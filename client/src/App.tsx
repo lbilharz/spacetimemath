@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSpacetimeDB, useTable } from 'spacetimedb/react';
 import { tables } from './module_bindings/index.js';
@@ -42,6 +42,27 @@ export default function App() {
       setPage('lobby');
     }
   }, [myPlayer?.identity, page]);
+
+  // Reconnect after backgrounding: if the WS is still dead 3s after coming back, reload.
+  const isActiveRef = useRef(isActive);
+  useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        timer = setTimeout(() => {
+          if (!isActiveRef.current) window.location.reload();
+        }, 3000);
+      } else {
+        clearTimeout(timer);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearTimeout(timer);
+    };
+  }, []);
 
   const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
     setSessionId(id);

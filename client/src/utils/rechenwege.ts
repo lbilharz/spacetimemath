@@ -5,6 +5,37 @@ export interface Rechenweg {
 }
 
 export function getRechenweg(a: number, b: number): Rechenweg {
+  // Tier-1: curated 2-digit factors — check before the small/big swap
+  const two = [11, 12, 15, 20, 25].includes(a) ? a
+            : [11, 12, 15, 20, 25].includes(b) ? b
+            : 0;
+  const n = two > 0 ? (a === two ? b : a) : 0;
+  if (two === 11 && n >= 2 && n <= 9) return {
+    strategyKey: 'rechenweg.eleven',
+    steps: [`${n} × 10 = ${n * 10}`, `${n * 10} + ${n} = ${n * 11}`],
+    hint: `${n}×10 + ${n}`,
+  };
+  if (two === 12 && n >= 2 && n <= 9) return {
+    strategyKey: 'rechenweg.twelve',
+    steps: [`${n} × 10 = ${n * 10}`, `${n} × 2 = ${n * 2}`, `${n * 10} + ${n * 2} = ${n * 12}`],
+    hint: `${n}×10 + ${n}×2`,
+  };
+  if (two === 15 && n >= 2 && n <= 9) return {
+    strategyKey: 'rechenweg.fifteen',
+    steps: [`${n} × 10 = ${n * 10}`, `${n * 10} ÷ 2 = ${n * 5}`, `${n * 10} + ${n * 5} = ${n * 15}`],
+    hint: `${n}×10 + ${n}×10÷2`,
+  };
+  if (two === 20 && n >= 2 && n <= 9) return {
+    strategyKey: 'rechenweg.twenty',
+    steps: [`${n} × 2 = ${n * 2}`, `${n * 2} × 10 = ${n * 20}`],
+    hint: `${n}×2, ×10`,
+  };
+  if (two === 25 && n >= 2 && n <= 9) return {
+    strategyKey: 'rechenweg.twentyfive',
+    steps: [`${n} × 100 = ${n * 100}`, `${n * 100} ÷ 4 = ${n * 25}`],
+    hint: `${n}×100 ÷ 4`,
+  };
+
   const [small, big] = a <= b ? [a, b] : [b, a];
 
   switch (small) {

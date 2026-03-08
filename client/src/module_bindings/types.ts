@@ -90,3 +90,11 @@ export const TransferCode = __t.object("TransferCode", {
 });
 export type TransferCode = __Infer<typeof TransferCode>;
 
+export const UnlockLog = __t.object("UnlockLog", {
+  id: __t.u64(),
+  playerIdentity: __t.identity(),
+  tier: __t.u8(),
+  unlockedAt: __t.timestamp(),
+});
+export type UnlockLog = __Infer<typeof UnlockLog>;
+

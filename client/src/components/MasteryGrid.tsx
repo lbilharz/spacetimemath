@@ -10,6 +10,7 @@ interface Props {
   problemStats: ProblemStat[];
   highlightSession?: bigint;
   sessionAnswers?: Answer[];
+  tier1Unlocked?: boolean;
 }
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -38,7 +39,10 @@ const MASTERY_BG: Record<Mastery, string> = {
   untouched: 'var(--card2)',
 };
 
-export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [] }: Props) {
+const TIER1_A = [11, 12, 15, 20, 25];
+const TIER1_B = [2, 3, 4, 5, 6, 7, 8, 9];
+
+export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [], tier1Unlocked = false }: Props) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
@@ -147,6 +151,79 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
           </div>
         </div>
       )}
+
+      {/* Tier-1 extended grid (unlocked) */}
+      {tier1Unlocked && (() => {
+        const t1cells: React.ReactNode[] = [];
+        t1cells.push(<div key="t1h0" style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>×</div>);
+        for (const b of TIER1_B) {
+          t1cells.push(
+            <div key={`t1hb${b}`} style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>
+              {b}
+            </div>
+          );
+        }
+        for (const a of TIER1_A) {
+          t1cells.push(
+            <div key={`t1ha${a}`} style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>
+              {a}
+            </div>
+          );
+          for (const b of TIER1_B) {
+            const mastery = getMastery(answers, a, b);
+            const key = a * 100 + b;
+            const isHighlighted = sessionKeys.has(key);
+            const isSelected = selected?.a === a && selected?.b === b;
+            const stat = problemStats.find(s => s.problemKey === key);
+            const w = stat?.difficultyWeight ?? 0;
+            const answer = a * b;
+            t1cells.push(
+              <button
+                key={`t1-${a}-${b}`}
+                title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
+                onClick={() => setSelected(isSelected ? null : { a, b })}
+                style={{
+                  ...cell,
+                  background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
+                  border: isSelected
+                    ? `2px solid ${MASTERY_COLORS[mastery]}`
+                    : isHighlighted
+                    ? '2px solid var(--accent)'
+                    : `1px solid ${MASTERY_COLORS[mastery]}44`,
+                  color: MASTERY_COLORS[mastery],
+                  fontWeight: 600,
+                  fontSize: 10,
+                  position: 'relative',
+                  cursor: 'pointer',
+                }}
+              >
+                {answer}
+                {w >= 1.5 && (
+                  <span style={{
+                    position: 'absolute', top: 2, right: 3,
+                    width: 4, height: 4, borderRadius: '50%',
+                    background: 'var(--wrong)', display: 'block',
+                  }} />
+                )}
+              </button>
+            );
+          }
+        }
+        return (
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 8 }}>
+              🔓 {t('unlock.tier1GridTitle' as any)}
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '28px repeat(8, 1fr)',
+              gap: 3,
+            }}>
+              {t1cells}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap' }}>

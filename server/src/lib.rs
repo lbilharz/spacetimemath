@@ -55,11 +55,23 @@ pub struct ProblemStat {
     pub problem_key: u16,
     pub a: u8,
     pub b: u8,
-    pub category: u8,        // 0 = trivial (*0/1/10), 1 = core (2-9 x 2-9)
+    pub category: u8,        // 0 = trivial (*0/1/10), 1 = core (2-9 x 2-9), 2 = tier-1 (curated 2-digit)
     pub attempt_count: u32,
     pub correct_count: u32,
     pub avg_response_ms: u32,
     pub difficulty_weight: f32,
+}
+
+/// Records tier unlocks per player. One row per player per tier.
+/// tier 1 = curated 2-digit multipliers (11,12,15,20,25 × 2-9)
+#[table(accessor = unlock_logs, public)]
+pub struct UnlockLog {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub player_identity: Identity,
+    pub tier: u8,
+    pub unlocked_at: Timestamp,
 }
 
 // ============================================================
@@ -69,6 +81,7 @@ pub struct ProblemStat {
 #[reducer(init)]
 pub fn init(ctx: &ReducerContext) {
     seed_problem_stats(ctx);
+    seed_tier1_problem_stats(ctx);
 }
 
 fn seed_problem_stats(ctx: &ReducerContext) {
@@ -88,6 +101,28 @@ fn seed_problem_stats(ctx: &ReducerContext) {
                 attempt_count: 0,
                 correct_count: 0,
                 avg_response_ms: 0,
+                difficulty_weight: weight,
+            });
+        }
+    }
+}
+
+fn seed_tier1_problem_stats(ctx: &ReducerContext) {
+    // Curated 2-digit × 1-digit pairs. Both orderings seeded (e.g. 11×7 and 7×11).
+    let pairs: &[(u8, u8, f32)] = &[
+        (11,2,0.6),(11,3,0.6),(11,4,0.6),(11,5,0.6),(11,6,0.6),(11,7,0.6),(11,8,0.6),(11,9,0.6),
+        (12,2,1.0),(12,3,1.0),(12,4,1.0),(12,5,1.0),(12,6,1.0),(12,7,1.0),(12,8,1.0),(12,9,1.0),
+        (15,2,1.2),(15,3,1.2),(15,4,1.2),(15,5,1.2),(15,6,1.2),(15,7,1.2),(15,8,1.2),(15,9,1.2),
+        (20,2,0.6),(20,3,0.6),(20,4,0.6),(20,5,0.6),(20,6,0.6),(20,7,0.6),(20,8,0.6),(20,9,0.6),
+        (25,2,1.4),(25,3,1.4),(25,4,1.4),(25,5,1.4),(25,6,1.4),(25,7,1.4),(25,8,1.4),(25,9,1.4),
+    ];
+    for &(a, b, weight) in pairs {
+        for &(ra, rb) in &[(a, b), (b, a)] {
+            let key = (ra as u16) * 100 + (rb as u16);
+            ctx.db.problem_stats().insert(ProblemStat {
+                problem_key: key,
+                a: ra, b: rb, category: 2,
+                attempt_count: 0, correct_count: 0, avg_response_ms: 0,
                 difficulty_weight: weight,
             });
         }
@@ -206,7 +241,7 @@ pub fn submit_answer(
             ((stat.avg_response_ms as u64 * stat.attempt_count as u64
                 + response_ms as u64) / new_count as u64) as u32
         };
-        let new_weight = if new_count >= 20 && stat.category == 1 {
+        let new_weight = if new_count >= 20 && (stat.category == 1 || stat.category == 2) {
             let error_rate = 1.0 - (new_correct as f32 / new_count as f32);
             let speed_factor = (new_avg_ms as f32 / 10_000.0).min(1.0);
             (0.2_f32 + 1.8 * error_rate + 0.5 * speed_factor).clamp(0.2, 2.0)
@@ -274,7 +309,41 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
         total_answered: player.total_answered + total,
         ..player
     });
+    check_and_unlock(ctx, sender);
     Ok(())
+}
+
+fn check_and_unlock(ctx: &ReducerContext, sender: Identity) {
+    // Already unlocked tier 1? Nothing to do.
+    if ctx.db.unlock_logs().iter().any(|u| u.player_identity == sender && u.tier == 1) {
+        return;
+    }
+    let my_answers: Vec<Answer> = ctx.db.answers()
+        .iter()
+        .filter(|a| a.player_identity == sender)
+        .collect();
+    let mut mastered = 0u32;
+    for a in 2u8..=9 {
+        for b in 2u8..=9 {
+            let pair: Vec<_> = my_answers.iter()
+                .filter(|ans| ans.a == a && ans.b == b)
+                .collect();
+            if pair.is_empty() { continue; }
+            let recent: Vec<_> = pair.iter().rev().take(10).collect();
+            let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
+                / recent.len() as f32;
+            if acc >= 0.8 { mastered += 1; }
+        }
+    }
+    // Require 30 of 64 core pairs mastered (≈47%); achievable in 7-10 high-accuracy sessions
+    if mastered >= 30 {
+        ctx.db.unlock_logs().insert(UnlockLog {
+            id: 0,
+            player_identity: sender,
+            tier: 1,
+            unlocked_at: ctx.timestamp,
+        });
+    }
 }
 
 // ============================================================

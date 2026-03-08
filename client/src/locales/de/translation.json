@@ -168,6 +168,13 @@
     "you": "du",
     "footer": "Punkte = Σ Schwierigkeit aller richtigen Antworten · Live via SpaceTimeDB"
   },
+  "unlock": {
+    "tier1Title": "Zweistellige Multiplikation freigeschaltet!",
+    "tier1Desc": "Neue Aufgaben mit 11, 12, 15, 20, 25 sind jetzt dabei!",
+    "tier1Earned": "Neue Stufe freigeschaltet! 🔓",
+    "tier1EarnedDesc": "Zweistellige Multiplikatoren (11, 12, 15, 20, 25) sind jetzt verfügbar!",
+    "tier1GridTitle": "Erweiterte Tabellen (freigeschaltet)"
+  },
   "rechenweg": {
     "zero": "× 0 = 0",
     "one": "× 1 = selbst",
@@ -179,7 +186,12 @@
     "timesFivePlusOne": "×5 + eins mehr",
     "timesFivePlusTwo": "×5 + verdoppeln",
     "tripleDouble": "Dreimal verdoppeln",
-    "timesTenMinusOne": "×10 − eins"
+    "timesTenMinusOne": "×10 − eins",
+    "eleven": "×10 + sich selbst",
+    "twelve": "×10 + verdoppeln",
+    "fifteen": "×10 + Hälfte von ×10",
+    "twenty": "Verdoppeln, dann ×10",
+    "twentyfive": "÷4 von ×100"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  Schwierigkeit: {{difficulty}}",

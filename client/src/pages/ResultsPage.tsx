@@ -27,8 +27,20 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
   const [players] = useTable(tables.players);
+  const [unlockLogs] = useTable(tables.unlock_logs);
 
   const session = sessions.find(s => (s as Session).id === sessionId) as Session | undefined;
+
+  const tier1Unlocked = (unlockLogs as any[]).some(
+    (u: any) => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
+  );
+  // Detect fresh unlock this session: compare unlock timestamp to session start
+  const myUnlock = (unlockLogs as any[]).find(
+    (u: any) => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
+  );
+  const sessionRow = sessions.find(s => (s as any).id === sessionId) as any;
+  const isNewUnlock = myUnlock && sessionRow &&
+    myUnlock.unlockedAt.microsSinceUnixEpoch >= sessionRow.startedAt.microsSinceUnixEpoch;
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[];
   const sessionAnswers = myAnswers.filter(a => a.sessionId === sessionId);
 
@@ -58,6 +70,15 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
         <div style={{ fontSize: 48, marginBottom: 4 }}>🏁</div>
         <h1>{t('results.heading')}</h1>
       </div>
+
+      {/* New-unlock toast */}
+      {isNewUnlock && (
+        <div className="card" style={{ width: '100%', border: '1px solid var(--accent)', textAlign: 'center' }}>
+          <div style={{ fontSize: 32 }}>🔓</div>
+          <h2 style={{ color: 'var(--accent)', margin: '8px 0 4px' }}>{t('unlock.tier1Earned' as any)}</h2>
+          <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>{t('unlock.tier1EarnedDesc' as any)}</p>
+        </div>
+      )}
 
       {/* Score card */}
       <div className="card" style={{ width: '100%', textAlign: 'center' }}>
@@ -159,7 +180,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
             {t('results.masteryDesc')}
           </p>
-          <MasteryGrid answers={myAnswers} problemStats={problemStats as any[]} highlightSession={sessionId} sessionAnswers={sessionAnswers} />
+          <MasteryGrid answers={myAnswers} problemStats={problemStats as any[]} highlightSession={sessionId} sessionAnswers={sessionAnswers} tier1Unlocked={tier1Unlocked} />
         </div>
       )}
 

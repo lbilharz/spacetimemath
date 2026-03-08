@@ -59,6 +59,7 @@ import ProblemStatsRow from "./problem_stats_table";
 import RecoveryKeysRow from "./recovery_keys_table";
 import SessionsRow from "./sessions_table";
 import TransferCodesRow from "./transfer_codes_table";
+import UnlockLogsRow from "./unlock_logs_table";
 
 /** Type-only namespace exports for generated type groups. */
 
@@ -152,6 +153,17 @@ const tablesSchema = __schema({
       { name: 'transfer_codes_code_key', constraint: 'unique', columns: ['code'] },
     ],
   }, TransferCodesRow),
+  unlock_logs: __table({
+    name: 'unlock_logs',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+    ],
+    constraints: [
+      { name: 'unlock_logs_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, UnlockLogsRow),
 });
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */

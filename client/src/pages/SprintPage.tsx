@@ -65,6 +65,14 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
+  const [unlockLogs] = useTable(tables.unlock_logs);
+
+  const tier1Unlocked = (unlockLogs as any[]).some(
+    (u: any) => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
+  );
+  const eligibleStats = (problemStats as ProblemStat[]).filter(s =>
+    tier1Unlocked || s.category !== 2
+  );
 
   const startSession = useSTDBReducer(reducers.startSession);
   const submitAnswer = useSTDBReducer(reducers.submitAnswer);
@@ -132,8 +140,8 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
 
   // 3c. Select first problem when sprint starts + stats are ready
   useEffect(() => {
-    if (sprintStarted && !problem && problemStats.length > 0) {
-      const p = selectNextProblem(problemStats as ProblemStat[], myAnswers);
+    if (sprintStarted && !problem && eligibleStats.length > 0) {
+      const p = selectNextProblem(eligibleStats, myAnswers);
       setProblem(p);
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
@@ -202,7 +210,7 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
     setTimeout(() => {
       setFeedback(null);
       const next = selectNextProblem(
-        problemStats as ProblemStat[],
+        eligibleStats,
         myAnswers,
         lastKeyRef.current
       );
