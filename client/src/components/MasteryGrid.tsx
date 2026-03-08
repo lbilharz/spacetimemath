@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getRechenweg } from '../utils/rechenwege.js';
 
 type Answer = { a: number; b: number; isCorrect: boolean; sessionId: bigint; };
 type ProblemStat = { problemKey: number; a: number; b: number; difficultyWeight: number; };
@@ -38,6 +40,7 @@ const MASTERY_BG: Record<Mastery, string> = {
 
 export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [] }: Props) {
   const { t } = useTranslation();
+  const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
   const cells: React.ReactNode[] = [];
@@ -62,24 +65,29 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
       const mastery = getMastery(answers, a, b);
       const key = a * 100 + b;
       const isHighlighted = sessionKeys.has(key);
+      const isSelected = selected?.a === a && selected?.b === b;
       const stat = problemStats.find(s => s.problemKey === key);
       const w = stat?.difficultyWeight ?? 0;
       const answer = a * b;
 
       cells.push(
-        <div
+        <button
           key={`${a}-${b}`}
           title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
+          onClick={() => setSelected(isSelected ? null : { a, b })}
           style={{
             ...cell,
-            background: MASTERY_BG[mastery],
-            border: isHighlighted
+            background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
+            border: isSelected
+              ? `2px solid ${MASTERY_COLORS[mastery]}`
+              : isHighlighted
               ? '2px solid var(--accent)'
               : `1px solid ${MASTERY_COLORS[mastery]}44`,
             color: MASTERY_COLORS[mastery],
             fontWeight: 600,
             fontSize: 13,
             position: 'relative',
+            cursor: 'pointer',
           }}
         >
           {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}
@@ -91,10 +99,12 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
               background: 'var(--wrong)', display: 'block',
             }} />
           )}
-        </div>
+        </button>
       );
     }
   }
+
+  const rw = selected ? getRechenweg(selected.a, selected.b) : null;
 
   return (
     <div>
@@ -105,6 +115,39 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
       }}>
         {cells}
       </div>
+
+      {/* Rechenweg panel */}
+      {selected && rw && (
+        <div style={{
+          marginTop: 12,
+          background: 'var(--card2)',
+          border: '1px solid var(--border)',
+          borderRadius: 8,
+          padding: '10px 14px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <span style={{ fontWeight: 700, fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>
+              {selected.a} × {selected.b} = {selected.a * selected.b}
+            </span>
+            <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {t(rw.strategyKey as any)}
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {rw.steps.map((step, i) => (
+              <div key={i} style={{
+                fontSize: 15,
+                fontVariantNumeric: 'tabular-nums',
+                fontWeight: i === rw.steps.length - 1 ? 700 : 400,
+                color: i === rw.steps.length - 1 ? 'var(--accent)' : 'var(--text)',
+              }}>
+                {step}{i === rw.steps.length - 1 ? ' ✓' : ''}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap' }}>
         {(['mastered', 'learning', 'struggling', 'untouched'] as Mastery[]).map(m => (
@@ -136,4 +179,7 @@ const cell: React.CSSProperties = {
   fontSize: 12,
   transition: 'opacity 0.2s',
   minWidth: 0,
+  // reset button styles
+  padding: 0,
+  fontFamily: 'inherit',
 };
