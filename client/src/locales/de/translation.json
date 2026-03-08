@@ -193,6 +193,10 @@
     "twenty": "Verdoppeln, dann ×10",
     "twentyfive": "÷4 von ×100"
   },
+  "history": {
+    "title": "📋 Sprint-Verlauf",
+    "noAnswers": "Keine Antworten aufgezeichnet."
+  },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  Schwierigkeit: {{difficulty}}",
     "mastered": "beherrscht",

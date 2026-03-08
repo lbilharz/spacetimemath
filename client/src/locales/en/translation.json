@@ -193,6 +193,10 @@
     "twenty": "Double, then ×10",
     "twentyfive": "÷4 of ×100"
   },
+  "history": {
+    "title": "📋 Sprint History",
+    "noAnswers": "No answers recorded."
+  },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  difficulty: {{difficulty}}",
     "mastered": "mastered",

@@ -4,6 +4,7 @@ import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import Leaderboard from '../components/Leaderboard.js';
+import SprintHistory from '../components/SprintHistory.js';
 
 type Player = { identity: { toHexString(): string }; username: string; bestScore: number; totalSessions: number; };
 
@@ -225,6 +226,11 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
 
       {/* Global Leaderboard */}
       <Leaderboard sessions={sessions as any[]} myIdentityHex={myIdentityHex} />
+
+      {/* Sprint History */}
+      {myIdentityHex && (
+        <SprintHistory sessions={sessions as any[]} answers={answers as any[]} myIdentityHex={myIdentityHex} />
+      )}
 
       {/* Personal Mastery Grid */}
       {myIdentityHex && (
