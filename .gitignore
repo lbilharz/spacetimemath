@@ -1,0 +1,24 @@
+# Claude Code internals
+.claude/
+
+# Pitch deck / misc scripts (not part of the open source prototype)
+*.pdf
+*.pptx
+*.jpg
+*.png
+create_pitchdeck.js
+# Root-level package.json is for the pitchdeck script, not the project
+/package.json
+/package-lock.json
+
+# Rust
+server/target/
+
+# Node
+node_modules/
+dist/
+.env
+.env.local
+
+# OS
+.DS_Store
