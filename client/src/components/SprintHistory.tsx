@@ -12,6 +12,7 @@ interface Props {
 
 export default function SprintHistory({ sessions, answers, myIdentityHex }: Props) {
   const { t, i18n } = useTranslation();
+  const [sectionOpen, setSectionOpen] = useState(false);
   const [openId, setOpenId] = useState<bigint | null>(null);
 
   const mySessions: SessionRow[] = (sessions as SessionRow[])
@@ -22,8 +23,20 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 12 }}>{t('history.title')}</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <button
+        onClick={() => setSectionOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+          color: 'var(--text)', padding: 0, marginBottom: sectionOpen ? 12 : 0,
+        }}
+      >
+        <h2 style={{ margin: 0 }}>{t('history.title')}</h2>
+        <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+          {mySessions.length} · {sectionOpen ? '▲' : '▼'}
+        </span>
+      </button>
+      {sectionOpen && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {mySessions.map((session: SessionRow) => {
           const isOpen = openId === session.id;
           const date = new Date(Number(session.startedAt.microsSinceUnixEpoch / 1000n));
@@ -155,7 +168,7 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
             </div>
           );
         })}
-      </div>
+      </div>}
     </div>
   );
 }
