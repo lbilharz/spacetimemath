@@ -16,6 +16,7 @@ export default function App() {
   const [classroomMembers] = useTable(tables.classroom_members);
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
+  const [classroomId, setClassroomId] = useState<bigint | null>(null);
   // Track where to return after sprint/results
   const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
 
@@ -24,9 +25,11 @@ export default function App() {
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
-  // Check if still in a classroom (for post-sprint routing)
-  const inClassroom = myIdentityHex
-    ? (classroomMembers as any[]).some(m => m.playerIdentity.toHexString() === myIdentityHex)
+  // Check if still in the specific classroom (for post-sprint routing)
+  const inClassroom = classroomId !== null && myIdentityHex
+    ? (classroomMembers as any[]).some(
+        m => m.playerIdentity.toHexString() === myIdentityHex && m.classroomId === classroomId
+      )
     : false;
 
   // Auto-navigate to lobby if already registered
@@ -40,6 +43,11 @@ export default function App() {
     setSessionId(id);
     setSprintOrigin(origin);
     setPage('sprint');
+  };
+
+  const goToClassroom = (id: bigint) => {
+    setClassroomId(id);
+    setPage('classroom');
   };
 
   if (connectionError) {
@@ -76,13 +84,14 @@ export default function App() {
           myIdentityHex={myIdentityHex}
           onStartSprint={(id) => goToSprint(id, 'lobby')}
           onAccount={() => setPage('account')}
-          onEnterClassroom={() => setPage('classroom')}
+          onEnterClassroom={goToClassroom}
         />
       );
     case 'classroom':
       return (
         <ClassroomPage
           myIdentityHex={myIdentityHex!}
+          classroomId={classroomId!}
           onStartSprint={(id) => goToSprint(id, 'classroom')}
           onLeave={() => setPage('lobby')}
           onAccount={() => setPage('account')}
@@ -108,6 +117,7 @@ export default function App() {
         <AccountPage
           myPlayer={myPlayer!}
           myIdentityHex={myIdentityHex!}
+          onEnterClassroom={goToClassroom}
           onBack={() => setPage('lobby')}
         />
       );

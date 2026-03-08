@@ -6,12 +6,13 @@ import { QRCodeSVG } from 'qrcode.react';
 
 interface Props {
   myIdentityHex: string;
+  classroomId: bigint;
   onStartSprint: (sessionId: bigint) => void;
   onLeave: () => void;
   onAccount: () => void;
 }
 
-export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, onAccount }: Props) {
+export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onLeave, onAccount }: Props) {
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [sessions] = useTable(tables.sessions);
@@ -28,13 +29,11 @@ export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, o
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
 
-  // Derive my classroom
+  // Find this specific classroom
+  const myClassroom = (classrooms as any[]).find(c => c.id === classroomId) ?? null;
   const myMembership = (classroomMembers as any[]).find(
-    m => m.playerIdentity.toHexString() === myIdentityHex
+    m => m.classroomId === classroomId && m.playerIdentity.toHexString() === myIdentityHex
   );
-  const myClassroom = myMembership
-    ? (classrooms as any[]).find(c => c.id === myMembership.classroomId)
-    : null;
 
   if (!myClassroom) {
     return (
@@ -48,7 +47,7 @@ export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, o
   const amHidden: boolean = myMembership?.hidden ?? false;
 
   // All members of this classroom
-  const members = (classroomMembers as any[]).filter(m => m.classroomId === myClassroom.id);
+  const members = (classroomMembers as any[]).filter(m => m.classroomId === classroomId);
   // Visible members (included in leaderboard + mastery)
   const visibleMembers = members.filter((m: any) => !m.hidden);
   const visibleIds = new Set(visibleMembers.map((m: any) => m.playerIdentity.toHexString()));
@@ -64,7 +63,6 @@ export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, o
   }
 
   // All member rows (for the Members card — shows everyone)
-  const memberIds = new Set(members.map((m: any) => m.playerIdentity.toHexString()));
   const memberRows = members.map((m: any) => {
     const id = m.playerIdentity.toHexString();
     const player = (players as any[]).find(p => p.identity.toHexString() === id);
@@ -79,7 +77,7 @@ export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, o
 
   const handleToggleVisibility = async () => {
     setTogglingVis(true);
-    await toggleVisibility();
+    await toggleVisibility({ classroomId });
     setTogglingVis(false);
   };
 
@@ -91,7 +89,7 @@ export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, o
 
   const handleLeave = async () => {
     setLeaving(true);
-    await leaveClassroom();
+    await leaveClassroom({ classroomId });
     onLeave();
   };
 
@@ -115,6 +113,7 @@ export default function ClassroomPage({ myIdentityHex, onStartSprint, onLeave, o
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button className="btn btn-secondary" onClick={onAccount} style={{ fontSize: 14 }}>⚙ Account</button>
+          <button className="btn btn-secondary" onClick={onLeave} style={{ fontSize: 14 }}>← Back</button>
           <button
             className="btn btn-primary btn-lg"
             onClick={handleStart}

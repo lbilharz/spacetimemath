@@ -422,8 +422,8 @@ pub struct ClassroomMember {
     pub hidden: bool,  // if true, member is excluded from class leaderboard/mastery
 }
 
-/// Create a new classroom. Closes any existing classroom the caller teaches,
-/// and removes them from any classroom they're in as a student.
+/// Create a new classroom. The caller becomes its teacher and first member.
+/// A player may teach or join multiple classrooms simultaneously.
 #[reducer]
 pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String> {
     let name = name.trim().to_string();
@@ -431,7 +431,6 @@ pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String
         return Err("Class name must be 1–40 characters".into());
     }
     let _player = get_player(ctx)?;
-    cleanup_classroom(ctx);
     let code = make_code(ctx);
     let classroom = ctx.db.classrooms().insert(Classroom {
         id: 0, code, name, teacher: ctx.sender(),
@@ -443,6 +442,7 @@ pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String
 }
 
 /// Join an existing classroom by its 6-character code.
+/// A player may be a member of multiple classrooms at once.
 #[reducer]
 pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> {
     let _player = get_player(ctx)?;
@@ -456,53 +456,48 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
     if ctx.db.classroom_members().iter().any(|m| m.classroom_id == cid && m.player_identity == ctx.sender()) {
         return Ok(());
     }
-    cleanup_classroom(ctx);
     ctx.db.classroom_members().insert(ClassroomMember {
         id: 0, classroom_id: cid, player_identity: ctx.sender(), hidden: false,
     });
     Ok(())
 }
 
-/// Leave current classroom. If caller is the teacher, closes the classroom for everyone.
+/// Leave a specific classroom by ID.
+/// If the caller is the teacher, the classroom is closed for all members.
 #[reducer]
-pub fn leave_classroom(ctx: &ReducerContext) -> Result<(), String> {
-    cleanup_classroom(ctx);
+pub fn leave_classroom(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
+    // Verify membership
+    let membership = ctx.db.classroom_members()
+        .iter()
+        .find(|m| m.classroom_id == classroom_id && m.player_identity == ctx.sender())
+        .ok_or("Not a member of this classroom")?;
+
+    let is_teacher = ctx.db.classrooms()
+        .iter()
+        .any(|c| c.id == classroom_id && c.teacher == ctx.sender());
+
+    if is_teacher {
+        // Close classroom: remove all members then the classroom itself
+        let all_members: Vec<_> = ctx.db.classroom_members()
+            .iter()
+            .filter(|m| m.classroom_id == classroom_id)
+            .collect();
+        for m in all_members { ctx.db.classroom_members().id().delete(m.id); }
+        ctx.db.classrooms().id().delete(classroom_id);
+    } else {
+        ctx.db.classroom_members().id().delete(membership.id);
+    }
     Ok(())
 }
 
-/// Toggle whether caller's stats are visible to the rest of the class.
+/// Toggle whether the caller's stats are visible in a specific classroom.
 #[reducer]
-pub fn toggle_classroom_visibility(ctx: &ReducerContext) -> Result<(), String> {
+pub fn toggle_classroom_visibility(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
     let membership = ctx.db.classroom_members()
         .iter()
-        .find(|m| m.player_identity == ctx.sender())
-        .ok_or("Not in a classroom")?;
+        .find(|m| m.classroom_id == classroom_id && m.player_identity == ctx.sender())
+        .ok_or("Not in this classroom")?;
     let updated = ClassroomMember { hidden: !membership.hidden, ..membership };
     ctx.db.classroom_members().id().update(updated);
     Ok(())
-}
-
-/// Remove all classroom traces for ctx.sender:
-/// - Closes any classroom they teach (removes all members)
-/// - Removes any student memberships they hold
-fn cleanup_classroom(ctx: &ReducerContext) {
-    // Close classrooms where caller is teacher
-    let my_classrooms: Vec<_> = ctx.db.classrooms()
-        .iter()
-        .filter(|c| c.teacher == ctx.sender())
-        .collect();
-    for c in my_classrooms {
-        let members: Vec<_> = ctx.db.classroom_members()
-            .iter()
-            .filter(|m| m.classroom_id == c.id)
-            .collect();
-        for m in members { ctx.db.classroom_members().id().delete(m.id); }
-        ctx.db.classrooms().id().delete(c.id);
-    }
-    // Remove student memberships
-    let my_memberships: Vec<_> = ctx.db.classroom_members()
-        .iter()
-        .filter(|m| m.player_identity == ctx.sender())
-        .collect();
-    for m in my_memberships { ctx.db.classroom_members().id().delete(m.id); }
 }

@@ -8,10 +8,11 @@ type Player = { identity: { toHexString(): string }; username: string };
 interface Props {
   myPlayer: Player;
   myIdentityHex: string;
+  onEnterClassroom: (id: bigint) => void;
   onBack: () => void;
 }
 
-export default function AccountPage({ myPlayer, myIdentityHex, onBack }: Props) {
+export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom, onBack }: Props) {
   const [transferCodes] = useTable(tables.transfer_codes);
   const [recoveryKeys] = useTable(tables.recovery_keys);
   const [classrooms] = useTable(tables.classrooms);
@@ -99,23 +100,25 @@ export default function AccountPage({ myPlayer, myIdentityHex, onBack }: Props) 
     setGenerating(false);
   };
 
-  // Classrooms
-  const myMembership = (classroomMembers as any[]).find(
+  // Classrooms — all memberships
+  const myMemberships = (classroomMembers as any[]).filter(
     m => m.playerIdentity.toHexString() === myIdentityHex
   );
-  const myClassroom = myMembership
-    ? (classrooms as any[]).find(c => c.id === myMembership.classroomId)
-    : null;
-  const iAmTeacher = myClassroom?.teacher?.toHexString() === myIdentityHex;
-  const classMembers = myClassroom
-    ? (classroomMembers as any[]).filter(m => m.classroomId === myClassroom.id)
-    : [];
+  const myClassroomList = myMemberships
+    .map((m: any) => {
+      const c = (classrooms as any[]).find(cl => cl.id === m.classroomId);
+      if (!c) return null;
+      const memberCount = (classroomMembers as any[]).filter(cm => cm.classroomId === c.id).length;
+      const isTeacher = c.teacher?.toHexString() === myIdentityHex;
+      return { ...c, memberCount, isTeacher };
+    })
+    .filter(Boolean);
 
-  const [classroomAction, setClassroomAction] = useState(false);
-  const handleClassroomAction = async () => {
-    setClassroomAction(true);
-    await leaveClassroom();
-    setClassroomAction(false);
+  const [leavingId, setLeavingId] = useState<bigint | null>(null);
+  const handleLeaveClassroom = async (cid: bigint) => {
+    setLeavingId(cid);
+    await leaveClassroom({ classroomId: cid });
+    setLeavingId(null);
   };
 
   const handleLogout = () => {
@@ -263,34 +266,46 @@ export default function AccountPage({ myPlayer, myIdentityHex, onBack }: Props) 
         )}
       </div>
 
-      {/* Classroom */}
-      {myClassroom && (
+      {/* Classrooms */}
+      {myClassroomList.length > 0 && (
         <div className="card" style={{ marginTop: 16 }}>
-          <h2 style={{ marginBottom: 8, fontSize: 16 }}>Classroom</h2>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <div>
-              <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{myClassroom.name}</span>
-              <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 10 }}>
-                code <code style={{ color: 'var(--text)' }}>{myClassroom.code}</code>
-              </span>
-              <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 10 }}>
-                {iAmTeacher ? 'Teacher' : 'Student'} · {classMembers.length} member{classMembers.length !== 1 ? 's' : ''}
-              </span>
+          <h2 style={{ marginBottom: 12, fontSize: 16 }}>My Classrooms</h2>
+          {myClassroomList.map((c: any) => (
+            <div key={String(c.id)} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexWrap: 'wrap', gap: 8, paddingBottom: 10, marginBottom: 10,
+              borderBottom: '1px solid var(--border)',
+            }}>
+              <div>
+                <button
+                  onClick={() => onEnterClassroom(c.id)}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: 'var(--accent)', fontSize: 15 }}
+                >
+                  {c.name}
+                </button>
+                <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 8 }}>
+                  {c.isTeacher ? 'Teacher' : 'Student'} · {c.memberCount} member{c.memberCount !== 1 ? 's' : ''} · code <code style={{ color: 'var(--text)' }}>{c.code}</code>
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => onEnterClassroom(c.id)}
+                  style={{ fontSize: 12 }}
+                >
+                  View →
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => handleLeaveClassroom(c.id)}
+                  disabled={leavingId === c.id}
+                  style={{ fontSize: 12 }}
+                >
+                  {leavingId === c.id ? '…' : c.isTeacher ? '✕ Close' : 'Leave'}
+                </button>
+              </div>
             </div>
-            <button
-              className="btn btn-secondary"
-              onClick={handleClassroomAction}
-              disabled={classroomAction}
-              style={{ fontSize: 13 }}
-            >
-              {classroomAction ? 'Leaving…' : iAmTeacher ? '✕ Close class' : '← Leave class'}
-            </button>
-          </div>
-          {iAmTeacher && (
-            <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
-              Closing removes all members from the class.
-            </p>
-          )}
+          ))}
         </div>
       )}
 
