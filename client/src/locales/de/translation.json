@@ -168,6 +168,19 @@
     "you": "du",
     "footer": "Punkte = Σ Schwierigkeit aller richtigen Antworten · Live via SpaceTimeDB"
   },
+  "rechenweg": {
+    "zero": "× 0 = 0",
+    "one": "× 1 = selbst",
+    "ten": "Null anhängen",
+    "double": "Verdoppeln",
+    "doubleAndOne": "Verdoppeln + eins mehr",
+    "doubleDouble": "Zweimal verdoppeln",
+    "timesTenHalf": "Hälfte von ×10",
+    "timesFivePlusOne": "×5 + eins mehr",
+    "timesFivePlusTwo": "×5 + verdoppeln",
+    "timesTenMinusTwo": "×10 − verdoppeln",
+    "timesTenMinusOne": "×10 − eins"
+  },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  Schwierigkeit: {{difficulty}}",
     "mastered": "beherrscht",

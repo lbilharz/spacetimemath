@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import { getRechenweg } from '../utils/rechenwege.js';
 
 // Types inferred from module_bindings
 type ProblemStat = {
@@ -331,15 +332,21 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
 
         {/* Feedback overlay */}
         {feedback ? (
-          <div style={{
-            fontSize: 32,
-            fontWeight: 700,
-            color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
-            marginBottom: 8,
-          }}>
-            {feedback.isCorrect
-              ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
-              : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
+          <div style={{ marginBottom: 8 }}>
+            <div style={{
+              fontSize: 32,
+              fontWeight: 700,
+              color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
+            }}>
+              {feedback.isCorrect
+                ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
+                : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
+            </div>
+            {!feedback.isCorrect && (
+              <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 6, fontVariantNumeric: 'tabular-nums' }}>
+                {getRechenweg(problem.a, problem.b).hint}
+              </div>
+            )}
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>

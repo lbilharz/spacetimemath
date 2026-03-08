@@ -168,6 +168,19 @@
     "you": "you",
     "footer": "Score = Σ difficulty weight of correct answers · Updates live via SpaceTimeDB"
   },
+  "rechenweg": {
+    "zero": "× 0 = 0",
+    "one": "× 1 = itself",
+    "ten": "Append a zero",
+    "double": "Double it",
+    "doubleAndOne": "Double + one more",
+    "doubleDouble": "Double twice",
+    "timesTenHalf": "Half of ×10",
+    "timesFivePlusOne": "×5 + one more",
+    "timesFivePlusTwo": "×5 + double",
+    "timesTenMinusTwo": "×10 − double",
+    "timesTenMinusOne": "×10 − one"
+  },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  difficulty: {{difficulty}}",
     "mastered": "mastered",

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
+import { getRechenweg } from '../utils/rechenwege.js';
 
 type Session = {
   id: bigint; playerIdentity: { toHexString(): string };
@@ -37,10 +38,11 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
 
   // Top 3 hardest pairs this session (wrong answers by difficulty weight)
   const wrongPairs = sessionAnswers
-    .filter(a => !a.isCorrect)
-    .map(a => ({
-      key: `${a.a}×${a.b}`,
-      weight: (problemStats as any[]).find(s => s.problemKey === a.a * 100 + a.b)?.difficultyWeight ?? 1,
+    .filter(ans => !ans.isCorrect)
+    .map(ans => ({
+      key: `${ans.a}×${ans.b}`,
+      a: ans.a, b: ans.b,
+      weight: (problemStats as any[]).find(s => s.problemKey === ans.a * 100 + ans.b)?.difficultyWeight ?? 1,
     }));
   const uniqueHard = [...new Map(wrongPairs.map(p => [p.key, p])).values()]
     .sort((a, b) => b.weight - a.weight)
@@ -88,15 +90,42 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
 
             {uniqueHard.length > 0 && (
               <div style={{ marginTop: 20, textAlign: 'left' }}>
-                <h3 style={{ marginBottom: 8 }}>{t('results.struggled')}</h3>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {uniqueHard.map(p => (
-                    <span key={p.key} className="tag tag-red" style={{ fontSize: 14, padding: '4px 12px' }}>
-                      {p.key}
-                    </span>
-                  ))}
+                <h3 style={{ marginBottom: 12 }}>{t('results.struggled')}</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {uniqueHard.map(p => {
+                    const rw = getRechenweg(p.a, p.b);
+                    return (
+                      <div key={p.key} style={{
+                        background: 'var(--card2)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 8,
+                        padding: '12px 16px',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                          <span className="tag tag-red" style={{ fontSize: 14, padding: '4px 12px' }}>
+                            {p.key} = {p.a * p.b}
+                          </span>
+                          <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>
+                            {t(rw.strategyKey as any)}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                          {rw.steps.map((step, i) => (
+                            <div key={i} style={{
+                              fontSize: 15,
+                              fontVariantNumeric: 'tabular-nums',
+                              fontWeight: i === rw.steps.length - 1 ? 700 : 400,
+                              color: i === rw.steps.length - 1 ? 'var(--accent)' : 'var(--text)',
+                            }}>
+                              {step}{i === rw.steps.length - 1 ? ' ✓' : ''}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+                <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 10 }}>
                   {t('results.struggledHint')}
                 </p>
               </div>
