@@ -418,6 +418,8 @@ pub struct ClassroomMember {
     pub id: u64,
     pub classroom_id: u64,
     pub player_identity: Identity,
+    #[default(false)]
+    pub hidden: bool,  // if true, member is excluded from class leaderboard/mastery
 }
 
 /// Create a new classroom. Closes any existing classroom the caller teaches,
@@ -435,7 +437,7 @@ pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String
         id: 0, code, name, teacher: ctx.sender(),
     });
     ctx.db.classroom_members().insert(ClassroomMember {
-        id: 0, classroom_id: classroom.id, player_identity: ctx.sender(),
+        id: 0, classroom_id: classroom.id, player_identity: ctx.sender(), hidden: false,
     });
     Ok(())
 }
@@ -456,7 +458,7 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
     }
     cleanup_classroom(ctx);
     ctx.db.classroom_members().insert(ClassroomMember {
-        id: 0, classroom_id: cid, player_identity: ctx.sender(),
+        id: 0, classroom_id: cid, player_identity: ctx.sender(), hidden: false,
     });
     Ok(())
 }
@@ -465,6 +467,18 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
 #[reducer]
 pub fn leave_classroom(ctx: &ReducerContext) -> Result<(), String> {
     cleanup_classroom(ctx);
+    Ok(())
+}
+
+/// Toggle whether caller's stats are visible to the rest of the class.
+#[reducer]
+pub fn toggle_classroom_visibility(ctx: &ReducerContext) -> Result<(), String> {
+    let membership = ctx.db.classroom_members()
+        .iter()
+        .find(|m| m.player_identity == ctx.sender())
+        .ok_or("Not in a classroom")?;
+    let updated = ClassroomMember { hidden: !membership.hidden, ..membership };
+    ctx.db.classroom_members().id().update(updated);
     Ok(())
 }
 

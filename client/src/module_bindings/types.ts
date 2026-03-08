@@ -35,6 +35,7 @@ export const ClassroomMember = __t.object("ClassroomMember", {
   id: __t.u64(),
   classroomId: __t.u64(),
   playerIdentity: __t.identity(),
+  hidden: __t.bool(),
 });
 export type ClassroomMember = __Infer<typeof ClassroomMember>;
 

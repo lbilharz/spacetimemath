@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
@@ -43,6 +43,18 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
   const myClassroom = myMembership
     ? (classrooms as any[]).find(c => c.id === myMembership.classroomId)
     : null;
+
+  // Auto-join from ?join=CODE URL param (QR code scan)
+  useEffect(() => {
+    if (!myPlayer) return;
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('join');
+    if (!code) return;
+    window.history.replaceState({}, '', '/');
+    joinClassroom({ code: code.trim().toUpperCase() })
+      .then(() => onEnterClassroom())
+      .catch(() => {/* ignore — user can join manually */});
+  }, [myPlayer?.identity]);
 
   const handleStart = async () => {
     setStarting(true);

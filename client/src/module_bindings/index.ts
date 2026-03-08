@@ -44,6 +44,7 @@ import RegisterReducer from "./register_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
+import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
 import UseTransferCodeReducer from "./use_transfer_code_reducer";
 
 // Import all procedure arg schemas
@@ -164,6 +165,7 @@ const reducersSchema = __reducers(
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_session", StartSessionReducer),
   __reducerSchema("submit_answer", SubmitAnswerReducer),
+  __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
   __reducerSchema("use_transfer_code", UseTransferCodeReducer),
 );
 

@@ -14,10 +14,13 @@ interface Props {
 export default function AccountPage({ myPlayer, myIdentityHex, onBack }: Props) {
   const [transferCodes] = useTable(tables.transfer_codes);
   const [recoveryKeys] = useTable(tables.recovery_keys);
+  const [classrooms] = useTable(tables.classrooms);
+  const [classroomMembers] = useTable(tables.classroom_members);
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
   const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+  const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
 
   // Username rename
   const [newName, setNewName] = useState(myPlayer.username);
@@ -94,6 +97,25 @@ export default function AccountPage({ myPlayer, myIdentityHex, onBack }: Props) 
     setGenerating(true);
     await createTransferCode({ token: capturedToken });
     setGenerating(false);
+  };
+
+  // Classrooms
+  const myMembership = (classroomMembers as any[]).find(
+    m => m.playerIdentity.toHexString() === myIdentityHex
+  );
+  const myClassroom = myMembership
+    ? (classrooms as any[]).find(c => c.id === myMembership.classroomId)
+    : null;
+  const iAmTeacher = myClassroom?.teacher?.toHexString() === myIdentityHex;
+  const classMembers = myClassroom
+    ? (classroomMembers as any[]).filter(m => m.classroomId === myClassroom.id)
+    : [];
+
+  const [classroomAction, setClassroomAction] = useState(false);
+  const handleClassroomAction = async () => {
+    setClassroomAction(true);
+    await leaveClassroom();
+    setClassroomAction(false);
   };
 
   const handleLogout = () => {
@@ -240,6 +262,37 @@ export default function AccountPage({ myPlayer, myIdentityHex, onBack }: Props) 
           </button>
         )}
       </div>
+
+      {/* Classroom */}
+      {myClassroom && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <h2 style={{ marginBottom: 8, fontSize: 16 }}>Classroom</h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <div>
+              <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{myClassroom.name}</span>
+              <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 10 }}>
+                code <code style={{ color: 'var(--text)' }}>{myClassroom.code}</code>
+              </span>
+              <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 10 }}>
+                {iAmTeacher ? 'Teacher' : 'Student'} · {classMembers.length} member{classMembers.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <button
+              className="btn btn-secondary"
+              onClick={handleClassroomAction}
+              disabled={classroomAction}
+              style={{ fontSize: 13 }}
+            >
+              {classroomAction ? 'Leaving…' : iAmTeacher ? '✕ Close class' : '← Leave class'}
+            </button>
+          </div>
+          {iAmTeacher && (
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+              Closing removes all members from the class.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Logout */}
       <div className="card" style={{ marginTop: 16, borderColor: 'var(--danger, #c0392b)' }}>

@@ -16,6 +16,7 @@ import RegisterReducer from "../register_reducer";
 import SetUsernameReducer from "../set_username_reducer";
 import StartSessionReducer from "../start_session_reducer";
 import SubmitAnswerReducer from "../submit_answer_reducer";
+import ToggleClassroomVisibilityReducer from "../toggle_classroom_visibility_reducer";
 import UseTransferCodeReducer from "../use_transfer_code_reducer";
 
 export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;
@@ -28,5 +29,6 @@ export type RegisterParams = __Infer<typeof RegisterReducer>;
 export type SetUsernameParams = __Infer<typeof SetUsernameReducer>;
 export type StartSessionParams = __Infer<typeof StartSessionReducer>;
 export type SubmitAnswerParams = __Infer<typeof SubmitAnswerReducer>;
+export type ToggleClassroomVisibilityParams = __Infer<typeof ToggleClassroomVisibilityReducer>;
 export type UseTransferCodeParams = __Infer<typeof UseTransferCodeReducer>;
 
