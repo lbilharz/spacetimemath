@@ -9,6 +9,7 @@ import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
 import ClassroomPage from './pages/ClassroomPage.js';
 import TopBar from './components/TopBar.js';
+import OnboardingOverlay from './components/OnboardingOverlay.js';
 
 export type Page = 'register' | 'lobby' | 'sprint' | 'results' | 'account' | 'classroom';
 
@@ -86,6 +87,7 @@ export default function App() {
 
   return (
     <>
+      {myPlayer && !myPlayer.onboardingDone && <OnboardingOverlay />}
       {showTopBar && (
         <TopBar
           myPlayer={myPlayer}

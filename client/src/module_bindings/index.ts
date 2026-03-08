@@ -34,6 +34,7 @@ import {
 } from "spacetimedb";
 
 // Import all reducer arg schemas
+import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
 import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import CreateTransferCodeReducer from "./create_transfer_code_reducer";
@@ -155,6 +156,7 @@ const tablesSchema = __schema({
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
+  __reducerSchema("complete_onboarding", CompleteOnboardingReducer),
   __reducerSchema("create_classroom", CreateClassroomReducer),
   __reducerSchema("create_recovery_key", CreateRecoveryKeyReducer),
   __reducerSchema("create_transfer_code", CreateTransferCodeReducer),

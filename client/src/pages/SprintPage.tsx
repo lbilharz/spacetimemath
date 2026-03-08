@@ -74,6 +74,8 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
 
   // Sprint state
   const [sessionId, setSessionId] = useState<bigint | null>(null);
+  const [preCountdown, setPreCountdown] = useState<number | null>(null);
+  const [sprintStarted, setSprintStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(SPRINT_DURATION);
   const [problem, setProblem] = useState<{ a: number; b: number } | null>(null);
   const [input, setInput] = useState('');
@@ -105,19 +107,41 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
     }
   }, [sessions, myIdentityHex, sessionId]);
 
-  // 3. Select first problem when session + stats are ready
+  // 3a. When session is detected, kick off the pre-countdown
   useEffect(() => {
-    if (sessionId !== null && !problem && problemStats.length > 0) {
+    if (sessionId === null || preCountdown !== null || sprintStarted) return;
+    setPreCountdown(3);
+  }, [sessionId, preCountdown, sprintStarted]);
+
+  // 3b. Tick the pre-countdown: 3→2→1→0("Go!")→null+sprintStarted
+  useEffect(() => {
+    if (preCountdown === null) return;
+    if (preCountdown > 0) {
+      const id = setTimeout(() => setPreCountdown(n => (n ?? 1) - 1), 1000);
+      return () => clearTimeout(id);
+    } else {
+      // Show "Go!" briefly, then start the sprint
+      const id = setTimeout(() => {
+        setPreCountdown(null);
+        setSprintStarted(true);
+      }, 700);
+      return () => clearTimeout(id);
+    }
+  }, [preCountdown]);
+
+  // 3c. Select first problem when sprint starts + stats are ready
+  useEffect(() => {
+    if (sprintStarted && !problem && problemStats.length > 0) {
       const p = selectNextProblem(problemStats as ProblemStat[], myAnswers);
       setProblem(p);
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
     }
-  }, [sessionId, problem, problemStats.length]);
+  }, [sprintStarted, problem, problemStats.length]);
 
-  // 4. Countdown timer
+  // 4. Sprint timer — starts only after pre-countdown finishes
   useEffect(() => {
-    if (sessionId === null) return;
+    if (!sprintStarted) return;
     const id = setInterval(() => {
       setTimeLeft(t => {
         if (t <= 1) { clearInterval(id); return 0; }
@@ -125,14 +149,14 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [sessionId]);
+  }, [sprintStarted]);
 
   // 5. When timer hits 0, end session
   useEffect(() => {
-    if (timeLeft === 0 && sessionId !== null && !ending) {
+    if (timeLeft === 0 && sprintStarted && sessionId !== null && !ending) {
       handleEnd();
     }
-  }, [timeLeft, sessionId, ending]);
+  }, [timeLeft, sprintStarted, sessionId, ending]);
 
   const handleEnd = useCallback(async () => {
     const sid = sessionIdRef.current;
@@ -198,12 +222,44 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
   const timerColor = timeLeft <= 10 ? 'var(--wrong)' : timeLeft <= 20 ? 'var(--warn)' : 'var(--accent)';
   const timerPct = (timeLeft / SPRINT_DURATION) * 100;
 
+  // Phase: still waiting for session to be created
+  if (sessionId === null) {
+    return (
+      <div className="loading">
+        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{t('sprint.startingSession')}</span>
+      </div>
+    );
+  }
+
+  // Phase: pre-sprint countdown (3-2-1-Go!)
+  if (preCountdown !== null) {
+    return (
+      <div className="page" style={{
+        alignItems: 'center', justifyContent: 'center',
+        minHeight: '80vh', gap: 20, textAlign: 'center',
+      }}>
+        <div style={{ fontSize: 13, color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>
+          {t('sprint.getReady')}
+        </div>
+        <div style={{
+          fontSize: preCountdown === 0 ? 80 : 108,
+          fontWeight: 900,
+          color: preCountdown === 0 ? 'var(--accent)' : 'var(--text)',
+          lineHeight: 1,
+          fontVariantNumeric: 'tabular-nums',
+          transition: 'color 0.2s, font-size 0.2s',
+        }}>
+          {preCountdown === 0 ? t('sprint.go') : preCountdown}
+        </div>
+      </div>
+    );
+  }
+
+  // Phase: sprint started but first problem loading
   if (!problem) {
     return (
       <div className="loading">
-        <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-          {sessionId ? t('sprint.loadingQuestions') : t('sprint.startingSession')}
-        </span>
+        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{t('sprint.loadingQuestions')}</span>
       </div>
     );
   }

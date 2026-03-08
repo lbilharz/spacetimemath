@@ -17,4 +17,5 @@ export default __t.row({
   totalSessions: __t.u32().name("total_sessions"),
   totalCorrect: __t.u32().name("total_correct"),
   totalAnswered: __t.u32().name("total_answered"),
+  onboardingDone: __t.bool().name("onboarding_done"),
 });

@@ -57,7 +57,20 @@
     "masteryTitle": "Meine Lernübersicht",
     "masteryDesc": "Jede Zelle = ein geordnetes Paar. Grün = beherrscht, Gelb = lernend, Rot = schwierig, Grau = unversucht."
   },
+  "onboarding": {
+    "card1Title": "60 Sekunden auf der Uhr",
+    "card1Body": "Löse so viele Aufgaben wie möglich, bevor die Zeit abläuft!",
+    "card2Title": "Aufgaben bringen Punkte",
+    "card2Body": "Leicht = 1 Pt · Mittel = 2 Pt · Schwer = 3 Pt. Schwerere Aufgaben = mehr Punkte!",
+    "card3Title": "Schlag deine Klasse",
+    "card3Body": "Nach jedem Sprint siehst du, wo du in der Rangliste deiner Klasse stehst.",
+    "letsGo": "Los geht's! 🚀",
+    "next": "Weiter →",
+    "back": "← Zurück"
+  },
   "sprint": {
+    "getReady": "Mach dich bereit!",
+    "go": "Los!",
     "loadingQuestions": "Lade Aufgaben…",
     "startingSession": "Sprint wird gestartet…",
     "stats": "✓ {{correct}}/{{answered}} richtig",

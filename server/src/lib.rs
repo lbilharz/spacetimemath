@@ -13,6 +13,8 @@ pub struct Player {
     pub total_sessions: u32,
     pub total_correct: u32,
     pub total_answered: u32,
+    #[default(false)]
+    pub onboarding_done: bool,
 }
 
 #[table(accessor = sessions, public)]
@@ -139,6 +141,7 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
             total_sessions: 0,
             total_correct: 0,
             total_answered: 0,
+            onboarding_done: false,
         });
     }
     Ok(())
@@ -296,6 +299,14 @@ pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), St
     }
     let player = get_player(ctx)?;
     ctx.db.players().identity().update(Player { username: name.clone(), ..player });
+    Ok(())
+}
+
+/// Mark the player's onboarding as completed so the intro overlay is not shown again.
+#[reducer]
+pub fn complete_onboarding(ctx: &ReducerContext) -> Result<(), String> {
+    let player = get_player(ctx)?;
+    ctx.db.players().identity().update(Player { onboarding_done: true, ..player });
     Ok(())
 }
 

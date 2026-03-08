@@ -57,7 +57,20 @@
     "masteryTitle": "My Mastery Grid",
     "masteryDesc": "Each cell = one ordered pair. Green = mastered, yellow = learning, red = struggling, gray = untouched."
   },
+  "onboarding": {
+    "card1Title": "60 Seconds on the Clock",
+    "card1Body": "Solve as many multiplication problems as you can before time runs out!",
+    "card2Title": "Problems Score Points",
+    "card2Body": "Easy = 1 pt · Medium = 2 pts · Hard = 3 pts. Tougher problems score more!",
+    "card3Title": "Beat Your Class",
+    "card3Body": "After each sprint, see how you rank against your classmates on the leaderboard.",
+    "letsGo": "Let's go! 🚀",
+    "next": "Next →",
+    "back": "← Back"
+  },
   "sprint": {
+    "getReady": "Get ready!",
+    "go": "Go!",
     "loadingQuestions": "Loading questions…",
     "startingSession": "Starting session…",
     "stats": "✓ {{correct}}/{{answered}} correct",
