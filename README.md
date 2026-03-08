@@ -1,6 +1,6 @@
 # SpaceTimeDB Math Sprint
 
-A real-time multiplayer multiplication trainer built as a prototype for the bettermarks v2 architecture pitch. Every design decision maps directly to a concept from the pitch: adaptive problem selection (IRT), difficulty-weighted scoring (Derived Score), directional mastery tracking, and live sync via SpaceTimeDB.
+A real-time multiplayer multiplication trainer built as a prototype and architecture pitch. Every design decision maps directly to a concept from the pitch: adaptive problem selection (IRT), difficulty-weighted scoring (Derived Score), directional mastery tracking, and live sync via SpaceTimeDB.
 
 ## What it demonstrates
 
