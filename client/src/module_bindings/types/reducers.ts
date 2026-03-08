@@ -6,18 +6,24 @@
 import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
+import CreateClassroomReducer from "../create_classroom_reducer";
 import CreateRecoveryKeyReducer from "../create_recovery_key_reducer";
 import CreateTransferCodeReducer from "../create_transfer_code_reducer";
 import EndSessionReducer from "../end_session_reducer";
+import JoinClassroomReducer from "../join_classroom_reducer";
+import LeaveClassroomReducer from "../leave_classroom_reducer";
 import RegisterReducer from "../register_reducer";
 import SetUsernameReducer from "../set_username_reducer";
 import StartSessionReducer from "../start_session_reducer";
 import SubmitAnswerReducer from "../submit_answer_reducer";
 import UseTransferCodeReducer from "../use_transfer_code_reducer";
 
+export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;
 export type CreateRecoveryKeyParams = __Infer<typeof CreateRecoveryKeyReducer>;
 export type CreateTransferCodeParams = __Infer<typeof CreateTransferCodeReducer>;
 export type EndSessionParams = __Infer<typeof EndSessionReducer>;
+export type JoinClassroomParams = __Infer<typeof JoinClassroomReducer>;
+export type LeaveClassroomParams = __Infer<typeof LeaveClassroomReducer>;
 export type RegisterParams = __Infer<typeof RegisterReducer>;
 export type SetUsernameParams = __Infer<typeof SetUsernameReducer>;
 export type StartSessionParams = __Infer<typeof StartSessionReducer>;

@@ -6,19 +6,28 @@ import LobbyPage from './pages/LobbyPage.js';
 import SprintPage from './pages/SprintPage.js';
 import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
+import ClassroomPage from './pages/ClassroomPage.js';
 
-export type Page = 'register' | 'lobby' | 'sprint' | 'results' | 'account';
+export type Page = 'register' | 'lobby' | 'sprint' | 'results' | 'account' | 'classroom';
 
 export default function App() {
   const { identity, isActive, connectionError } = useSpacetimeDB();
   const [players] = useTable(tables.players);
+  const [classroomMembers] = useTable(tables.classroom_members);
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
+  // Track where to return after sprint/results
+  const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
+
+  // Check if still in a classroom (for post-sprint routing)
+  const inClassroom = myIdentityHex
+    ? (classroomMembers as any[]).some(m => m.playerIdentity.toHexString() === myIdentityHex)
+    : false;
 
   // Auto-navigate to lobby if already registered
   useEffect(() => {
@@ -26,6 +35,12 @@ export default function App() {
       setPage('lobby');
     }
   }, [myPlayer?.identity, page]);
+
+  const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
+    setSessionId(id);
+    setSprintOrigin(origin);
+    setPage('sprint');
+  };
 
   if (connectionError) {
     return (
@@ -59,7 +74,17 @@ export default function App() {
         <LobbyPage
           myPlayer={myPlayer}
           myIdentityHex={myIdentityHex}
-          onStartSprint={(id) => { setSessionId(id); setPage('sprint'); }}
+          onStartSprint={(id) => goToSprint(id, 'lobby')}
+          onAccount={() => setPage('account')}
+          onEnterClassroom={() => setPage('classroom')}
+        />
+      );
+    case 'classroom':
+      return (
+        <ClassroomPage
+          myIdentityHex={myIdentityHex!}
+          onStartSprint={(id) => goToSprint(id, 'classroom')}
+          onLeave={() => setPage('lobby')}
           onAccount={() => setPage('account')}
         />
       );
@@ -75,7 +100,7 @@ export default function App() {
         <ResultsPage
           sessionId={sessionId!}
           myIdentityHex={myIdentityHex!}
-          onBack={() => setPage('lobby')}
+          onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin)}
         />
       );
     case 'account':

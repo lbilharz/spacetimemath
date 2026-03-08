@@ -396,3 +396,99 @@ fn get_player(ctx: &ReducerContext) -> Result<Player, String> {
     ctx.db.players().identity().find(ctx.sender())
         .ok_or_else(|| "Not registered - call register() first".into())
 }
+
+// ============================================================
+// CLASSROOMS
+// ============================================================
+
+#[table(accessor = classrooms, public)]
+pub struct Classroom {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub code: String,
+    pub name: String,
+    pub teacher: Identity,
+}
+
+#[table(accessor = classroom_members, public)]
+pub struct ClassroomMember {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub classroom_id: u64,
+    pub player_identity: Identity,
+}
+
+/// Create a new classroom. Closes any existing classroom the caller teaches,
+/// and removes them from any classroom they're in as a student.
+#[reducer]
+pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String> {
+    let name = name.trim().to_string();
+    if name.is_empty() || name.len() > 40 {
+        return Err("Class name must be 1–40 characters".into());
+    }
+    let _player = get_player(ctx)?;
+    cleanup_classroom(ctx);
+    let code = make_code(ctx);
+    let classroom = ctx.db.classrooms().insert(Classroom {
+        id: 0, code, name, teacher: ctx.sender(),
+    });
+    ctx.db.classroom_members().insert(ClassroomMember {
+        id: 0, classroom_id: classroom.id, player_identity: ctx.sender(),
+    });
+    Ok(())
+}
+
+/// Join an existing classroom by its 6-character code.
+#[reducer]
+pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> {
+    let _player = get_player(ctx)?;
+    let upper = code.trim().to_uppercase();
+    let classroom = ctx.db.classrooms()
+        .iter()
+        .find(|c| c.code == upper)
+        .ok_or("Classroom not found — check the code")?;
+    let cid = classroom.id;
+    // Already a member? No-op
+    if ctx.db.classroom_members().iter().any(|m| m.classroom_id == cid && m.player_identity == ctx.sender()) {
+        return Ok(());
+    }
+    cleanup_classroom(ctx);
+    ctx.db.classroom_members().insert(ClassroomMember {
+        id: 0, classroom_id: cid, player_identity: ctx.sender(),
+    });
+    Ok(())
+}
+
+/// Leave current classroom. If caller is the teacher, closes the classroom for everyone.
+#[reducer]
+pub fn leave_classroom(ctx: &ReducerContext) -> Result<(), String> {
+    cleanup_classroom(ctx);
+    Ok(())
+}
+
+/// Remove all classroom traces for ctx.sender:
+/// - Closes any classroom they teach (removes all members)
+/// - Removes any student memberships they hold
+fn cleanup_classroom(ctx: &ReducerContext) {
+    // Close classrooms where caller is teacher
+    let my_classrooms: Vec<_> = ctx.db.classrooms()
+        .iter()
+        .filter(|c| c.teacher == ctx.sender())
+        .collect();
+    for c in my_classrooms {
+        let members: Vec<_> = ctx.db.classroom_members()
+            .iter()
+            .filter(|m| m.classroom_id == c.id)
+            .collect();
+        for m in members { ctx.db.classroom_members().id().delete(m.id); }
+        ctx.db.classrooms().id().delete(c.id);
+    }
+    // Remove student memberships
+    let my_memberships: Vec<_> = ctx.db.classroom_members()
+        .iter()
+        .filter(|m| m.player_identity == ctx.sender())
+        .collect();
+    for m in my_memberships { ctx.db.classroom_members().id().delete(m.id); }
+}

@@ -23,6 +23,21 @@ export const Answer = __t.object("Answer", {
 });
 export type Answer = __Infer<typeof Answer>;
 
+export const Classroom = __t.object("Classroom", {
+  id: __t.u64(),
+  code: __t.string(),
+  name: __t.string(),
+  teacher: __t.identity(),
+});
+export type Classroom = __Infer<typeof Classroom>;
+
+export const ClassroomMember = __t.object("ClassroomMember", {
+  id: __t.u64(),
+  classroomId: __t.u64(),
+  playerIdentity: __t.identity(),
+});
+export type ClassroomMember = __Infer<typeof ClassroomMember>;
+
 export const Player = __t.object("Player", {
   identity: __t.identity(),
   username: __t.string(),

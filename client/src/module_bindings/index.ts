@@ -34,9 +34,12 @@ import {
 } from "spacetimedb";
 
 // Import all reducer arg schemas
+import CreateClassroomReducer from "./create_classroom_reducer";
 import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import CreateTransferCodeReducer from "./create_transfer_code_reducer";
 import EndSessionReducer from "./end_session_reducer";
+import JoinClassroomReducer from "./join_classroom_reducer";
+import LeaveClassroomReducer from "./leave_classroom_reducer";
 import RegisterReducer from "./register_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartSessionReducer from "./start_session_reducer";
@@ -47,6 +50,8 @@ import UseTransferCodeReducer from "./use_transfer_code_reducer";
 
 // Import all table schema definitions
 import AnswersRow from "./answers_table";
+import ClassroomMembersRow from "./classroom_members_table";
+import ClassroomsRow from "./classrooms_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
 import RecoveryKeysRow from "./recovery_keys_table";
@@ -68,6 +73,28 @@ const tablesSchema = __schema({
       { name: 'answers_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, AnswersRow),
+  classroom_members: __table({
+    name: 'classroom_members',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+    ],
+    constraints: [
+      { name: 'classroom_members_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, ClassroomMembersRow),
+  classrooms: __table({
+    name: 'classrooms',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+    ],
+    constraints: [
+      { name: 'classrooms_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, ClassroomsRow),
   players: __table({
     name: 'players',
     indexes: [
@@ -127,9 +154,12 @@ const tablesSchema = __schema({
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
+  __reducerSchema("create_classroom", CreateClassroomReducer),
   __reducerSchema("create_recovery_key", CreateRecoveryKeyReducer),
   __reducerSchema("create_transfer_code", CreateTransferCodeReducer),
   __reducerSchema("end_session", EndSessionReducer),
+  __reducerSchema("join_classroom", JoinClassroomReducer),
+  __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_session", StartSessionReducer),
