@@ -55,10 +55,10 @@ export default function TopBar({ myPlayer, onAccount, onBack, backLabel }: Props
         >
           <span style={{ color: 'var(--text)', fontWeight: 600 }}>{myPlayer.username}</span>
           <span style={{
-            width: 28, height: 28, borderRadius: '50%',
+            width: 32, height: 32, borderRadius: '50%',
             background: 'var(--card2)', border: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 12, color: 'var(--muted)',
+            fontSize: 18, color: 'var(--muted)',
           }}>⚙</span>
         </button>
       </div>
