@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSTDBReducer } from '@clockworklabs/spacetimedb-sdk';
+import { useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { reducers } from '../module_bindings/index.js';
 
 const CARDS = [
