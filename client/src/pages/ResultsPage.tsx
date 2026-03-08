@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props) {
+  const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
@@ -50,13 +52,13 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
     <div className="page" style={{ alignItems: 'center' }}>
       <div style={{ textAlign: 'center', paddingTop: 24 }}>
         <div style={{ fontSize: 48, marginBottom: 4 }}>🏁</div>
-        <h1>Session Complete!</h1>
+        <h1>{t('results.heading')}</h1>
       </div>
 
       {/* Score card */}
       <div className="card" style={{ width: '100%', textAlign: 'center' }}>
         {!isComplete ? (
-          <p style={{ color: 'var(--muted)' }}>Finalizing session…</p>
+          <p style={{ color: 'var(--muted)' }}>{t('results.finalizing')}</p>
         ) : (
           <>
             <div style={{
@@ -68,7 +70,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
             }}>
               {session!.weightedScore.toFixed(1)}
             </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>weighted score</p>
+            <p style={{ color: 'var(--muted)', fontSize: 14 }}>{t('results.weightedScore')}</p>
 
             <div style={{
               display: 'grid',
@@ -79,14 +81,14 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
               borderTop: '1px solid var(--border)',
               borderBottom: '1px solid var(--border)',
             }}>
-              <Stat label="Correct" value={`${session!.rawScore} / ${session!.totalAnswered}`} />
-              <Stat label="Accuracy" value={`${session!.accuracyPct}%`} />
-              <Stat label="Rank" value={myRank ? `#${myRank}` : '—'} accent />
+              <Stat label={t('results.correct')} value={`${session!.rawScore} / ${session!.totalAnswered}`} />
+              <Stat label={t('results.accuracy')} value={`${session!.accuracyPct}%`} />
+              <Stat label={t('results.rank')} value={myRank ? `#${myRank}` : '—'} accent />
             </div>
 
             {uniqueHard.length > 0 && (
               <div style={{ marginTop: 20, textAlign: 'left' }}>
-                <h3 style={{ marginBottom: 8 }}>You struggled with:</h3>
+                <h3 style={{ marginBottom: 8 }}>{t('results.struggled')}</h3>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {uniqueHard.map(p => (
                     <span key={p.key} className="tag tag-red" style={{ fontSize: 14, padding: '4px 12px' }}>
@@ -95,7 +97,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
                   ))}
                 </div>
                 <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
-                  These will appear more often in your next sprint.
+                  {t('results.struggledHint')}
                 </p>
               </div>
             )}
@@ -106,16 +108,16 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
       {/* Mastery grid */}
       {myAnswers.length > 0 && (
         <div className="card" style={{ width: '100%' }}>
-          <h2 style={{ marginBottom: 4 }}>Mastery Grid</h2>
+          <h2 style={{ marginBottom: 4 }}>{t('results.masteryTitle')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-            Your cumulative knowledge map across all sessions.
+            {t('results.masteryDesc')}
           </p>
           <MasteryGrid answers={myAnswers} problemStats={problemStats as any[]} highlightSession={sessionId} sessionAnswers={sessionAnswers} />
         </div>
       )}
 
       <button className="btn btn-primary btn-lg" onClick={onBack} style={{ width: '100%', maxWidth: 320 }}>
-        Back to Lobby
+        {t('results.backToLobby')}
       </button>
     </div>
   );

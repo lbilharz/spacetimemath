@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
@@ -9,10 +10,10 @@ interface Props {
   classroomId: bigint;
   onStartSprint: (sessionId: bigint) => void;
   onLeave: () => void;
-  onAccount: () => void;
 }
 
-export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onLeave, onAccount }: Props) {
+export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onLeave }: Props) {
+  const { t } = useTranslation();
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [sessions] = useTable(tables.sessions);
@@ -38,7 +39,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   if (!myClassroom) {
     return (
       <div className="loading">
-        <span style={{ color: 'var(--muted)', fontSize: 14 }}>Classroom not found</span>
+        <span style={{ color: 'var(--muted)', fontSize: 14 }}>{t('classroom.notFound')}</span>
       </div>
     );
   }
@@ -108,26 +109,22 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         <div>
           <h1 style={{ fontSize: 24 }}>📚 {myClassroom.name}</h1>
           <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 2 }}>
-            {isTeacher ? 'You are teaching' : 'You are a student'} · {members.length} member{members.length !== 1 ? 's' : ''}
+            {isTeacher ? t('classroom.youAreTeaching') : t('classroom.youAreStudent')} · {t('classroom.members', { count: members.length })}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button className="btn btn-secondary" onClick={onAccount} style={{ fontSize: 14 }}>⚙ Account</button>
-          <button className="btn btn-secondary" onClick={onLeave} style={{ fontSize: 14 }}>← Back</button>
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={handleStart}
-            disabled={starting}
-            style={{ minWidth: 140 }}
-          >
-            {starting ? 'Starting…' : '▶ Start Sprint'}
-          </button>
-        </div>
+        <button
+          className="btn btn-primary btn-lg"
+          onClick={handleStart}
+          disabled={starting}
+          style={{ minWidth: 140 }}
+        >
+          {starting ? t('classroom.starting') : t('classroom.startSprint')}
+        </button>
       </div>
 
       {/* Join code + QR */}
       <div className="card">
-        <h2 style={{ marginBottom: 12, fontSize: 16 }}>Join code</h2>
+        <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.joinCode')}</h2>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
           <div>
             <div style={{
@@ -141,10 +138,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               {myClassroom.code}
             </div>
             <button className="btn btn-secondary" onClick={handleCopyCode} style={{ fontSize: 13 }}>
-              {codeCopied ? '✓ Copied' : '⎘ Copy link'}
+              {codeCopied ? t('common.copied') : t('classroom.copyLink')}
             </button>
             <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8, maxWidth: 220 }}>
-              Students scan the QR code or type the code in the lobby.
+              {t('classroom.joinHint')}
             </p>
           </div>
           <div style={{ background: '#fff', padding: 8, borderRadius: 8, lineHeight: 0 }}>
@@ -161,24 +158,24 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         {/* Members */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h2 style={{ fontSize: 16 }}>Members</h2>
+            <h2 style={{ fontSize: 16 }}>{t('classroom.membersHeading')}</h2>
             <button
               className="btn btn-secondary"
               onClick={handleToggleVisibility}
               disabled={togglingVis}
               style={{ fontSize: 12, padding: '4px 10px' }}
-              title={amHidden ? 'Your stats are hidden from this class. Click to show.' : 'Hide your stats from this class.'}
+              title={amHidden ? t('classroom.showStatsTitle') : t('classroom.hideStatsTitle')}
             >
-              {amHidden ? '👁 Show my stats' : '🙈 Hide my stats'}
+              {amHidden ? t('classroom.showStats') : t('classroom.hideStats')}
             </button>
           </div>
           {amHidden && (
             <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 10, fontStyle: 'italic' }}>
-              Your stats are hidden from this class's leaderboard and mastery grid.
+              {t('classroom.hiddenHint')}
             </p>
           )}
           {memberRows.length === 0 ? (
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>No members yet.</p>
+            <p style={{ color: 'var(--muted)', fontSize: 14 }}>{t('classroom.noMembers')}</p>
           ) : (
             memberRows.map((m, i) => (
               <div key={m.id} style={{
@@ -190,10 +187,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                 <span style={{ fontWeight: m.id === myIdentityHex ? 700 : 400 }}>
                   {m.username}
                   {m.id === myIdentityHex && (
-                    <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>you</span>
+                    <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>{t('common.you')}</span>
                   )}
                   {m.hidden && (
-                    <span style={{ color: 'var(--muted)', marginLeft: 6, fontSize: 11 }}>hidden</span>
+                    <span style={{ color: 'var(--muted)', marginLeft: 6, fontSize: 11 }}>{t('classroom.hidden')}</span>
                   )}
                 </span>
                 {!m.hidden && m.best !== undefined ? (
@@ -202,7 +199,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                   </span>
                 ) : (
                   <span style={{ color: 'var(--muted)', fontSize: 12 }}>
-                    {m.hidden ? '—' : 'no sessions'}
+                    {m.hidden ? '—' : t('classroom.noSessions')}
                   </span>
                 )}
               </div>
@@ -212,16 +209,16 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
         {/* Class leaderboard */}
         <div className="card">
-          <h2 style={{ marginBottom: 12, fontSize: 16 }}>🏆 Class Leaderboard</h2>
+          <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.leaderboard')}</h2>
           {leaderRows.length === 0 ? (
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>Start sprinting to populate the board!</p>
+            <p style={{ color: 'var(--muted)', fontSize: 14 }}>{t('classroom.leaderboardEmpty')}</p>
           ) : (
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  <th style={th}>#</th>
-                  <th style={{ ...th, textAlign: 'left' }}>Player</th>
-                  <th style={th}>Score</th>
+                  <th style={th}>{t('classroom.colHash')}</th>
+                  <th style={{ ...th, textAlign: 'left' }}>{t('classroom.colPlayer')}</th>
+                  <th style={th}>{t('classroom.colScore')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -237,7 +234,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                       </td>
                       <td style={{ ...td, fontWeight: isMe ? 700 : 400 }}>
                         {m.username}
-                        {isMe && <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>you</span>}
+                        {isMe && <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>{t('common.you')}</span>}
                       </td>
                       <td style={{ ...td, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
                         {m.best!.toFixed(1)}
@@ -249,7 +246,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             </table>
           )}
           <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>
-            Best session score · Live via SpaceTimeDB
+            {t('classroom.liveCaption')}
           </p>
         </div>
       </div>
@@ -257,9 +254,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       {/* Class mastery grid */}
       {classAnswers.length > 0 && (
         <div className="card">
-          <h2 style={{ marginBottom: 4, fontSize: 16 }}>Class Mastery Grid</h2>
+          <h2 style={{ marginBottom: 4, fontSize: 16 }}>{t('classroom.classMastery')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-            Aggregate accuracy across {visibleMembers.length} visible member{visibleMembers.length !== 1 ? 's' : ''}.
+            {t('classroom.classMasteryDesc', { count: visibleMembers.length })}
           </p>
           <MasteryGrid answers={classAnswers} problemStats={problemStats as any[]} />
         </div>
@@ -273,11 +270,11 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
           disabled={leaving}
           style={{ fontSize: 14 }}
         >
-          {leaving ? 'Leaving…' : isTeacher ? '✕ Close class' : '← Leave class'}
+          {leaving ? t('classroom.leaving') : isTeacher ? t('classroom.closeClass') : t('classroom.leaveClass')}
         </button>
         {isTeacher && (
           <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 6 }}>
-            Closing the class removes all members from the session.
+            {t('classroom.closeHint')}
           </p>
         )}
       </div>

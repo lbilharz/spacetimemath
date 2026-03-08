@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 
@@ -9,12 +10,12 @@ interface Props {
 }
 
 export default function RegisterPage({ onRegistered }: Props) {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const register = useSTDBReducer(reducers.register);
 
-  // Restore-account section
   const [showRestore, setShowRestore] = useState(false);
   const [code, setCode] = useState('');
   const [restoreError, setRestoreError] = useState('');
@@ -27,7 +28,7 @@ export default function RegisterPage({ onRegistered }: Props) {
     e.preventDefault();
     const name = username.trim();
     if (!name || name.length > 24) {
-      setError('Username must be 1–24 characters');
+      setError(t('register.usernameError'));
       return;
     }
     setLoading(true);
@@ -36,7 +37,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       await register({ username: name });
       setTimeout(onRegistered, 300);
     } catch (err: any) {
-      setError(err?.message ?? 'Registration failed');
+      setError(err?.message ?? t('register.usernameError'));
       setLoading(false);
     }
   };
@@ -47,7 +48,6 @@ export default function RegisterPage({ onRegistered }: Props) {
     setRestoring(true);
     setRestoreError('');
 
-    // 6-char transfer code: single-use, delete after restore
     const transfer = (transferCodes as any[]).find(c => c.code === upper);
     if (transfer) {
       localStorage.setItem(CREDS_KEY, JSON.stringify({ token: transfer.token }));
@@ -56,7 +56,6 @@ export default function RegisterPage({ onRegistered }: Props) {
       return;
     }
 
-    // 12-char recovery key: permanent, keep after restore
     const recovery = (recoveryKeys as any[]).find(k => k.code === upper);
     if (recovery) {
       localStorage.setItem(CREDS_KEY, JSON.stringify({ token: recovery.token }));
@@ -64,7 +63,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       return;
     }
 
-    setRestoreError('Code not found — check the code or generate a new one on your other device');
+    setRestoreError(t('register.restoreError'));
     setRestoring(false);
   };
 
@@ -74,18 +73,18 @@ export default function RegisterPage({ onRegistered }: Props) {
         <div style={{ fontSize: 64, marginBottom: 8 }}>⚡</div>
         <h1 style={{ fontSize: 36 }}>Math Sprint</h1>
         <p style={{ color: 'var(--muted)', marginTop: 8 }}>
-          60 seconds. Multiplication tables. Live leaderboard.
+          {t('register.tagline')}
         </p>
       </div>
 
       {!showRestore ? (
         <div className="card">
-          <h2 style={{ marginBottom: 16 }}>Choose your name</h2>
+          <h2 style={{ marginBottom: 16 }}>{t('register.chooseName')}</h2>
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <input
               className="field"
               type="text"
-              placeholder="Enter username…"
+              placeholder={t('register.usernamePlaceholder')}
               value={username}
               onChange={e => setUsername(e.target.value)}
               maxLength={24}
@@ -98,7 +97,7 @@ export default function RegisterPage({ onRegistered }: Props) {
               type="submit"
               disabled={loading || !username.trim()}
             >
-              {loading ? 'Registering…' : 'Join the Sprint →'}
+              {loading ? t('register.registering') : t('register.joinSprint')}
             </button>
           </form>
 
@@ -110,20 +109,20 @@ export default function RegisterPage({ onRegistered }: Props) {
               textDecoration: 'underline', padding: 0,
             }}
           >
-            ↩ Restore existing account
+            {t('register.restoreLink')}
           </button>
         </div>
       ) : (
         <div className="card">
-          <h2 style={{ marginBottom: 8, fontSize: 16 }}>Restore account</h2>
+          <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('register.restoreHeading')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-            Enter a 6-character transfer code or your 12-character permanent recovery key.
+            {t('register.restoreDesc')}
           </p>
           <form onSubmit={handleRestore} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <input
               className="field"
               type="text"
-              placeholder="e.g. XK4P9M or ABCD34EF5678"
+              placeholder={t('register.restorePlaceholder')}
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               maxLength={12}
@@ -137,7 +136,7 @@ export default function RegisterPage({ onRegistered }: Props) {
               type="submit"
               disabled={restoring || (code.trim().length !== 6 && code.trim().length !== 12)}
             >
-              {restoring ? 'Restoring…' : 'Restore →'}
+              {restoring ? t('register.restoring') : t('register.restore')}
             </button>
           </form>
 
@@ -149,13 +148,13 @@ export default function RegisterPage({ onRegistered }: Props) {
               textDecoration: 'underline', padding: 0,
             }}
           >
-            ← New account
+            {t('register.newAccount')}
           </button>
         </div>
       )}
 
       <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--muted)' }}>
-        Problems are weighted by community difficulty · powered by SpaceTimeDB
+        {t('register.footer')}
       </p>
     </div>
   );

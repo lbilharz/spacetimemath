@@ -1,4 +1,5 @@
 import { useState, FormEvent, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
@@ -10,13 +11,13 @@ interface Props {
   myPlayer: Player | undefined;
   myIdentityHex: string | undefined;
   onStartSprint: (sessionId: bigint) => void;
-  onAccount: () => void;
   onEnterClassroom: (id: bigint) => void;
 }
 
 type ClassroomPanel = 'none' | 'create' | 'join';
 
-export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAccount, onEnterClassroom }: Props) {
+export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEnterClassroom }: Props) {
+  const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
   const [answers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
@@ -105,29 +106,24 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
 
   return (
     <div className="page">
-      {/* Header */}
+      {/* CTA */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 24 }}>⚡ Math Sprint</h1>
           {myPlayer && (
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 2 }}>
-              Welcome back, <b style={{ color: 'var(--text)' }}>{myPlayer.username}</b>
-              {' · '}Best score: <b style={{ color: 'var(--warn)' }}>{myPlayer.bestScore.toFixed(1)}</b>
-              {' · '}{myPlayer.totalSessions} sessions
+            <p style={{ color: 'var(--muted)', fontSize: 14 }}>
+              {t('lobby.bestScore')} <b style={{ color: 'var(--warn)' }}>{myPlayer.bestScore.toFixed(1)}</b>
+              {' · '}{t('lobby.sessions', { count: myPlayer.totalSessions })}
             </p>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button className="btn btn-secondary" onClick={onAccount} style={{ fontSize: 14 }}>⚙ Account</button>
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={handleStart}
-            disabled={starting}
-            style={{ minWidth: 160 }}
-          >
-            {starting ? 'Starting…' : '▶ Start Sprint'}
-          </button>
-        </div>
+        <button
+          className="btn btn-primary btn-lg"
+          onClick={handleStart}
+          disabled={starting}
+          style={{ minWidth: 160 }}
+        >
+          {starting ? t('lobby.starting') : t('lobby.startSprint')}
+        </button>
       </div>
 
       {/* Classrooms */}
@@ -142,11 +138,11 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
                   <div>
                     <b style={{ color: 'var(--accent)' }}>{c.name}</b>
                     <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 8 }}>
-                      {isTeacher ? 'Teacher' : 'Student'} · {memberCount} member{memberCount !== 1 ? 's' : ''} · code <code style={{ color: 'var(--text)' }}>{c.code}</code>
+                      {isTeacher ? t('common.teacher') : t('common.student')} · {t('classroom.members', { count: memberCount })} · {t('common.code')} <code style={{ color: 'var(--text)' }}>{c.code}</code>
                     </span>
                   </div>
                   <button className="btn btn-primary" onClick={() => onEnterClassroom(c.id)} style={{ fontSize: 13 }}>
-                    📚 View →
+                    {t('lobby.viewClass')}
                   </button>
                 </div>
               );
@@ -161,24 +157,24 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
               onClick={() => { setPanel('create'); setClassError(''); }}
               style={{ fontSize: 13 }}
             >
-              + Create class
+              {t('lobby.createClass')}
             </button>
             <button
               className="btn btn-secondary"
               onClick={() => { setPanel('join'); setClassError(''); }}
               style={{ fontSize: 13 }}
             >
-              → Join class
+              {t('lobby.joinClass')}
             </button>
           </div>
         ) : panel === 'create' ? (
           <div className="card">
-            <h2 style={{ marginBottom: 8, fontSize: 16 }}>Create a classroom</h2>
+            <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('lobby.createClassHeading')}</h2>
             <form onSubmit={handleCreate} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <input
                 className="field"
                 type="text"
-                placeholder="Class name (e.g. 3B Mathe)"
+                placeholder={t('lobby.classNamePlaceholder')}
                 value={className}
                 onChange={e => setClassName(e.target.value)}
                 maxLength={40}
@@ -187,22 +183,22 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
                 style={{ flex: 1, minWidth: 180 }}
               />
               <button className="btn btn-primary" type="submit" disabled={submitting || !className.trim()}>
-                {submitting ? 'Creating…' : 'Create →'}
+                {submitting ? t('lobby.creating') : t('lobby.create')}
               </button>
               <button className="btn btn-secondary" type="button" onClick={() => setPanel('none')} disabled={submitting}>
-                Cancel
+                {t('common.cancel')}
               </button>
             </form>
             {classError && <p style={{ color: 'var(--wrong)', fontSize: 13, marginTop: 8 }}>⚠ {classError}</p>}
           </div>
         ) : (
           <div className="card">
-            <h2 style={{ marginBottom: 8, fontSize: 16 }}>Join a classroom</h2>
+            <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('lobby.joinClassHeading')}</h2>
             <form onSubmit={handleJoin} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <input
                 className="field"
                 type="text"
-                placeholder="6-char code"
+                placeholder={t('lobby.joinCodePlaceholder')}
                 value={joinCode}
                 onChange={e => setJoinCode(e.target.value.toUpperCase())}
                 maxLength={6}
@@ -211,10 +207,10 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
                 style={{ width: 140, textAlign: 'center', fontSize: 20, letterSpacing: 4, fontWeight: 700 }}
               />
               <button className="btn btn-primary" type="submit" disabled={submitting || joinCode.trim().length !== 6}>
-                {submitting ? 'Joining…' : 'Join →'}
+                {submitting ? t('lobby.joining') : t('lobby.join')}
               </button>
               <button className="btn btn-secondary" type="button" onClick={() => setPanel('none')} disabled={submitting}>
-                Cancel
+                {t('common.cancel')}
               </button>
             </form>
             {classError && <p style={{ color: 'var(--wrong)', fontSize: 13, marginTop: 8 }}>⚠ {classError}</p>}
@@ -228,9 +224,9 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onAc
       {/* Personal Mastery Grid */}
       {myIdentityHex && (
         <div className="card">
-          <h2 style={{ marginBottom: 4 }}>My Mastery Grid</h2>
+          <h2 style={{ marginBottom: 4 }}>{t('lobby.masteryTitle')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-            Each cell = one ordered pair. Green = mastered, yellow = learning, red = struggling, gray = untouched.
+            {t('lobby.masteryDesc')}
           </p>
           <MasteryGrid answers={myAnswers as any[]} problemStats={problemStats as any[]} />
         </div>

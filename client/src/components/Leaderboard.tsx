@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 type Session = {
   id: bigint;
   playerIdentity: { toHexString(): string };
@@ -15,6 +17,7 @@ interface Props {
 }
 
 export default function Leaderboard({ sessions, myIdentityHex }: Props) {
+  const { t } = useTranslation();
   const completed = sessions
     .filter(s => s.isComplete && s.totalAnswered > 0)
     .sort((a, b) => b.weightedScore - a.weightedScore);
@@ -34,20 +37,20 @@ export default function Leaderboard({ sessions, myIdentityHex }: Props) {
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 16 }}>🏆 Leaderboard</h2>
+      <h2 style={{ marginBottom: 16 }}>{t('leaderboard.title')}</h2>
       {rows.length === 0 ? (
         <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-          No sessions yet — be the first!
+          {t('leaderboard.empty')}
         </p>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={th}>#</th>
-              <th style={{ ...th, textAlign: 'left' }}>Player</th>
-              <th style={th}>Score</th>
-              <th style={th}>Acc.</th>
-              <th style={th}>Ans.</th>
+              <th style={th}>{t('leaderboard.colHash')}</th>
+              <th style={{ ...th, textAlign: 'left' }}>{t('leaderboard.colPlayer')}</th>
+              <th style={th}>{t('leaderboard.colScore')}</th>
+              <th style={th}>{t('leaderboard.colAccuracy')}</th>
+              <th style={th}>{t('leaderboard.colAnswers')}</th>
             </tr>
           </thead>
           <tbody>
@@ -66,7 +69,7 @@ export default function Leaderboard({ sessions, myIdentityHex }: Props) {
                   </td>
                   <td style={{ ...td, fontWeight: isMe ? 700 : 400 }}>
                     {s.username}
-                    {isMe && <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>you</span>}
+                    {isMe && <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>{t('leaderboard.you')}</span>}
                   </td>
                   <td style={{ ...td, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
                     {s.weightedScore.toFixed(1)}
@@ -84,7 +87,7 @@ export default function Leaderboard({ sessions, myIdentityHex }: Props) {
         </table>
       )}
       <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>
-        Score = Σ difficulty weight of correct answers · Updates live via SpaceTimeDB
+        {t('leaderboard.footer')}
       </p>
     </div>
   );

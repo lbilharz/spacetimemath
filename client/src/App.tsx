@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSpacetimeDB, useTable } from 'spacetimedb/react';
 import { tables } from './module_bindings/index.js';
 import RegisterPage from './pages/RegisterPage.js';
@@ -7,10 +8,12 @@ import SprintPage from './pages/SprintPage.js';
 import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
 import ClassroomPage from './pages/ClassroomPage.js';
+import TopBar from './components/TopBar.js';
 
 export type Page = 'register' | 'lobby' | 'sprint' | 'results' | 'account' | 'classroom';
 
 export default function App() {
+  const { t } = useTranslation();
   const { identity, isActive, connectionError } = useSpacetimeDB();
   const [players] = useTable(tables.players);
   const [classroomMembers] = useTable(tables.classroom_members);
@@ -54,9 +57,9 @@ export default function App() {
     return (
       <div className="loading" style={{ flexDirection: 'column', gap: 8 }}>
         <span style={{ fontSize: 24 }}>⚠️</span>
-        <span>Cannot connect to SpaceTimeDB</span>
+        <span>{t('app.connectionError')}</span>
         <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-          Make sure <code>spacetime start --in-memory</code> is running on port 3000
+          {t('app.connectionErrorHint')}
         </span>
       </div>
     );
@@ -65,61 +68,74 @@ export default function App() {
   if (!isActive) {
     return (
       <div className="loading">
-        <span>⚡ Connecting to SpacetimeDB…</span>
+        <span>{t('app.connecting')}</span>
       </div>
     );
   }
 
-  switch (page) {
-    case 'register':
-      return (
-        <RegisterPage
-          onRegistered={() => setPage('lobby')}
-        />
-      );
-    case 'lobby':
-      return (
-        <LobbyPage
+  const showTopBar = page !== 'register' && page !== 'sprint' && myPlayer;
+  const topBarBack = page === 'classroom' || page === 'results'
+    ? () => setPage(page === 'results' ? (inClassroom ? 'classroom' : sprintOrigin) : 'lobby')
+    : page === 'account'
+    ? () => setPage('lobby')
+    : undefined;
+  const topBarBackLabel = page === 'classroom' ? t('common.lobby')
+    : page === 'results' ? t('common.back')
+    : page === 'account' ? t('common.lobby')
+    : undefined;
+
+  return (
+    <>
+      {showTopBar && (
+        <TopBar
           myPlayer={myPlayer}
-          myIdentityHex={myIdentityHex}
-          onStartSprint={(id) => goToSprint(id, 'lobby')}
           onAccount={() => setPage('account')}
-          onEnterClassroom={goToClassroom}
+          onBack={topBarBack}
+          backLabel={topBarBackLabel}
         />
-      );
-    case 'classroom':
-      return (
-        <ClassroomPage
-          myIdentityHex={myIdentityHex!}
-          classroomId={classroomId!}
-          onStartSprint={(id) => goToSprint(id, 'classroom')}
-          onLeave={() => setPage('lobby')}
-          onAccount={() => setPage('account')}
-        />
-      );
-    case 'sprint':
-      return (
-        <SprintPage
-          myIdentityHex={myIdentityHex!}
-          onFinished={(id) => { setSessionId(id); setPage('results'); }}
-        />
-      );
-    case 'results':
-      return (
-        <ResultsPage
-          sessionId={sessionId!}
-          myIdentityHex={myIdentityHex!}
-          onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin)}
-        />
-      );
-    case 'account':
-      return (
-        <AccountPage
-          myPlayer={myPlayer!}
-          myIdentityHex={myIdentityHex!}
-          onEnterClassroom={goToClassroom}
-          onBack={() => setPage('lobby')}
-        />
-      );
-  }
+      )}
+      <main className="content-area">
+        {page === 'register' && (
+          <RegisterPage onRegistered={() => setPage('lobby')} />
+        )}
+        {page === 'lobby' && (
+          <LobbyPage
+            myPlayer={myPlayer}
+            myIdentityHex={myIdentityHex}
+            onStartSprint={(id) => goToSprint(id, 'lobby')}
+            onEnterClassroom={goToClassroom}
+          />
+        )}
+        {page === 'classroom' && (
+          <ClassroomPage
+            myIdentityHex={myIdentityHex!}
+            classroomId={classroomId!}
+            onStartSprint={(id) => goToSprint(id, 'classroom')}
+            onLeave={() => setPage('lobby')}
+          />
+        )}
+        {page === 'sprint' && (
+          <SprintPage
+            myIdentityHex={myIdentityHex!}
+            onFinished={(id) => { setSessionId(id); setPage('results'); }}
+          />
+        )}
+        {page === 'results' && (
+          <ResultsPage
+            sessionId={sessionId!}
+            myIdentityHex={myIdentityHex!}
+            onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin)}
+          />
+        )}
+        {page === 'account' && (
+          <AccountPage
+            myPlayer={myPlayer!}
+            myIdentityHex={myIdentityHex!}
+            onEnterClassroom={goToClassroom}
+            onBack={() => setPage('lobby')}
+          />
+        )}
+      </main>
+    </>
+  );
 }

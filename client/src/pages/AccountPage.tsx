@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import { capturedToken } from '../auth.js';
 
-type Player = { identity: { toHexString(): string }; username: string };
+type Player = {
+  identity: { toHexString(): string };
+  username: string;
+  bestScore: number;
+  totalSessions: number;
+};
 
 interface Props {
   myPlayer: Player;
@@ -12,7 +18,8 @@ interface Props {
   onBack: () => void;
 }
 
-export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom, onBack }: Props) {
+export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom }: Props) {
+  const { t } = useTranslation();
   const [transferCodes] = useTable(tables.transfer_codes);
   const [recoveryKeys] = useTable(tables.recovery_keys);
   const [classrooms] = useTable(tables.classrooms);
@@ -53,14 +60,14 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
   const [generating, setGenerating] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [codeShownAt, setCodeShownAt] = useState<number | null>(null);
+  const [transferCopied, setTransferCopied] = useState(false);
 
-  const CODE_TTL = 60 * 60; // 1 hour in seconds
+  const CODE_TTL = 60 * 60;
 
   const myCode = (transferCodes as any[]).find(
     c => c.owner.toHexString() === myIdentityHex
   );
 
-  // Start client-side countdown when a code appears
   useEffect(() => {
     if (myCode && codeShownAt === null) {
       setCodeShownAt(Date.now());
@@ -100,7 +107,14 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
     setGenerating(false);
   };
 
-  // Classrooms — all memberships
+  const handleCopyTransfer = () => {
+    if (!myCode) return;
+    navigator.clipboard.writeText(myCode.code);
+    setTransferCopied(true);
+    setTimeout(() => setTransferCopied(false), 2000);
+  };
+
+  // Classrooms
   const myMemberships = (classroomMembers as any[]).filter(
     m => m.playerIdentity.toHexString() === myIdentityHex
   );
@@ -129,21 +143,33 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
   const fmtCountdown = (s: number) =>
     `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
+  const initials = myPlayer.username.slice(0, 2).toUpperCase();
+
   return (
     <div className="page" style={{ maxWidth: 520 }}>
-      <button
-        className="btn btn-secondary"
-        onClick={onBack}
-        style={{ alignSelf: 'flex-start', marginBottom: 8, fontSize: 13 }}
-      >
-        ← Back
-      </button>
 
-      <h1 style={{ fontSize: 22, marginBottom: 24 }}>⚙ Account</h1>
+      {/* Profile header */}
+      <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div style={{
+          width: 56, height: 56, borderRadius: '50%',
+          background: 'var(--accent)', color: '#000',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontWeight: 800, fontSize: 20, flexShrink: 0,
+        }}>
+          {initials}
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700, fontSize: 20, color: 'var(--text)' }}>{myPlayer.username}</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
+            {t('account.sessions', { count: myPlayer.totalSessions })}
+            {' · '}{t('account.best')} <span style={{ color: 'var(--warn)', fontWeight: 600 }}>{myPlayer.bestScore.toFixed(1)}</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Username */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <h2 style={{ marginBottom: 16, fontSize: 16 }}>Display name</h2>
+      {/* Display name */}
+      <div className="card">
+        <h2 style={{ marginBottom: 16, fontSize: 16 }}>{t('account.displayName')}</h2>
         <div style={{ display: 'flex', gap: 10 }}>
           <input
             className="field"
@@ -158,118 +184,15 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
             onClick={handleRename}
             disabled={nameSaving || !newName.trim() || newName.trim() === myPlayer.username}
           >
-            {nameSaved ? '✓ Saved' : nameSaving ? 'Saving…' : 'Save'}
+            {nameSaved ? t('common.saved') : nameSaving ? t('common.saving') : t('common.save')}
           </button>
         </div>
       </div>
 
-      {/* Transfer code */}
-      <div className="card">
-        <h2 style={{ marginBottom: 8, fontSize: 16 }}>Transfer to another device</h2>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-          Generate a one-time 6-character code. Enter it on your other device within 60 minutes
-          to continue with the same account and score history.
-        </p>
-
-        {myCode ? (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: 40,
-              fontWeight: 800,
-              letterSpacing: 8,
-              color: 'var(--accent)',
-              background: 'var(--card2)',
-              border: '2px solid var(--accent)',
-              borderRadius: 12,
-              padding: '20px 24px',
-              marginBottom: 12,
-            }}>
-              {myCode.code}
-            </div>
-            <p style={{ fontSize: 12, color: 'var(--muted)' }}>
-              {countdown !== null && countdown > 0
-                ? `Expires in ${fmtCountdown(countdown)} · single use`
-                : 'Expired'}
-            </p>
-            <button
-              className="btn btn-secondary"
-              style={{ marginTop: 12, fontSize: 13 }}
-              onClick={handleGenerateCode}
-              disabled={generating}
-            >
-              Generate new code
-            </button>
-          </div>
-        ) : (
-          <button
-            className="btn btn-primary"
-            onClick={handleGenerateCode}
-            disabled={generating || !capturedToken}
-            style={{ width: '100%' }}
-          >
-            {generating ? 'Generating…' : 'Generate code'}
-          </button>
-        )}
-      </div>
-
-      {/* Recovery key */}
-      <div className="card" style={{ marginTop: 16 }}>
-        <h2 style={{ marginBottom: 8, fontSize: 16 }}>Recovery key</h2>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-          A permanent 12-character key — never expires, works from any device.
-          Store it in your password manager or write it down.
-        </p>
-        {myRecoveryKey ? (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: 26,
-              fontWeight: 800,
-              letterSpacing: 5,
-              color: 'var(--accent)',
-              background: 'var(--card2)',
-              border: '2px solid var(--accent)',
-              borderRadius: 12,
-              padding: '16px 20px',
-              marginBottom: 12,
-            }}>
-              {myRecoveryKey.code}
-            </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-              <button
-                className="btn btn-primary"
-                style={{ fontSize: 13 }}
-                onClick={handleCopyKey}
-              >
-                {keyCopied ? '✓ Copied' : '⎘ Copy'}
-              </button>
-              <button
-                className="btn btn-secondary"
-                style={{ fontSize: 13 }}
-                onClick={handleGenerateRecoveryKey}
-                disabled={generatingKey}
-              >
-                Regenerate
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            className="btn btn-primary"
-            onClick={handleGenerateRecoveryKey}
-            disabled={generatingKey || !capturedToken}
-            style={{ width: '100%' }}
-          >
-            {generatingKey ? 'Generating…' : 'Generate recovery key'}
-          </button>
-        )}
-      </div>
-
       {/* Classrooms */}
       {myClassroomList.length > 0 && (
-        <div className="card" style={{ marginTop: 16 }}>
-          <h2 style={{ marginBottom: 12, fontSize: 16 }}>My Classrooms</h2>
+        <div className="card">
+          <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('account.myClassrooms')}</h2>
           {myClassroomList.map((c: any) => (
             <div key={String(c.id)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -284,7 +207,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
                   {c.name}
                 </button>
                 <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 8 }}>
-                  {c.isTeacher ? 'Teacher' : 'Student'} · {c.memberCount} member{c.memberCount !== 1 ? 's' : ''} · code <code style={{ color: 'var(--text)' }}>{c.code}</code>
+                  {c.isTeacher ? t('common.teacher') : t('common.student')} · {t('account.members', { count: c.memberCount })} · {t('common.code')} <code style={{ color: 'var(--text)' }}>{c.code}</code>
                 </span>
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
@@ -293,7 +216,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
                   onClick={() => onEnterClassroom(c.id)}
                   style={{ fontSize: 12 }}
                 >
-                  View →
+                  {t('account.viewClass')}
                 </button>
                 <button
                   className="btn btn-secondary"
@@ -301,7 +224,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
                   disabled={leavingId === c.id}
                   style={{ fontSize: 12 }}
                 >
-                  {leavingId === c.id ? '…' : c.isTeacher ? '✕ Close' : 'Leave'}
+                  {leavingId === c.id ? '…' : c.isTeacher ? t('account.closeClass') : t('account.leaveClass')}
                 </button>
               </div>
             </div>
@@ -309,19 +232,96 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom,
         </div>
       )}
 
-      {/* Logout */}
-      <div className="card" style={{ marginTop: 16, borderColor: 'var(--danger, #c0392b)' }}>
-        <h2 style={{ marginBottom: 8, fontSize: 16 }}>Session</h2>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
-          Logging out removes this device's access to your account. Your scores and username
-          are kept on the server — use a transfer code first if you want to sign in again later.
+      {/* Account recovery */}
+      <div className="card">
+        <h2 style={{ marginBottom: 4, fontSize: 16 }}>{t('account.recovery')}</h2>
+        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>
+          {t('account.recoveryDesc')}
         </p>
-        <button
-          className="btn btn-danger"
-          onClick={handleLogout}
-          style={{ width: '100%' }}
-        >
-          Log out
+
+        {/* Transfer code */}
+        <h3 style={{ marginBottom: 4 }}>{t('account.transferCode')}</h3>
+        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 12 }}>
+          {t('account.transferDesc')}
+        </p>
+        {myCode ? (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{
+              fontFamily: 'monospace', fontSize: 34, fontWeight: 800, letterSpacing: 8,
+              color: 'var(--accent)', background: 'var(--card2)', border: '2px solid var(--accent)',
+              borderRadius: 10, padding: '14px 20px', marginBottom: 8, textAlign: 'center',
+            }}>
+              {myCode.code}
+            </div>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+              <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={handleCopyTransfer}>
+                {transferCopied ? t('common.copied') : t('common.copy')}
+              </button>
+              <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={handleGenerateCode} disabled={generating}>
+                {t('account.newCode')}
+              </button>
+            </div>
+            <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', marginTop: 8 }}>
+              {countdown !== null && countdown > 0 ? t('account.transferExpires', { time: fmtCountdown(countdown) }) : t('account.transferExpired')}
+            </p>
+          </div>
+        ) : (
+          <button
+            className="btn btn-primary"
+            onClick={handleGenerateCode}
+            disabled={generating || !capturedToken}
+            style={{ width: '100%', marginBottom: 20 }}
+          >
+            {generating ? t('common.generating') : t('account.generateCode')}
+          </button>
+        )}
+
+        {/* Divider */}
+        <div style={{ borderTop: '1px solid var(--border)', margin: '4px 0 20px' }} />
+
+        {/* Recovery key */}
+        <h3 style={{ marginBottom: 4 }}>{t('account.recoveryKey')}</h3>
+        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 12 }}>
+          {t('account.recoveryKeyDesc')}
+        </p>
+        {myRecoveryKey ? (
+          <div>
+            <div style={{
+              fontFamily: 'monospace', fontSize: 22, fontWeight: 800, letterSpacing: 5,
+              color: 'var(--accent)', background: 'var(--card2)', border: '2px solid var(--accent)',
+              borderRadius: 10, padding: '12px 16px', marginBottom: 8, textAlign: 'center',
+            }}>
+              {myRecoveryKey.code}
+            </div>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+              <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={handleCopyKey}>
+                {keyCopied ? t('common.copied') : t('common.copy')}
+              </button>
+              <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
+                {t('account.regenerate')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="btn btn-primary"
+            onClick={handleGenerateRecoveryKey}
+            disabled={generatingKey || !capturedToken}
+            style={{ width: '100%' }}
+          >
+            {generatingKey ? t('common.generating') : t('account.generateRecoveryKey')}
+          </button>
+        )}
+      </div>
+
+      {/* Danger zone */}
+      <div className="card" style={{ borderColor: 'rgba(255,68,85,0.4)' }}>
+        <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('account.session')}</h2>
+        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
+          {t('account.logoutDesc')}
+        </p>
+        <button className="btn btn-danger" onClick={handleLogout} style={{ width: '100%' }}>
+          {t('account.logout')}
         </button>
       </div>
     </div>

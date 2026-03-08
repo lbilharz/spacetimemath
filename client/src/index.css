@@ -25,9 +25,33 @@ html, body, #root {
 #root {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 24px 16px;
   min-height: 100vh;
+}
+
+/* Persistent top bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 52px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+/* Page content wrapper — centers and pads all pages */
+.content-area {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 48px;
 }
 
 .page { width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 20px; }

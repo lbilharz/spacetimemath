@@ -4,6 +4,7 @@ import { SpacetimeDBProvider } from 'spacetimedb/react';
 import { DbConnection } from './module_bindings/index.js';
 import App from './App.js';
 import { setCapturedToken } from './auth.js';
+import './i18n.js';
 import './index.css';
 
 const CREDS_KEY = 'spacetimemath_credentials';

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 type Answer = { a: number; b: number; isCorrect: boolean; sessionId: bigint; };
 type ProblemStat = { problemKey: number; a: number; b: number; difficultyWeight: number; };
 
@@ -35,6 +37,7 @@ const MASTERY_BG: Record<Mastery, string> = {
 };
 
 export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [] }: Props) {
+  const { t } = useTranslation();
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
   const cells: React.ReactNode[] = [];
@@ -66,7 +69,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
       cells.push(
         <div
           key={`${a}-${b}`}
-          title={`${a}×${b}=${answer}  difficulty: ${w.toFixed(2)}`}
+          title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
           style={{
             ...cell,
             background: MASTERY_BG[mastery],
@@ -111,12 +114,12 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
               background: MASTERY_BG[m],
               border: `1px solid ${MASTERY_COLORS[m]}`,
             }} />
-            <span style={{ fontSize: 12, color: 'var(--muted)', textTransform: 'capitalize' }}>{m}</span>
+            <span style={{ fontSize: 12, color: 'var(--muted)' }}>{t(`mastery.${m}` as const)}</span>
           </div>
         ))}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--wrong)' }} />
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>hard (≥1.5×)</span>
+          <span style={{ fontSize: 12, color: 'var(--muted)' }}>{t('mastery.hardDiff')}</span>
         </div>
       </div>
     </div>

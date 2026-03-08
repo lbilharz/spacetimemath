@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 
@@ -59,6 +60,7 @@ interface Props {
 type Feedback = { isCorrect: boolean; points: number; correct: number } | null;
 
 export default function SprintPage({ myIdentityHex, onFinished }: Props) {
+  const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
@@ -200,7 +202,7 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
     return (
       <div className="loading">
         <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-          {sessionId ? 'Loading questions…' : 'Starting session…'}
+          {sessionId ? t('sprint.loadingQuestions') : t('sprint.startingSession')}
         </span>
       </div>
     );
@@ -213,10 +215,10 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
       <div style={{ width: '100%', maxWidth: 520 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-            ✓ {correct}/{answered} correct
+            {t('sprint.stats', { correct, answered })}
           </span>
           <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-            score: <b style={{ color: 'var(--warn)' }}>{score.toFixed(1)}</b>
+            {t('sprint.score')} <b style={{ color: 'var(--warn)' }}>{score.toFixed(1)}</b>
           </span>
         </div>
         <div style={{
@@ -250,9 +252,9 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
         {(() => {
           const s = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
           const w = s?.difficultyWeight ?? 1;
-          const tag = w >= 1.5 ? { label: '🔥 Hard', cls: 'tag-red' }
-                    : w >= 1.0 ? { label: '⚡ Medium', cls: 'tag-warn' }
-                    : { label: '✓ Easy', cls: 'tag-green' };
+          const tag = w >= 1.5 ? { label: t('sprint.tagHard'), cls: 'tag-red' }
+                    : w >= 1.0 ? { label: t('sprint.tagMedium'), cls: 'tag-warn' }
+                    : { label: t('sprint.tagEasy'), cls: 'tag-green' };
           return (
             <span className={`tag ${tag.cls}`} style={{ position: 'absolute', top: 16, right: 16 }}>
               {tag.label}
@@ -280,8 +282,8 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
             marginBottom: 8,
           }}>
             {feedback.isCorrect
-              ? `✓ +${feedback.points.toFixed(1)} pts`
-              : `✗ ${problem.a} × ${problem.b} = ${feedback.correct} (−2s)`}
+              ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
+              : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -367,7 +369,7 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
         disabled={ending}
         style={{ fontSize: 14 }}
       >
-        {ending ? 'Ending…' : 'End Sprint'}
+        {ending ? t('sprint.ending') : t('sprint.endSprint')}
       </button>
     </div>
   );
