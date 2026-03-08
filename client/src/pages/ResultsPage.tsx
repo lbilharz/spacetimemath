@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
@@ -48,6 +49,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
     .sort((a, b) => b.weight - a.weight)
     .slice(0, 3);
 
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const isComplete = session?.isComplete ?? false;
 
   return (
@@ -91,36 +93,52 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
             {uniqueHard.length > 0 && (
               <div style={{ marginTop: 20, textAlign: 'left' }}>
                 <h3 style={{ marginBottom: 12 }}>{t('results.struggled')}</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {uniqueHard.map(p => {
                     const rw = getRechenweg(p.a, p.b);
+                    const isOpen = expandedKey === p.key;
                     return (
-                      <div key={p.key} style={{
-                        background: 'var(--card2)',
-                        border: '1px solid var(--border)',
-                        borderRadius: 8,
-                        padding: '12px 16px',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                      <div key={p.key}>
+                        <button
+                          onClick={() => setExpandedKey(isOpen ? null : p.key)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            padding: '2px 0', width: '100%', textAlign: 'left',
+                          }}
+                        >
                           <span className="tag tag-red" style={{ fontSize: 14, padding: '4px 12px' }}>
                             {p.key} = {p.a * p.b}
                           </span>
-                          <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>
-                            {t(rw.strategyKey as any)}
+                          <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                            {isOpen ? '▲' : '▼'}
                           </span>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                          {rw.steps.map((step, i) => (
-                            <div key={i} style={{
-                              fontSize: 15,
-                              fontVariantNumeric: 'tabular-nums',
-                              fontWeight: i === rw.steps.length - 1 ? 700 : 400,
-                              color: i === rw.steps.length - 1 ? 'var(--accent)' : 'var(--text)',
-                            }}>
-                              {step}{i === rw.steps.length - 1 ? ' ✓' : ''}
+                        </button>
+                        {isOpen && (
+                          <div style={{
+                            background: 'var(--card2)',
+                            border: '1px solid var(--border)',
+                            borderRadius: 8,
+                            padding: '10px 14px',
+                            marginTop: 4,
+                          }}>
+                            <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                              {t(rw.strategyKey as any)}
                             </div>
-                          ))}
-                        </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                              {rw.steps.map((step, i) => (
+                                <div key={i} style={{
+                                  fontSize: 15,
+                                  fontVariantNumeric: 'tabular-nums',
+                                  fontWeight: i === rw.steps.length - 1 ? 700 : 400,
+                                  color: i === rw.steps.length - 1 ? 'var(--accent)' : 'var(--text)',
+                                }}>
+                                  {step}{i === rw.steps.length - 1 ? ' ✓' : ''}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

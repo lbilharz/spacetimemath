@@ -74,13 +74,13 @@ export function getRechenweg(a: number, b: number): Rechenweg {
       };
     case 8:
       return {
-        strategyKey: 'rechenweg.timesTenMinusTwo',
+        strategyKey: 'rechenweg.tripleDouble',
         steps: [
-          `${big} × 10 = ${big * 10}`,
           `${big} × 2 = ${big * 2}`,
-          `${big * 10} − ${big * 2} = ${big * 8}`,
+          `${big * 2} × 2 = ${big * 4}`,
+          `${big * 4} × 2 = ${big * 8}`,
         ],
-        hint: `${big}×10 − ${big}×2`,
+        hint: `${big} → ${big * 2} → ${big * 4} → ${big * 8}`,
       };
     case 9:
       return {
