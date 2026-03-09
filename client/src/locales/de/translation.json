@@ -209,9 +209,9 @@
   "scoring": {
     "title": "Punktesystem",
     "howTitle": "Punkte pro richtige Antwort = Schwierigkeitsgewicht",
-    "howBody": "Gewichte basieren auf Forschungsschätzungen und kalibrieren sich nach 20+ Gemeinschaftsantworten:",
-    "calibNote": "Startwerte angelehnt an Ashcraft & Christy (1995) Fehlerquoten-Rankings.",
-    "calibLegend": "Heller Rahmen = Gewicht durch 20+ Gemeinschaftsantworten kalibriert."
+    "howBody": "Gewichte basieren auf Forschungsschätzungen und verschieben sich schrittweise Richtung Gemeinschaftsdaten über 200+ Antworten pro Aufgabe:",
+    "calibNote": "Forschungshintergrund: Quadrate (7×7, 8×8) sind schwerer als sie wirken — Schüler verwechseln sie mit Nachbarn. ×4 und ×9 haben zuverlässige Tricks (zweimal verdoppeln, Quersumme). Startwerte angelehnt an Ashcraft & Christy (1995).",
+    "calibLegend": "Heller Rahmen = vollständig kalibriert (200+ Antworten)."
   },
   "history": {
     "title": "📋 Sprint-Verlauf",

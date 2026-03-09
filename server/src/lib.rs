@@ -218,6 +218,37 @@ pub fn migrate_seed_best_scores(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// Recompute all core (category=1) pair weights using the current blending formula.
+/// Fixes two classes of wrong values in production:
+///   (a) old bootstrap bugs: 4×5, 5×4, 3×6, 3×7, 3×9 were all 0.8; correct values are 0.6/0.7
+///   (b) over-calibrated pairs from small-sample community data (e.g. 8×6 dropped to 0.7
+///       after only ~20 answers from 2 players — bootstrap is 1.8)
+/// Category 0 (trivial ×0/1/10) and category 2 (extended) are left untouched.
+/// Idempotent — safe to call multiple times.
+#[reducer]
+pub fn migrate_reset_weights(ctx: &ReducerContext) -> Result<(), String> {
+    for stat in ctx.db.problem_stats().iter() {
+        if stat.category != 1 { continue; }
+        let new_weight = if stat.attempt_count == 0 {
+            bootstrap_weight(stat.a, stat.b, stat.category)
+        } else {
+            let error_rate = 1.0 - (stat.correct_count as f32 / stat.attempt_count as f32);
+            let speed_factor = (stat.avg_response_ms as f32 / 10_000.0).min(1.0);
+            let community = (0.2_f32 + 1.8 * error_rate + 0.5 * speed_factor).clamp(0.2, 2.0);
+            let bootstrap = bootstrap_weight(stat.a, stat.b, stat.category);
+            let blend = (stat.attempt_count as f32 / 200.0).min(1.0);
+            bootstrap * (1.0 - blend) + community * blend
+        };
+        if (new_weight - stat.difficulty_weight).abs() > 0.001 {
+            ctx.db.problem_stats().problem_key().update(ProblemStat {
+                difficulty_weight: new_weight,
+                ..stat
+            });
+        }
+    }
+    Ok(())
+}
+
 fn seed_problem_stats(ctx: &ReducerContext) {
     for a in 0u8..=10 {
         for b in 0u8..=10 {
@@ -379,12 +410,18 @@ pub fn submit_answer(
             ((stat.avg_response_ms as u64 * stat.attempt_count as u64
                 + response_ms as u64) / new_count as u64) as u32
         };
-        let new_weight = if new_count >= 20 && pair_learning_tier(stat.a, stat.b).is_some() {
+        // Blend bootstrap → community weight over 200 answers (category 1 only).
+        // A hard cutover at 20 lets a single fast player crater an established weight;
+        // gradual blending means small user bases stay close to research-backed values.
+        let new_weight = if stat.category == 1 {
             let error_rate = 1.0 - (new_correct as f32 / new_count as f32);
             let speed_factor = (new_avg_ms as f32 / 10_000.0).min(1.0);
-            (0.2_f32 + 1.8 * error_rate + 0.5 * speed_factor).clamp(0.2, 2.0)
+            let community = (0.2_f32 + 1.8 * error_rate + 0.5 * speed_factor).clamp(0.2, 2.0);
+            let bootstrap = bootstrap_weight(stat.a, stat.b, stat.category);
+            let blend = (new_count as f32 / 200.0).min(1.0);
+            bootstrap * (1.0 - blend) + community * blend
         } else {
-            stat.difficulty_weight
+            stat.difficulty_weight // category 0 (trivial) and 2 (extended): keep seeded value
         };
         ctx.db.problem_stats().problem_key().update(ProblemStat {
             attempt_count: new_count,

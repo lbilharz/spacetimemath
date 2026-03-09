@@ -209,9 +209,9 @@
   "scoring": {
     "title": "Scoring Guide",
     "howTitle": "Points per correct answer = difficulty weight",
-    "howBody": "Weights start from research estimates and auto-calibrate after 20+ community answers:",
-    "calibNote": "Bootstrap values inspired by Ashcraft & Christy (1995) error-rate rankings.",
-    "calibLegend": "Bright border = weight calibrated by 20+ community answers."
+    "howBody": "Weights start from research estimates and gradually shift toward community data over 200+ answers per problem:",
+    "calibNote": "Research basis: squares (7×7, 8×8) are harder than they look — students confuse them with neighbours. ×4 and ×9 have reliable tricks (double-twice, digit-sum). Bootstrap values inspired by Ashcraft & Christy (1995).",
+    "calibLegend": "Bright border = fully community-calibrated (200+ answers)."
   },
   "history": {
     "title": "📋 Sprint History",

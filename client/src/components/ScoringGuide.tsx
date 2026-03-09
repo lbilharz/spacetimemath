@@ -27,7 +27,8 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
 
   const stat = (a: number, b: number) => problemStats.find(s => s.a === a && s.b === b);
   const w    = (a: number, b: number) => stat(a, b)?.difficultyWeight ?? 0;
-  const cal  = (a: number, b: number) => (stat(a, b)?.attemptCount ?? 0) >= 20;
+  // ≥200 answers → fully community-calibrated (bright border in grid)
+  const cal  = (a: number, b: number) => (stat(a, b)?.attemptCount ?? 0) >= 200;
 
   function Cell({ a, b }: { a: number; b: number }) {
     const wt = w(a, b);
