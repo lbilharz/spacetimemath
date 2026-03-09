@@ -76,6 +76,19 @@ pub struct UnlockLog {
     pub unlocked_at: Timestamp,
 }
 
+/// Per-player best sprint snapshot — 1 row per player, updated at end_session.
+/// Eliminates full sessions-table scan for the leaderboard at scale.
+#[table(accessor = best_scores, public)]
+pub struct BestScore {
+    #[primary_key]
+    pub player_identity: Identity,
+    pub username: String,
+    pub best_weighted_score: f32,
+    pub best_accuracy_pct: u8,
+    pub best_total_answered: u32,
+    pub learning_tier: u8,
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -164,6 +177,42 @@ pub fn migrate_recompute_tiers(ctx: &ReducerContext) -> Result<(), String> {
 
         if earned_tier != player.learning_tier {
             ctx.db.players().identity().update(Player { learning_tier: earned_tier, ..player });
+        }
+    }
+    Ok(())
+}
+
+/// One-time migration: seed best_scores from existing completed sessions.
+/// Idempotent — safe to call multiple times.
+#[reducer]
+pub fn migrate_seed_best_scores(ctx: &ReducerContext) -> Result<(), String> {
+    let all_sessions: Vec<Session> = ctx.db.sessions().iter()
+        .filter(|s| s.is_complete)
+        .collect();
+
+    for player in ctx.db.players().iter() {
+        let best = all_sessions.iter()
+            .filter(|s| s.player_identity == player.identity)
+            .max_by(|a, b| a.weighted_score.partial_cmp(&b.weighted_score)
+                .unwrap_or(std::cmp::Ordering::Equal));
+
+        if let Some(s) = best {
+            let new_bs = BestScore {
+                player_identity: player.identity,
+                username: player.username.clone(),
+                best_weighted_score: s.weighted_score,
+                best_accuracy_pct: s.accuracy_pct,
+                best_total_answered: s.total_answered,
+                learning_tier: player.learning_tier,
+            };
+            match ctx.db.best_scores().player_identity().find(player.identity) {
+                Some(existing) => {
+                    if s.weighted_score > existing.best_weighted_score {
+                        ctx.db.best_scores().player_identity().update(new_bs);
+                    }
+                }
+                None => { ctx.db.best_scores().insert(new_bs); }
+            }
         }
     }
     Ok(())
@@ -399,6 +448,34 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
         ..player
     });
     check_and_unlock(ctx, sender, session_id);
+
+    // Upsert BestScore — re-read player to pick up updated learning_tier from check_and_unlock
+    if let Some(up) = ctx.db.players().identity().find(sender) {
+        match ctx.db.best_scores().player_identity().find(sender) {
+            Some(prev) => {
+                // Always refresh username + tier; keep whichever score is higher
+                let keep = prev.best_weighted_score >= weighted_score;
+                ctx.db.best_scores().player_identity().update(BestScore {
+                    username: up.username.clone(),
+                    best_weighted_score: if keep { prev.best_weighted_score } else { weighted_score },
+                    best_accuracy_pct:   if keep { prev.best_accuracy_pct   } else { accuracy_pct  },
+                    best_total_answered: if keep { prev.best_total_answered  } else { total         },
+                    learning_tier: up.learning_tier,
+                    ..prev
+                });
+            }
+            None => {
+                ctx.db.best_scores().insert(BestScore {
+                    player_identity: sender,
+                    username: up.username.clone(),
+                    best_weighted_score: weighted_score,
+                    best_accuracy_pct: accuracy_pct,
+                    best_total_answered: total,
+                    learning_tier: up.learning_tier,
+                });
+            }
+        }
+    }
     Ok(())
 }
 
@@ -520,6 +597,10 @@ pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), St
     }
     let player = get_player(ctx)?;
     ctx.db.players().identity().update(Player { username: name.clone(), ..player });
+    // Keep BestScore.username in sync
+    if let Some(bs) = ctx.db.best_scores().player_identity().find(ctx.sender()) {
+        ctx.db.best_scores().player_identity().update(BestScore { username: name, ..bs });
+    }
     Ok(())
 }
 

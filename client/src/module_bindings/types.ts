@@ -23,6 +23,16 @@ export const Answer = __t.object("Answer", {
 });
 export type Answer = __Infer<typeof Answer>;
 
+export const BestScore = __t.object("BestScore", {
+  playerIdentity: __t.identity(),
+  username: __t.string(),
+  bestWeightedScore: __t.f32(),
+  bestAccuracyPct: __t.u8(),
+  bestTotalAnswered: __t.u32(),
+  learningTier: __t.u8(),
+});
+export type BestScore = __Infer<typeof BestScore>;
+
 export const Classroom = __t.object("Classroom", {
   id: __t.u64(),
   code: __t.string(),

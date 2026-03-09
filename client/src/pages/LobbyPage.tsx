@@ -17,7 +17,7 @@ type ClassroomPanel = 'none' | 'create' | 'join';
 
 export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEnterClassroom }: Props) {
   const { t } = useTranslation();
-  const [sessions] = useTable(tables.sessions);
+  const [bestScores] = useTable(tables.best_scores);
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
 
@@ -214,7 +214,11 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
       </div>
 
       {/* Global Leaderboard */}
-      <Leaderboard sessions={sessions as any[]} myIdentityHex={myIdentityHex} />
+      <Leaderboard
+        bestScores={bestScores as any[]}
+        myIdentityHex={myIdentityHex}
+        myLearningTier={(myPlayer as any)?.learningTier ?? 0}
+      />
 
     </div>
   );

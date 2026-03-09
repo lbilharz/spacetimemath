@@ -41,6 +41,9 @@ import CreateTransferCodeReducer from "./create_transfer_code_reducer";
 import EndSessionReducer from "./end_session_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
+import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
+import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
+import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
 import RegisterReducer from "./register_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartSessionReducer from "./start_session_reducer";
@@ -52,6 +55,7 @@ import UseTransferCodeReducer from "./use_transfer_code_reducer";
 
 // Import all table schema definitions
 import AnswersRow from "./answers_table";
+import BestScoresRow from "./best_scores_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
 import PlayersRow from "./players_table";
@@ -76,6 +80,17 @@ const tablesSchema = __schema({
       { name: 'answers_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, AnswersRow),
+  best_scores: __table({
+    name: 'best_scores',
+    indexes: [
+      { name: 'player_identity', algorithm: 'btree', columns: [
+        'playerIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'best_scores_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
+    ],
+  }, BestScoresRow),
   classroom_members: __table({
     name: 'classroom_members',
     indexes: [
@@ -175,6 +190,9 @@ const reducersSchema = __reducers(
   __reducerSchema("end_session", EndSessionReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
+  __reducerSchema("migrate_recompute_tiers", MigrateRecomputeTiersReducer),
+  __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),
+  __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_session", StartSessionReducer),
