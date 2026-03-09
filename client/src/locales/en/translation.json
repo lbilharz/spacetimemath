@@ -62,9 +62,10 @@
     "card1Body": "Solve as many multiplication problems as you can before time runs out!",
     "card2Title": "Problems Score Points",
     "card2Body": "Easy = 1 pt · Medium = 2 pts · Hard = 3 pts. Tougher problems score more!",
-    "card3Title": "Beat Your Class",
-    "card3Body": "After each sprint, see how you rank against your classmates on the leaderboard.",
+    "card3Title": "Ready to Sprint?",
+    "card3Body": "Start your first 60-second multiplication sprint. Answer as many as you can — your score gets recorded!",
     "letsGo": "Let's go! 🚀",
+    "startSprint": "Start 60s Sprint ⚡",
     "next": "Next →",
     "back": "← Back"
   },
@@ -94,6 +95,7 @@
     "struggledHint": "These will appear more often in your next sprint.",
     "masteryTitle": "Mastery Grid",
     "masteryDesc": "Your cumulative knowledge map across all sessions.",
+    "nextSprint": "▶ Next Sprint",
     "backToLobby": "Back to Lobby"
   },
   "classroom": {

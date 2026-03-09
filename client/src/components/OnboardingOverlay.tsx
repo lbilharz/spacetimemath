@@ -6,10 +6,14 @@ import { reducers } from '../module_bindings/index.js';
 const CARDS = [
   { emoji: '⏱️', titleKey: 'onboarding.card1Title', bodyKey: 'onboarding.card1Body' },
   { emoji: '🎯', titleKey: 'onboarding.card2Title', bodyKey: 'onboarding.card2Body' },
-  { emoji: '🏆', titleKey: 'onboarding.card3Title', bodyKey: 'onboarding.card3Body' },
+  { emoji: '⚡', titleKey: 'onboarding.card3Title', bodyKey: 'onboarding.card3Body' },
 ] as const;
 
-export default function OnboardingOverlay() {
+interface Props {
+  onDone: () => void;
+}
+
+export default function OnboardingOverlay({ onDone }: Props) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [finishing, setFinishing] = useState(false);
@@ -22,7 +26,7 @@ export default function OnboardingOverlay() {
     if (finishing) return;
     setFinishing(true);
     await completeOnboarding();
-    // Overlay disappears reactively when myPlayer.onboardingDone flips to true
+    onDone();
   };
 
   return (
@@ -99,18 +103,23 @@ export default function OnboardingOverlay() {
             disabled={finishing}
             style={{
               flex: 2,
-              padding: '11px 0',
-              background: 'var(--accent)',
+              padding: isLast ? '16px 0' : '11px 0',
+              background: isLast
+                ? 'linear-gradient(135deg, #00d4aa 0%, #00b08a 100%)'
+                : 'var(--accent)',
               border: 'none',
-              borderRadius: 8,
-              color: '#fff',
-              fontSize: 15,
-              fontWeight: 700,
+              borderRadius: 10,
+              color: isLast ? '#0a0a1a' : '#fff',
+              fontSize: isLast ? 18 : 15,
+              fontWeight: 900,
               cursor: finishing ? 'default' : 'pointer',
               opacity: finishing ? 0.7 : 1,
+              boxShadow: isLast ? '0 4px 20px rgba(0,212,170,0.4)' : 'none',
+              letterSpacing: isLast ? '-0.3px' : 'normal',
+              WebkitTapHighlightColor: 'transparent',
             }}
           >
-            {isLast ? t('onboarding.letsGo') : t('onboarding.next')}
+            {isLast ? t('onboarding.startSprint') : t('onboarding.next')}
           </button>
         </div>
       </div>

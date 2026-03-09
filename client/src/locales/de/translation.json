@@ -62,9 +62,10 @@
     "card1Body": "Löse so viele Aufgaben wie möglich, bevor die Zeit abläuft!",
     "card2Title": "Aufgaben bringen Punkte",
     "card2Body": "Leicht = 1 Pt · Mittel = 2 Pt · Schwer = 3 Pt. Schwerere Aufgaben = mehr Punkte!",
-    "card3Title": "Schlag deine Klasse",
-    "card3Body": "Nach jedem Sprint siehst du, wo du in der Rangliste deiner Klasse stehst.",
+    "card3Title": "Bereit für den Sprint?",
+    "card3Body": "Starte deinen ersten 60-Sekunden-Multiplikationssprint. Beantworte so viele wie möglich — dein Ergebnis wird gespeichert!",
     "letsGo": "Los geht's! 🚀",
+    "startSprint": "60s Sprint starten ⚡",
     "next": "Weiter →",
     "back": "← Zurück"
   },
@@ -94,6 +95,7 @@
     "struggledHint": "Diese erscheinen beim nächsten Sprint häufiger.",
     "masteryTitle": "Lernübersicht",
     "masteryDesc": "Deine gesammelte Lernkarte über alle Sprints.",
+    "nextSprint": "▶ Nächster Sprint",
     "backToLobby": "Zurück zur Lobby"
   },
   "classroom": {

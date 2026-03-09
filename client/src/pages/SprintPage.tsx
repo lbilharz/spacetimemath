@@ -98,6 +98,8 @@ interface Props {
 
 type Feedback = { isCorrect: boolean; points: number; correct: number } | null;
 
+const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
+
 export default function SprintPage({ myIdentityHex, onFinished }: Props) {
   const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
@@ -415,9 +417,10 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
               ref={inputRef}
               className="field"
               type="number"
-              inputMode="numeric"
+              inputMode={isTouchDevice ? 'none' : 'numeric'}
+              readOnly={isTouchDevice}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={e => !isTouchDevice && setInput(e.target.value)}
               placeholder="?"
               style={{
                 width: 140,
@@ -425,8 +428,9 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
                 fontSize: 28,
                 fontWeight: 700,
                 padding: '10px 16px',
+                caretColor: isTouchDevice ? 'transparent' : undefined,
               }}
-              autoFocus
+              autoFocus={!isTouchDevice}
               disabled={timeLeft === 0}
             />
             <button

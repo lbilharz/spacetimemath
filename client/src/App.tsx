@@ -110,7 +110,12 @@ export default function App() {
 
   return (
     <>
-      {myPlayer && !myPlayer.onboardingDone && <OnboardingOverlay />}
+      {myPlayer && !myPlayer.onboardingDone && (
+        <OnboardingOverlay onDone={() => {
+          tierAtSprintStartRef.current = myPlayer.learningTier ?? 0;
+          setPage('sprint');
+        }} />
+      )}
 
       {/* Desktop top nav — hidden on mobile via CSS */}
       {myPlayer && (
@@ -177,6 +182,10 @@ export default function App() {
                 ? myPlayer!.learningTier
                 : undefined
             }
+            onNextSprint={() => {
+              tierAtSprintStartRef.current = myPlayer?.learningTier ?? 0;
+              setPage('sprint');
+            }}
             onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin as Page)}
           />
         )}

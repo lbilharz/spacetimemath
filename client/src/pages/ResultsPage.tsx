@@ -20,10 +20,11 @@ interface Props {
   myIdentityHex: string;
   playerLearningTier?: number;
   newlyUnlockedTier?: number;
+  onNextSprint?: () => void;
   onBack: () => void;
 }
 
-export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTier = 0, newlyUnlockedTier, onBack }: Props) {
+export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTier = 0, newlyUnlockedTier, onNextSprint, onBack }: Props) {
   const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
@@ -171,6 +172,29 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
         )}
       </div>
 
+      {/* Next Sprint CTA */}
+      {onNextSprint && (
+        <button
+          onClick={onNextSprint}
+          style={{
+            width: '100%',
+            padding: '18px 0',
+            background: 'linear-gradient(135deg, #00d4aa 0%, #00b08a 100%)',
+            border: 'none',
+            borderRadius: 14,
+            color: '#0a0a1a',
+            fontSize: 20,
+            fontWeight: 900,
+            cursor: 'pointer',
+            boxShadow: '0 6px 28px rgba(0,212,170,0.4)',
+            letterSpacing: '-0.5px',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          {t('results.nextSprint')}
+        </button>
+      )}
+
       {/* Mastery grid */}
       {myAnswers.length > 0 && (
         <div ref={gridRef} className="card" style={{ width: '100%' }}>
@@ -190,7 +214,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
         </div>
       )}
 
-      <button className="btn btn-primary btn-lg" onClick={onBack} style={{ width: '100%', maxWidth: 320 }}>
+      <button className="btn btn-secondary" onClick={onBack} style={{ width: '100%', maxWidth: 320, fontSize: 14 }}>
         {t('results.backToLobby')}
       </button>
     </div>
