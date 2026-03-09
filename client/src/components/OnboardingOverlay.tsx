@@ -29,6 +29,14 @@ export default function OnboardingOverlay({ onDone }: Props) {
     onDone();
   };
 
+  // "Okay" — mark onboarding complete but stay in the lobby (no sprint started).
+  // The overlay auto-disappears once onboardingDone flips to true in the subscription.
+  const handleOkay = async () => {
+    if (finishing) return;
+    setFinishing(true);
+    await completeOnboarding();
+  };
+
   return (
     <div style={{
       position: 'fixed',
@@ -79,12 +87,59 @@ export default function OnboardingOverlay({ onDone }: Props) {
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: 10, width: '100%', marginTop: 4 }}>
-          {step > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', marginTop: 4 }}>
+          {/* Main row: Back (if applicable) + Next / Start Sprint */}
+          <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+            {step > 0 && (
+              <button
+                onClick={() => setStep(s => s - 1)}
+                style={{
+                  flex: 1,
+                  padding: '10px 0',
+                  background: 'var(--card2)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 8,
+                  color: 'var(--muted)',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                {t('onboarding.back')}
+              </button>
+            )}
             <button
-              onClick={() => setStep(s => s - 1)}
+              onClick={isLast ? handleDone : () => setStep(s => s + 1)}
+              disabled={finishing}
               style={{
-                flex: 1,
+                flex: 2,
+                padding: isLast ? '16px 0' : '11px 0',
+                background: isLast
+                  ? 'linear-gradient(135deg, #00d4aa 0%, #00b08a 100%)'
+                  : 'var(--accent)',
+                border: 'none',
+                borderRadius: 10,
+                color: isLast ? '#0a0a1a' : '#fff',
+                fontSize: isLast ? 18 : 15,
+                fontWeight: 900,
+                cursor: finishing ? 'default' : 'pointer',
+                opacity: finishing ? 0.7 : 1,
+                boxShadow: isLast ? '0 4px 20px rgba(0,212,170,0.4)' : 'none',
+                letterSpacing: isLast ? '-0.3px' : 'normal',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              {isLast ? t('onboarding.startSprint') : t('onboarding.next')}
+            </button>
+          </div>
+
+          {/* Secondary "Okay" — only on the last card */}
+          {isLast && (
+            <button
+              onClick={handleOkay}
+              disabled={finishing}
+              style={{
+                width: '100%',
                 padding: '10px 0',
                 background: 'var(--card2)',
                 border: '1px solid var(--border)',
@@ -92,35 +147,14 @@ export default function OnboardingOverlay({ onDone }: Props) {
                 color: 'var(--muted)',
                 fontSize: 14,
                 fontWeight: 600,
-                cursor: 'pointer',
+                cursor: finishing ? 'default' : 'pointer',
+                opacity: finishing ? 0.7 : 1,
+                WebkitTapHighlightColor: 'transparent',
               }}
             >
-              {t('onboarding.back')}
+              {t('onboarding.okay')}
             </button>
           )}
-          <button
-            onClick={isLast ? handleDone : () => setStep(s => s + 1)}
-            disabled={finishing}
-            style={{
-              flex: 2,
-              padding: isLast ? '16px 0' : '11px 0',
-              background: isLast
-                ? 'linear-gradient(135deg, #00d4aa 0%, #00b08a 100%)'
-                : 'var(--accent)',
-              border: 'none',
-              borderRadius: 10,
-              color: isLast ? '#0a0a1a' : '#fff',
-              fontSize: isLast ? 18 : 15,
-              fontWeight: 900,
-              cursor: finishing ? 'default' : 'pointer',
-              opacity: finishing ? 0.7 : 1,
-              boxShadow: isLast ? '0 4px 20px rgba(0,212,170,0.4)' : 'none',
-              letterSpacing: isLast ? '-0.3px' : 'normal',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            {isLast ? t('onboarding.startSprint') : t('onboarding.next')}
-          </button>
         </div>
       </div>
     </div>
