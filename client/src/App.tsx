@@ -205,7 +205,12 @@ export default function App() {
       )}
 
       <main className={`content-area${showBottomNav ? ' has-bottom-nav' : ''}`}>
-        {page === 'register'  && <RegisterPage onRegistered={() => navigate('lobby')} />}
+        {page === 'register'  && <RegisterPage onRegistered={() => {
+          // Preserve ?join=CODE so LobbyPage can auto-join after new-user registration
+          const search = window.location.search;
+          window.history.pushState(null, '', search ? `/${search}` : '/');
+          setPage('lobby');
+        }} />}
         {page === 'lobby'     && (
           <LobbyPage
             myPlayer={myPlayer}
