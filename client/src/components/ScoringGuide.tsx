@@ -14,9 +14,15 @@ const EXT_ROWS = [11, 12, 15, 20, 25];
 const EXT_COLS = [2, 3, 4, 5, 6, 7, 8, 9];
 const CELL     = 34;
 
-/** Green (easy) → yellow → red (hard), weight range 0.2–2.0 */
+/** Same bonus applied in end_session on the server. */
+function digitBonus(a: number, b: number): number {
+  if (Math.max(a, b) >= 11) return a * b >= 100 ? 1.0 : 0.5;
+  return 0;
+}
+
+/** Green (easy) → yellow → red (hard), weight range 0.2–3.0 */
 function weightBg(w: number): string {
-  const t = Math.min(1, Math.max(0, (w - 0.2) / 1.8));
+  const t = Math.min(1, Math.max(0, (w - 0.2) / 2.8));
   const hue = Math.round(120 - 120 * t);   // 120° green → 0° red
   return `hsl(${hue}, 65%, 32%)`;
 }
@@ -31,20 +37,25 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
   const cal  = (a: number, b: number) => (stat(a, b)?.attemptCount ?? 0) >= 200;
 
   function Cell({ a, b }: { a: number; b: number }) {
-    const wt = w(a, b);
+    const base = w(a, b);
+    const bonus = digitBonus(a, b);
+    const effective = base + bonus;
     const isCalibrated = cal(a, b);
+    const title = bonus > 0
+      ? `${a}×${b}=${a * b}  ${effective.toFixed(2)} pts  (base ${base.toFixed(2)} + ${bonus.toFixed(1)} bonus)${isCalibrated ? '  ✓ calibrated' : ''}`
+      : `${a}×${b}=${a * b}  ${effective.toFixed(2)} pts${isCalibrated ? '  ✓ calibrated' : ''}`;
     return (
       <td
-        title={`${a}×${b}=${a * b}  ${wt.toFixed(2)} pts${isCalibrated ? '  ✓ calibrated' : ''}`}
+        title={title}
         style={{
           width: CELL, height: CELL, textAlign: 'center',
-          background: weightBg(wt), color: '#fff',
+          background: weightBg(effective), color: '#fff',
           borderRadius: 4, fontWeight: 700, cursor: 'default',
           fontSize: 11, lineHeight: `${CELL}px`,
           outline: isCalibrated ? '1.5px solid rgba(255,255,255,0.35)' : 'none',
         }}
       >
-        {wt.toFixed(1)}
+        {effective.toFixed(1)}
       </td>
     );
   }
