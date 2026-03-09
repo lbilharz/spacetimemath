@@ -1,20 +1,22 @@
 # Makefile for spacetimemath
 # Usage:
-#   make publish         – publish server to maincloud (non-interactive, auto-confirms)
-#   make generate        – regenerate TypeScript bindings from server/src/lib.rs
-#   make call REDUCER=x  – call a reducer, e.g. make call REDUCER=migrate_seed_best_scores
+#   make publish         – build WASM + publish to maincloud (non-interactive)
+#   make generate        – regenerate TypeScript bindings from server source
+#   make call REDUCER=x  – call a reducer on maincloud
 #   make deploy          – publish + generate in one step
 
-SPACETIME := /Users/lbi/.local/bin/spacetime
-CARGO_ENV  := source $$HOME/.cargo/env
+SPACETIME  := /Users/lbi/.local/bin/spacetime
+CARGO      := /Users/lbi/.cargo/bin/cargo
+WASM_BIN   := server/target/wasm32-unknown-unknown/release/spacetimemath.wasm
 
-# Confirm and publish the server module to maincloud
+# Build WASM then publish to maincloud non-interactively
 publish:
-	zsh -c '$(CARGO_ENV) && printf "y\n" | $(SPACETIME) publish spacetimemath --server maincloud'
+	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
+	$(SPACETIME) publish spacetimemath --server maincloud --bin-path $(WASM_BIN) -y
 
 # Regenerate TypeScript module bindings from the server source
 generate:
-	zsh -c '$(CARGO_ENV) && $(SPACETIME) generate --lang typescript --out-dir client/src/module_bindings --module-path server'
+	zsh -c 'source $$HOME/.cargo/env && $(SPACETIME) generate --lang typescript --out-dir client/src/module_bindings --module-path server'
 
 # Call a reducer: make call REDUCER=migrate_seed_best_scores
 call:
