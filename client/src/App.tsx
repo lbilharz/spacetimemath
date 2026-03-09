@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSpacetimeDB, useTable } from 'spacetimedb/react';
-import { tables } from './module_bindings/index.js';
+import { useSpacetimeDB, useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { tables, reducers } from './module_bindings/index.js';
+import { capturedToken } from './auth.js';
 import RegisterPage from './pages/RegisterPage.js';
 import LobbyPage from './pages/LobbyPage.js';
 import ProgressPage from './pages/ProgressPage.js';
@@ -40,6 +41,8 @@ export default function App() {
   const { identity, isActive, connectionError } = useSpacetimeDB();
   const [players] = useTable(tables.players);
   const [classroomMembers] = useTable(tables.classroom_members);
+  const [recoveryKeys] = useTable(tables.recovery_keys);
+  const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
@@ -54,6 +57,16 @@ export default function App() {
     : undefined;
 
   useEffect(() => { myPlayerRef.current = myPlayer; }, [myPlayer]);
+
+  // Silently generate a recovery key for any existing user who doesn't have one yet.
+  // New registrations already do this in RegisterPage; this catches everyone else.
+  useEffect(() => {
+    if (!myPlayer || !capturedToken) return;
+    const hasKey = (recoveryKeys as any[]).some(
+      (k: any) => k.owner.toHexString() === myIdentityHex
+    );
+    if (!hasKey) createRecoveryKey({ token: capturedToken });
+  }, [myPlayer?.identity, recoveryKeys]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const inClassroom = classroomId !== null && myIdentityHex
     ? (classroomMembers as any[]).some(
