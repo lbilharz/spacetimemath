@@ -27,6 +27,8 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   const [joinCode, setJoinCode] = useState('');
   const [classError, setClassError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  // Pending auto-join code from ?join=CODE URL param; cleared once we navigate
+  const [pendingJoinCode, setPendingJoinCode] = useState<string | null>(null);
 
   const startSession = useSTDBReducer(reducers.startSession);
   const createClassroom = useSTDBReducer(reducers.createClassroom);
@@ -40,21 +42,29 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     .map((m: any) => (classrooms as any[]).find(c => c.id === m.classroomId))
     .filter(Boolean);
 
-  // Auto-join from ?join=CODE URL param (QR code scan)
+  // Auto-join from ?join=CODE URL param (QR code scan).
+  // Step 1: detect the code and fire the reducer.
   useEffect(() => {
     if (!myPlayer) return;
     const params = new URLSearchParams(window.location.search);
     const code = params.get('join');
     if (!code) return;
-    window.history.replaceState({}, '', '/');
+    window.history.replaceState({}, '', '/');   // clean the URL immediately
     const upperCode = code.trim().toUpperCase();
-    joinClassroom({ code: upperCode })
-      .then(() => {
-        const classroom = (classrooms as any[]).find(c => c.code === upperCode);
-        if (classroom) onEnterClassroom(classroom.id);
-      })
-      .catch(() => {/* ignore */});
-  }, [myPlayer?.identity]);
+    setPendingJoinCode(upperCode);
+    joinClassroom({ code: upperCode }).catch(() => setPendingJoinCode(null));
+  }, [myPlayer?.identity]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Step 2: navigate once the classrooms subscription delivers the joined classroom.
+  // (classrooms may be empty when Step 1 fires — SpacetimeDB subscription catches up asynchronously)
+  useEffect(() => {
+    if (!pendingJoinCode) return;
+    const classroom = (classrooms as any[]).find(c => c.code === pendingJoinCode);
+    if (classroom) {
+      setPendingJoinCode(null);
+      onEnterClassroom(classroom.id);
+    }
+  }, [pendingJoinCode, classrooms]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStart = async () => {
     setStarting(true);
