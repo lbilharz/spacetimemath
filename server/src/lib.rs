@@ -325,18 +325,24 @@ fn check_and_unlock(ctx: &ReducerContext, sender: Identity) {
     let mut mastered = 0u32;
     for a in 2u8..=9 {
         for b in 2u8..=9 {
-            let pair: Vec<_> = my_answers.iter()
+            let mut pair: Vec<_> = my_answers.iter()
                 .filter(|ans| ans.a == a && ans.b == b)
                 .collect();
             if pair.is_empty() { continue; }
+            // Sort by id (auto_inc) so rev() reliably yields most-recent first
+            pair.sort_by_key(|ans| ans.id);
             let recent: Vec<_> = pair.iter().rev().take(10).collect();
             let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
                 / recent.len() as f32;
             if acc >= 0.8 { mastered += 1; }
         }
     }
-    // Require 30 of 64 core pairs mastered (≈47%); achievable in 7-10 high-accuracy sessions
-    if mastered >= 30 {
+    // Require 20 of 64 core pairs mastered AND a real score (proves timed competence)
+    let player = match ctx.db.players().identity().find(sender) {
+        Some(p) => p,
+        None => return,
+    };
+    if mastered >= 20 && player.best_score >= 12.0 {
         ctx.db.unlock_logs().insert(UnlockLog {
             id: 0,
             player_identity: sender,
