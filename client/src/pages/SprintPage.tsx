@@ -3,6 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import { getRechenweg } from '../utils/rechenwege.js';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+
+// Haptics fire-and-forget — silently no-ops on web
+const hapticTap  = () => Haptics.impact({ style: ImpactStyle.Light  }).catch(() => {});
+const hapticOk   = () => Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {});
+const hapticGood = () => Haptics.notification({ type: NotificationType.Success }).catch(() => {});
+const hapticBad  = () => Haptics.notification({ type: NotificationType.Error   }).catch(() => {});
 
 // Types inferred from module_bindings
 type ProblemStat = {
@@ -203,6 +210,7 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
     }
 
     const fb = { isCorrect, points: pts, correct: correct_answer };
+    isCorrect ? hapticGood() : hapticBad();
     setFeedback(fb);
     setInput('');
 
@@ -406,10 +414,13 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
               disabled={timeLeft === 0 || !!feedback}
               onClick={() => {
                 if (isBack) {
+                  hapticTap();
                   setInput(i => i.slice(0, -1));
                 } else if (isOk) {
+                  hapticOk();
                   doSubmit();
                 } else {
+                  hapticTap();
                   setInput(i => i.length < 3 ? i + String(key) : i);
                 }
               }}
