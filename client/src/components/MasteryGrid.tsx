@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getRechenweg } from '../utils/rechenwege.js';
 
-type Answer = { a: number; b: number; isCorrect: boolean; sessionId: bigint; };
+type Answer = { id: bigint; a: number; b: number; isCorrect: boolean; sessionId: bigint; userAnswer?: number; responseMs?: number; };
 type ProblemStat = { problemKey: number; a: number; b: number; difficultyWeight: number; };
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
   highlightSession?: bigint;
   sessionAnswers?: Answer[];
   tier1Unlocked?: boolean;
+  focusCell?: { a: number; b: number } | null;
 }
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -42,9 +43,13 @@ const MASTERY_BG: Record<Mastery, string> = {
 const TIER1_A = [11, 12, 15, 20, 25];
 const TIER1_B = [2, 3, 4, 5, 6, 7, 8, 9];
 
-export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [], tier1Unlocked = false }: Props) {
+export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell }: Props) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
+
+  useEffect(() => {
+    if (focusCell) setSelected(focusCell);
+  }, [focusCell?.a, focusCell?.b]);
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
   const cells: React.ReactNode[] = [];
@@ -149,6 +154,49 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
               </div>
             ))}
           </div>
+
+          {/* Answer history */}
+          {(() => {
+            const pair = answers
+              .filter(ans => ans.a === selected!.a && ans.b === selected!.b)
+              .sort((x, y) => (x.id < y.id ? -1 : 1));
+            if (pair.length === 0) return null;
+            const recent = pair.slice(-10);
+            const correct = recent.filter(x => x.isCorrect).length;
+            return (
+              <div style={{ marginTop: 10, borderTop: '1px solid var(--border)', paddingTop: 8 }}>
+                <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6, fontWeight: 600 }}>
+                  {correct}/{recent.length} correct (last {recent.length} of {pair.length})
+                </div>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {recent.map((ans, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 4,
+                        background: ans.isCorrect ? 'rgba(0,212,170,0.15)' : 'rgba(255,68,85,0.15)',
+                        border: `1px solid ${ans.isCorrect ? '#00d4aa' : '#ff4455'}`,
+                        color: ans.isCorrect ? '#00d4aa' : '#ff4455',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, fontWeight: 700,
+                      }}>
+                        {ans.isCorrect ? '✓' : '✗'}
+                      </div>
+                      {!ans.isCorrect && ans.userAnswer !== undefined && (
+                        <div style={{ fontSize: 9, color: '#ff4455', fontWeight: 700 }}>
+                          {ans.userAnswer}
+                        </div>
+                      )}
+                      {ans.responseMs !== undefined && (
+                        <div style={{ fontSize: 9, color: 'var(--muted)' }}>
+                          {(ans.responseMs / 1000).toFixed(1)}s
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
 

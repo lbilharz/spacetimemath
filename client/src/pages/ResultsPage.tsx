@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
@@ -61,6 +61,8 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
     .slice(0, 3);
 
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const [gridFocus, setGridFocus] = useState<{ a: number; b: number } | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const isComplete = session?.isComplete ?? false;
 
   return (
@@ -120,7 +122,11 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
                     return (
                       <div key={p.key}>
                         <button
-                          onClick={() => setExpandedKey(isOpen ? null : p.key)}
+                          onClick={() => {
+                            setExpandedKey(isOpen ? null : p.key);
+                            setGridFocus({ a: p.a, b: p.b });
+                            setTimeout(() => gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                          }}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 10,
                             background: 'none', border: 'none', cursor: 'pointer',
@@ -174,7 +180,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
 
       {/* Mastery grid */}
       {myAnswers.length > 0 && (
-        <div className="card" style={{ width: '100%' }}>
+        <div ref={gridRef} className="card" style={{ width: '100%' }}>
           <h2 style={{ marginBottom: 4 }}>{t('results.masteryTitle')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
             {t('results.masteryDesc')}
@@ -185,6 +191,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
             highlightSession={sessionId}
             sessionAnswers={sessionAnswers}
             tier1Unlocked={tier1Unlocked}
+            focusCell={gridFocus}
           />
         </div>
       )}
