@@ -58,7 +58,7 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
   );
 
   return (
-    <div className="card">
+    <div id="scoring-guide" className="card">
       <button
         onClick={() => setOpen(o => !o)}
         style={{

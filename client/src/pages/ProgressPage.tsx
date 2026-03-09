@@ -27,7 +27,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
   return (
     <div className="page">
       {/* Tier status card */}
-      <div className="card" style={{
+      <div id="tier-status" className="card" style={{
         border: `1px solid ${isMaxTier ? 'var(--accent)' : 'var(--border)'}`,
         display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px',
       }}>
@@ -55,7 +55,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
         </div>
       </div>
 
-      <div className="card">
+      <div id="mastery" className="card">
         <h2 style={{ marginBottom: 4 }}>{t('lobby.masteryTitle')}</h2>
         <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
           {t('lobby.masteryDesc')}
@@ -73,11 +73,13 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
         playerLearningTier={playerLearningTier}
       />
 
-      <SprintHistory
-        sessions={sessions as any[]}
-        answers={answers as any[]}
-        myIdentityHex={myIdentityHex}
-      />
+      <div id="history">
+        <SprintHistory
+          sessions={sessions as any[]}
+          answers={answers as any[]}
+          myIdentityHex={myIdentityHex}
+        />
+      </div>
     </div>
   );
 }

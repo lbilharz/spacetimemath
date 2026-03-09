@@ -96,7 +96,9 @@
     "masteryTitle": "Lernübersicht",
     "masteryDesc": "Deine gesammelte Lernkarte über alle Sprints.",
     "nextSprint": "▶ Nächster Sprint",
-    "backToLobby": "Zurück zur Lobby"
+    "backToLobby": "Zurück zur Lobby",
+    "scoringExplained": "Wie wird gewertet?",
+    "viewProgress": "Fortschritt ansehen"
   },
   "classroom": {
     "notFound": "Klasse nicht gefunden",
@@ -107,7 +109,8 @@
     "starting": "Startet…",
     "startSprint": "▶ Sprint starten",
     "joinCode": "Beitrittscode",
-    "copyLink": "⎘ Link kopieren",
+    "copyLink": "⎘ Beitrittslink kopieren",
+    "copyCodeHint": "tippen zum Kopieren",
     "joinHint": "Schüler scannen den QR-Code oder geben den Code in der Lobby ein.",
     "membersHeading": "Mitglieder",
     "showStats": "👁 Statistik zeigen",

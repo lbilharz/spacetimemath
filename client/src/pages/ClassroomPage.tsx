@@ -26,6 +26,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const toggleVisibility = useSTDBReducer(reducers.toggleClassroomVisibility);
 
   const [codeCopied, setCodeCopied] = useState(false);
+  const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [starting, setStarting] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
@@ -94,10 +95,16 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     onLeave();
   };
 
-  const handleCopyCode = () => {
+  const handleCopyLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/?join=${myClassroom.code}`);
     setCodeCopied(true);
     setTimeout(() => setCodeCopied(false), 2000);
+  };
+
+  const handleCopyCodeText = () => {
+    navigator.clipboard.writeText(myClassroom.code);
+    setCodeTextCopied(true);
+    setTimeout(() => setCodeTextCopied(false), 2000);
   };
 
   const medals = ['🥇', '🥈', '🥉'];
@@ -127,17 +134,23 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.joinCode')}</h2>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
           <div>
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: 36,
-              fontWeight: 800,
-              letterSpacing: 10,
-              color: 'var(--accent)',
-              marginBottom: 8,
-            }}>
+            {/* Tap the code itself to copy just the 6-char code */}
+            <button
+              onClick={handleCopyCodeText}
+              title={t('classroom.copyCodeHint')}
+              style={{
+                fontFamily: 'monospace', fontSize: 36, fontWeight: 800,
+                letterSpacing: 10, color: 'var(--accent)', marginBottom: 4,
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                display: 'block', WebkitTapHighlightColor: 'transparent',
+              }}
+            >
               {myClassroom.code}
-            </div>
-            <button className="btn btn-secondary" onClick={handleCopyCode} style={{ fontSize: 13 }}>
+            </button>
+            <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 10px' }}>
+              {codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}
+            </p>
+            <button className="btn btn-secondary" onClick={handleCopyLink} style={{ fontSize: 13 }}>
               {codeCopied ? t('common.copied') : t('classroom.copyLink')}
             </button>
             <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8, maxWidth: 220 }}>

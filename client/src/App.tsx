@@ -17,6 +17,24 @@ export type Page = 'register' | 'lobby' | 'progress' | 'sprint' | 'results' | 'a
 
 const TABBED_PAGES: Page[] = ['lobby', 'progress', 'account'];
 
+/** Pathname → Page (only stable, deep-linkable pages) */
+const PATH_MAP: Record<string, Page> = {
+  '/': 'lobby',
+  '/progress': 'progress',
+  '/account': 'account',
+  '/classroom': 'classroom',
+};
+
+/** Page → canonical pathname */
+const PAGE_PATH: Partial<Record<Page, string>> = {
+  lobby:     '/',
+  progress:  '/progress',
+  account:   '/account',
+  classroom: '/classroom',
+  sprint:    '/sprint',
+  results:   '/results',
+};
+
 export default function App() {
   const { t } = useTranslation();
   const { identity, isActive, connectionError } = useSpacetimeDB();
@@ -25,81 +43,126 @@ export default function App() {
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
-  // Track where to return after sprint/results
   const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
-  // Capture learning tier at the moment a sprint starts so we can detect unlocks on ResultsPage
   const tierAtSprintStartRef = useRef<number>(0);
+  // Ref so event handlers can read current player without stale closure
+  const myPlayerRef = useRef<{ learningTier?: number } | undefined>(undefined);
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
-  // Check if still in the specific classroom (for post-sprint routing)
+  useEffect(() => { myPlayerRef.current = myPlayer; }, [myPlayer]);
+
   const inClassroom = classroomId !== null && myIdentityHex
     ? (classroomMembers as any[]).some(
         m => m.playerIdentity.toHexString() === myIdentityHex && m.classroomId === classroomId
       )
     : false;
 
-  // Auto-navigate to lobby if already registered
+  // ── Navigation ──────────────────────────────────────────────────────────────
+
+  const navigate = (newPage: Page, hash?: string) => {
+    const path = PAGE_PATH[newPage] ?? '/';
+    window.history.pushState(null, '', hash ? `${path}#${hash}` : path);
+    setPage(newPage);
+  };
+
+  // After each page transition: scroll to hash or reset to top
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const t = setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+      return () => clearTimeout(t);
+    } else {
+      window.scrollTo({ top: 0 });
+    }
+  }, [page]);
+
+  // Global SPA link interceptor — <a href="/progress#scoring-guide"> works anywhere
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest('a[href]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute('href') ?? '';
+      if (!href.startsWith('/') && !href.startsWith('#')) return;
+      e.preventDefault();
+      const [rawPath, rawHash] = href.split('#');
+      const path = rawPath || window.location.pathname;
+      const targetPage = PATH_MAP[path] ?? 'lobby';
+      if (!myPlayerRef.current && targetPage !== 'register') return;
+      navigate(targetPage, rawHash || undefined);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Browser back / forward
+  useEffect(() => {
+    const handlePop = () => {
+      const path = window.location.pathname;
+      const target = PATH_MAP[path] ?? 'lobby';
+      const safe: Page = TABBED_PAGES.includes(target) ? target : 'lobby';
+      setPage(myPlayerRef.current ? safe : 'register');
+      const hash = window.location.hash.slice(1);
+      if (hash) setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
+  // Auto-navigate to URL-indicated page after login
   useEffect(() => {
     if (myPlayer && page === 'register') {
-      setPage('lobby');
+      const fromUrl = PATH_MAP[window.location.pathname];
+      const target: Page = (fromUrl && TABBED_PAGES.includes(fromUrl)) ? fromUrl : 'lobby';
+      navigate(target);
     }
-  }, [myPlayer?.identity, page]);
+  }, [myPlayer?.identity, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Reconnect after backgrounding: if the WS is still dead 3s after coming back, reload.
+  // ── Reconnect guard ─────────────────────────────────────────────────────────
   const isActiveRef = useRef(isActive);
   useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        timer = setTimeout(() => {
-          if (!isActiveRef.current) window.location.reload();
-        }, 3000);
+        timer = setTimeout(() => { if (!isActiveRef.current) window.location.reload(); }, 3000);
       } else {
         clearTimeout(timer);
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibility);
-      clearTimeout(timer);
-    };
+    return () => { document.removeEventListener('visibilitychange', handleVisibility); clearTimeout(timer); };
   }, []);
 
+  // ── Sprint helpers ──────────────────────────────────────────────────────────
   const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
     tierAtSprintStartRef.current = myPlayer?.learningTier ?? 0;
     setSessionId(id);
     setSprintOrigin(origin);
-    setPage('sprint');
+    navigate('sprint');
   };
 
   const goToClassroom = (id: bigint) => {
     setClassroomId(id);
-    setPage('classroom');
+    navigate('classroom');
   };
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   if (connectionError) {
     return (
       <div className="loading" style={{ flexDirection: 'column', gap: 8 }}>
         <span style={{ fontSize: 24 }}>⚠️</span>
         <span>{t('app.connectionError')}</span>
-        <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-          {t('app.connectionErrorHint')}
-        </span>
+        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{t('app.connectionErrorHint')}</span>
       </div>
     );
   }
 
   if (!isActive) {
-    return (
-      <div className="loading">
-        <span>{t('app.connecting')}</span>
-      </div>
-    );
+    return <div className="loading"><span>{t('app.connecting')}</span></div>;
   }
 
   const showBottomNav = TABBED_PAGES.includes(page) && !!myPlayer;
@@ -113,24 +176,18 @@ export default function App() {
       {myPlayer && !myPlayer.onboardingDone && (
         <OnboardingOverlay onDone={() => {
           tierAtSprintStartRef.current = myPlayer.learningTier ?? 0;
-          setPage('sprint');
+          navigate('sprint');
         }} />
       )}
 
-      {/* Desktop top nav — hidden on mobile via CSS */}
       {myPlayer && (
-        <TopBar
-          myPlayer={myPlayer}
-          active={page}
-          onNavigate={(tab) => setPage(tab)}
-        />
+        <TopBar myPlayer={myPlayer} active={page} onNavigate={(tab) => navigate(tab)} />
       )}
 
-      {/* Slim back strip for focused pages (classroom, results) */}
       {backTarget && (
         <div className="pageback">
           <button
-            onClick={() => setPage(backTarget)}
+            onClick={() => navigate(backTarget)}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               color: 'var(--muted)', fontSize: 14, padding: 0,
@@ -143,7 +200,7 @@ export default function App() {
       )}
 
       <main className={`content-area${showBottomNav ? ' has-bottom-nav' : ''}`}>
-        {page === 'register'  && <RegisterPage onRegistered={() => setPage('lobby')} />}
+        {page === 'register'  && <RegisterPage onRegistered={() => navigate('lobby')} />}
         {page === 'lobby'     && (
           <LobbyPage
             myPlayer={myPlayer}
@@ -163,13 +220,13 @@ export default function App() {
             myIdentityHex={myIdentityHex!}
             classroomId={classroomId!}
             onStartSprint={(id) => goToSprint(id, 'classroom')}
-            onLeave={() => setPage('lobby')}
+            onLeave={() => navigate('lobby')}
           />
         )}
         {page === 'sprint'    && (
           <SprintPage
             myIdentityHex={myIdentityHex!}
-            onFinished={(id) => { setSessionId(id); setPage('results'); }}
+            onFinished={(id) => { setSessionId(id); navigate('results'); }}
           />
         )}
         {page === 'results'   && (
@@ -184,9 +241,9 @@ export default function App() {
             }
             onNextSprint={() => {
               tierAtSprintStartRef.current = myPlayer?.learningTier ?? 0;
-              setPage('sprint');
+              navigate('sprint');
             }}
-            onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin as Page)}
+            onBack={() => navigate(inClassroom ? 'classroom' : sprintOrigin as Page)}
           />
         )}
         {page === 'account'   && (
@@ -194,12 +251,12 @@ export default function App() {
             myPlayer={myPlayer!}
             myIdentityHex={myIdentityHex!}
             onEnterClassroom={goToClassroom}
-            onBack={() => setPage('lobby')}
+            onBack={() => navigate('lobby')}
           />
         )}
       </main>
 
-      {showBottomNav && <BottomNav active={page} onNavigate={(tab) => setPage(tab)} />}
+      {showBottomNav && <BottomNav active={page} onNavigate={(tab) => navigate(tab)} />}
     </>
   );
 }

@@ -69,9 +69,12 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
           <h2 style={{ color: 'var(--accent)', margin: '8px 0 4px' }}>
             {t(`tiers.unlocked${newlyUnlockedTier}` as any)}
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 10px' }}>
             {t(`tiers.unlockedDesc${newlyUnlockedTier}` as any)}
           </p>
+          <a href="/progress#tier-status" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
+            {t('results.viewProgress')} →
+          </a>
         </div>
       )}
 
@@ -91,6 +94,12 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
               {session!.weightedScore.toFixed(1)}
             </div>
             <p style={{ color: 'var(--muted)', fontSize: 14 }}>{t('results.weightedScore')}</p>
+            <a
+              href="/progress#scoring-guide"
+              style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none', marginTop: 2, display: 'inline-block' }}
+            >
+              {t('results.scoringExplained')} →
+            </a>
 
             <div style={{
               display: 'grid',

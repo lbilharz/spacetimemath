@@ -96,7 +96,9 @@
     "masteryTitle": "Mastery Grid",
     "masteryDesc": "Your cumulative knowledge map across all sessions.",
     "nextSprint": "▶ Next Sprint",
-    "backToLobby": "Back to Lobby"
+    "backToLobby": "Back to Lobby",
+    "scoringExplained": "How is this scored?",
+    "viewProgress": "View your progress"
   },
   "classroom": {
     "notFound": "Classroom not found",
@@ -107,7 +109,8 @@
     "starting": "Starting…",
     "startSprint": "▶ Start Sprint",
     "joinCode": "Join code",
-    "copyLink": "⎘ Copy link",
+    "copyLink": "⎘ Copy join link",
+    "copyCodeHint": "tap to copy code",
     "joinHint": "Students scan the QR code or type the code in the lobby.",
     "membersHeading": "Members",
     "showStats": "👁 Show my stats",

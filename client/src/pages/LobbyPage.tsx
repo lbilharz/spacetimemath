@@ -108,6 +108,14 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
             <p style={{ color: 'var(--muted)', fontSize: 14 }}>
               {t('lobby.bestScore')} <b style={{ color: 'var(--warn)' }}>{myPlayer.bestScore.toFixed(1)}</b>
               {' · '}{t('lobby.sessions', { count: myPlayer.totalSessions })}
+              {' · '}
+              <a
+                href="/progress#tier-status"
+                style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}
+              >
+                {['🌱','🔨','⚡','🏆'][Math.min((myPlayer as any).learningTier ?? 0, 3)]}
+                {' '}Tier {(myPlayer as any).learningTier ?? 0}
+              </a>
             </p>
           )}
         </div>
