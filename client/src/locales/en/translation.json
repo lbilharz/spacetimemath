@@ -201,6 +201,13 @@
     "progress": "Progress",
     "account": "Account"
   },
+  "scoring": {
+    "title": "Scoring Guide",
+    "howTitle": "Points per correct answer = difficulty weight",
+    "howBody": "Weights start from research estimates and auto-calibrate after 20+ community answers:",
+    "calibNote": "Bootstrap values inspired by Ashcraft & Christy (1995) error-rate rankings.",
+    "calibLegend": "Bright border = weight calibrated by 20+ community answers."
+  },
   "history": {
     "title": "📋 Sprint History",
     "noAnswers": "No answers recorded."

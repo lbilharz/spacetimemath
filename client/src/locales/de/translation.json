@@ -201,6 +201,13 @@
     "progress": "Fortschritt",
     "account": "Konto"
   },
+  "scoring": {
+    "title": "Punktesystem",
+    "howTitle": "Punkte pro richtige Antwort = Schwierigkeitsgewicht",
+    "howBody": "Gewichte basieren auf Forschungsschätzungen und kalibrieren sich nach 20+ Gemeinschaftsantworten:",
+    "calibNote": "Startwerte angelehnt an Ashcraft & Christy (1995) Fehlerquoten-Rankings.",
+    "calibLegend": "Heller Rahmen = Gewicht durch 20+ Gemeinschaftsantworten kalibriert."
+  },
   "history": {
     "title": "📋 Sprint-Verlauf",
     "noAnswers": "Keine Antworten aufgezeichnet."

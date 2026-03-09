@@ -237,6 +237,9 @@ fn bootstrap_weight(a: u8, b: u8, category: u8) -> f32 {
     if a == b && a <= 5 { return 0.5; }
     if min_ab == 2 { return 0.45; }
     if min_ab == 5 { return 0.6; }
+    // 3×5, 4×5, 5×4, 3×6 etc. that slipped through – keep them accessible
+    if max_ab <= 5 { return 0.6; }      // 4×5 = 0.6  (not 0.8)
+    if min_ab == 3 { return 0.7; }      // 3×6, 3×7, 3×9 = 0.7
     0.8
 }
 

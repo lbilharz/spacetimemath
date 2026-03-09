@@ -3,6 +3,7 @@ import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import SprintHistory from '../components/SprintHistory.js';
+import ScoringGuide from '../components/ScoringGuide.js';
 
 interface Props {
   myIdentityHex: string;
@@ -66,6 +67,11 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
           playerLearningTier={playerLearningTier}
         />
       </div>
+
+      <ScoringGuide
+        problemStats={problemStats as any[]}
+        playerLearningTier={playerLearningTier}
+      />
 
       <SprintHistory
         sessions={sessions as any[]}
