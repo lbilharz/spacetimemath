@@ -193,6 +193,11 @@
     "twenty": "Double, then ×10",
     "twentyfive": "÷4 of ×100"
   },
+  "nav": {
+    "home": "Home",
+    "progress": "Progress",
+    "account": "Account"
+  },
   "history": {
     "title": "📋 Sprint History",
     "noAnswers": "No answers recorded."

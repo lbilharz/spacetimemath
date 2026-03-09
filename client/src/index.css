@@ -22,25 +22,25 @@ html, body, #root {
   -webkit-font-smoothing: antialiased;
 }
 
+body {
+  /* push content below status bar / Dynamic Island */
+  padding-top: env(safe-area-inset-top);
+}
+
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Persistent top bar */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-  height: 52px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
+/* Thin back-navigation strip (classroom, results) */
+.pageback {
+  height: 44px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 16px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
@@ -52,6 +52,25 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   padding: 28px 16px 48px;
+}
+
+/* Extra bottom padding when the bottom nav is visible */
+.content-area.has-bottom-nav {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom) + 20px);
+}
+
+/* Persistent bottom tab bar */
+.bottomnav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .page { width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 20px; }

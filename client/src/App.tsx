@@ -4,14 +4,17 @@ import { useSpacetimeDB, useTable } from 'spacetimedb/react';
 import { tables } from './module_bindings/index.js';
 import RegisterPage from './pages/RegisterPage.js';
 import LobbyPage from './pages/LobbyPage.js';
+import ProgressPage from './pages/ProgressPage.js';
 import SprintPage from './pages/SprintPage.js';
 import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
 import ClassroomPage from './pages/ClassroomPage.js';
-import TopBar from './components/TopBar.js';
+import BottomNav from './components/BottomNav.js';
 import OnboardingOverlay from './components/OnboardingOverlay.js';
 
-export type Page = 'register' | 'lobby' | 'sprint' | 'results' | 'account' | 'classroom';
+export type Page = 'register' | 'lobby' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom';
+
+const TABBED_PAGES: Page[] = ['lobby', 'progress', 'account'];
 
 export default function App() {
   const { t } = useTranslation();
@@ -95,33 +98,35 @@ export default function App() {
     );
   }
 
-  const showTopBar = page !== 'register' && page !== 'sprint' && myPlayer;
-  const topBarBack = page === 'classroom' || page === 'results'
-    ? () => setPage(page === 'results' ? (inClassroom ? 'classroom' : sprintOrigin) : 'lobby')
-    : page === 'account'
-    ? () => setPage('lobby')
-    : undefined;
-  const topBarBackLabel = page === 'classroom' ? t('common.lobby')
-    : page === 'results' ? t('common.back')
-    : page === 'account' ? t('common.lobby')
-    : undefined;
+  const showBottomNav = TABBED_PAGES.includes(page) && !!myPlayer;
+  const backTarget: Page | null =
+    page === 'classroom' ? 'lobby'
+    : page === 'results'  ? (inClassroom ? 'classroom' : sprintOrigin as Page)
+    : null;
 
   return (
     <>
       {myPlayer && !myPlayer.onboardingDone && <OnboardingOverlay />}
-      {showTopBar && (
-        <TopBar
-          myPlayer={myPlayer}
-          onAccount={() => setPage('account')}
-          onBack={topBarBack}
-          backLabel={topBarBackLabel}
-        />
+
+      {/* Slim back strip for focused pages (classroom, results) */}
+      {backTarget && (
+        <div className="pageback">
+          <button
+            onClick={() => setPage(backTarget)}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--muted)', fontSize: 14, padding: 0,
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            ← {page === 'classroom' ? t('common.lobby') : t('common.back')}
+          </button>
+        </div>
       )}
-      <main className="content-area">
-        {page === 'register' && (
-          <RegisterPage onRegistered={() => setPage('lobby')} />
-        )}
-        {page === 'lobby' && (
+
+      <main className={`content-area${showBottomNav ? ' has-bottom-nav' : ''}`}>
+        {page === 'register'  && <RegisterPage onRegistered={() => setPage('lobby')} />}
+        {page === 'lobby'     && (
           <LobbyPage
             myPlayer={myPlayer}
             myIdentityHex={myIdentityHex}
@@ -129,6 +134,7 @@ export default function App() {
             onEnterClassroom={goToClassroom}
           />
         )}
+        {page === 'progress'  && myIdentityHex && <ProgressPage myIdentityHex={myIdentityHex} />}
         {page === 'classroom' && (
           <ClassroomPage
             myIdentityHex={myIdentityHex!}
@@ -137,20 +143,20 @@ export default function App() {
             onLeave={() => setPage('lobby')}
           />
         )}
-        {page === 'sprint' && (
+        {page === 'sprint'    && (
           <SprintPage
             myIdentityHex={myIdentityHex!}
             onFinished={(id) => { setSessionId(id); setPage('results'); }}
           />
         )}
-        {page === 'results' && (
+        {page === 'results'   && (
           <ResultsPage
             sessionId={sessionId!}
             myIdentityHex={myIdentityHex!}
-            onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin)}
+            onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin as Page)}
           />
         )}
-        {page === 'account' && (
+        {page === 'account'   && (
           <AccountPage
             myPlayer={myPlayer!}
             myIdentityHex={myIdentityHex!}
@@ -159,6 +165,8 @@ export default function App() {
           />
         )}
       </main>
+
+      {showBottomNav && <BottomNav active={page} onNavigate={(tab) => setPage(tab)} />}
     </>
   );
 }

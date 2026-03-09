@@ -193,6 +193,11 @@
     "twenty": "Verdoppeln, dann ×10",
     "twentyfive": "÷4 von ×100"
   },
+  "nav": {
+    "home": "Home",
+    "progress": "Fortschritt",
+    "account": "Konto"
+  },
   "history": {
     "title": "📋 Sprint-Verlauf",
     "noAnswers": "Keine Antworten aufgezeichnet."
