@@ -55,14 +55,18 @@ cd ../client && npm install && npm run dev
 
 ## Publishing to maincloud
 
+Use the Makefile from the repo root:
+
 ```bash
-cd server
-~/.cargo/bin/cargo build --target wasm32-unknown-unknown --release
-~/.local/bin/spacetime publish spacetimemath --server maincloud \
-  --bin-path target/wasm32-unknown-unknown/release/spacetimemath.wasm -y
+make publish    # build WASM + publish to maincloud (non-interactive)
+make generate   # regenerate client/src/module_bindings from server source
+make deploy     # publish + generate in one step
+make call REDUCER=migrate_seed_best_scores   # call any reducer
 ```
 
 Schema changes (adding columns) require `--break-clients` — disconnects all clients until they reload.
+
+> **Why not just `spacetime publish` directly?** The CLI invokes cargo internally but won't find it unless `~/.cargo/bin` is in PATH — which it isn't in non-login shells. The Makefile uses absolute paths for both binaries to avoid this.
 
 ## Project structure
 
