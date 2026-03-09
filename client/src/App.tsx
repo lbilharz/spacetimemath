@@ -112,12 +112,17 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePop);
   }, []);
 
-  // Auto-navigate to URL-indicated page after login
+  // Auto-navigate to URL-indicated page after login.
+  // NOTE: we cannot call navigate() here because it strips query params like ?join=CODE.
+  // Instead we push the URL manually, preserving search params so LobbyPage can auto-join.
   useEffect(() => {
     if (myPlayer && page === 'register') {
       const fromUrl = PATH_MAP[window.location.pathname];
       const target: Page = (fromUrl && TABBED_PAGES.includes(fromUrl)) ? fromUrl : 'lobby';
-      navigate(target);
+      const path = PAGE_PATH[target] ?? '/';
+      const search = window.location.search; // preserve e.g. ?join=8652EV
+      window.history.pushState(null, '', search ? `${path}${search}` : path);
+      setPage(target);
     }
   }, [myPlayer?.identity, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
