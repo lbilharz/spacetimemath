@@ -134,7 +134,10 @@
     "leaving": "Verlässt…",
     "closeClass": "✕ Klasse schließen",
     "leaveClass": "← Klasse verlassen",
-    "closeHint": "Das Schließen der Klasse entfernt alle Mitglieder aus der Sitzung."
+    "closeHint": "Das Schließen der Klasse entfernt alle Mitglieder aus der Sitzung.",
+    "printCards": "Login-Karten drucken",
+    "showLoginCard": "Login-QR-Karte zeigen",
+    "studentLoginHint": "Scannen zum Einloggen auf jedem Gerät — kein Passwort nötig."
   },
   "account": {
     "sessions_one": "{{count}} Sprint",
