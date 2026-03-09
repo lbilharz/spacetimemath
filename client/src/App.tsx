@@ -56,7 +56,14 @@ export default function App() {
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
-  useEffect(() => { myPlayerRef.current = myPlayer; }, [myPlayer]);
+  // Cache the last known player so we can keep rendering during a reconnect.
+  // When the WebSocket drops (background), isActive flips to false and the
+  // subscription clears — but we know who the user is and can skip the spinner.
+  const [cachedPlayer, setCachedPlayer] = useState(myPlayer);
+  useEffect(() => { if (myPlayer) setCachedPlayer(myPlayer); }, [myPlayer]);
+  const effectivePlayer = myPlayer ?? cachedPlayer;
+
+  useEffect(() => { myPlayerRef.current = effectivePlayer; }, [effectivePlayer]);
 
   // Silently generate a recovery key for any existing user who doesn't have one yet.
   // New registrations already do this in RegisterPage; this catches everyone else.
@@ -157,7 +164,7 @@ export default function App() {
 
   // ── Sprint helpers ──────────────────────────────────────────────────────────
   const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
-    tierAtSprintStartRef.current = myPlayer?.learningTier ?? 0;
+    tierAtSprintStartRef.current = effectivePlayer?.learningTier ?? 0;
     setSessionId(id);
     setSprintOrigin(origin);
     navigate('sprint');
@@ -179,11 +186,12 @@ export default function App() {
     );
   }
 
-  if (!isActive) {
+  // First-ever load with no cached player: show spinner
+  if (!isActive && !effectivePlayer) {
     return <div className="loading"><span>{t('app.connecting')}</span></div>;
   }
 
-  const showBottomNav = TABBED_PAGES.includes(page) && !!myPlayer;
+  const showBottomNav = TABBED_PAGES.includes(page) && !!effectivePlayer;
   const backTarget: Page | null =
     page === 'classroom' ? 'lobby'
     : page === 'results'  ? (inClassroom ? 'classroom' : sprintOrigin as Page)
@@ -191,15 +199,27 @@ export default function App() {
 
   return (
     <>
-      {myPlayer && !myPlayer.onboardingDone && (
+      {/* Subtle reconnecting pill — shown instead of a full blank screen */}
+      {!isActive && effectivePlayer && (
+        <div style={{
+          position: 'fixed', top: 8, left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--card2)', border: '1px solid var(--border)',
+          borderRadius: 20, padding: '4px 14px', fontSize: 12, color: 'var(--muted)',
+          zIndex: 2000, pointerEvents: 'none', whiteSpace: 'nowrap',
+        }}>
+          {t('app.reconnecting')}
+        </div>
+      )}
+
+      {effectivePlayer && !effectivePlayer.onboardingDone && (
         <OnboardingOverlay onDone={() => {
-          tierAtSprintStartRef.current = myPlayer.learningTier ?? 0;
+          tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
           navigate('sprint');
         }} />
       )}
 
-      {myPlayer && (
-        <TopBar myPlayer={myPlayer} active={page} onNavigate={(tab) => navigate(tab)} />
+      {effectivePlayer && (
+        <TopBar myPlayer={effectivePlayer} active={page} onNavigate={(tab) => navigate(tab)} />
       )}
 
       {backTarget && (
@@ -226,7 +246,7 @@ export default function App() {
         }} />}
         {page === 'lobby'     && (
           <LobbyPage
-            myPlayer={myPlayer}
+            myPlayer={effectivePlayer}
             myIdentityHex={myIdentityHex}
             onStartSprint={(id) => goToSprint(id, 'lobby')}
             onEnterClassroom={goToClassroom}
@@ -235,7 +255,7 @@ export default function App() {
         {page === 'progress'  && myIdentityHex && (
           <ProgressPage
             myIdentityHex={myIdentityHex}
-            playerLearningTier={myPlayer?.learningTier ?? 0}
+            playerLearningTier={effectivePlayer?.learningTier ?? 0}
           />
         )}
         {page === 'classroom' && (
@@ -256,14 +276,14 @@ export default function App() {
           <ResultsPage
             sessionId={sessionId!}
             myIdentityHex={myIdentityHex!}
-            playerLearningTier={myPlayer?.learningTier ?? 0}
+            playerLearningTier={effectivePlayer?.learningTier ?? 0}
             newlyUnlockedTier={
-              (myPlayer?.learningTier ?? 0) > tierAtSprintStartRef.current
-                ? myPlayer!.learningTier
+              (effectivePlayer?.learningTier ?? 0) > tierAtSprintStartRef.current
+                ? effectivePlayer!.learningTier
                 : undefined
             }
             onNextSprint={() => {
-              tierAtSprintStartRef.current = myPlayer?.learningTier ?? 0;
+              tierAtSprintStartRef.current = effectivePlayer?.learningTier ?? 0;
               navigate('sprint');
             }}
             onBack={() => navigate(inClassroom ? 'classroom' : sprintOrigin as Page)}
@@ -271,7 +291,7 @@ export default function App() {
         )}
         {page === 'account'   && (
           <AccountPage
-            myPlayer={myPlayer!}
+            myPlayer={effectivePlayer!}
             myIdentityHex={myIdentityHex!}
             onEnterClassroom={goToClassroom}
             onBack={() => navigate('lobby')}

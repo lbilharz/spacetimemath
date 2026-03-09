@@ -18,7 +18,8 @@
     "brand": "⚡ Math Sprint",
     "connecting": "⚡ Verbinde mit SpacetimeDB…",
     "connectionError": "Keine Verbindung zu SpaceTimeDB",
-    "connectionErrorHint": "Stelle sicher, dass spacetime start --in-memory auf Port 3000 läuft"
+    "connectionErrorHint": "Stelle sicher, dass spacetime start --in-memory auf Port 3000 läuft",
+    "reconnecting": "Verbindung wird wiederhergestellt…"
   },
   "register": {
     "tagline": "60 Sekunden. Einmaleins. Live-Rangliste.",
