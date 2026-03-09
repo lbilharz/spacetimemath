@@ -10,6 +10,7 @@ import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
 import ClassroomPage from './pages/ClassroomPage.js';
 import BottomNav from './components/BottomNav.js';
+import TopBar from './components/TopBar.js';
 import OnboardingOverlay from './components/OnboardingOverlay.js';
 
 export type Page = 'register' | 'lobby' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom';
@@ -107,6 +108,15 @@ export default function App() {
   return (
     <>
       {myPlayer && !myPlayer.onboardingDone && <OnboardingOverlay />}
+
+      {/* Desktop top nav — hidden on mobile via CSS */}
+      {myPlayer && (
+        <TopBar
+          myPlayer={myPlayer}
+          active={page}
+          onNavigate={(tab) => setPage(tab)}
+        />
+      )}
 
       {/* Slim back strip for focused pages (classroom, results) */}
       {backTarget && (

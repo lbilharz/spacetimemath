@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [transferCodes] = useTable(tables.transfer_codes);
   const [recoveryKeys] = useTable(tables.recovery_keys);
   const [classrooms] = useTable(tables.classrooms);
@@ -165,6 +165,22 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
             {' · '}{t('account.best')} <span style={{ color: 'var(--warn)', fontWeight: 600 }}>{myPlayer.bestScore.toFixed(1)}</span>
           </div>
         </div>
+      </div>
+
+      {/* Language selector */}
+      <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontWeight: 600, fontSize: 15 }}>{t('account.language')}</span>
+        <button
+          onClick={() => i18n.changeLanguage(i18n.language.startsWith('de') ? 'en' : 'de')}
+          style={{
+            fontSize: 13, fontWeight: 700,
+            background: 'var(--card2)', border: '1px solid var(--border)',
+            borderRadius: 6, padding: '6px 16px',
+            color: 'var(--text)', cursor: 'pointer',
+          }}
+        >
+          {i18n.language.startsWith('de') ? 'English' : 'Deutsch'}
+        </button>
       </div>
 
       {/* Display name */}

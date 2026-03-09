@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
-import MasteryGrid from '../components/MasteryGrid.js';
 import { getRechenweg } from '../utils/rechenwege.js';
+import MasteryGrid from '../components/MasteryGrid.js';
 
 type Session = {
   id: bigint; playerIdentity: { toHexString(): string };
@@ -26,7 +26,6 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const [players] = useTable(tables.players);
   const [unlockLogs] = useTable(tables.unlock_logs);
 
   const session = sessions.find(s => (s as Session).id === sessionId) as Session | undefined;
@@ -180,7 +179,13 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
             {t('results.masteryDesc')}
           </p>
-          <MasteryGrid answers={myAnswers} problemStats={problemStats as any[]} highlightSession={sessionId} sessionAnswers={sessionAnswers} tier1Unlocked={tier1Unlocked} />
+          <MasteryGrid
+            answers={myAnswers}
+            problemStats={problemStats as any[]}
+            highlightSession={sessionId}
+            sessionAnswers={sessionAnswers}
+            tier1Unlocked={tier1Unlocked}
+          />
         </div>
       )}
 

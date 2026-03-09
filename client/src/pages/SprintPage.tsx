@@ -32,19 +32,34 @@ function selectNextProblem(
   myAnswers: Answer[],
   lastKey?: number
 ): { a: number; b: number } {
-  // Build personal accuracy map
-  const accMap = new Map<number, { correct: number; total: number }>();
+  // Group answers by problem key (myAnswers is in insertion/id order)
+  const byKey = new Map<number, Answer[]>();
   for (const ans of myAnswers) {
     const key = ans.a * 100 + ans.b;
-    const s = accMap.get(key) ?? { correct: 0, total: 0 };
-    accMap.set(key, { correct: s.correct + (ans.isCorrect ? 1 : 0), total: s.total + 1 });
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key)!.push(ans);
   }
 
-  // Selection weight = difficulty × (1.5 − personal_accuracy)
+  // last-10 accuracy per problem (more responsive than all-time)
+  const accMap = new Map<number, { correct: number; total: number; allTotal: number }>();
+  for (const [key, answers] of byKey) {
+    const recent = answers.slice(-10);
+    accMap.set(key, {
+      correct: recent.filter(a => a.isCorrect).length,
+      total: recent.length,
+      allTotal: answers.length,
+    });
+  }
+
+  // Selection weight = difficulty × (1.5 − last10_accuracy)
   const weighted = stats.map(stat => {
     const personal = accMap.get(stat.problemKey);
     const accuracy = personal ? personal.correct / personal.total : 0.5;
-    const w = stat.difficultyWeight * (1.5 - accuracy);
+    let w = stat.difficultyWeight * (1.5 - accuracy);
+    // Suppress trivial (category 0: ×0, ×1, ×10) once the player has clearly mastered them
+    if (stat.category === 0 && personal && personal.allTotal >= 10 && accuracy >= 0.9) {
+      w = 0.05;
+    }
     // Avoid same problem twice in a row
     const samePenalty = stat.problemKey === lastKey ? 0.05 : 1.0;
     return { stat, weight: Math.max(w * samePenalty, 0.01) };

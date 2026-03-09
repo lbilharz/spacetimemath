@@ -155,7 +155,8 @@
     "generateRecoveryKey": "Wiederherstellungsschlüssel erstellen",
     "session": "Sitzung",
     "logoutDesc": "Beim Abmelden wird der Zugang dieses Geräts entfernt. Punkte und Benutzername bleiben auf dem Server — erstelle zuerst einen Transfercode, falls du dich später wieder anmelden möchtest.",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "language": "Sprache"
   },
   "leaderboard": {
     "title": "🏆 Rangliste",

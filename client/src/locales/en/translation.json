@@ -155,7 +155,8 @@
     "generateRecoveryKey": "Generate recovery key",
     "session": "Session",
     "logoutDesc": "Logging out removes this device's access. Your scores and username are kept on the server — use a transfer code first if you want to sign in again later.",
-    "logout": "Log out"
+    "logout": "Log out",
+    "language": "Language"
   },
   "leaderboard": {
     "title": "🏆 Leaderboard",
