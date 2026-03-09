@@ -88,6 +88,10 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
             </code>
             <br />
             <span style={{ fontSize: 11 }}>{t('scoring.calibNote')}</span>
+            <br />
+            <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600 }}>
+              ＋ {t('scoring.digitBonus')}
+            </span>
           </div>
 
           {/* Legend */}

@@ -217,6 +217,7 @@
     "title": "Punktesystem",
     "howTitle": "Punkte pro richtige Antwort = Schwierigkeitsgewicht",
     "howBody": "Gewichte basieren auf Forschungsschätzungen und verschieben sich schrittweise Richtung Gemeinschaftsdaten über 200+ Antworten pro Aufgabe:",
+    "digitBonus": "Bonus für erweiterte Tafeln: 11× und 12× Aufgaben geben +0,5 Punkte. Dreistellige Ergebnisse (≥ 100, z.B. 12×9=108) geben +1,0 Punkte.",
     "calibNote": "Forschungshintergrund: Quadrate (7×7, 8×8) sind schwerer als sie wirken — Schüler verwechseln sie mit Nachbarn. ×4 und ×9 haben zuverlässige Tricks (zweimal verdoppeln, Quersumme). Startwerte angelehnt an Ashcraft & Christy (1995).",
     "calibLegend": "Heller Rahmen = vollständig kalibriert (200+ Antworten)."
   },

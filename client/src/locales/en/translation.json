@@ -217,6 +217,7 @@
     "title": "Scoring Guide",
     "howTitle": "Points per correct answer = difficulty weight",
     "howBody": "Weights start from research estimates and gradually shift toward community data over 200+ answers per problem:",
+    "digitBonus": "Bonus for extended tables: 11× and 12× answers add +0.5 pts. Three-digit results (≥ 100, e.g. 12×9=108) add +1.0 pts.",
     "calibNote": "Research basis: squares (7×7, 8×8) are harder than they look — students confuse them with neighbours. ×4 and ×9 have reliable tricks (double-twice, digit-sum). Bootstrap values inspired by Ashcraft & Christy (1995).",
     "calibLegend": "Bright border = fully community-calibrated (200+ answers)."
   },

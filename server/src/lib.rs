@@ -461,9 +461,16 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
         .filter(|a| a.is_correct)
         .map(|a| {
             let key = (a.a as u16) * 100 + (a.b as u16);
-            ctx.db.problem_stats().problem_key().find(key)
+            let base = ctx.db.problem_stats().problem_key().find(key)
                 .map(|s| s.difficulty_weight)
-                .unwrap_or(1.0)
+                .unwrap_or(1.0);
+            // Bonus for double-digit factors (11×, 12×) — harder mentally and require
+            // typing more digits. +0.5 for any 11×/12× answer; +1.0 when the result
+            // is three digits (≥ 100), e.g. 12×9=108 or 11×12=132.
+            let digit_bonus: f32 = if a.a.max(a.b) >= 11 {
+                if (a.a as u32) * (a.b as u32) >= 100 { 1.0 } else { 0.5 }
+            } else { 0.0 };
+            base + digit_bonus
         })
         .sum();
 
