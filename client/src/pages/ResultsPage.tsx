@@ -18,28 +18,17 @@ type Answer = {
 interface Props {
   sessionId: bigint;
   myIdentityHex: string;
+  playerLearningTier?: number;
+  newlyUnlockedTier?: number;
   onBack: () => void;
 }
 
-export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props) {
+export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTier = 0, newlyUnlockedTier, onBack }: Props) {
   const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const [unlockLogs] = useTable(tables.unlock_logs);
-
   const session = sessions.find(s => (s as Session).id === sessionId) as Session | undefined;
-
-  const tier1Unlocked = (unlockLogs as any[]).some(
-    (u: any) => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
-  );
-  // Detect fresh unlock this session: compare unlock timestamp to session start
-  const myUnlock = (unlockLogs as any[]).find(
-    (u: any) => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
-  );
-  const sessionRow = sessions.find(s => (s as any).id === sessionId) as any;
-  const isNewUnlock = myUnlock && sessionRow &&
-    myUnlock.unlockedAt.microsSinceUnixEpoch >= sessionRow.startedAt.microsSinceUnixEpoch;
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[];
   const sessionAnswers = myAnswers.filter(a => a.sessionId === sessionId);
 
@@ -72,12 +61,16 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
         <h1>{t('results.heading')}</h1>
       </div>
 
-      {/* New-unlock toast */}
-      {isNewUnlock && (
+      {/* Tier-up unlock toast */}
+      {newlyUnlockedTier !== undefined && (
         <div className="card" style={{ width: '100%', border: '1px solid var(--accent)', textAlign: 'center' }}>
-          <div style={{ fontSize: 32 }}>🔓</div>
-          <h2 style={{ color: 'var(--accent)', margin: '8px 0 4px' }}>{t('unlock.tier1Earned' as any)}</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>{t('unlock.tier1EarnedDesc' as any)}</p>
+          <div style={{ fontSize: 32 }}>🎉</div>
+          <h2 style={{ color: 'var(--accent)', margin: '8px 0 4px' }}>
+            {t(`tiers.unlocked${newlyUnlockedTier}` as any)}
+          </h2>
+          <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>
+            {t(`tiers.unlockedDesc${newlyUnlockedTier}` as any)}
+          </p>
         </div>
       )}
 
@@ -190,7 +183,8 @@ export default function ResultsPage({ sessionId, myIdentityHex, onBack }: Props)
             problemStats={problemStats as any[]}
             highlightSession={sessionId}
             sessionAnswers={sessionAnswers}
-            tier1Unlocked={tier1Unlocked}
+            tier1Unlocked={playerLearningTier >= 3}
+            playerLearningTier={playerLearningTier}
             focusCell={gridFocus}
           />
         </div>

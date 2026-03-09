@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getRechenweg } from '../utils/rechenwege.js';
+import { learningTierOf } from '../utils/learningTier.js';
 
 type Answer = { id: bigint; a: number; b: number; isCorrect: boolean; sessionId: bigint; userAnswer?: number; responseMs?: number; };
 type ProblemStat = { problemKey: number; a: number; b: number; difficultyWeight: number; };
@@ -12,6 +13,7 @@ interface Props {
   sessionAnswers?: Answer[];
   tier1Unlocked?: boolean;
   focusCell?: { a: number; b: number } | null;
+  playerLearningTier?: number;
 }
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -43,7 +45,7 @@ const MASTERY_BG: Record<Mastery, string> = {
 const TIER1_A = [11, 12, 15, 20, 25];
 const TIER1_B = [2, 3, 4, 5, 6, 7, 8, 9];
 
-export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell }: Props) {
+export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell, playerLearningTier }: Props) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
 
@@ -78,12 +80,14 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
       const stat = problemStats.find(s => s.problemKey === key);
       const w = stat?.difficultyWeight ?? 0;
       const answer = a * b;
+      const isLocked = playerLearningTier !== undefined
+        && learningTierOf(a, b) > playerLearningTier;
 
       cells.push(
         <button
           key={`${a}-${b}`}
           title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
-          onClick={() => setSelected(isSelected ? null : { a, b })}
+          onClick={() => !isLocked && setSelected(isSelected ? null : { a, b })}
           style={{
             ...cell,
             background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
@@ -96,7 +100,8 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
             fontWeight: 600,
             fontSize: 13,
             position: 'relative',
-            cursor: 'pointer',
+            cursor: isLocked ? 'default' : 'pointer',
+            opacity: isLocked ? 0.25 : 1,
           }}
         >
           {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}

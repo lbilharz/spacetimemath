@@ -27,6 +27,8 @@ export default function App() {
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
   // Track where to return after sprint/results
   const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
+  // Capture learning tier at the moment a sprint starts so we can detect unlocks on ResultsPage
+  const tierAtSprintStartRef = useRef<number>(0);
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
@@ -69,6 +71,7 @@ export default function App() {
   }, []);
 
   const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
+    tierAtSprintStartRef.current = myPlayer?.learningTier ?? 0;
     setSessionId(id);
     setSprintOrigin(origin);
     setPage('sprint');
@@ -144,7 +147,12 @@ export default function App() {
             onEnterClassroom={goToClassroom}
           />
         )}
-        {page === 'progress'  && myIdentityHex && <ProgressPage myIdentityHex={myIdentityHex} />}
+        {page === 'progress'  && myIdentityHex && (
+          <ProgressPage
+            myIdentityHex={myIdentityHex}
+            playerLearningTier={myPlayer?.learningTier ?? 0}
+          />
+        )}
         {page === 'classroom' && (
           <ClassroomPage
             myIdentityHex={myIdentityHex!}
@@ -163,6 +171,12 @@ export default function App() {
           <ResultsPage
             sessionId={sessionId!}
             myIdentityHex={myIdentityHex!}
+            playerLearningTier={myPlayer?.learningTier ?? 0}
+            newlyUnlockedTier={
+              (myPlayer?.learningTier ?? 0) > tierAtSprintStartRef.current
+                ? myPlayer!.learningTier
+                : undefined
+            }
             onBack={() => setPage(inClassroom ? 'classroom' : sprintOrigin as Page)}
           />
         )}

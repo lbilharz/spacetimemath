@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import { getRechenweg } from '../utils/rechenwege.js';
+import { learningTierOf } from '../utils/learningTier.js';
+import DotArray from '../components/DotArray.js';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 // Haptics fire-and-forget — silently no-ops on web
@@ -27,9 +29,22 @@ type Session = {
 
 const SPRINT_DURATION = 60;
 
+type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
+
+function getMasteryLocal(answers: Answer[], a: number, b: number): Mastery {
+  const pair = answers.filter(ans => ans.a === a && ans.b === b);
+  if (pair.length === 0) return 'untouched';
+  const recent = pair.slice(-10);
+  const acc = recent.filter(x => x.isCorrect).length / recent.length;
+  if (acc >= 0.8) return 'mastered';
+  if (acc >= 0.5) return 'learning';
+  return 'struggling';
+}
+
 function selectNextProblem(
   stats: ProblemStat[],
   myAnswers: Answer[],
+  playerLearningTier: number,
   lastKey?: number
 ): { a: number; b: number } {
   // Group answers by problem key (myAnswers is in insertion/id order)
@@ -56,9 +71,10 @@ function selectNextProblem(
     const personal = accMap.get(stat.problemKey);
     const accuracy = personal ? personal.correct / personal.total : 0.5;
     let w = stat.difficultyWeight * (1.5 - accuracy);
-    // Suppress trivial (category 0: ×0, ×1, ×10) once the player has clearly mastered them
-    if (stat.category === 0 && personal && personal.allTotal >= 10 && accuracy >= 0.9) {
-      w = 0.05;
+    // Suppress lower-tier pairs once the player has advanced and clearly mastered them
+    if (learningTierOf(stat.a, stat.b) < playerLearningTier
+        && personal && personal.allTotal >= 10 && accuracy >= 0.9) {
+      w = 0.1;
     }
     // Avoid same problem twice in a row
     const samePenalty = stat.problemKey === lastKey ? 0.05 : 1.0;
@@ -87,13 +103,14 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const [unlockLogs] = useTable(tables.unlock_logs);
+  const [players] = useTable(tables.players);
 
-  const tier1Unlocked = (unlockLogs as any[]).some(
-    (u: any) => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
-  );
+  const playerLearningTier: number = (players as any[]).find(
+    p => p.identity.toHexString() === myIdentityHex
+  )?.learningTier ?? 0;
+
   const eligibleStats = (problemStats as ProblemStat[]).filter(s =>
-    tier1Unlocked || s.category !== 2
+    learningTierOf(s.a, s.b) <= playerLearningTier
   );
 
   const startSession = useSTDBReducer(reducers.startSession);
@@ -163,7 +180,7 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
   // 3c. Select first problem when sprint starts + stats are ready
   useEffect(() => {
     if (sprintStarted && !problem && eligibleStats.length > 0) {
-      const p = selectNextProblem(eligibleStats, myAnswers);
+      const p = selectNextProblem(eligibleStats, myAnswers, playerLearningTier);
       setProblem(p);
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
@@ -235,6 +252,7 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
       const next = selectNextProblem(
         eligibleStats,
         myAnswers,
+        playerLearningTier,
         lastKeyRef.current
       );
       setProblem(next);
@@ -347,6 +365,18 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
             <span className={`tag ${tag.cls}`} style={{ position: 'absolute', top: 16, right: 16 }}>
               {tag.label}
             </span>
+          );
+        })()}
+
+        {/* Dot array for tier-0 pairs (untouched or struggling) */}
+        {(() => {
+          const mastery = getMasteryLocal(myAnswers, problem.a, problem.b);
+          if (learningTierOf(problem.a, problem.b) !== 0) return null;
+          if (mastery === 'mastered' || mastery === 'learning') return null;
+          return (
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+              <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
+            </div>
           );
         })()}
 

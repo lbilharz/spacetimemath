@@ -15,6 +15,8 @@ pub struct Player {
     pub total_answered: u32,
     #[default(false)]
     pub onboarding_done: bool,
+    #[default(0)]
+    pub learning_tier: u8,
 }
 
 #[table(accessor = sessions, public)]
@@ -177,6 +179,7 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
             total_correct: 0,
             total_answered: 0,
             onboarding_done: false,
+            learning_tier: 0,
         });
     }
     Ok(())
@@ -241,7 +244,7 @@ pub fn submit_answer(
             ((stat.avg_response_ms as u64 * stat.attempt_count as u64
                 + response_ms as u64) / new_count as u64) as u32
         };
-        let new_weight = if new_count >= 20 && (stat.category == 1 || stat.category == 2) {
+        let new_weight = if new_count >= 20 && pair_learning_tier(stat.a, stat.b).is_some() {
             let error_rate = 1.0 - (new_correct as f32 / new_count as f32);
             let speed_factor = (new_avg_ms as f32 / 10_000.0).min(1.0);
             (0.2_f32 + 1.8 * error_rate + 0.5 * speed_factor).clamp(0.2, 2.0)
@@ -309,40 +312,97 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
         total_answered: player.total_answered + total,
         ..player
     });
-    check_and_unlock(ctx, sender);
+    check_and_unlock(ctx, sender, session_id);
     Ok(())
 }
 
-fn check_and_unlock(ctx: &ReducerContext, sender: Identity) {
-    // Already unlocked tier 1? Nothing to do.
-    if ctx.db.unlock_logs().iter().any(|u| u.player_identity == sender && u.tier == 1) {
-        return;
+/// Returns the learning tier for a factor value (None = excluded, i.e. ×0).
+fn factor_tier(x: u8) -> Option<u8> {
+    match x {
+        0 => None,
+        1 | 2 | 5 | 10 => Some(0),
+        3 | 4 => Some(1),
+        6 | 7 | 8 | 9 => Some(2),
+        _ => Some(3), // 11, 12, 15, 20, 25
     }
+}
+
+/// Learning tier of an ordered pair = max(tier(a), tier(b)).
+/// Returns None for excluded pairs (those involving ×0).
+fn pair_learning_tier(a: u8, b: u8) -> Option<u8> {
+    match (factor_tier(a), factor_tier(b)) {
+        (Some(ta), Some(tb)) => Some(ta.max(tb)),
+        _ => None,
+    }
+}
+
+fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_id: u64) {
+    let player = match ctx.db.players().identity().find(sender) {
+        Some(p) => p,
+        None => return,
+    };
+
     let my_answers: Vec<Answer> = ctx.db.answers()
         .iter()
         .filter(|a| a.player_identity == sender)
         .collect();
-    let mut mastered = 0u32;
-    for a in 2u8..=9 {
-        for b in 2u8..=9 {
+    let sprint_answers: Vec<&Answer> = my_answers.iter()
+        .filter(|a| a.session_id == session_id)
+        .collect();
+
+    let mut new_tier = player.learning_tier;
+
+    for target_tier in (player.learning_tier + 1)..=3u8 {
+        let check_tier = target_tier - 1;
+
+        // All problem_stat pairs belonging to check_tier
+        let tier_pairs: Vec<(u8, u8)> = ctx.db.problem_stats()
+            .iter()
+            .filter(|s| pair_learning_tier(s.a, s.b) == Some(check_tier))
+            .map(|s| (s.a, s.b))
+            .collect();
+        let total = tier_pairs.len() as f32;
+        if total == 0.0 { continue; }
+
+        // Speed bonus: ≥80% of this-sprint answers for check_tier pairs answered in <2s
+        let sprint_tier: Vec<_> = sprint_answers.iter()
+            .filter(|a| pair_learning_tier(a.a, a.b) == Some(check_tier))
+            .collect();
+        let speed_bonus = !sprint_tier.is_empty()
+            && sprint_tier.iter().filter(|a| a.response_ms < 2000).count() as f32
+               / sprint_tier.len() as f32 >= 0.8;
+        let threshold = if speed_bonus { 0.5_f32 } else { 0.8_f32 };
+
+        // Count mastered pairs (last-10 accuracy ≥80%)
+        let mut mastered = 0u32;
+        for (a, b) in &tier_pairs {
             let mut pair: Vec<_> = my_answers.iter()
-                .filter(|ans| ans.a == a && ans.b == b)
+                .filter(|ans| ans.a == *a && ans.b == *b)
                 .collect();
             if pair.is_empty() { continue; }
-            // Sort by id (auto_inc) so rev() reliably yields most-recent first
             pair.sort_by_key(|ans| ans.id);
             let recent: Vec<_> = pair.iter().rev().take(10).collect();
             let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
                 / recent.len() as f32;
             if acc >= 0.8 { mastered += 1; }
         }
+
+        if mastered as f32 / total >= threshold {
+            new_tier = target_tier;
+        } else {
+            break; // cannot skip tiers
+        }
     }
-    // Require 20 of 64 core pairs mastered AND a real score (proves timed competence)
-    let player = match ctx.db.players().identity().find(sender) {
-        Some(p) => p,
-        None => return,
-    };
-    if mastered >= 20 && player.best_score >= 12.0 {
+
+    if new_tier > player.learning_tier {
+        let updated = Player { learning_tier: new_tier, ..player };
+        ctx.db.players().identity().update(updated);
+    }
+
+    // Backward compat: write unlock_logs(tier=1) when player reaches learning_tier ≥ 2
+    if new_tier >= 2
+        && !ctx.db.unlock_logs().iter().any(|u| u.player_identity == sender && u.tier == 1)
+    {
         ctx.db.unlock_logs().insert(UnlockLog {
             id: 0,
             player_identity: sender,

@@ -210,5 +210,13 @@
     "struggling": "struggling",
     "untouched": "untouched",
     "hardDiff": "hard (≥1.5×)"
+  },
+  "tiers": {
+    "unlocked1": "×3 and ×4 unlocked!",
+    "unlockedDesc1": "You've mastered the basics. Time to tackle ×3 and ×4.",
+    "unlocked2": "Full table unlocked!",
+    "unlockedDesc2": "×6, ×7, ×8, ×9 are yours now. Complete mastery awaits.",
+    "unlocked3": "2-digit multipliers unlocked!",
+    "unlockedDesc3": "×11, ×12, ×15, ×20, ×25 — the bonus round is open."
   }
 }

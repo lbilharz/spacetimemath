@@ -6,9 +6,10 @@ import SprintHistory from '../components/SprintHistory.js';
 
 interface Props {
   myIdentityHex: string;
+  playerLearningTier?: number;
 }
 
-export default function ProgressPage({ myIdentityHex }: Props) {
+export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: Props) {
   const { t } = useTranslation();
   const [sessions]     = useTable(tables.sessions);
   const [answers]      = useTable(tables.answers);
@@ -50,6 +51,7 @@ export default function ProgressPage({ myIdentityHex }: Props) {
           answers={myAnswers}
           problemStats={problemStats as any[]}
           tier1Unlocked={tier1Unlocked}
+          playerLearningTier={playerLearningTier}
         />
       </div>
 

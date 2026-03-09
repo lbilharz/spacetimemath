@@ -18,4 +18,5 @@ export default __t.row({
   totalCorrect: __t.u32().name("total_correct"),
   totalAnswered: __t.u32().name("total_answered"),
   onboardingDone: __t.bool().name("onboarding_done"),
+  learningTier: __t.u8().name("learning_tier"),
 });

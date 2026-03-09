@@ -47,6 +47,7 @@ export const Player = __t.object("Player", {
   totalCorrect: __t.u32(),
   totalAnswered: __t.u32(),
   onboardingDone: __t.bool(),
+  learningTier: __t.u8(),
 });
 export type Player = __Infer<typeof Player>;
 
