@@ -28,6 +28,17 @@ function getMastery(answers: Answer[], a: number, b: number): Mastery {
   return 'struggling';
 }
 
+/** For extended pairs: combine answers from both orderings (e.g. 3×12 and 12×3). */
+function getMasteryEither(answers: Answer[], a: number, b: number): Mastery {
+  const pair = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
+  if (pair.length === 0) return 'untouched';
+  const recent = pair.slice(-10);
+  const acc = recent.filter(x => x.isCorrect).length / recent.length;
+  if (acc >= 0.8) return 'mastered';
+  if (acc >= 0.5) return 'learning';
+  return 'struggling';
+}
+
 const MASTERY_COLORS: Record<Mastery, string> = {
   mastered: '#00d4aa',
   learning: '#ffd700',
@@ -162,8 +173,9 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
 
           {/* Answer history */}
           {(() => {
+            const { a: sa, b: sb } = selected!;
             const pair = answers
-              .filter(ans => ans.a === selected!.a && ans.b === selected!.b)
+              .filter(ans => (ans.a === sa && ans.b === sb) || (ans.a === sb && ans.b === sa))
               .sort((x, y) => (x.id < y.id ? -1 : 1));
             if (pair.length === 0) return null;
             const recent = pair.slice(-10);
@@ -223,9 +235,9 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
             </div>
           );
           for (const b of TIER1_B) {
-            const mastery = getMastery(answers, a, b);
+            const mastery = getMasteryEither(answers, a, b);
             const key = a * 100 + b;
-            const isHighlighted = sessionKeys.has(key);
+            const isHighlighted = sessionKeys.has(key) || sessionKeys.has(b * 100 + a);
             const isSelected = selected?.a === a && selected?.b === b;
             const stat = problemStats.find(s => s.problemKey === key);
             const w = stat?.difficultyWeight ?? 0;

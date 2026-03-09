@@ -86,6 +86,40 @@ pub fn init(ctx: &ReducerContext) {
     seed_tier1_problem_stats(ctx);
 }
 
+/// One-time migration: seed extended-table problem_stats rows if missing.
+/// Call once after deploying the tier system to an existing database.
+#[reducer]
+pub fn migrate_seed_extended_pairs(ctx: &ReducerContext) -> Result<(), String> {
+    let pairs: &[(u8, u8, f32)] = &[
+        (11,2,0.6),(11,3,0.6),(11,4,0.6),(11,5,0.6),(11,6,0.6),(11,7,0.6),(11,8,0.6),(11,9,0.6),
+        (12,2,1.0),(12,3,1.0),(12,4,1.0),(12,5,1.0),(12,6,1.0),(12,7,1.0),(12,8,1.0),(12,9,1.0),
+        (15,2,1.2),(15,3,1.2),(15,4,1.2),(15,5,1.2),(15,6,1.2),(15,7,1.2),(15,8,1.2),(15,9,1.2),
+        (20,2,0.8),(20,3,0.8),(20,4,0.8),(20,5,0.8),(20,6,0.8),(20,7,0.8),(20,8,0.8),(20,9,0.8),
+        (25,2,1.4),(25,3,1.4),(25,4,1.4),(25,5,1.4),(25,6,1.4),(25,7,1.4),(25,8,1.4),(25,9,1.4),
+    ];
+    for &(a, b, weight) in pairs {
+        for &(ra, rb) in &[(a, b), (b, a)] {
+            let key = (ra as u16) * 100 + (rb as u16);
+            if let Some(existing) = ctx.db.problem_stats().problem_key().find(key) {
+                // Patch weight if it differs (e.g. ×20 was previously seeded at 0.6)
+                if (existing.difficulty_weight - weight).abs() > 0.01 && existing.attempt_count < 20 {
+                    ctx.db.problem_stats().problem_key().update(ProblemStat {
+                        difficulty_weight: weight, ..existing
+                    });
+                }
+            } else {
+                ctx.db.problem_stats().insert(ProblemStat {
+                    problem_key: key,
+                    a: ra, b: rb, category: 2,
+                    attempt_count: 0, correct_count: 0, avg_response_ms: 0,
+                    difficulty_weight: weight,
+                });
+            }
+        }
+    }
+    Ok(())
+}
+
 fn seed_problem_stats(ctx: &ReducerContext) {
     for a in 0u8..=10 {
         for b in 0u8..=10 {
@@ -115,7 +149,7 @@ fn seed_tier1_problem_stats(ctx: &ReducerContext) {
         (11,2,0.6),(11,3,0.6),(11,4,0.6),(11,5,0.6),(11,6,0.6),(11,7,0.6),(11,8,0.6),(11,9,0.6),
         (12,2,1.0),(12,3,1.0),(12,4,1.0),(12,5,1.0),(12,6,1.0),(12,7,1.0),(12,8,1.0),(12,9,1.0),
         (15,2,1.2),(15,3,1.2),(15,4,1.2),(15,5,1.2),(15,6,1.2),(15,7,1.2),(15,8,1.2),(15,9,1.2),
-        (20,2,0.6),(20,3,0.6),(20,4,0.6),(20,5,0.6),(20,6,0.6),(20,7,0.6),(20,8,0.6),(20,9,0.6),
+        (20,2,0.8),(20,3,0.8),(20,4,0.8),(20,5,0.8),(20,6,0.8),(20,7,0.8),(20,8,0.8),(20,9,0.8),
         (25,2,1.4),(25,3,1.4),(25,4,1.4),(25,5,1.4),(25,6,1.4),(25,7,1.4),(25,8,1.4),(25,9,1.4),
     ];
     for &(a, b, weight) in pairs {

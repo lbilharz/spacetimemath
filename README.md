@@ -1,122 +1,77 @@
-# SpaceTimeDB Math Sprint
+# SpaceTimeMath
 
-A real-time multiplayer multiplication trainer built as a prototype and architecture pitch. Every design decision maps directly to a concept from the pitch: adaptive problem selection (IRT), difficulty-weighted scoring (Derived Score), directional mastery tracking, and live sync via SpaceTimeDB.
-
-## What it demonstrates
-
-| Prototype feature | Architecture concept |
-|---|---|
-| Ordered pair tracking (4×6 ≠ 6×4) | n:m competency mapping |
-| Bootstrap + live difficulty weights | Derived Score from interaction data |
-| Weighted session score | IRT-based exercise difficulty |
-| Problem selection via difficulty × accuracy | Adaptive learning path |
-| 10×10 mastery grid heatmap | Implizit → Explizit |
-| Classroom leaderboard + mastery grid | Teacher dashboard |
-| Live leaderboard across devices | Real-time sync via SpaceTimeDB |
+Real-time multiplayer multiplication trainer. Adaptive problem selection, difficulty-weighted scoring, live sync via SpaceTimeDB.
 
 ## Tech stack
 
-- **Backend**: [SpaceTimeDB](https://spacetimedb.com) — Rust module, published to maincloud
-- **Frontend**: Vite + React 19 + TypeScript, deployed on Vercel
-- **No external database** — SpaceTimeDB is the only data store; clients subscribe to live table updates
+- **Backend**: SpaceTimeDB — Rust module on maincloud
+- **Frontend**: Vite + React 19 + TypeScript on Vercel
+- **No external database** — SpaceTimeDB is the only data store
 
 ## Features
 
-**Sprint (60 seconds)**
-- Problems selected adaptively: `p(appear) ∝ difficulty_weight × (1.5 − user_accuracy)`
-- Score = sum of difficulty weights for correct answers (weighted, not raw count)
-- Wrong answer: red flash, correct answer shown, −2s penalty
-- Post-session breakdown: hardest pairs you struggled with
+**Sprint (60 s)**
+- Adaptive selection: `p(appear) ∝ difficulty_weight × (1.5 − last10_accuracy)`
+- Score = Σ difficulty weights of correct answers; wrong answer = −2 s penalty
+- Tier-gated pool: only unlocked pairs appear until mastery gates open the next tier
 
-**Mastery grid**
-- 10×10 heatmap of all ordered pairs (1–10)
-- Green = mastered (>80% over last 10), yellow = learning, red = struggling, gray = untouched
-- Available per player and aggregated per classroom
+**Learning tiers** (unlocked automatically at end of session)
+| Tier | Factors | Unlock condition |
+|------|---------|-----------------|
+| 0 — Starter | ×1 ×2 ×5 ×10 | automatic |
+| 1 — Building | +×3 ×4 | 80% of tier-0 pairs mastered |
+| 2 — Advanced | +×6–9 | 80% of tier-1 pairs mastered |
+| 3 — Extended | ×11 ×12 ×15 ×20 ×25 | 80% of tier-2 pairs mastered |
 
-**Difficulty weights**
-- Bootstrapped from Ashcraft multiplication difficulty research
-- Auto-updated after community data: `weight = 0.2 + 1.8×error_rate + 0.5×(avg_ms/10s)`
-- Range: 0.2 (trivial) → 2.0 (hardest)
+Speed bonus: if ≥80% of sprint answers for current-tier pairs are <2 s, threshold drops to 50%.
 
-**Classrooms**
-- Teacher creates a class, gets a 6-char code + QR code
-- Students join via code or QR scan (auto-join URL: `/?join=CODE`)
-- Members can hide their stats from the class leaderboard per classroom
-- A player can be in multiple classrooms simultaneously
-- Live class leaderboard + aggregate mastery grid
+**Mastery grid** — heatmap of all answered ordered pairs (4×6 and 6×4 tracked separately)
 
-**Accounts**
-- No passwords — identity is a SpaceTimeDB token stored in `localStorage`
-- Transfer code (6-char, 1h TTL) to move account to another device
-- Permanent recovery key (12-char) for long-term backup
+**Difficulty weights** — bootstrapped from Ashcraft research; auto-updated after 20+ community answers:
+`weight = 0.2 + 1.8×error_rate + 0.5×(avg_ms/10s)`
+
+**Classrooms** — teacher creates class (6-char code + QR), live leaderboard + aggregate mastery grid
+
+**Accounts** — no passwords; SpaceTimeDB token in localStorage; transfer code + recovery key for device migration
 
 ## Running locally
 
-**Prerequisites**: Rust, `spacetime` CLI ([install](https://spacetimedb.com/install))
-
 ```bash
-# Start a local SpaceTimeDB instance
-spacetime start --in-memory
+# Start local SpaceTimeDB
+spacetime start
 
-# Publish the server module
+# Build and publish the server module
 cd server
-spacetime publish --server local spacetimemath
+~/.cargo/bin/cargo build --target wasm32-unknown-unknown --release
+spacetime publish spacetimemath --server local --bin-path target/wasm32-unknown-unknown/release/spacetimemath.wasm
 
 # Generate TypeScript bindings
-cd ..
-spacetime generate --module-path ./server --lang typescript \
-  --out-dir ./client/src/module_bindings
+spacetime generate --lang typescript --out-dir ../client/src/module_bindings \
+  --bin-path target/wasm32-unknown-unknown/release/spacetimemath.wasm
 
-# Start the frontend
-cd client
-npm install
-npm run dev
-```
-
-The app connects to `ws://127.0.0.1:3000` by default.
-
-## Connecting to maincloud
-
-Set environment variables before running the client:
-
-```bash
-VITE_SPACETIMEDB_URI=wss://maincloud.spacetimedb.com
-VITE_SPACETIMEDB_DB=spacetimemath
-npm run dev
-```
-
-Or create `client/.env.local`:
-```
-VITE_SPACETIMEDB_URI=wss://maincloud.spacetimedb.com
-VITE_SPACETIMEDB_DB=spacetimemath
-```
-
-## Project structure
-
-```
-server/          Rust SpaceTimeDB module (schema + reducers)
-client/
-  src/
-    module_bindings/   Auto-generated TypeScript bindings (do not edit)
-    pages/             RegisterPage, LobbyPage, SprintPage, ResultsPage,
-                       ClassroomPage, AccountPage
-    components/        MasteryGrid, Leaderboard
-    auth.ts            Token capture + credential persistence
-    main.tsx           SpaceTimeDB connection setup
-```
-
-## Regenerating bindings
-
-After any change to `server/src/lib.rs`:
-
-```bash
-spacetime generate --module-path ./server --lang typescript \
-  --out-dir ./client/src/module_bindings
+# Start frontend (client/.env.local already points to ws://127.0.0.1:3000)
+cd ../client && npm install && npm run dev
 ```
 
 ## Publishing to maincloud
 
 ```bash
-PATH="$PATH:$HOME/.cargo/bin" spacetime publish \
-  --module-path server --server maincloud spacetimemath
+cd server
+~/.cargo/bin/cargo build --target wasm32-unknown-unknown --release
+~/.local/bin/spacetime publish spacetimemath --server maincloud \
+  --bin-path target/wasm32-unknown-unknown/release/spacetimemath.wasm -y
+```
+
+Schema changes (adding columns) require `--break-clients` — disconnects all clients until they reload.
+
+## Project structure
+
+```
+server/src/lib.rs          Rust module: schema, reducers, tier logic
+client/src/
+  module_bindings/         Auto-generated TypeScript bindings (do not edit)
+  pages/                   RegisterPage LobbyPage SprintPage ResultsPage
+                           ResultsPage ClassroomPage AccountPage
+  components/              MasteryGrid BottomNav TopBar DotArray
+  utils/learningTier.ts    Client-side pair→tier mapping
 ```
