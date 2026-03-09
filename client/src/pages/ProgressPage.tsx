@@ -9,38 +9,50 @@ interface Props {
   playerLearningTier?: number;
 }
 
+const TIER_EMOJI = ['🌱', '🔨', '⚡', '🏆'];
+
 export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: Props) {
   const { t } = useTranslation();
   const [sessions]     = useTable(tables.sessions);
   const [answers]      = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const [unlockLogs]   = useTable(tables.unlock_logs);
 
   const myAnswers = (answers as any[]).filter(
     a => a.playerIdentity.toHexString() === myIdentityHex
   );
-  const tier1Unlocked = (unlockLogs as any[]).some(
-    u => u.playerIdentity.toHexString() === myIdentityHex && u.tier === 1
-  );
+
+  const isMaxTier = playerLearningTier >= 3;
 
   return (
     <div className="page">
-      {tier1Unlocked && (
-        <div className="card" style={{
-          border: '1px solid var(--accent)',
-          display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px',
-        }}>
-          <span style={{ fontSize: 24 }}>🔓</span>
-          <div>
-            <div style={{ fontWeight: 700, color: 'var(--accent)' }}>
-              {t('unlock.tier1Title' as any)}
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-              {t('unlock.tier1Desc' as any)}
-            </div>
+      {/* Tier status card */}
+      <div className="card" style={{
+        border: `1px solid ${isMaxTier ? 'var(--accent)' : 'var(--border)'}`,
+        display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px',
+      }}>
+        <span style={{ fontSize: 28, lineHeight: 1 }}>{TIER_EMOJI[Math.min(playerLearningTier, 3)]}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontWeight: 700, fontSize: 15,
+            color: isMaxTier ? 'var(--accent)' : 'var(--text)',
+            display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+          }}>
+            {t(`tiers.tier${playerLearningTier}Name` as any)}
+            <span style={{
+              fontSize: 11, fontWeight: 700, color: 'var(--muted)',
+              background: 'var(--card2)', padding: '2px 8px',
+              borderRadius: 6, border: '1px solid var(--border)',
+            }}>
+              {t('tiers.statusLevel', { tier: playerLearningTier })}
+            </span>
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>
+            {isMaxTier
+              ? t('tiers.allUnlocked')
+              : t(`tiers.nextUnlock${playerLearningTier}` as any)}
           </div>
         </div>
-      )}
+      </div>
 
       <div className="card">
         <h2 style={{ marginBottom: 4 }}>{t('lobby.masteryTitle')}</h2>
@@ -50,7 +62,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
         <MasteryGrid
           answers={myAnswers}
           problemStats={problemStats as any[]}
-          tier1Unlocked={tier1Unlocked}
+          tier1Unlocked={playerLearningTier >= 3}
           playerLearningTier={playerLearningTier}
         />
       </div>

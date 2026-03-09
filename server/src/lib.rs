@@ -120,6 +120,55 @@ pub fn migrate_seed_extended_pairs(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// Migration: recompute every player's learning_tier strictly from their mastery data.
+/// Unlike check_and_unlock (which only increases tier), this can also LOWER the tier
+/// for players who were grandfathered above what their actual answers justify.
+/// Idempotent — safe to call multiple times.
+#[reducer]
+pub fn migrate_recompute_tiers(ctx: &ReducerContext) -> Result<(), String> {
+    let all_answers: Vec<Answer> = ctx.db.answers().iter().collect();
+    for player in ctx.db.players().iter() {
+        let my_answers: Vec<&Answer> = all_answers.iter()
+            .filter(|a| a.player_identity == player.identity)
+            .collect();
+
+        let mut earned_tier = 0u8;
+        for target_tier in 1u8..=3u8 {
+            let check_tier = target_tier - 1;
+            let tier_pairs: Vec<(u8, u8)> = ctx.db.problem_stats()
+                .iter()
+                .filter(|s| pair_learning_tier(s.a, s.b) == Some(check_tier))
+                .map(|s| (s.a, s.b))
+                .collect();
+            let total = tier_pairs.len() as f32;
+            if total == 0.0 { continue; }
+
+            let mut mastered = 0u32;
+            for (a, b) in &tier_pairs {
+                let mut pair: Vec<_> = my_answers.iter()
+                    .filter(|ans| ans.a == *a && ans.b == *b)
+                    .collect();
+                if pair.is_empty() { continue; }
+                pair.sort_by_key(|ans| ans.id);
+                let recent: Vec<_> = pair.iter().rev().take(10).collect();
+                let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
+                    / recent.len() as f32;
+                if acc >= 0.8 { mastered += 1; }
+            }
+            if mastered as f32 / total >= 0.8 {
+                earned_tier = target_tier;
+            } else {
+                break;
+            }
+        }
+
+        if earned_tier != player.learning_tier {
+            ctx.db.players().identity().update(Player { learning_tier: earned_tier, ..player });
+        }
+    }
+    Ok(())
+}
+
 fn seed_problem_stats(ctx: &ReducerContext) {
     for a in 0u8..=10 {
         for b in 0u8..=10 {

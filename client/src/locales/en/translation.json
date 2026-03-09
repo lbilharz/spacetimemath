@@ -219,6 +219,15 @@
     "unlocked2": "Full table unlocked!",
     "unlockedDesc2": "×6, ×7, ×8, ×9 are yours now. Complete mastery awaits.",
     "unlocked3": "2-digit multipliers unlocked!",
-    "unlockedDesc3": "×11, ×12, ×15, ×20, ×25 — the bonus round is open."
+    "unlockedDesc3": "×11, ×12, ×15, ×20, ×25 — the bonus round is open.",
+    "statusLevel": "Level {{tier}}",
+    "tier0Name": "Starter",
+    "tier1Name": "Building",
+    "tier2Name": "Advanced",
+    "tier3Name": "Extended",
+    "nextUnlock0": "Master ×1, ×2, ×5, ×10 to unlock ×3 & ×4",
+    "nextUnlock1": "Master ×3 & ×4 to unlock ×6–9",
+    "nextUnlock2": "Master ×6–9 to unlock 2-digit multipliers",
+    "allUnlocked": "All tables unlocked! 🎉"
   }
 }

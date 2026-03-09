@@ -219,6 +219,15 @@
     "unlocked2": "Volltabelle freigeschaltet!",
     "unlockedDesc2": "×6, ×7, ×8, ×9 gehören jetzt dir. Vollständige Beherrschung wartet.",
     "unlocked3": "Zweistellige Multiplikatoren freigeschaltet!",
-    "unlockedDesc3": "×11, ×12, ×15, ×20, ×25 — die Bonusrunde ist offen."
+    "unlockedDesc3": "×11, ×12, ×15, ×20, ×25 — die Bonusrunde ist offen.",
+    "statusLevel": "Level {{tier}}",
+    "tier0Name": "Einsteiger",
+    "tier1Name": "Aufbau",
+    "tier2Name": "Fortgeschritten",
+    "tier3Name": "Erweitert",
+    "nextUnlock0": "×1, ×2, ×5, ×10 meistern → ×3 & ×4 freischalten",
+    "nextUnlock1": "×3 & ×4 meistern → ×6–9 freischalten",
+    "nextUnlock2": "×6–9 meistern → Zweistellige Multiplikatoren freischalten",
+    "allUnlocked": "Alle Tabellen freigeschaltet! 🎉"
   }
 }
