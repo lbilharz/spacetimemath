@@ -252,8 +252,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const medals = ['🥇', '🥈', '🥉'];
   const studentsWithCards = memberRows.filter(m => m.recoveryCode).length;
 
-  // Hide non-sprint UI while a class sprint is active or just ended
-  const isSprintMode = isTeacher && !!(activeSprint || endedSprint);
 
   return (
     <div className="page">
@@ -427,7 +425,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       )}
 
       {/* Join code + QR */}
-      {!isSprintMode && <div className="card">
+      <div className="card">
         <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.joinCode')}</h2>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
           <div>
@@ -460,10 +458,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             />
           </div>
         </div>
-      </div>}
+      </div>
 
       {/* Members + Leaderboard */}
-      {!isSprintMode && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
         {/* Members */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8, flexWrap: 'wrap' }}>
@@ -585,10 +583,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             {t('classroom.liveCaption')}
           </p>
         </div>
-      </div>}
+      </div>
 
       {/* Class mastery grid */}
-      {!isSprintMode && classAnswers.length > 0 && (
+      {classAnswers.length > 0 && (
         <div className="card">
           <h2 style={{ marginBottom: 4, fontSize: 16 }}>{t('classroom.classMastery')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
@@ -599,7 +597,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       )}
 
       {/* Leave / Close */}
-      {!isSprintMode && <div>
+      <div>
         <button
           className="btn btn-secondary"
           onClick={handleLeave}
@@ -613,7 +611,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             {t('classroom.closeHint')}
           </p>
         )}
-      </div>}
+      </div>
     </div>
   );
 }
