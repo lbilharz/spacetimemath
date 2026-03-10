@@ -92,7 +92,7 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier 
                   key={s.playerIdentity.toHexString()}
                   style={{
                     borderBottom: '1px solid var(--border)',
-                    background: isMe ? 'rgba(0,212,170,0.05)' : 'transparent',
+                    background: isMe ? 'rgba(251,186,0,0.08)' : 'transparent',
                   }}
                 >
                   <td style={{ ...td, fontWeight: 700, color: i < 3 ? 'var(--warn)' : 'var(--muted)', textAlign: 'center' }}>

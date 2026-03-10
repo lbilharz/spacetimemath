@@ -22,11 +22,6 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
 
   return (
     <div className="topbar">
-      {/* Brand */}
-      <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', letterSpacing: '-0.2px', flexShrink: 0 }}>
-        {t('app.brand')}
-      </span>
-
       {/* Tab links — only when a player is registered */}
       {myPlayer && (
         <div style={{ display: 'flex', gap: 2, flex: 1, justifyContent: 'center' }}>
@@ -39,8 +34,8 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  borderBottom: isActive ? '2px solid var(--accent)' : '2px solid transparent',
-                  color: isActive ? 'var(--accent)' : 'var(--muted)',
+                  borderBottom: (isActive && tab.id !== 'lobby') ? '2px solid var(--accent)' : '2px solid transparent',
+                  color: isActive ? 'var(--text)' : 'var(--muted)',
                   cursor: 'pointer',
                   padding: '8px 18px',
                   fontSize: 13,
@@ -51,8 +46,28 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
                   transition: 'color 0.15s',
                 }}
               >
-                <span style={{ fontSize: 15 }}>{tab.icon}</span>
-                {t(tab.labelKey as any)}
+                {tab.id === 'lobby' ? (
+                  <>
+                    <svg width="20" height="20" viewBox="0 0 100 100" aria-hidden="true" style={{ flexShrink: 0 }}>
+                      <rect width="100" height="100" rx="22" fill="#2C3E50"/>
+                      <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
+                      <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
+                      <rect x="68" y="6"  width="26" height="26" rx="5" fill="#FBBA00"/>
+                      <rect x="6"  y="37" width="26" height="26" rx="5" fill="#5DD23C"/>
+                      <rect x="37" y="37" width="26" height="26" rx="5" fill="#FBBA00"/>
+                      <rect x="68" y="37" width="26" height="26" rx="5" fill="#4FA7FF"/>
+                      <rect x="6"  y="68" width="26" height="26" rx="5" fill="#4FA7FF"/>
+                      <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
+                      <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
+                    </svg>
+                    <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: '-0.3px' }}>noggin</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: 15 }}>{tab.icon}</span>
+                    {t(tab.labelKey as any)}
+                  </>
+                )}
               </button>
             );
           })}

@@ -114,17 +114,15 @@ export default function OnboardingOverlay({ onDone }: Props) {
               style={{
                 flex: 2,
                 padding: isLast ? '16px 0' : '11px 0',
-                background: isLast
-                  ? 'linear-gradient(135deg, #00d4aa 0%, #00b08a 100%)'
-                  : 'var(--accent)',
+                background: 'var(--accent)',
                 border: 'none',
                 borderRadius: 10,
-                color: isLast ? '#0a0a1a' : '#fff',
+                color: '#2C3E50',
                 fontSize: isLast ? 18 : 15,
                 fontWeight: 900,
                 cursor: finishing ? 'default' : 'pointer',
                 opacity: finishing ? 0.7 : 1,
-                boxShadow: isLast ? '0 4px 20px rgba(0,212,170,0.4)' : 'none',
+                boxShadow: isLast ? '0 4px 20px rgba(251,186,0,0.4)' : 'none',
                 letterSpacing: isLast ? '-0.3px' : 'normal',
                 WebkitTapHighlightColor: 'transparent',
               }}

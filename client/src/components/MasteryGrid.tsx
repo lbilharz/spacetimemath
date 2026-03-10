@@ -40,17 +40,17 @@ function getMasteryEither(answers: Answer[], a: number, b: number): Mastery {
 }
 
 const MASTERY_COLORS: Record<Mastery, string> = {
-  mastered: '#00d4aa',
-  learning: '#ffd700',
-  struggling: '#ff4455',
-  untouched: '#2a2a45',
+  mastered:   '#5DD23C',
+  learning:   '#FBBA00',
+  struggling: '#E8391D',
+  untouched:  '#E9E9E9',
 };
 
 const MASTERY_BG: Record<Mastery, string> = {
-  mastered: 'rgba(0,212,170,0.15)',
-  learning: 'rgba(255,215,0,0.15)',
-  struggling: 'rgba(255,68,85,0.15)',
-  untouched: 'var(--card2)',
+  mastered:   'rgba(93,210,60,0.15)',
+  learning:   'rgba(251,186,0,0.15)',
+  struggling: 'rgba(232,57,29,0.12)',
+  untouched:  'var(--card2)',
 };
 
 const TIER1_A = [11, 12, 15, 20, 25];
@@ -190,16 +190,16 @@ export default function MasteryGrid({ answers, problemStats, highlightSession, s
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: 4,
-                        background: ans.isCorrect ? 'rgba(0,212,170,0.15)' : 'rgba(255,68,85,0.15)',
-                        border: `1px solid ${ans.isCorrect ? '#00d4aa' : '#ff4455'}`,
-                        color: ans.isCorrect ? '#00d4aa' : '#ff4455',
+                        background: ans.isCorrect ? 'rgba(93,210,60,0.15)' : 'rgba(232,57,29,0.12)',
+                        border: `1px solid ${ans.isCorrect ? '#5DD23C' : '#E8391D'}`,
+                        color: ans.isCorrect ? '#5DD23C' : '#E8391D',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 13, fontWeight: 700,
                       }}>
                         {ans.isCorrect ? '✓' : '✗'}
                       </div>
                       {!ans.isCorrect && ans.userAnswer !== undefined && (
-                        <div style={{ fontSize: 9, color: '#ff4455', fontWeight: 700 }}>
+                        <div style={{ fontSize: 9, color: '#E8391D', fontWeight: 700 }}>
                           {ans.userAnswer}
                         </div>
                       )}

@@ -15,12 +15,12 @@
     "code": "code"
   },
   "app": {
-    "brand": "⚡ Math Sprint",
-    "connecting": "⚡ Connecting to SpacetimeDB…",
+    "brand": "noggin",
+    "connecting": "Connecting to SpacetimeDB…",
     "connectionError": "Cannot connect to SpaceTimeDB",
     "connectionErrorHint": "Make sure spacetime start --in-memory is running on port 3000",
     "reconnecting": "Reconnecting…",
-    "tagline": "Multiply your speed."
+    "tagline": "Knock it in."
   },
   "register": {
     "tagline": "60 seconds. Multiplication tables. Live leaderboard.",

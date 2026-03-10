@@ -129,11 +129,11 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                               padding: '4px 7px',
                               borderRadius: 5,
                               background: ans.isCorrect
-                                ? 'rgba(0,212,170,0.08)'
-                                : 'rgba(255,68,85,0.12)',
+                                ? 'rgba(93,210,60,0.10)'
+                                : 'rgba(232,57,29,0.10)',
                               border: ans.isCorrect
-                                ? '1px solid rgba(0,212,170,0.2)'
-                                : '1px solid rgba(255,68,85,0.25)',
+                                ? '1px solid rgba(93,210,60,0.3)'
+                                : '1px solid rgba(232,57,29,0.3)',
                             }}
                           >
                             {/* Problem */}

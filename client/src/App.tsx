@@ -247,13 +247,13 @@ export default function App() {
         gap: 16, padding: 32, textAlign: 'center',
       }}>
         <div style={{ fontSize: 48 }}>🏫</div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>
           {t('classSprint.alertTitle')}
         </div>
         <div style={{ fontSize: 48, fontWeight: 900, color: 'var(--accent)', lineHeight: 1 }}>
           {count > 0 ? count : '🚀'}
         </div>
-        <div style={{ fontSize: 14, color: 'var(--muted)' }}>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
           {t('classSprint.alertCountdown', { n: count })}
         </div>
       </div>
@@ -261,12 +261,18 @@ export default function App() {
   };
 
   // ── Splash helper ────────────────────────────────────────────────────────────
-  const SplashBolt = () => (
-    <svg className="splash-bolt" width="56" height="88" viewBox="0 0 56 88" aria-hidden="true">
-      {/* depth shadow */}
-      <polygon points="36,2 6,48 24,48 16,86 50,40 32,40" fill="#005544" transform="translate(2.5,2.5)" />
-      {/* main teal bolt */}
-      <polygon points="36,2 6,48 24,48 16,86 50,40 32,40" fill="#00d4aa" />
+  const SplashGrid = () => (
+    <svg className="splash-bolt" width="80" height="80" viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" rx="22" fill="#2C3E50"/>
+      <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
+      <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
+      <rect x="68" y="6"  width="26" height="26" rx="5" fill="#FBBA00"/>
+      <rect x="6"  y="37" width="26" height="26" rx="5" fill="#5DD23C"/>
+      <rect x="37" y="37" width="26" height="26" rx="5" fill="#FBBA00"/>
+      <rect x="68" y="37" width="26" height="26" rx="5" fill="#4FA7FF"/>
+      <rect x="6"  y="68" width="26" height="26" rx="5" fill="#4FA7FF"/>
+      <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
+      <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
     </svg>
   );
 
@@ -275,8 +281,8 @@ export default function App() {
     return (
       <div className="splash-screen">
         <div className="splash-glow" />
-        <SplashBolt />
-        <div className="splash-title">Math Sprint</div>
+        <SplashGrid />
+        <div className="splash-title">noggin</div>
         <div className="splash-tagline" style={{ color: 'var(--wrong)', marginTop: 12 }}>
           {t('app.connectionError')}
         </div>
@@ -293,8 +299,8 @@ export default function App() {
     return (
       <div className="splash-screen">
         <div className="splash-glow" />
-        <SplashBolt />
-        <div className="splash-title">Math Sprint</div>
+        <SplashGrid />
+        <div className="splash-title">noggin</div>
         <div className="splash-tagline">{t('app.tagline')}</div>
       </div>
     );

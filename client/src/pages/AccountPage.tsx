@@ -331,7 +331,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
       </div>
 
       {/* Danger zone */}
-      <div className="card" style={{ borderColor: 'rgba(255,68,85,0.4)' }}>
+      <div className="card" style={{ borderColor: 'rgba(232,57,29,0.4)' }}>
         <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('account.session')}</h2>
         <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
           {t('account.logoutDesc')}

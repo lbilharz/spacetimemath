@@ -188,14 +188,14 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
           style={{
             width: '100%',
             padding: '18px 0',
-            background: 'linear-gradient(135deg, #00d4aa 0%, #00b08a 100%)',
+            background: 'var(--accent)',
             border: 'none',
             borderRadius: 14,
-            color: '#0a0a1a',
+            color: '#2C3E50',
             fontSize: 20,
             fontWeight: 900,
             cursor: 'pointer',
-            boxShadow: '0 6px 28px rgba(0,212,170,0.4)',
+            boxShadow: '0 6px 28px rgba(251,186,0,0.4)',
             letterSpacing: '-0.5px',
             WebkitTapHighlightColor: 'transparent',
           }}
