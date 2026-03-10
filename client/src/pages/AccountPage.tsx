@@ -340,6 +340,25 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
           {t('account.logout')}
         </button>
       </div>
+
+      {/* Legal */}
+      <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', paddingBottom: 8 }}>
+        {[
+          { key: 'account.imprint',  href: 'https://www.bettermarks.com/impressum/' },
+          { key: 'account.privacy',  href: 'https://www.bettermarks.com/datenschutz/' },
+          { key: 'account.terms',    href: 'https://www.bettermarks.com/agb/' },
+        ].map(({ key, href }) => (
+          <a
+            key={key}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}
+          >
+            {t(key as any)}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
