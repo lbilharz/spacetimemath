@@ -160,3 +160,51 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
   font-size: 18px;
   color: var(--muted);
 }
+
+/* ─── Splash / loading screen ─────────────────────────────── */
+@keyframes splash-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes splash-bolt-pulse {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.50)); }
+  50%       { filter: drop-shadow(0 0 28px rgba(0, 212, 170, 0.90)); }
+}
+
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: #0d0d1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  z-index: 9999;
+}
+.splash-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 55% at 50% 58%, rgba(0,212,170,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+.splash-bolt {
+  position: relative;
+  animation:
+    splash-fade-up 0.5s ease-out,
+    splash-bolt-pulse 2.4s ease-in-out 0.5s infinite;
+}
+.splash-title {
+  margin-top: 22px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #e8e8f0;
+  letter-spacing: -0.5px;
+  animation: splash-fade-up 0.5s ease-out 0.15s backwards;
+}
+.splash-tagline {
+  margin-top: 7px;
+  font-size: 14px;
+  color: #8888aa;
+  animation: splash-fade-up 0.5s ease-out 0.30s backwards;
+}

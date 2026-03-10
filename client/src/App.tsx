@@ -175,20 +175,43 @@ export default function App() {
     navigate('classroom');
   };
 
+  // ── Splash helper ────────────────────────────────────────────────────────────
+  const SplashBolt = () => (
+    <svg className="splash-bolt" width="56" height="88" viewBox="0 0 56 88" aria-hidden="true">
+      {/* depth shadow */}
+      <polygon points="36,2 6,48 24,48 16,86 50,40 32,40" fill="#005544" transform="translate(2.5,2.5)" />
+      {/* main teal bolt */}
+      <polygon points="36,2 6,48 24,48 16,86 50,40 32,40" fill="#00d4aa" />
+    </svg>
+  );
+
   // ── Render ──────────────────────────────────────────────────────────────────
   if (connectionError) {
     return (
-      <div className="loading" style={{ flexDirection: 'column', gap: 8 }}>
-        <span style={{ fontSize: 24 }}>⚠️</span>
-        <span>{t('app.connectionError')}</span>
-        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{t('app.connectionErrorHint')}</span>
+      <div className="splash-screen">
+        <div className="splash-glow" />
+        <SplashBolt />
+        <div className="splash-title">Math Sprint</div>
+        <div className="splash-tagline" style={{ color: 'var(--wrong)', marginTop: 12 }}>
+          {t('app.connectionError')}
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+          {t('app.connectionErrorHint')}
+        </div>
       </div>
     );
   }
 
-  // First-ever load with no cached player: show spinner
+  // First-ever load with no cached player: show branded splash
   if (!isActive && !effectivePlayer) {
-    return <div className="loading"><span>{t('app.connecting')}</span></div>;
+    return (
+      <div className="splash-screen">
+        <div className="splash-glow" />
+        <SplashBolt />
+        <div className="splash-title">Math Sprint</div>
+        <div className="splash-tagline">{t('app.tagline')}</div>
+      </div>
+    );
   }
 
   const showBottomNav = TABBED_PAGES.includes(page) && !!effectivePlayer;
