@@ -66,11 +66,23 @@ function selectNextProblem(
     });
   }
 
-  // Selection weight = difficulty × (1.5 − last10_accuracy)
+  // Selection weight = difficulty × (1.5 − last10_accuracy) × masteryMultiplier
+  // The mastery multiplier ensures blank/orange cells are introduced before the
+  // algorithm settles into optimising pure score on already-green problems.
+  // Once everything is mastered the multipliers equalise and difficulty takes over,
+  // naturally surfacing the highest-point problems for score runs.
+  const MASTERY_MULT: Record<Mastery, number> = {
+    untouched:  4.0,  // strongly prefer introducing unseen problems
+    struggling: 3.0,  // highest priority to fix errors
+    learning:   2.0,  // reinforce in-progress problems
+    mastered:   0.5,  // de-prioritise once solid
+  };
+
   const weighted = stats.map(stat => {
     const personal = accMap.get(stat.problemKey);
-    const accuracy = personal ? personal.correct / personal.total : 0.5;
-    let w = stat.difficultyWeight * (1.5 - accuracy);
+    const accuracy = personal ? personal.correct / personal.total : 0;
+    const mastery  = getMasteryLocal(myAnswers, stat.a, stat.b);
+    let w = stat.difficultyWeight * (1.5 - accuracy) * MASTERY_MULT[mastery];
     // Suppress lower-tier pairs once the player has advanced and clearly mastered them
     if (learningTierOf(stat.a, stat.b) < playerLearningTier
         && personal && personal.allTotal >= 10 && accuracy >= 0.9) {
