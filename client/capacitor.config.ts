@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.bilharz.mathsprint',
-  appName: 'Math Sprint',
+  appId: 'com.bettermarks.MMDTRanking',
+  appName: 'bettermark – Math Sprint',
   webDir: 'dist',
   ios: {
     backgroundColor: '#0d0d1a',   // matches --bg
