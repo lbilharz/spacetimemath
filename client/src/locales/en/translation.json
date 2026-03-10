@@ -212,8 +212,13 @@
   },
   "nav": {
     "home": "Home",
+    "classes": "Classes",
     "progress": "Progress",
     "account": "Account"
+  },
+  "classes": {
+    "empty": "No classes yet",
+    "emptyHint": "Join an existing class or create your own."
   },
   "scoring": {
     "title": "Scoring Guide",

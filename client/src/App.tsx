@@ -10,30 +10,33 @@ import SprintPage from './pages/SprintPage.js';
 import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
 import ClassroomPage from './pages/ClassroomPage.js';
+import ClassroomsPage from './pages/ClassroomsPage.js';
 import BottomNav from './components/BottomNav.js';
 import TopBar from './components/TopBar.js';
 import OnboardingOverlay from './components/OnboardingOverlay.js';
 
-export type Page = 'register' | 'lobby' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom';
+export type Page = 'register' | 'lobby' | 'classrooms' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom';
 
-const TABBED_PAGES: Page[] = ['lobby', 'progress', 'account'];
+const TABBED_PAGES: Page[] = ['lobby', 'classrooms', 'progress', 'account'];
 
 /** Pathname → Page (only stable, deep-linkable pages) */
 const PATH_MAP: Record<string, Page> = {
-  '/': 'lobby',
-  '/progress': 'progress',
-  '/account': 'account',
-  '/classroom': 'classroom',
+  '/':           'lobby',
+  '/classrooms': 'classrooms',
+  '/progress':   'progress',
+  '/account':    'account',
+  '/classroom':  'classroom',
 };
 
 /** Page → canonical pathname */
 const PAGE_PATH: Partial<Record<Page, string>> = {
-  lobby:     '/',
-  progress:  '/progress',
-  account:   '/account',
-  classroom: '/classroom',
-  sprint:    '/sprint',
-  results:   '/results',
+  lobby:      '/',
+  classrooms: '/classrooms',
+  progress:   '/progress',
+  account:    '/account',
+  classroom:  '/classroom',
+  sprint:     '/sprint',
+  results:    '/results',
 };
 
 export default function App() {
@@ -275,11 +278,17 @@ export default function App() {
           window.history.pushState(null, '', search ? `/${search}` : '/');
           setPage('lobby');
         }} />}
-        {page === 'lobby'     && (
+        {page === 'lobby'      && (
           <LobbyPage
             myPlayer={effectivePlayer}
             myIdentityHex={myIdentityHex}
             onStartSprint={(id) => goToSprint(id, 'lobby')}
+            onEnterClassroom={goToClassroom}
+          />
+        )}
+        {page === 'classrooms' && (
+          <ClassroomsPage
+            myIdentityHex={myIdentityHex}
             onEnterClassroom={goToClassroom}
           />
         )}

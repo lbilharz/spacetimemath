@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { Page } from '../App.js';
 
-export type NavTab = 'lobby' | 'progress' | 'account';
+export type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
 
 interface Props {
   active: Page;
@@ -9,9 +9,10 @@ interface Props {
 }
 
 const TABS: { id: NavTab; icon: string; labelKey: string }[] = [
-  { id: 'lobby',    icon: '⚡', labelKey: 'nav.home'     },
-  { id: 'progress', icon: '📊', labelKey: 'nav.progress' },
-  { id: 'account',  icon: '⚙',  labelKey: 'nav.account'  },
+  { id: 'lobby',      icon: '⚡', labelKey: 'nav.home'     },
+  { id: 'classrooms', icon: '🏫', labelKey: 'nav.classes'  },
+  { id: 'progress',   icon: '📊', labelKey: 'nav.progress' },
+  { id: 'account',    icon: '⚙',  labelKey: 'nav.account'  },
 ];
 
 export default function BottomNav({ active, onNavigate }: Props) {

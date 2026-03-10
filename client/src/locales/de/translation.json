@@ -212,8 +212,13 @@
   },
   "nav": {
     "home": "Home",
+    "classes": "Klassen",
     "progress": "Fortschritt",
     "account": "Konto"
+  },
+  "classes": {
+    "empty": "Noch keine Klassen",
+    "emptyHint": "Tritt einer bestehenden Klasse bei oder erstelle eine eigene."
   },
   "scoring": {
     "title": "Punktesystem",

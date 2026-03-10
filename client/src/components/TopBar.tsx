@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import type { Page } from '../App.js';
 
-type NavTab = 'lobby' | 'progress' | 'account';
+type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
 
 const TABS: { id: NavTab; icon: string; labelKey: string }[] = [
-  { id: 'lobby',    icon: '⚡', labelKey: 'nav.home'     },
-  { id: 'progress', icon: '📊', labelKey: 'nav.progress' },
-  { id: 'account',  icon: '⚙',  labelKey: 'nav.account'  },
+  { id: 'lobby',      icon: '⚡', labelKey: 'nav.home'     },
+  { id: 'classrooms', icon: '🏫', labelKey: 'nav.classes'  },
+  { id: 'progress',   icon: '📊', labelKey: 'nav.progress' },
+  { id: 'account',    icon: '⚙',  labelKey: 'nav.account'  },
 ];
 
 interface Props {
