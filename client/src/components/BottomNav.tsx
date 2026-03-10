@@ -8,11 +8,11 @@ interface Props {
   onNavigate: (tab: NavTab) => void;
 }
 
-const TABS: { id: NavTab; icon: string; labelKey: string }[] = [
-  { id: 'lobby',      icon: '⚡', labelKey: 'nav.home'     },
-  { id: 'classrooms', icon: '🏫', labelKey: 'nav.classes'  },
-  { id: 'progress',   icon: '📊', labelKey: 'nav.progress' },
-  { id: 'account',    icon: '⚙',  labelKey: 'nav.account'  },
+const tabs: { id: NavTab; emoji: string | null; labelKey: string }[] = [
+  { id: 'lobby',      emoji: null, labelKey: 'nav.home'     },
+  { id: 'classrooms', emoji: '🏫', labelKey: 'nav.classes'  },
+  { id: 'progress',   emoji: '📊', labelKey: 'nav.progress' },
+  { id: 'account',    emoji: '⚙',  labelKey: 'nav.account'  },
 ];
 
 export default function BottomNav({ active, onNavigate }: Props) {
@@ -20,7 +20,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
 
   return (
     <nav className="bottomnav">
-      {TABS.map(tab => {
+      {tabs.map(tab => {
         const isActive = active === tab.id;
         return (
           <button
@@ -59,13 +59,8 @@ export default function BottomNav({ active, onNavigate }: Props) {
               </>
             ) : (
               <>
-                <span style={{ fontSize: 22, lineHeight: 1 }}>{tab.icon}</span>
-                <span style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  letterSpacing: '0.4px',
-                  textTransform: 'uppercase',
-                }}>
+                <span style={{ fontSize: 22 }}>{tab.emoji}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.4px', textTransform: 'uppercase' }}>
                   {t(tab.labelKey as any)}
                 </span>
               </>

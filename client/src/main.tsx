@@ -1,11 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Capacitor } from '@capacitor/core';
 import { SpacetimeDBProvider } from 'spacetimedb/react';
 import { DbConnection } from './module_bindings/index.js';
 import App from './App.js';
 import { setCapturedToken } from './auth.js';
 import './i18n.js';
 import './index.css';
+
+// On iOS/Android use the system font so emoji render correctly in WKWebView.
+if (Capacitor.isNativePlatform()) {
+  document.documentElement.classList.add('is-native');
+}
 
 const CREDS_KEY = 'spacetimemath_credentials';
 
