@@ -38,14 +38,17 @@ import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
 import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import CreateTransferCodeReducer from "./create_transfer_code_reducer";
+import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
+import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
 import RegisterReducer from "./register_reducer";
 import SetUsernameReducer from "./set_username_reducer";
+import StartClassSprintReducer from "./start_class_sprint_reducer";
 import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
@@ -56,6 +59,7 @@ import UseTransferCodeReducer from "./use_transfer_code_reducer";
 // Import all table schema definitions
 import AnswersRow from "./answers_table";
 import BestScoresRow from "./best_scores_table";
+import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
 import PlayersRow from "./players_table";
@@ -91,6 +95,17 @@ const tablesSchema = __schema({
       { name: 'best_scores_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
     ],
   }, BestScoresRow),
+  class_sprints: __table({
+    name: 'class_sprints',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+    ],
+    constraints: [
+      { name: 'class_sprints_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, ClassSprintsRow),
   classroom_members: __table({
     name: 'classroom_members',
     indexes: [
@@ -187,14 +202,17 @@ const reducersSchema = __reducers(
   __reducerSchema("create_classroom", CreateClassroomReducer),
   __reducerSchema("create_recovery_key", CreateRecoveryKeyReducer),
   __reducerSchema("create_transfer_code", CreateTransferCodeReducer),
+  __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("migrate_recompute_tiers", MigrateRecomputeTiersReducer),
+  __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
   __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),
   __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("set_username", SetUsernameReducer),
+  __reducerSchema("start_class_sprint", StartClassSprintReducer),
   __reducerSchema("start_session", StartSessionReducer),
   __reducerSchema("submit_answer", SubmitAnswerReducer),
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),

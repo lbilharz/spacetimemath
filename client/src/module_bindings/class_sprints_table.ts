@@ -12,13 +12,8 @@ import {
 
 export default __t.row({
   id: __t.u64().primaryKey(),
-  playerIdentity: __t.identity().name("player_identity"),
-  username: __t.string(),
-  weightedScore: __t.f32().name("weighted_score"),
-  rawScore: __t.u32().name("raw_score"),
-  accuracyPct: __t.u8().name("accuracy_pct"),
-  totalAnswered: __t.u32().name("total_answered"),
-  isComplete: __t.bool().name("is_complete"),
+  classroomId: __t.u64().name("classroom_id"),
+  teacher: __t.identity(),
   startedAt: __t.timestamp().name("started_at"),
-  classSprintId: __t.u64().name("class_sprint_id"),
+  isActive: __t.bool().name("is_active"),
 });

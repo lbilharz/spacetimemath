@@ -32,6 +32,8 @@ pub struct Session {
     pub total_answered: u32,
     pub is_complete: bool,
     pub started_at: Timestamp,
+    #[default(0u64)]
+    pub class_sprint_id: u64,  // 0 = solo sprint; non-zero = class sprint
 }
 
 #[table(accessor = answers, public)]
@@ -364,6 +366,7 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
         total_answered: 0,
         is_complete: false,
         started_at: ctx.timestamp,
+        class_sprint_id: 0,
     });
     Ok(())
 }
@@ -779,6 +782,20 @@ pub struct ClassroomMember {
     pub hidden: bool,  // if true, member is excluded from class leaderboard/mastery
 }
 
+/// An active class sprint kicked off by a teacher.
+/// When is_active flips to false (or the teacher calls end_class_sprint),
+/// the live view switches to the "ended" mode on all clients.
+#[table(accessor = class_sprints, public)]
+pub struct ClassSprint {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub classroom_id: u64,
+    pub teacher: Identity,
+    pub started_at: Timestamp,
+    pub is_active: bool,
+}
+
 /// Create a new classroom. The caller becomes its teacher and first member.
 /// A player may teach or join multiple classrooms simultaneously.
 #[reducer]
@@ -856,5 +873,82 @@ pub fn toggle_classroom_visibility(ctx: &ReducerContext, classroom_id: u64) -> R
         .ok_or("Not in this classroom")?;
     let updated = ClassroomMember { hidden: !membership.hidden, ..membership };
     ctx.db.classroom_members().id().update(updated);
+    Ok(())
+}
+
+/// Teacher starts a class sprint: marks any existing active sprint for this classroom
+/// as inactive, inserts a new ClassSprint row, then creates a Session for every
+/// non-hidden, non-teacher member so their SprintPage auto-detects it.
+#[reducer]
+pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
+    let sender = ctx.sender();
+    // Verify caller is the classroom teacher
+    let classroom = ctx.db.classrooms().id().find(classroom_id)
+        .ok_or("Classroom not found")?;
+    if classroom.teacher != sender {
+        return Err("Only the teacher can start a class sprint".into());
+    }
+
+    // Deactivate any previous active ClassSprint for this classroom
+    let old_sprints: Vec<_> = ctx.db.class_sprints()
+        .iter()
+        .filter(|s| s.classroom_id == classroom_id && s.is_active)
+        .collect();
+    for s in old_sprints {
+        ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..s });
+    }
+
+    // Insert new ClassSprint
+    let sprint = ctx.db.class_sprints().insert(ClassSprint {
+        id: 0,
+        classroom_id,
+        teacher: sender,
+        started_at: ctx.timestamp,
+        is_active: true,
+    });
+
+    // Create a Session for each non-hidden, non-teacher member
+    let members: Vec<_> = ctx.db.classroom_members()
+        .iter()
+        .filter(|m| m.classroom_id == classroom_id && !m.hidden && m.player_identity != sender)
+        .collect();
+
+    for member in members {
+        if let Some(player) = ctx.db.players().identity().find(member.player_identity) {
+            // Skip if that player already has an incomplete session for this class sprint
+            // (shouldn't happen, but guards against double-tap)
+            let already = ctx.db.sessions()
+                .iter()
+                .any(|s| s.player_identity == member.player_identity
+                    && s.class_sprint_id == sprint.id
+                    && !s.is_complete);
+            if already { continue; }
+
+            ctx.db.sessions().insert(Session {
+                id: 0,
+                player_identity: member.player_identity,
+                username: player.username,
+                weighted_score: 0.0,
+                raw_score: 0,
+                accuracy_pct: 0,
+                total_answered: 0,
+                is_complete: false,
+                started_at: ctx.timestamp,
+                class_sprint_id: sprint.id,
+            });
+        }
+    }
+    Ok(())
+}
+
+/// Teacher ends the class sprint early (students' 60s timers still run to natural end).
+#[reducer]
+pub fn end_class_sprint(ctx: &ReducerContext, class_sprint_id: u64) -> Result<(), String> {
+    let sprint = ctx.db.class_sprints().id().find(class_sprint_id)
+        .ok_or("ClassSprint not found")?;
+    if sprint.teacher != ctx.sender() {
+        return Err("Only the teacher can end this sprint".into());
+    }
+    ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..sprint });
     Ok(())
 }

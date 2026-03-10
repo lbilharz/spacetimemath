@@ -33,6 +33,15 @@ export const BestScore = __t.object("BestScore", {
 });
 export type BestScore = __Infer<typeof BestScore>;
 
+export const ClassSprint = __t.object("ClassSprint", {
+  id: __t.u64(),
+  classroomId: __t.u64(),
+  teacher: __t.identity(),
+  startedAt: __t.timestamp(),
+  isActive: __t.bool(),
+});
+export type ClassSprint = __Infer<typeof ClassSprint>;
+
 export const Classroom = __t.object("Classroom", {
   id: __t.u64(),
   code: __t.string(),
@@ -90,6 +99,7 @@ export const Session = __t.object("Session", {
   totalAnswered: __t.u32(),
   isComplete: __t.bool(),
   startedAt: __t.timestamp(),
+  classSprintId: __t.u64(),
 });
 export type Session = __Infer<typeof Session>;
 

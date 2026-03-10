@@ -240,6 +240,23 @@
     "untouched": "unversucht",
     "hardDiff": "schwer (≥1.5×)"
   },
+  "classSprint": {
+    "start": "▶ Klassen-Sprint starten",
+    "starting": "Startet…",
+    "live": "🔴 LIVE · Klassen-Sprint",
+    "end": "⏹ Sprint beenden",
+    "alertTitle": "Dein Lehrer hat einen Klassen-Sprint gestartet!",
+    "alertCountdown": "Startet in {{n}}…",
+    "viewResults": "🏁 Klassenergebnisse ansehen",
+    "resultsTitle": "Klassen-Sprint Ergebnisse",
+    "rankingTitle": "🏆 Klassenrangliste",
+    "colScore": "Punkte",
+    "colCorrect": "Richtig",
+    "backToClass": "← Zurück zur Klasse",
+    "grid": "Kombiniertes Klassen-Einmaleins",
+    "gridDesc": "Felder, die mindestens ein Mitglied in diesem Sprint richtig beantwortet hat.",
+    "noResults": "Noch keine Ergebnisse — Sprints laufen noch."
+  },
   "tiers": {
     "unlocked1": "×3 und ×4 freigeschaltet!",
     "unlockedDesc1": "Du hast die Grundlagen gemeistert. Zeit für ×3 und ×4.",

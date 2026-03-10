@@ -240,6 +240,23 @@
     "untouched": "untouched",
     "hardDiff": "hard (≥1.5×)"
   },
+  "classSprint": {
+    "start": "▶ Start class sprint",
+    "starting": "Starting…",
+    "live": "🔴 LIVE · Class Sprint",
+    "end": "⏹ End sprint",
+    "alertTitle": "Your teacher started a class sprint!",
+    "alertCountdown": "Starting in {{n}}…",
+    "viewResults": "🏁 View class results",
+    "resultsTitle": "Class Sprint Results",
+    "rankingTitle": "🏆 Class Ranking",
+    "colScore": "Score",
+    "colCorrect": "Correct",
+    "backToClass": "← Back to class",
+    "grid": "Combined class grid",
+    "gridDesc": "Cells answered correctly by at least one member this sprint.",
+    "noResults": "No results yet — sessions still running."
+  },
   "tiers": {
     "unlocked1": "×3 and ×4 unlocked!",
     "unlockedDesc1": "You've mastered the basics. Time to tackle ×3 and ×4.",

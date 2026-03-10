@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
@@ -9,26 +9,32 @@ interface Props {
   myIdentityHex: string;
   classroomId: bigint;
   onStartSprint: (sessionId: bigint) => void;
+  onStartClassSprint: (classSprintId: bigint) => void;
   onLeave: () => void;
 }
 
-export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onLeave }: Props) {
+export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onStartClassSprint, onLeave }: Props) {
   const { t } = useTranslation();
-  const [classrooms] = useTable(tables.classrooms);
-  const [classroomMembers] = useTable(tables.classroom_members);
-  const [sessions] = useTable(tables.sessions);
-  const [answers] = useTable(tables.answers);
-  const [players] = useTable(tables.players);
-  const [problemStats] = useTable(tables.problem_stats);
-  const [recoveryKeys] = useTable(tables.recovery_keys);
+  const [classrooms]        = useTable(tables.classrooms);
+  const [classroomMembers]  = useTable(tables.classroom_members);
+  const [classSprints]      = useTable(tables.class_sprints);
+  const [sessions]          = useTable(tables.sessions);
+  const [answers]           = useTable(tables.answers);
+  const [players]           = useTable(tables.players);
+  const [problemStats]      = useTable(tables.problem_stats);
+  const [recoveryKeys]      = useTable(tables.recovery_keys);
 
-  const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
-  const startSession = useSTDBReducer(reducers.startSession);
+  const leaveClassroom   = useSTDBReducer(reducers.leaveClassroom);
+  const startSession     = useSTDBReducer(reducers.startSession);
   const toggleVisibility = useSTDBReducer(reducers.toggleClassroomVisibility);
+  const startClassSprint = useSTDBReducer(reducers.startClassSprint);
+  const endClassSprint   = useSTDBReducer(reducers.endClassSprint);
 
   const [codeCopied, setCodeCopied] = useState(false);
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [startingClassSprint, setStartingClassSprint] = useState(false);
+  const [endingClassSprint, setEndingClassSprint] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
 
@@ -51,6 +57,56 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const isTeacher = myClassroom.teacher.toHexString() === myIdentityHex;
   const amHidden: boolean = myMembership?.hidden ?? false;
+
+  // ── Class sprint state ──────────────────────────────────────────────────────
+  const roomSprints = (classSprints as any[])
+    .filter(s => s.classroomId === classroomId)
+    .sort((a, b) => Number(b.id - a.id));
+  const latestSprint = roomSprints[0] ?? null;
+  const activeSprint = latestSprint?.isActive ? latestSprint : null;
+  const endedSprint  = latestSprint && !latestSprint.isActive ? latestSprint : null;
+
+  // Sessions + answers belonging to the active/ended sprint (for live ticker + mini LB)
+  const sprintSessions = latestSprint
+    ? (sessions as any[]).filter(s => s.classSprintId === latestSprint.id)
+    : [];
+  const sprintSessionIds = new Set<bigint>(sprintSessions.map((s: any) => s.id as bigint));
+  const sprintAnswers = (answers as any[]).filter(a => sprintSessionIds.has(a.sessionId));
+
+  // Last 20 answers sorted newest-first for the live ticker
+  const recentAnswers = [...sprintAnswers]
+    .sort((a, b) => Number(b.id - a.id))
+    .slice(0, 20);
+
+  // Mini live leaderboard (top 5 by current score)
+  const liveLB = sprintSessions
+    .map((s: any) => {
+      const p = (players as any[]).find(pl => pl.identity.toHexString() === s.playerIdentity.toHexString());
+      return { username: p?.username ?? s.username, score: s.weightedScore as number };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+
+  const handleStartClassSprint = async () => {
+    setStartingClassSprint(true);
+    try {
+      await startClassSprint({ classroomId });
+    } finally {
+      setStartingClassSprint(false);
+    }
+  };
+
+  const handleEndClassSprint = async () => {
+    if (!activeSprint) return;
+    setEndingClassSprint(true);
+    try {
+      await endClassSprint({ classSprintId: activeSprint.id });
+    } finally {
+      setEndingClassSprint(false);
+    }
+  };
+
+  // ── End of class sprint state ───────────────────────────────────────────────
 
   // All members of this classroom
   const members = (classroomMembers as any[]).filter(m => m.classroomId === classroomId);
@@ -211,22 +267,127 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 24 }}>📚 {myClassroom.name}</h1>
+          <h1 style={{ fontSize: 24 }}>
+            {activeSprint ? <span style={{ color: 'var(--wrong)', marginRight: 8 }}>🔴</span> : '📚 '}
+            {myClassroom.name}
+          </h1>
           <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 2 }}>
             {isTeacher ? t('classroom.youAreTeaching') : t('classroom.youAreStudent')} · {t('classroom.members', { count: members.length })}
           </p>
+          {activeSprint && isTeacher && (
+            <p style={{ color: 'var(--wrong)', fontSize: 13, fontWeight: 700, marginTop: 4 }}>
+              {t('classSprint.live')}
+            </p>
+          )}
         </div>
-        <button
-          className="btn btn-primary btn-lg"
-          onClick={handleStart}
-          disabled={starting}
-          style={{ minWidth: 140 }}
-        >
-          {starting ? t('classroom.starting') : t('classroom.startSprint')}
-        </button>
+
+        {/* Right-side controls */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+          {isTeacher ? (
+            /* Teacher: class sprint controls only */
+            <>
+              {!activeSprint && (
+                <button
+                  className="btn btn-primary btn-lg"
+                  onClick={handleStartClassSprint}
+                  disabled={startingClassSprint}
+                  style={{ minWidth: 160 }}
+                >
+                  {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
+                </button>
+              )}
+              {activeSprint && (
+                <button
+                  className="btn btn-primary btn-lg"
+                  onClick={handleEndClassSprint}
+                  disabled={endingClassSprint}
+                  style={{ minWidth: 160, background: 'var(--wrong)', borderColor: 'var(--wrong)' }}
+                >
+                  {t('classSprint.end')}
+                </button>
+              )}
+              {endedSprint && !activeSprint && (
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => onStartClassSprint(endedSprint.id)}
+                  style={{ minWidth: 160, fontSize: 13 }}
+                >
+                  {t('classSprint.viewResults')}
+                </button>
+              )}
+            </>
+          ) : (
+            /* Student: solo sprint */
+            <button
+              className="btn btn-primary btn-lg"
+              onClick={handleStart}
+              disabled={starting}
+              style={{ minWidth: 140 }}
+            >
+              {starting ? t('classroom.starting') : t('classroom.startSprint')}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Live feed — shown during an active class sprint (teacher only) */}
+      {isTeacher && activeSprint && (
+        <div className="card" style={{ borderColor: 'rgba(255,60,60,0.4)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, flexWrap: 'wrap' }}>
+            {/* Rolling answer ticker */}
+            <div>
+              <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Live answers
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {recentAnswers.length === 0 ? (
+                  <span style={{ color: 'var(--muted)', fontSize: 13 }}>Waiting for answers…</span>
+                ) : (
+                  recentAnswers.map((a: any) => {
+                    const p = (players as any[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
+                    const name = p?.username ?? '?';
+                    return (
+                      <div key={String(a.id)} style={{
+                        display: 'flex', gap: 6, alignItems: 'center', fontSize: 13,
+                        color: a.isCorrect ? 'var(--accent)' : 'var(--wrong)',
+                      }}>
+                        <span>{a.isCorrect ? '🟢' : '🔴'}</span>
+                        <span style={{ fontWeight: 600 }}>{name}</span>
+                        <span style={{ color: 'var(--muted)' }}>{a.a}×{a.b}</span>
+                        <span>{a.isCorrect ? '✓' : '✗'}</span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Mini live leaderboard */}
+            <div>
+              <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Live scores
+              </h3>
+              {liveLB.length === 0 ? (
+                <span style={{ color: 'var(--muted)', fontSize: 13 }}>No scores yet</span>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {liveLB.map((r, i) => (
+                    <div key={r.username} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, color: 'var(--muted)', width: 16, textAlign: 'right' }}>{i + 1}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, flex: 1 }}>{r.username}</span>
+                      <span style={{ fontSize: 13, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
+                        {r.score.toFixed(1)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Join code + QR */}
       <div className="card">

@@ -11,11 +11,12 @@ import ResultsPage from './pages/ResultsPage.js';
 import AccountPage from './pages/AccountPage.js';
 import ClassroomPage from './pages/ClassroomPage.js';
 import ClassroomsPage from './pages/ClassroomsPage.js';
+import ClassSprintResultsPage from './pages/ClassSprintResultsPage.js';
 import BottomNav from './components/BottomNav.js';
 import TopBar from './components/TopBar.js';
 import OnboardingOverlay from './components/OnboardingOverlay.js';
 
-export type Page = 'register' | 'lobby' | 'classrooms' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom';
+export type Page = 'register' | 'lobby' | 'classrooms' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom' | 'classsprintresults';
 
 const TABBED_PAGES: Page[] = ['lobby', 'classrooms', 'progress', 'account'];
 
@@ -43,13 +44,18 @@ export default function App() {
   const { t } = useTranslation();
   const { identity, isActive, connectionError } = useSpacetimeDB();
   const [players] = useTable(tables.players);
+  const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
+  const [classSprints] = useTable(tables.class_sprints);
   const [recoveryKeys] = useTable(tables.recovery_keys);
   const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
   const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
+  const [activeClassSprintId, setActiveClassSprintId] = useState<bigint | null>(null);
+  const [incomingClassSprint, setIncomingClassSprint] = useState<any>(null);
+  const seenClassSprintIds = useRef(new Set<bigint>());
   const tierAtSprintStartRef = useRef<number>(0);
   // Ref so event handlers can read current player without stale closure
   const myPlayerRef = useRef<{ learningTier?: number } | undefined>(undefined);
@@ -90,6 +96,31 @@ export default function App() {
         m => m.playerIdentity.toHexString() === myIdentityHex && m.classroomId === classroomId
       )
     : false;
+
+  // ── Class sprint detection (student alert) ───────────────────────────────────
+  useEffect(() => {
+    if (!myIdentityHex || page === 'sprint' || page === 'register') return;
+
+    const myClassroomIds = (classroomMembers as any[])
+      .filter(m => m.playerIdentity.toHexString() === myIdentityHex)
+      .map(m => m.classroomId);
+
+    const activeForMe = (classSprints as any[]).find(
+      s => s.isActive
+        && myClassroomIds.includes(s.classroomId)
+        && !seenClassSprintIds.current.has(s.id)
+    );
+
+    if (activeForMe) {
+      // Only show alert to non-teacher students
+      const classroom = (classrooms as any[]).find(c => c.id === activeForMe.classroomId);
+      const isTeacher = classroom?.teacher.toHexString() === myIdentityHex;
+      if (!isTeacher) {
+        seenClassSprintIds.current.add(activeForMe.id);
+        setIncomingClassSprint(activeForMe);
+      }
+    }
+  }, [classSprints, classroomMembers, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Navigation ──────────────────────────────────────────────────────────────
 
@@ -177,12 +208,56 @@ export default function App() {
     tierAtSprintStartRef.current = effectivePlayer?.learningTier ?? 0;
     setSessionId(id);
     setSprintOrigin(origin);
+    setActiveClassSprintId(null);
+    navigate('sprint');
+  };
+
+  const goToClassSprint = (classSprintId: bigint, classroomId: bigint) => {
+    tierAtSprintStartRef.current = effectivePlayer?.learningTier ?? 0;
+    setActiveClassSprintId(classSprintId);
+    setClassroomId(classroomId);
+    setSprintOrigin('classroom');
     navigate('sprint');
   };
 
   const goToClassroom = (id: bigint) => {
     setClassroomId(id);
     navigate('classroom');
+  };
+
+  // ── Class sprint alert overlay ───────────────────────────────────────────────
+  const ClassSprintAlert = ({ sprint }: { sprint: any }) => {
+    const [count, setCount] = useState(3);
+    useEffect(() => {
+      if (count > 0) {
+        const id = setTimeout(() => setCount(n => n - 1), 1000);
+        return () => clearTimeout(id);
+      } else {
+        goToClassSprint(sprint.id, sprint.classroomId);
+        setIncomingClassSprint(null);
+      }
+    }, [count]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 3000,
+        background: 'rgba(0,0,0,0.82)',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        gap: 16, padding: 32, textAlign: 'center',
+      }}>
+        <div style={{ fontSize: 48 }}>🏫</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>
+          {t('classSprint.alertTitle')}
+        </div>
+        <div style={{ fontSize: 48, fontWeight: 900, color: 'var(--accent)', lineHeight: 1 }}>
+          {count > 0 ? count : '🚀'}
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--muted)' }}>
+          {t('classSprint.alertCountdown', { n: count })}
+        </div>
+      </div>
+    );
   };
 
   // ── Splash helper ────────────────────────────────────────────────────────────
@@ -227,8 +302,9 @@ export default function App() {
 
   const showBottomNav = TABBED_PAGES.includes(page) && !!effectivePlayer;
   const backTarget: Page | null =
-    page === 'classroom' ? 'lobby'
-    : page === 'results'  ? (inClassroom ? 'classroom' : sprintOrigin as Page)
+    page === 'classroom'           ? 'lobby'
+    : page === 'results'           ? (inClassroom ? 'classroom' : sprintOrigin as Page)
+    : page === 'classsprintresults' ? 'classroom'
     : null;
 
   return (
@@ -251,6 +327,9 @@ export default function App() {
           navigate('sprint');
         }} />
       )}
+
+      {/* Class sprint alert — shown to enrolled students when teacher fires a sprint */}
+      {incomingClassSprint && <ClassSprintAlert sprint={incomingClassSprint} />}
 
       {effectivePlayer && (
         <TopBar myPlayer={effectivePlayer} active={page} onNavigate={(tab) => navigate(tab)} />
@@ -303,13 +382,25 @@ export default function App() {
             myIdentityHex={myIdentityHex!}
             classroomId={classroomId!}
             onStartSprint={(id) => goToSprint(id, 'classroom')}
+            onStartClassSprint={(csId) => {
+              setActiveClassSprintId(csId);
+              navigate('classsprintresults');
+            }}
             onLeave={() => navigate('lobby')}
           />
         )}
         {page === 'sprint'    && (
           <SprintPage
             myIdentityHex={myIdentityHex!}
-            onFinished={(id) => { setSessionId(id); navigate('results'); }}
+            classSprintId={activeClassSprintId ?? undefined}
+            onFinished={(id) => {
+              setSessionId(id);
+              if (activeClassSprintId !== null) {
+                navigate('classsprintresults');
+              } else {
+                navigate('results');
+              }
+            }}
           />
         )}
         {page === 'results'   && (
@@ -335,6 +426,16 @@ export default function App() {
             myIdentityHex={myIdentityHex!}
             onEnterClassroom={goToClassroom}
             onBack={() => navigate('lobby')}
+          />
+        )}
+        {page === 'classsprintresults' && activeClassSprintId !== null && (
+          <ClassSprintResultsPage
+            classSprintId={activeClassSprintId}
+            myIdentityHex={myIdentityHex!}
+            onBack={() => {
+              setActiveClassSprintId(null);
+              navigate('classroom');
+            }}
           />
         )}
       </main>

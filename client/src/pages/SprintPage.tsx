@@ -93,6 +93,8 @@ function selectNextProblem(
 
 interface Props {
   myIdentityHex: string;
+  /** Set when navigating from a class-sprint alert — session is pre-created by the server */
+  classSprintId?: bigint;
   onFinished: (sessionId: bigint) => void;
 }
 
@@ -100,7 +102,7 @@ type Feedback = { isCorrect: boolean; points: number; correct: number } | null;
 
 const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
 
-export default function SprintPage({ myIdentityHex, onFinished }: Props) {
+export default function SprintPage({ myIdentityHex, classSprintId, onFinished }: Props) {
   const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
@@ -140,10 +142,12 @@ export default function SprintPage({ myIdentityHex, onFinished }: Props) {
   const sessionIdRef = useRef<bigint | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Start session on mount
+  // 1. Start session on mount — skip for class sprints (server pre-creates the session)
   useEffect(() => {
-    startSession();
-  }, []);
+    if (classSprintId === undefined) {
+      startSession();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2. Detect new session for this player
   useEffect(() => {
