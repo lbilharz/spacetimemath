@@ -111,11 +111,29 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     }
   };
 
-  // Auto-end the class sprint on the server once every student finishes
+  // Early exit: all sessions finished before the deadline (everyone was online)
   useEffect(() => {
     if (!isTeacher || !activeSprint || !allSessionsComplete) return;
     endClassSprint({ classSprintId: activeSprint.id });
   }, [allSessionsComplete, activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Deadline fallback: end 62 s after startedAt even if some students never showed up.
+  // startedAt is a SpacetimeDB Timestamp (µs since epoch), so divide by 1000 → ms.
+  useEffect(() => {
+    if (!isTeacher || !activeSprint) return;
+    const startedAtMs = Number(activeSprint.startedAt) / 1000;
+    const msLeft = (startedAtMs + 62_000) - Date.now();
+    if (msLeft <= 0) {
+      // Teacher returned to the page after the sprint already expired
+      endClassSprint({ classSprintId: activeSprint.id });
+      return;
+    }
+    const timer = setTimeout(
+      () => endClassSprint({ classSprintId: activeSprint.id }),
+      msLeft,
+    );
+    return () => clearTimeout(timer);
+  }, [activeSprint?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── End of class sprint state ───────────────────────────────────────────────
 
