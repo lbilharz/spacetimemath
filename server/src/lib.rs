@@ -1,4 +1,4 @@
-use spacetimedb::{table, reducer, Table, ReducerContext, Identity, Timestamp};
+use spacetimedb::{table, reducer, Table, ReducerContext, Identity, Timestamp, ScheduleAt};
 
 // ============================================================
 // TABLES
@@ -796,6 +796,18 @@ pub struct ClassSprint {
     pub is_active: bool,
 }
 
+/// Scheduled auto-end for class sprints.
+/// SpacetimeDB fires `auto_end_class_sprint` when `scheduled_at` arrives —
+/// even if every client is offline — so offline students can never block the transition.
+#[table(accessor = end_sprint_schedule, scheduled(auto_end_class_sprint))]
+pub struct EndSprintSchedule {
+    #[primary_key]
+    #[auto_inc]
+    pub scheduled_id: u64,
+    pub scheduled_at: ScheduleAt,
+    pub class_sprint_id: u64,
+}
+
 /// Create a new classroom. The caller becomes its teacher and first member.
 /// A player may teach or join multiple classrooms simultaneously.
 #[reducer]
@@ -938,6 +950,17 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64) -> Result<(),
             });
         }
     }
+
+    // Schedule server-side auto-end 62 s from now.
+    // Fires even if every client goes offline — offline students can never block the transition.
+    ctx.db.end_sprint_schedule().insert(EndSprintSchedule {
+        scheduled_id: 0,
+        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
+            ctx.timestamp.to_micros_since_unix_epoch() + 62 * 1_000_000,
+        )),
+        class_sprint_id: sprint.id,
+    });
+
     Ok(())
 }
 
@@ -950,5 +973,18 @@ pub fn end_class_sprint(ctx: &ReducerContext, class_sprint_id: u64) -> Result<()
         return Err("Only the teacher can end this sprint".into());
     }
     ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..sprint });
+    Ok(())
+}
+
+/// Called automatically by SpacetimeDB's scheduler 62 s after a class sprint starts.
+/// Idempotent: no-op if the sprint was already ended (manually or by a previous schedule fire).
+/// No permission check needed — `ctx.sender()` is the module identity here, not a teacher.
+#[reducer]
+pub fn auto_end_class_sprint(ctx: &ReducerContext, args: EndSprintSchedule) -> Result<(), String> {
+    if let Some(sprint) = ctx.db.class_sprints().id().find(args.class_sprint_id) {
+        if sprint.is_active {
+            ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..sprint });
+        }
+    }
     Ok(())
 }

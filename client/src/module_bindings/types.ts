@@ -58,6 +58,13 @@ export const ClassroomMember = __t.object("ClassroomMember", {
 });
 export type ClassroomMember = __Infer<typeof ClassroomMember>;
 
+export const EndSprintSchedule = __t.object("EndSprintSchedule", {
+  scheduledId: __t.u64(),
+  scheduledAt: __t.scheduleAt(),
+  classSprintId: __t.u64(),
+});
+export type EndSprintSchedule = __Infer<typeof EndSprintSchedule>;
+
 export const Player = __t.object("Player", {
   identity: __t.identity(),
   username: __t.string(),
