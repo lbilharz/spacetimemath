@@ -31,7 +31,11 @@ function roundRect(ctx, x, y, w, h, r) {
 const canvas = createCanvas(SIZE, SIZE);
 const ctx = canvas.getContext('2d');
 
-// Transparent background — @capacitor/assets adds the bg color itself.
+// Navy rounded-rect background (mirrors the favicon.svg outer container).
+// @capacitor/assets will use a white outer background; iOS rounds the corners.
+ctx.fillStyle = '#2C3E50';
+roundRect(ctx, 0, 0, SIZE, SIZE, SIZE * 0.22);
+
 // Draw the 3×3 grid of colored squares.
 for (let row = 0; row < 3; row++) {
   for (let col = 0; col < 3; col++) {
