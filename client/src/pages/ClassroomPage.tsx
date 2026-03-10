@@ -87,6 +87,11 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
 
+  // True once every student session has finished — used to auto-end the sprint
+  const allSessionsComplete =
+    sprintSessions.length > 0 &&
+    sprintSessions.every((s: any) => s.isComplete as boolean);
+
   const handleStartClassSprint = async () => {
     setStartingClassSprint(true);
     try {
@@ -105,6 +110,12 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       setEndingClassSprint(false);
     }
   };
+
+  // Auto-end the class sprint on the server once every student finishes
+  useEffect(() => {
+    if (!isTeacher || !activeSprint || !allSessionsComplete) return;
+    endClassSprint({ classSprintId: activeSprint.id });
+  }, [allSessionsComplete, activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── End of class sprint state ───────────────────────────────────────────────
 
@@ -228,6 +239,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const medals = ['🥇', '🥈', '🥉'];
   const studentsWithCards = memberRows.filter(m => m.recoveryCode).length;
+
+  // Hide non-sprint UI while a class sprint is active or just ended
+  const isSprintMode = isTeacher && !!(activeSprint || endedSprint);
 
   return (
     <div className="page">
@@ -386,11 +400,21 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               )}
             </div>
           </div>
+
+          {/* Live 10×10 grid — updates as answers come in */}
+          {sprintAnswers.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {t('classSprint.grid')}
+              </h3>
+              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
+            </div>
+          )}
         </div>
       )}
 
       {/* Join code + QR */}
-      <div className="card">
+      {!isSprintMode && <div className="card">
         <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.joinCode')}</h2>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
           <div>
@@ -423,10 +447,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             />
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Members + Leaderboard */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+      {!isSprintMode && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
         {/* Members */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8, flexWrap: 'wrap' }}>
@@ -548,10 +572,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             {t('classroom.liveCaption')}
           </p>
         </div>
-      </div>
+      </div>}
 
       {/* Class mastery grid */}
-      {classAnswers.length > 0 && (
+      {!isSprintMode && classAnswers.length > 0 && (
         <div className="card">
           <h2 style={{ marginBottom: 4, fontSize: 16 }}>{t('classroom.classMastery')}</h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
@@ -562,7 +586,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       )}
 
       {/* Leave / Close */}
-      <div>
+      {!isSprintMode && <div>
         <button
           className="btn btn-secondary"
           onClick={handleLeave}
@@ -576,7 +600,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             {t('classroom.closeHint')}
           </p>
         )}
-      </div>
+      </div>}
     </div>
   );
 }
