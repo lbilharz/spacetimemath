@@ -255,7 +255,11 @@
     "backToClass": "← Back to class",
     "grid": "Combined class grid",
     "gridDesc": "Cells answered correctly by at least one member this sprint.",
-    "noResults": "No results yet — sessions still running."
+    "noResults": "No results yet — sessions still running.",
+    "liveAnswers": "Live answers",
+    "waitingForAnswers": "Waiting for answers…",
+    "liveScores": "Live scores",
+    "noScoresYet": "No scores yet"
   },
   "tiers": {
     "unlocked1": "×3 and ×4 unlocked!",

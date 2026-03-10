@@ -255,7 +255,11 @@
     "backToClass": "← Zurück zur Klasse",
     "grid": "Kombiniertes Klassen-Einmaleins",
     "gridDesc": "Felder, die mindestens ein Mitglied in diesem Sprint richtig beantwortet hat.",
-    "noResults": "Noch keine Ergebnisse — Sprints laufen noch."
+    "noResults": "Noch keine Ergebnisse — Sprints laufen noch.",
+    "liveAnswers": "Live-Antworten",
+    "waitingForAnswers": "Warte auf Antworten…",
+    "liveScores": "Live-Punkte",
+    "noScoresYet": "Noch keine Punkte"
   },
   "tiers": {
     "unlocked1": "×3 und ×4 freigeschaltet!",

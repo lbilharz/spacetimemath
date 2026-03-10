@@ -78,11 +78,21 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     .sort((a, b) => Number(b.id - a.id))
     .slice(0, 20);
 
-  // Mini live leaderboard (top 5 by current score)
+  // Mini live leaderboard (top 5) — compute score from answers, not session.weightedScore
+  // (weightedScore is only written at end_session; it stays 0 during an active sprint)
   const liveLB = sprintSessions
     .map((s: any) => {
       const p = (players as any[]).find(pl => pl.identity.toHexString() === s.playerIdentity.toHexString());
-      return { username: p?.username ?? s.username, score: s.weightedScore as number };
+      const mine = sprintAnswers.filter((a: any) => a.sessionId === s.id);
+      const score = mine
+        .filter((a: any) => a.isCorrect)
+        .reduce((sum: number, a: any) => {
+          const key = (a.a as number) * 100 + (a.b as number);
+          const stat = (problemStats as any[]).find(ps => ps.problemKey === key);
+          return sum + (stat?.difficultyWeight ?? 1.0);
+        }, 0);
+      const correct = mine.filter((a: any) => a.isCorrect).length;
+      return { username: p?.username ?? s.username, score, correct };
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
@@ -351,23 +361,33 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       {/* Live feed — shown during an active class sprint (teacher only) */}
       {isTeacher && activeSprint && (
         <div className="card" style={{ borderColor: 'rgba(255,60,60,0.4)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, flexWrap: 'wrap' }}>
-            {/* Rolling answer ticker */}
+
+          {/* 1 — Combined class grid (always on top) */}
+          <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {t('classSprint.grid')}
+          </h3>
+          <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
+
+          {/* 2 — Ticker + leaderboard below the grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 20 }}>
+
+            {/* Rolling answer ticker — newest on top, old rows fall off the bottom */}
             <div>
               <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Live answers
+                {t('classSprint.liveAnswers')}
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {recentAnswers.length === 0 ? (
-                  <span style={{ color: 'var(--muted)', fontSize: 13 }}>Waiting for answers…</span>
-                ) : (
-                  recentAnswers.map((a: any) => {
+              {recentAnswers.length === 0 ? (
+                <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.waitingForAnswers')}</span>
+              ) : (
+                <div style={{ overflow: 'hidden', maxHeight: 180, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {recentAnswers.map((a: any) => {
                     const p = (players as any[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
                     const name = p?.username ?? '?';
                     return (
                       <div key={String(a.id)} style={{
                         display: 'flex', gap: 6, alignItems: 'center', fontSize: 13,
                         color: a.isCorrect ? 'var(--accent)' : 'var(--wrong)',
+                        flexShrink: 0,
                       }}>
                         <span>{a.isCorrect ? '🟢' : '🔴'}</span>
                         <span style={{ fontWeight: 600 }}>{name}</span>
@@ -375,24 +395,25 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                         <span>{a.isCorrect ? '✓' : '✗'}</span>
                       </div>
                     );
-                  })
-                )}
-              </div>
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Mini live leaderboard */}
             <div>
               <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Live scores
+                {t('classSprint.liveScores')}
               </h3>
               {liveLB.length === 0 ? (
-                <span style={{ color: 'var(--muted)', fontSize: 13 }}>No scores yet</span>
+                <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.noScoresYet')}</span>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {liveLB.map((r, i) => (
                     <div key={r.username} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 12, color: 'var(--muted)', width: 16, textAlign: 'right' }}>{i + 1}</span>
                       <span style={{ fontSize: 13, fontWeight: 600, flex: 1 }}>{r.username}</span>
+                      <span style={{ fontSize: 13, color: 'var(--muted)', marginRight: 4 }}>{r.correct}✓</span>
                       <span style={{ fontSize: 13, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
                         {r.score.toFixed(1)}
                       </span>
@@ -402,16 +423,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               )}
             </div>
           </div>
-
-          {/* Live 10×10 grid — updates as answers come in */}
-          {sprintAnswers.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                {t('classSprint.grid')}
-              </h3>
-              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
-            </div>
-          )}
         </div>
       )}
 
