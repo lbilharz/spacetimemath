@@ -56,6 +56,13 @@ export default function App() {
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
+  // Hold the splash for at least 1.5 s on first load (not on WS reconnect).
+  const [splashDone, setSplashDone] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setSplashDone(true), 1500);
+    return () => clearTimeout(id);
+  }, []);
+
   // Cache the last known player so we can keep rendering during a reconnect.
   // When the WebSocket drops (background), isActive flips to false and the
   // subscription clears — but we know who the user is and can skip the spinner.
@@ -202,8 +209,9 @@ export default function App() {
     );
   }
 
-  // First-ever load with no cached player: show branded splash
-  if (!isActive && !effectivePlayer) {
+  // First-ever load: show branded splash for at least 1.5 s,
+  // then keep showing until the connection is up and we have a player.
+  if (!splashDone || (!isActive && !effectivePlayer)) {
     return (
       <div className="splash-screen">
         <div className="splash-glow" />
