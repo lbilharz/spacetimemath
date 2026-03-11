@@ -434,7 +434,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             </div>
 
             {/* Right — Ticker + leaderboard stacked */}
-            <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'row', gap: 24 }}>
 
               {/* Rolling answer ticker */}
               <div>
