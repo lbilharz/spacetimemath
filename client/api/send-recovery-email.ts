@@ -13,8 +13,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const restoreUrl = `https://noggin.bettermarks.com/?restore=${encodeURIComponent(code)}`;
 
-  await resend.emails.send({
-    from: 'noggin <noreply@bettermarks.com>',
+  const { error } = await resend.emails.send({
+    from: 'noggin <onboarding@resend.dev>',
     to: email,
     subject: 'Your noggin recovery key',
     html: `
@@ -43,5 +43,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `,
   });
 
+  if (error) return res.status(500).json({ error: error.message });
   return res.status(200).json({ ok: true });
 }
