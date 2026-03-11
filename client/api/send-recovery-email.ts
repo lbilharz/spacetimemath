@@ -11,7 +11,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'email and code required' });
   }
 
-  const restoreUrl = `https://noggin.bettermarks.com/?restore=${encodeURIComponent(code)}`;
+  const appUrl = process.env.APP_URL ?? 'https://spacetimemath.vercel.app';
+  const restoreUrl = `${appUrl}/?restore=${encodeURIComponent(code)}`;
 
   const { error } = await resend.emails.send({
     from: 'noggin <onboarding@resend.dev>',
@@ -36,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           Restore my account →
         </a>
         <p style="color:#606060;font-size:12px;margin:0">
-          Or go to <a href="https://noggin.bettermarks.com" style="color:#606060">noggin.bettermarks.com</a>
+          Or go to <a href="${appUrl}" style="color:#606060">${appUrl.replace(/^https?:\/\//, '')}</a>
           and enter the code manually under "Restore account".
         </p>
       </div>
