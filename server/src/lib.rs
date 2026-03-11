@@ -451,6 +451,37 @@ pub fn submit_answer(
     Ok(())
 }
 
+/// Compute and persist final scores for a session without permission checks.
+/// Used by end_session (player-initiated) and sprint auto-end (server-initiated).
+/// Does NOT update player stats — call sites that need that handle it separately.
+fn finalize_session(ctx: &ReducerContext, session: Session) {
+    if session.is_complete { return; }
+    let session_id = session.id;
+    let answers: Vec<Answer> = ctx.db.answers().iter().filter(|a| a.session_id == session_id).collect();
+    let total = answers.len() as u32;
+    if total == 0 {
+        ctx.db.sessions().id().update(Session { is_complete: true, ..session });
+        return;
+    }
+    let raw_score = answers.iter().filter(|a| a.is_correct).count() as u32;
+    let accuracy_pct = ((raw_score * 100) / total).min(100) as u8;
+    let weighted_score: f32 = answers.iter()
+        .filter(|a| a.is_correct)
+        .map(|a| {
+            let key = (a.a as u16) * 100 + (a.b as u16);
+            let base = ctx.db.problem_stats().problem_key().find(key)
+                .map(|s| s.difficulty_weight).unwrap_or(1.0);
+            let digit_bonus: f32 = if a.a.max(a.b) >= 11 {
+                if (a.a as u32) * (a.b as u32) >= 100 { 1.0 } else { 0.5 }
+            } else { 0.0 };
+            base + digit_bonus
+        })
+        .sum();
+    ctx.db.sessions().id().update(Session {
+        weighted_score, raw_score, accuracy_pct, total_answered: total, is_complete: true, ..session
+    });
+}
+
 #[reducer]
 pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> {
     let sender = ctx.sender();
@@ -461,44 +492,14 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
     if session.player_identity != sender { return Err("Not your session".into()); }
     if session.is_complete { return Ok(()); }
 
-    let session_answers: Vec<Answer> = ctx.db.answers()
-        .iter()
-        .filter(|a| a.session_id == session_id)
-        .collect();
+    finalize_session(ctx, session);
 
-    let total = session_answers.len() as u32;
-    if total == 0 {
-        ctx.db.sessions().id().update(Session { is_complete: true, ..session });
-        return Ok(());
-    }
-
-    let raw_score = session_answers.iter().filter(|a| a.is_correct).count() as u32;
-    let accuracy_pct = ((raw_score * 100) / total).min(100) as u8;
-    let weighted_score: f32 = session_answers.iter()
-        .filter(|a| a.is_correct)
-        .map(|a| {
-            let key = (a.a as u16) * 100 + (a.b as u16);
-            let base = ctx.db.problem_stats().problem_key().find(key)
-                .map(|s| s.difficulty_weight)
-                .unwrap_or(1.0);
-            // Bonus for double-digit factors (11×, 12×) — harder mentally and require
-            // typing more digits. +0.5 for any 11×/12× answer; +1.0 when the result
-            // is three digits (≥ 100), e.g. 12×9=108 or 11×12=132.
-            let digit_bonus: f32 = if a.a.max(a.b) >= 11 {
-                if (a.a as u32) * (a.b as u32) >= 100 { 1.0 } else { 0.5 }
-            } else { 0.0 };
-            base + digit_bonus
-        })
-        .sum();
-
-    ctx.db.sessions().id().update(Session {
-        weighted_score,
-        raw_score,
-        accuracy_pct,
-        total_answered: total,
-        is_complete: true,
-        ..session
-    });
+    // Re-read to get the scores written by finalize_session
+    let session = ctx.db.sessions().id().find(session_id).ok_or("Session not found")?;
+    let weighted_score = session.weighted_score;
+    let raw_score = session.raw_score;
+    let accuracy_pct = session.accuracy_pct;
+    let total = session.total_answered;
 
     let new_best = player.best_score.max(weighted_score);
     ctx.db.players().identity().update(Player {
@@ -1023,19 +1024,31 @@ pub fn end_class_sprint(ctx: &ReducerContext, class_sprint_id: u64) -> Result<()
     if sprint.teacher != ctx.sender() {
         return Err("Only the teacher can end this sprint".into());
     }
+    finalize_class_sprint_sessions(ctx, class_sprint_id);
     ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..sprint });
     Ok(())
 }
 
-/// Called automatically by SpacetimeDB's scheduler 62 s after a class sprint starts.
-/// Idempotent: no-op if the sprint was already ended (manually or by a previous schedule fire).
+/// Called automatically by SpacetimeDB's scheduler after a class sprint starts.
+/// Idempotent: no-op if the sprint was already ended manually.
 /// No permission check needed — `ctx.sender()` is the module identity here, not a teacher.
 #[reducer]
 pub fn auto_end_class_sprint(ctx: &ReducerContext, args: EndSprintSchedule) -> Result<(), String> {
     if let Some(sprint) = ctx.db.class_sprints().id().find(args.class_sprint_id) {
         if sprint.is_active {
+            finalize_class_sprint_sessions(ctx, args.class_sprint_id);
             ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..sprint });
         }
     }
     Ok(())
+}
+
+fn finalize_class_sprint_sessions(ctx: &ReducerContext, class_sprint_id: u64) {
+    let incomplete: Vec<Session> = ctx.db.sessions()
+        .iter()
+        .filter(|s| s.class_sprint_id == class_sprint_id && !s.is_complete)
+        .collect();
+    for session in incomplete {
+        finalize_session(ctx, session);
+    }
 }
