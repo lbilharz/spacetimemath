@@ -27,9 +27,12 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier 
     ? bestScores
     : bestScores.filter(s => s.learningTier === tierFilter);
 
-  const rows = [...filtered]
-    .sort((a, b) => b.bestWeightedScore - a.bestWeightedScore)
-    .slice(0, 10);
+  const sorted = [...filtered].sort((a, b) => b.bestWeightedScore - a.bestWeightedScore);
+  const rows = sorted.slice(0, 10);
+
+  // Find the current player's rank in the full sorted list
+  const myRankIndex = sorted.findIndex(s => s.playerIdentity.toHexString() === myIdentityHex);
+  const myRow = myRankIndex >= 10 ? sorted[myRankIndex] : null; // null if already in top 10
 
   const medals = ['🥇', '🥈', '🥉'];
 
@@ -119,6 +122,37 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier 
                 </tr>
               );
             })}
+            {/* "You" row when player is outside the top 10 */}
+            {myRow && (
+              <>
+                <tr>
+                  <td colSpan={5} style={{ padding: '4px 0', textAlign: 'center', color: 'var(--muted)', fontSize: 13, letterSpacing: 2 }}>
+                    ···
+                  </td>
+                </tr>
+                <tr style={{ background: 'rgba(251,186,0,0.08)', borderTop: '1px solid var(--border)' }}>
+                  <td style={{ ...td, fontWeight: 700, color: 'var(--muted)', textAlign: 'center' }}>
+                    {myRankIndex + 1}
+                  </td>
+                  <td style={{ ...td, fontWeight: 700 }}>
+                    <span>{myRow.username}</span>
+                    {tierFilter === -1 && (
+                      <span style={{ marginLeft: 6, fontSize: 11 }}>{TIER_EMOJI[Math.min(myRow.learningTier, 3)]}</span>
+                    )}
+                    <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>{t('leaderboard.you')}</span>
+                  </td>
+                  <td style={{ ...td, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
+                    {myRow.bestWeightedScore.toFixed(1)}
+                  </td>
+                  <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                    {myRow.bestAccuracyPct}%
+                  </td>
+                  <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                    {myRow.bestTotalAnswered}
+                  </td>
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       )}
