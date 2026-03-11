@@ -178,10 +178,6 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes splash-grid-pulse {
-  0%, 100% { filter: drop-shadow(0 4px 16px rgba(251,186,0,0.35)); }
-  50%       { filter: drop-shadow(0 4px 32px rgba(251,186,0,0.70)); }
-}
 
 .splash-screen {
   position: fixed;
@@ -202,9 +198,7 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
 }
 .splash-bolt {
   position: relative;
-  animation:
-    splash-fade-up 0.5s ease-out,
-    splash-grid-pulse 2.4s ease-in-out 0.5s infinite;
+  animation: splash-fade-up 0.5s ease-out;
 }
 .splash-title {
   margin-top: 22px;
