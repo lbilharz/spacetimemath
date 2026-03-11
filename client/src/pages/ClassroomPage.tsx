@@ -35,6 +35,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
   const [isDiagnostic, setIsDiagnostic] = useState(false);
+  const [sprintError, setSprintError] = useState<string | null>(null);
   const [endingClassSprint, setEndingClassSprint] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
@@ -105,8 +106,12 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const handleStartClassSprint = async () => {
     setStartingClassSprint(true);
+    setSprintError(null);
     try {
       await startClassSprint({ classroomId, isDiagnostic });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setSprintError(msg);
     } finally {
       setStartingClassSprint(false);
     }
@@ -126,7 +131,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // rather than waiting for the server's 62 s scheduled auto-end.
   useEffect(() => {
     if (!isTeacher || !activeSprint || !allSessionsComplete) return;
-    endClassSprint({ classSprintId: activeSprint.id });
+    endClassSprint({ classSprintId: activeSprint.id }).catch(console.error);
   }, [allSessionsComplete, activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
   // Offline-student deadline is handled server-side via the EndSprintSchedule table.
 
@@ -332,6 +337,11 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                   >
                     {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
                   </button>
+                  {sprintError && (
+                    <p style={{ fontSize: 12, color: 'var(--wrong)', margin: 0, maxWidth: 220, textAlign: 'right' }}>
+                      ⚠ {sprintError}
+                    </p>
+                  )}
                 </div>
               )}
               {activeSprint && (
