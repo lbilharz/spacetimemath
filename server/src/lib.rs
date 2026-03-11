@@ -16,6 +16,7 @@ pub struct Player {
     #[default(false)]
     pub onboarding_done: bool,
     #[default(0)]
+    #[index(btree)]
     pub learning_tier: u8,
 }
 
@@ -41,7 +42,9 @@ pub struct Answer {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
+    #[index(btree)]
     pub player_identity: Identity,
+    #[index(btree)]
     pub session_id: u64,
     pub a: u8,
     pub b: u8,
@@ -57,7 +60,9 @@ pub struct Answer {
 pub struct ProblemStat {
     #[primary_key]
     pub problem_key: u16,
+    #[index(btree)]
     pub a: u8,
+    #[index(btree)]
     pub b: u8,
     pub category: u8,        // 0 = trivial (*0/1/10), 1 = core (2-9 x 2-9), 2 = tier-1 (curated 2-digit)
     pub attempt_count: u32,
@@ -88,6 +93,7 @@ pub struct BestScore {
     pub best_weighted_score: f32,
     pub best_accuracy_pct: u8,
     pub best_total_answered: u32,
+    #[index(btree)]
     pub learning_tier: u8,
 }
 
@@ -766,8 +772,10 @@ pub struct Classroom {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
+    #[index(btree)]
     pub code: String,
     pub name: String,
+    #[index(btree)]
     pub teacher: Identity,
 }
 
@@ -776,7 +784,9 @@ pub struct ClassroomMember {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
+    #[index(btree)]
     pub classroom_id: u64,
+    #[index(btree)]
     pub player_identity: Identity,
     #[default(false)]
     pub hidden: bool,  // if true, member is excluded from class leaderboard/mastery
