@@ -227,15 +227,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   }, [sessions, myIdentityHex, sessionId, classSprintId]);
 
   // 3a. When session is detected, kick off the pre-countdown
-  // Class sprints skip the countdown — the ClassSprintAlert already did one
   useEffect(() => {
     if (sessionId === null || preCountdown !== null || sprintStarted) return;
-    if (classSprintId !== undefined) {
-      setSprintStarted(true);
-    } else {
-      setPreCountdown(3);
-    }
-  }, [sessionId, preCountdown, sprintStarted, classSprintId]);
+    setPreCountdown(3);
+  }, [sessionId, preCountdown, sprintStarted]);
 
   // 3b. Tick the pre-countdown: 3→2→1→0("Go!")→null+sprintStarted
   useEffect(() => {

@@ -225,40 +225,15 @@ export default function App() {
     navigate('classroom');
   };
 
-  // ── Class sprint alert overlay ───────────────────────────────────────────────
-  const ClassSprintAlert = ({ sprint }: { sprint: any }) => {
-    const [count, setCount] = useState(3);
-    useEffect(() => {
-      if (count > 0) {
-        const id = setTimeout(() => setCount(n => n - 1), 1000);
-        return () => clearTimeout(id);
-      } else {
-        goToClassSprint(sprint.id, sprint.classroomId);
-        setIncomingClassSprint(null);
-      }
-    }, [count]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 3000,
-        background: 'rgba(0,0,0,0.82)',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        gap: 16, padding: 32, textAlign: 'center',
-      }}>
-        <div style={{ fontSize: 48 }}>🏫</div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>
-          {t('classSprint.alertTitle')}
-        </div>
-        <div style={{ fontSize: 48, fontWeight: 900, color: 'var(--accent)', lineHeight: 1 }}>
-          {count > 0 ? count : '🚀'}
-        </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
-          {t('classSprint.alertCountdown', { n: count })}
-        </div>
-      </div>
-    );
-  };
+  // ── Class sprint alert — brief notification, then navigate to sprint ──────────
+  useEffect(() => {
+    if (!incomingClassSprint) return;
+    const id = setTimeout(() => {
+      goToClassSprint(incomingClassSprint.id, incomingClassSprint.classroomId);
+      setIncomingClassSprint(null);
+    }, 1500);
+    return () => clearTimeout(id);
+  }, [incomingClassSprint]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Render ──────────────────────────────────────────────────────────────────
   if (connectionError) {
@@ -319,7 +294,23 @@ export default function App() {
       )}
 
       {/* Class sprint alert — shown to enrolled students when teacher fires a sprint */}
-      {incomingClassSprint && <ClassSprintAlert sprint={incomingClassSprint} />}
+      {incomingClassSprint && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 3000,
+          background: 'rgba(0,0,0,0.82)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: 16, padding: 32, textAlign: 'center',
+        }}>
+          <div style={{ fontSize: 48 }}>🏫</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>
+            {t('classSprint.alertTitle')}
+          </div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
+            {t('classSprint.alertStarting')}
+          </div>
+        </div>
+      )}
 
       {effectivePlayer && (
         <TopBar myPlayer={effectivePlayer} active={page} onNavigate={(tab) => navigate(tab)} />

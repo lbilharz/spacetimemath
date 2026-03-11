@@ -257,7 +257,7 @@
     "live": "🔴 LIVE · Class Sprint",
     "end": "⏹ End sprint",
     "alertTitle": "Your teacher started a class sprint!",
-    "alertCountdown": "Starting in {{n}}…",
+    "alertStarting": "Starting in a moment…",
     "viewResults": "🏁 View class results",
     "resultsTitle": "Class Sprint Results",
     "rankingTitle": "🏆 Class Ranking",
