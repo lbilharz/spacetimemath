@@ -388,6 +388,7 @@ export default function App() {
             myIdentityHex={myIdentityHex}
             onStartSprint={(id) => goToSprint(id, 'lobby')}
             onEnterClassroom={goToClassroom}
+            onGoToAccount={() => setPage('account')}
           />
         )}
         {page === 'classrooms' && (

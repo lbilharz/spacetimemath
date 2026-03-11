@@ -56,6 +56,34 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
     setTimeout(() => setKeyCopied(false), 2000);
   };
 
+  // Email recovery key
+  const EMAILED_KEY = 'noggin_recovery_emailed';
+  const [emailInput, setEmailInput] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [alreadyEmailed] = useState(() => !!localStorage.getItem(EMAILED_KEY));
+
+  const handleEmailKey = async () => {
+    if (!myRecoveryKey || !emailInput.trim()) return;
+    setEmailSending(true);
+    setEmailError('');
+    try {
+      const res = await fetch('/api/send-recovery-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
+      });
+      if (!res.ok) throw new Error();
+      localStorage.setItem(EMAILED_KEY, '1');
+      setEmailSent(true);
+    } catch {
+      setEmailError(t('account.emailKeyError'));
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
   // Transfer code
   const [generating, setGenerating] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -316,6 +344,42 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
               <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
                 {t('account.regenerate')}
               </button>
+            </div>
+            {/* Email recovery key */}
+            <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
+              {emailSent || alreadyEmailed ? (
+                <p style={{ fontSize: 13, color: 'var(--correct)', textAlign: 'center' }}>
+                  ✓ {t('account.emailKeySent')}
+                </p>
+              ) : (
+                <>
+                  <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>
+                    {t('account.emailKeyDesc')}
+                  </p>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input
+                      type="email"
+                      value={emailInput}
+                      onChange={e => setEmailInput(e.target.value)}
+                      placeholder={t('account.emailKeyPlaceholder')}
+                      style={{
+                        flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)',
+                        background: 'var(--card2)', color: 'var(--text)', fontSize: 14,
+                      }}
+                      onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
+                    />
+                    <button
+                      className="btn btn-primary"
+                      style={{ fontSize: 13, whiteSpace: 'nowrap' }}
+                      onClick={handleEmailKey}
+                      disabled={emailSending || !emailInput.trim()}
+                    >
+                      {emailSending ? '…' : t('account.emailKeySend')}
+                    </button>
+                  </div>
+                  {emailError && <p style={{ fontSize: 12, color: 'var(--wrong)', marginTop: 6 }}>{emailError}</p>}
+                </>
+              )}
             </div>
           </div>
         ) : (

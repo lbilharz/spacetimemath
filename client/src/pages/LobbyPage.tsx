@@ -4,6 +4,8 @@ import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import Leaderboard from '../components/Leaderboard.js';
 
+const EMAILED_KEY = 'noggin_recovery_emailed';
+
 type Player = { identity: { toHexString(): string }; username: string; bestScore: number; totalSessions: number; };
 
 interface Props {
@@ -11,14 +13,23 @@ interface Props {
   myIdentityHex: string | undefined;
   onStartSprint: (sessionId: bigint) => void;
   onEnterClassroom: (id: bigint) => void;
+  onGoToAccount: () => void;
 }
 
-export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEnterClassroom }: Props) {
+export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEnterClassroom, onGoToAccount }: Props) {
   const { t } = useTranslation();
-  const [bestScores]       = useTable(tables.best_scores);
-  const [classrooms]       = useTable(tables.classrooms);
-  const startSession       = useSTDBReducer(reducers.startSession);
-  const joinClassroom      = useSTDBReducer(reducers.joinClassroom);
+  const [bestScores]        = useTable(tables.best_scores);
+  const [classrooms]        = useTable(tables.classrooms);
+  const [classroomMembers]  = useTable(tables.classroom_members);
+  const startSession        = useSTDBReducer(reducers.startSession);
+  const joinClassroom       = useSTDBReducer(reducers.joinClassroom);
+
+  // Nag: teacher with students who hasn't emailed their recovery key yet
+  const hasStudents = (classrooms as any[]).some(c =>
+    c.teacher.toHexString() === myIdentityHex &&
+    (classroomMembers as any[]).some(m => m.classroomId === c.id && !m.isHidden)
+  );
+  const showNag = hasStudents && !localStorage.getItem(EMAILED_KEY);
 
   const [starting, setStarting]           = useState(false);
   // Pending auto-join code from ?join=CODE URL param; cleared once we navigate
@@ -56,6 +67,23 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
 
   return (
     <div className="page">
+      {/* Recovery key nag for teachers with students */}
+      {showNag && (
+        <div style={{
+          background: 'rgba(251,186,0,0.12)', border: '1.5px solid var(--accent)',
+          borderRadius: 10, padding: '12px 16px', display: 'flex',
+          alignItems: 'center', gap: 12, flexWrap: 'wrap',
+        }}>
+          <span style={{ fontSize: 20 }}>⚠️</span>
+          <p style={{ flex: 1, fontSize: 13, color: 'var(--text)', margin: 0 }}>
+            {t('lobby.recoveryNag')}
+          </p>
+          <button className="btn btn-primary" style={{ fontSize: 13, whiteSpace: 'nowrap' }} onClick={onGoToAccount}>
+            {t('lobby.recoveryNagCta')}
+          </button>
+        </div>
+      )}
+
       {/* Sprint CTA */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div>
