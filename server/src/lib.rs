@@ -720,11 +720,30 @@ pub struct RecoveryKey {
     pub token: String,
 }
 
-/// Generate (or replace) the caller's permanent recovery key.
+/// Ensure the caller has a permanent recovery key — no-op if one already exists.
+/// Safe to call on every app load; will never overwrite an existing key.
 #[reducer]
 pub fn create_recovery_key(ctx: &ReducerContext, token: String) -> Result<(), String> {
     let _player = get_player(ctx)?;
-    // Remove any previous recovery key for this owner
+    let existing = ctx.db.recovery_keys()
+        .iter()
+        .any(|k| k.owner == ctx.sender());
+    if existing { return Ok(()); }
+
+    let code = make_recovery_code(ctx);
+    ctx.db.recovery_keys().insert(RecoveryKey {
+        code,
+        owner: ctx.sender(),
+        token,
+    });
+    Ok(())
+}
+
+/// Explicitly replace the caller's recovery key with a new one.
+/// Only called when the user clicks "Regenerate" in the Account page.
+#[reducer]
+pub fn regenerate_recovery_key(ctx: &ReducerContext, token: String) -> Result<(), String> {
+    let _player = get_player(ctx)?;
     let old: Vec<_> = ctx.db.recovery_keys()
         .iter()
         .filter(|k| k.owner == ctx.sender())

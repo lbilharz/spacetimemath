@@ -28,6 +28,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
   const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+  const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
   const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
   const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
 
@@ -46,7 +47,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
-    await createRecoveryKey({ token: capturedToken });
+    await regenerateRecoveryKey({ token: capturedToken });
     setGeneratingKey(false);
   };
 

@@ -47,6 +47,7 @@ import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
+import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartClassSprintReducer from "./start_class_sprint_reducer";
@@ -242,6 +243,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
   __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),
   __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
+  __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_class_sprint", StartClassSprintReducer),
