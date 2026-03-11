@@ -39,6 +39,7 @@ export const ClassSprint = __t.object("ClassSprint", {
   teacher: __t.identity(),
   startedAt: __t.timestamp(),
   isActive: __t.bool(),
+  isDiagnostic: __t.bool(),
 });
 export type ClassSprint = __Infer<typeof ClassSprint>;
 

@@ -16,4 +16,5 @@ export default __t.row({
   teacher: __t.identity(),
   startedAt: __t.timestamp().name("started_at"),
   isActive: __t.bool().name("is_active"),
+  isDiagnostic: __t.bool().name("is_diagnostic"),
 });

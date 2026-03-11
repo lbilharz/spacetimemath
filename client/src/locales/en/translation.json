@@ -87,7 +87,8 @@
     "feedbackCorrect": "✓ +{{points}} pts",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
     "ending": "Ending…",
-    "endSprint": "End Sprint"
+    "endSprint": "End Sprint",
+    "phase": "Phase"
   },
   "results": {
     "heading": "Session Complete!",
@@ -269,7 +270,8 @@
     "liveAnswers": "Live answers",
     "waitingForAnswers": "Waiting for answers…",
     "liveScores": "Live scores",
-    "noScoresYet": "No scores yet"
+    "noScoresYet": "No scores yet",
+    "diagnostic": "Diagnostic assessment (32s)"
   },
   "tiers": {
     "unlocked1": "×3 and ×4 unlocked!",

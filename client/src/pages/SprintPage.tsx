@@ -27,9 +27,36 @@ type Session = {
   isComplete: boolean; weightedScore: number;
 };
 
-const SPRINT_DURATION = 60;
-
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
+
+// ── Diagnostic assessment sprint ─────────────────────────────────────────────
+// 4 phases × 8 seconds = 32 seconds total. Problem set expands each phase.
+const DIAGNOSTIC_PHASE_SECS = 8;
+const DIAGNOSTIC_PHASES: (number[] | null)[] = [
+  [1, 2, 5, 10],                          // Phase 0  0–8s
+  [1, 2, 3, 4, 5, 10],                    // Phase 1  8–16s
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],       // Phase 2  16–24s
+  null,                                    // Phase 3  24–32s (one two-digit factor)
+];
+const DIAGNOSTIC_PHASE_LABELS = ['1, 2, 5, 10', '+ 3, 4', '+ 6–9', '11–20 ×'];
+
+function selectDiagnosticProblem(elapsed: number, lastKey: number | undefined): { a: number; b: number } {
+  const phase = Math.min(Math.floor(elapsed / DIAGNOSTIC_PHASE_SECS), 3);
+  let a: number, b: number;
+  if (phase === 3) {
+    a = 11 + Math.floor(Math.random() * 10); // 11–20
+    b = 2  + Math.floor(Math.random() * 9);  // 2–10
+    if (Math.random() < 0.5) { const tmp = a; a = b; b = tmp; }
+  } else {
+    const factors = DIAGNOSTIC_PHASES[phase] as number[];
+    a = factors[Math.floor(Math.random() * factors.length)];
+    b = factors[Math.floor(Math.random() * factors.length)];
+  }
+  const key = a * 100 + b;
+  // Retry once to avoid the same problem twice
+  if (key === lastKey) return selectDiagnosticProblem(elapsed, undefined);
+  return { a, b };
+}
 
 function getMasteryLocal(answers: Answer[], a: number, b: number): Mastery {
   const pair = answers.filter(ans => ans.a === a && ans.b === b);
@@ -120,6 +147,13 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
   const [players] = useTable(tables.players);
+  const [classSprints] = useTable(tables.class_sprints);
+
+  // Derive sprint mode from the active class sprint (if any)
+  const isDiagnostic = classSprintId
+    ? !!((classSprints as any[]).find(s => s.id === classSprintId)?.isDiagnostic)
+    : false;
+  const SPRINT_DURATION = isDiagnostic ? 32 : 60;
 
   const playerLearningTier: number = (players as any[]).find(
     p => p.identity.toHexString() === myIdentityHex
@@ -153,6 +187,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const problemStartRef = useRef(Date.now());
   const sessionIdRef = useRef<bigint | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 0. Sync timeLeft with SPRINT_DURATION once class sprint data arrives (before sprint starts)
+  useEffect(() => {
+    if (!sprintStarted) setTimeLeft(SPRINT_DURATION);
+  }, [SPRINT_DURATION]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 1. Start session on mount — skip for class sprints (server pre-creates the session)
   useEffect(() => {
@@ -197,13 +236,15 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   // 3c. Select first problem when sprint starts + stats are ready
   useEffect(() => {
-    if (sprintStarted && !problem && eligibleStats.length > 0) {
-      const p = selectNextProblem(eligibleStats, myAnswers, playerLearningTier);
+    if (sprintStarted && !problem && (isDiagnostic || eligibleStats.length > 0)) {
+      const p = isDiagnostic
+        ? selectDiagnosticProblem(0, undefined)
+        : selectNextProblem(eligibleStats, myAnswers, playerLearningTier);
       setProblem(p);
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
     }
-  }, [sprintStarted, problem, problemStats.length]);
+  }, [sprintStarted, problem, problemStats.length, isDiagnostic]);
 
   // 4. Sprint timer — starts only after pre-countdown finishes
   useEffect(() => {
@@ -267,12 +308,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     // Show feedback briefly, then next problem
     setTimeout(() => {
       setFeedback(null);
-      const next = selectNextProblem(
-        eligibleStats,
-        myAnswers,
-        playerLearningTier,
-        lastKeyRef.current
-      );
+      const elapsed = SPRINT_DURATION - timeLeft;
+      const next = isDiagnostic
+        ? selectDiagnosticProblem(elapsed, lastKeyRef.current)
+        : selectNextProblem(eligibleStats, myAnswers, playerLearningTier, lastKeyRef.current);
       setProblem(next);
       lastKeyRef.current = next.a * 100 + next.b;
       problemStartRef.current = Date.now();
@@ -339,7 +378,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       <div style={{ width: '100%', maxWidth: 520 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-            {t('sprint.stats', { correct, answered })}
+            {isDiagnostic
+              ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b>{' · '}{DIAGNOSTIC_PHASE_LABELS[Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3)]}</>
+              : t('sprint.stats', { correct, answered })
+            }
           </span>
           <span style={{ fontSize: 13, color: 'var(--muted)' }}>
             {t('sprint.score')} <b style={{ color: 'var(--warn)' }}>{score.toFixed(1)}</b>

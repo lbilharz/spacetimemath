@@ -816,6 +816,8 @@ pub struct ClassSprint {
     pub teacher: Identity,
     pub started_at: Timestamp,
     pub is_active: bool,
+    #[default(false)]
+    pub is_diagnostic: bool,
 }
 
 /// Scheduled auto-end for class sprints.
@@ -914,7 +916,7 @@ pub fn toggle_classroom_visibility(ctx: &ReducerContext, classroom_id: u64) -> R
 /// as inactive, inserts a new ClassSprint row, then creates a Session for every
 /// non-hidden, non-teacher member so their SprintPage auto-detects it.
 #[reducer]
-pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
+pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic: bool) -> Result<(), String> {
     let sender = ctx.sender();
     // Verify caller is the classroom teacher
     let classroom = ctx.db.classrooms().id().find(classroom_id)
@@ -939,6 +941,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64) -> Result<(),
         teacher: sender,
         started_at: ctx.timestamp,
         is_active: true,
+        is_diagnostic,
     });
 
     // Create a Session for each non-hidden, non-teacher member
@@ -973,12 +976,13 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64) -> Result<(),
         }
     }
 
-    // Schedule server-side auto-end 62 s from now.
+    // Schedule server-side auto-end: 34 s for diagnostic (32s + 2s buffer), 62 s for regular.
     // Fires even if every client goes offline — offline students can never block the transition.
+    let auto_end_secs: i64 = if is_diagnostic { 34 } else { 62 };
     ctx.db.end_sprint_schedule().insert(EndSprintSchedule {
         scheduled_id: 0,
         scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
-            ctx.timestamp.to_micros_since_unix_epoch() + 62 * 1_000_000,
+            ctx.timestamp.to_micros_since_unix_epoch() + auto_end_secs * 1_000_000,
         )),
         class_sprint_id: sprint.id,
     });

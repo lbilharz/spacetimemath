@@ -34,6 +34,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
+  const [isDiagnostic, setIsDiagnostic] = useState(false);
   const [endingClassSprint, setEndingClassSprint] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
@@ -105,7 +106,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const handleStartClassSprint = async () => {
     setStartingClassSprint(true);
     try {
-      await startClassSprint({ classroomId });
+      await startClassSprint({ classroomId, isDiagnostic });
     } finally {
       setStartingClassSprint(false);
     }
@@ -313,14 +314,25 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             /* Teacher: class sprint controls only */
             <>
               {!activeSprint && (
-                <button
-                  className="btn btn-primary btn-lg"
-                  onClick={handleStartClassSprint}
-                  disabled={startingClassSprint}
-                  style={{ minWidth: 160 }}
-                >
-                  {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                  <label style={{ fontSize: 13, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={isDiagnostic}
+                      onChange={e => setIsDiagnostic(e.target.checked)}
+                      style={{ accentColor: 'var(--accent)', width: 15, height: 15 }}
+                    />
+                    {t('classSprint.diagnostic')}
+                  </label>
+                  <button
+                    className="btn btn-primary btn-lg"
+                    onClick={handleStartClassSprint}
+                    disabled={startingClassSprint}
+                    style={{ minWidth: 160 }}
+                  >
+                    {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
+                  </button>
+                </div>
               )}
               {activeSprint && (
                 <button

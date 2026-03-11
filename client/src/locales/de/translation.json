@@ -87,7 +87,8 @@
     "feedbackCorrect": "✓ +{{points}} Pkt.",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
     "ending": "Wird beendet…",
-    "endSprint": "Sprint beenden"
+    "endSprint": "Sprint beenden",
+    "phase": "Phase"
   },
   "results": {
     "heading": "Sprint abgeschlossen!",
@@ -269,7 +270,8 @@
     "liveAnswers": "Live-Antworten",
     "waitingForAnswers": "Warte auf Antworten…",
     "liveScores": "Live-Punkte",
-    "noScoresYet": "Noch keine Punkte"
+    "noScoresYet": "Noch keine Punkte",
+    "diagnostic": "Lernstandserhebung (32s)"
   },
   "tiers": {
     "unlocked1": "×3 und ×4 freigeschaltet!",

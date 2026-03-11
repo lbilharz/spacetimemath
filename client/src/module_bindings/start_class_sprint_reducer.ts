@@ -12,4 +12,5 @@ import {
 
 export default {
   classroomId: __t.u64(),
+  isDiagnostic: __t.bool(),
 };
