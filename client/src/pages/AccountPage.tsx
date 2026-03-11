@@ -28,6 +28,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
   const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+  const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
   const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
 
   // Username rename
@@ -57,12 +58,10 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   };
 
   // Email recovery key
-  const EMAILED_KEY = 'noggin_recovery_emailed';
   const [emailInput, setEmailInput] = useState('');
   const [emailSending, setEmailSending] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const [alreadyEmailed] = useState(() => !!localStorage.getItem(EMAILED_KEY));
 
   const handleEmailKey = async () => {
     if (!myRecoveryKey || !emailInput.trim()) return;
@@ -75,7 +74,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
         body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
       });
       if (!res.ok) throw new Error();
-      localStorage.setItem(EMAILED_KEY, '1');
+      await markRecoveryEmailed({});
       setEmailSent(true);
     } catch {
       setEmailError(t('account.emailKeyError'));
@@ -347,7 +346,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
             </div>
             {/* Email recovery key */}
             <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
-              {emailSent || alreadyEmailed ? (
+              {emailSent || (myPlayer as any).recoveryEmailed ? (
                 <p style={{ fontSize: 13, color: 'var(--correct)', textAlign: 'center' }}>
                   ✓ {t('account.emailKeySent')}
                 </p>

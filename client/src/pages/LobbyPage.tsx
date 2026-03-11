@@ -4,8 +4,6 @@ import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import Leaderboard from '../components/Leaderboard.js';
 
-const EMAILED_KEY = 'noggin_recovery_emailed';
-
 type Player = { identity: { toHexString(): string }; username: string; bestScore: number; totalSessions: number; };
 
 interface Props {
@@ -29,7 +27,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     c.teacher.toHexString() === myIdentityHex &&
     (classroomMembers as any[]).some(m => m.classroomId === c.id && !m.isHidden)
   );
-  const showNag = hasStudents && !localStorage.getItem(EMAILED_KEY);
+  const showNag = hasStudents && !(myPlayer as any)?.recoveryEmailed;
 
   const [starting, setStarting]           = useState(false);
   // Pending auto-join code from ?join=CODE URL param; cleared once we navigate

@@ -42,6 +42,7 @@ import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
+import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
 import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
@@ -79,6 +80,12 @@ const tablesSchema = __schema({
       { name: 'id', algorithm: 'btree', columns: [
         'id',
       ] },
+      { name: 'player_identity', algorithm: 'btree', columns: [
+        'playerIdentity',
+      ] },
+      { name: 'session_id', algorithm: 'btree', columns: [
+        'sessionId',
+      ] },
     ],
     constraints: [
       { name: 'answers_id_key', constraint: 'unique', columns: ['id'] },
@@ -87,6 +94,9 @@ const tablesSchema = __schema({
   best_scores: __table({
     name: 'best_scores',
     indexes: [
+      { name: 'learning_tier', algorithm: 'btree', columns: [
+        'learningTier',
+      ] },
       { name: 'player_identity', algorithm: 'btree', columns: [
         'playerIdentity',
       ] },
@@ -109,8 +119,14 @@ const tablesSchema = __schema({
   classroom_members: __table({
     name: 'classroom_members',
     indexes: [
+      { name: 'classroom_id', algorithm: 'btree', columns: [
+        'classroomId',
+      ] },
       { name: 'id', algorithm: 'btree', columns: [
         'id',
+      ] },
+      { name: 'player_identity', algorithm: 'btree', columns: [
+        'playerIdentity',
       ] },
     ],
     constraints: [
@@ -120,8 +136,14 @@ const tablesSchema = __schema({
   classrooms: __table({
     name: 'classrooms',
     indexes: [
+      { name: 'code', algorithm: 'btree', columns: [
+        'code',
+      ] },
       { name: 'id', algorithm: 'btree', columns: [
         'id',
+      ] },
+      { name: 'teacher', algorithm: 'btree', columns: [
+        'teacher',
       ] },
     ],
     constraints: [
@@ -134,6 +156,9 @@ const tablesSchema = __schema({
       { name: 'identity', algorithm: 'btree', columns: [
         'identity',
       ] },
+      { name: 'learning_tier', algorithm: 'btree', columns: [
+        'learningTier',
+      ] },
     ],
     constraints: [
       { name: 'players_identity_key', constraint: 'unique', columns: ['identity'] },
@@ -142,6 +167,12 @@ const tablesSchema = __schema({
   problem_stats: __table({
     name: 'problem_stats',
     indexes: [
+      { name: 'a', algorithm: 'btree', columns: [
+        'a',
+      ] },
+      { name: 'b', algorithm: 'btree', columns: [
+        'b',
+      ] },
       { name: 'problem_key', algorithm: 'btree', columns: [
         'problemKey',
       ] },
@@ -206,6 +237,7 @@ const reducersSchema = __reducers(
   __reducerSchema("end_session", EndSessionReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
+  __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
   __reducerSchema("migrate_recompute_tiers", MigrateRecomputeTiersReducer),
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
   __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),

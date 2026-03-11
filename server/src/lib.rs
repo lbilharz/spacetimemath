@@ -18,6 +18,8 @@ pub struct Player {
     #[default(0)]
     #[index(btree)]
     pub learning_tier: u8,
+    #[default(false)]
+    pub recovery_emailed: bool,
 }
 
 #[table(accessor = sessions, public)]
@@ -354,6 +356,7 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
             total_answered: 0,
             onboarding_done: false,
             learning_tier: 0,
+            recovery_emailed: false,
         });
     }
     Ok(())
@@ -662,6 +665,15 @@ pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), St
 pub fn complete_onboarding(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
     ctx.db.players().identity().update(Player { onboarding_done: true, ..player });
+    Ok(())
+}
+
+/// Mark that the player has emailed themselves their recovery key.
+/// Persisted server-side so the nag banner stays gone across all devices.
+#[reducer]
+pub fn mark_recovery_emailed(ctx: &ReducerContext) -> Result<(), String> {
+    let player = get_player(ctx)?;
+    ctx.db.players().identity().update(Player { recovery_emailed: true, ..player });
     Ok(())
 }
 
