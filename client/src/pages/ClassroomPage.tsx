@@ -261,7 +261,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
 
   return (
-    <div className="page">
+    <div className="page" style={isTeacher ? { maxWidth: 1100 } : undefined}>
 
       {/* Student QR login card modal */}
       {qrStudent && (
@@ -382,67 +382,71 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       {/* Live feed — shown during AND after a class sprint (teacher only) */}
       {isTeacher && latestSprint && (
         <div className="card" style={{ borderColor: 'rgba(255,60,60,0.4)' }}>
+          <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
-          {/* 1 — Combined class grid (always on top) */}
-          <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            {t('classSprint.grid')}
-          </h3>
-          <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
-
-          {/* 2 — Ticker + leaderboard below the grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 20 }}>
-
-            {/* Rolling answer ticker — newest on top, old rows fall off the bottom */}
-            <div>
+            {/* Left — Combined class grid */}
+            <div style={{ flex: '0 0 auto' }}>
               <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                {t('classSprint.liveAnswers')}
+                {t('classSprint.grid')}
               </h3>
-              {recentAnswers.length === 0 ? (
-                <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.waitingForAnswers')}</span>
-              ) : (
-                <div style={{ overflow: 'hidden', maxHeight: 180, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {recentAnswers.map((a: any) => {
-                    const p = (players as any[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
-                    const name = p?.username ?? '?';
-                    return (
-                      <div key={String(a.id)} style={{
-                        display: 'flex', gap: 6, alignItems: 'center', fontSize: 13,
-                        color: a.isCorrect ? 'var(--accent)' : 'var(--wrong)',
-                        flexShrink: 0,
-                      }}>
-                        <span>{a.isCorrect ? '🟢' : '🔴'}</span>
-                        <span style={{ fontWeight: 600 }}>{name}</span>
-                        <span style={{ color: 'var(--muted)' }}>{a.a}×{a.b}</span>
-                        <span>{a.isCorrect ? '✓' : '✗'}</span>
+              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
+            </div>
+
+            {/* Right — Ticker + leaderboard stacked */}
+            <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+              {/* Rolling answer ticker */}
+              <div>
+                <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {t('classSprint.liveAnswers')}
+                </h3>
+                {recentAnswers.length === 0 ? (
+                  <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.waitingForAnswers')}</span>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {recentAnswers.map((a: any) => {
+                      const p = (players as any[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
+                      const name = p?.username ?? '?';
+                      return (
+                        <div key={String(a.id)} style={{
+                          display: 'flex', gap: 6, alignItems: 'center', fontSize: 13,
+                          color: a.isCorrect ? 'var(--accent)' : 'var(--wrong)',
+                        }}>
+                          <span>{a.isCorrect ? '🟢' : '🔴'}</span>
+                          <span style={{ fontWeight: 600 }}>{name}</span>
+                          <span style={{ color: 'var(--muted)' }}>{a.a}×{a.b}</span>
+                          <span>{a.isCorrect ? '✓' : '✗'}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Mini live leaderboard */}
+              <div>
+                <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {t('classSprint.liveScores')}
+                </h3>
+                {liveLB.length === 0 ? (
+                  <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.noScoresYet')}</span>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {liveLB.map((r, i) => (
+                      <div key={r.username} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 12, color: 'var(--muted)', width: 16, textAlign: 'right' }}>{i + 1}</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, flex: 1 }}>{r.username}</span>
+                        <span style={{ fontSize: 13, color: 'var(--muted)', marginRight: 4 }}>{r.correct}✓</span>
+                        <span style={{ fontSize: 13, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
+                          {r.score.toFixed(1)}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Mini live leaderboard */}
-            <div>
-              <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                {t('classSprint.liveScores')}
-              </h3>
-              {liveLB.length === 0 ? (
-                <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.noScoresYet')}</span>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {liveLB.map((r, i) => (
-                    <div key={r.username} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, color: 'var(--muted)', width: 16, textAlign: 'right' }}>{i + 1}</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, flex: 1 }}>{r.username}</span>
-                      <span style={{ fontSize: 13, color: 'var(--muted)', marginRight: 4 }}>{r.correct}✓</span>
-                      <span style={{ fontSize: 13, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
-                        {r.score.toFixed(1)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       )}
