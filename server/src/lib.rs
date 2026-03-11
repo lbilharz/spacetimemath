@@ -1,4 +1,4 @@
-use spacetimedb::{table, reducer, Table, ReducerContext, Identity, Timestamp, ScheduleAt};
+use spacetimedb::{table, reducer, Table, ReducerContext, Identity, Timestamp, ScheduleAt, TimeDuration};
 
 // ============================================================
 // TABLES
@@ -952,15 +952,6 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
 
     for member in members {
         if let Some(player) = ctx.db.players().identity().find(member.player_identity) {
-            // Skip if that player already has an incomplete session for this class sprint
-            // (shouldn't happen, but guards against double-tap)
-            let already = ctx.db.sessions()
-                .iter()
-                .any(|s| s.player_identity == member.player_identity
-                    && s.class_sprint_id == sprint.id
-                    && !s.is_complete);
-            if already { continue; }
-
             ctx.db.sessions().insert(Session {
                 id: 0,
                 player_identity: member.player_identity,
@@ -977,13 +968,11 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
     }
 
     // Schedule server-side auto-end: 34 s for diagnostic (32s + 2s buffer), 62 s for regular.
-    // Fires even if every client goes offline — offline students can never block the transition.
-    let auto_end_secs: i64 = if is_diagnostic { 34 } else { 62 };
+    // Use Interval (duration from now) rather than absolute Timestamp to avoid any clock math.
+    let auto_end_micros: i64 = if is_diagnostic { 34_000_000 } else { 62_000_000 };
     ctx.db.end_sprint_schedule().insert(EndSprintSchedule {
         scheduled_id: 0,
-        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
-            ctx.timestamp.to_micros_since_unix_epoch() + auto_end_secs * 1_000_000,
-        )),
+        scheduled_at: ScheduleAt::Interval(TimeDuration::from_micros(auto_end_micros)),
         class_sprint_id: sprint.id,
     });
 
