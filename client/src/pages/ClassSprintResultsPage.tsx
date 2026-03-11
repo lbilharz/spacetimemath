@@ -24,21 +24,22 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
     ? (classrooms as any[]).find(c => c.id === classSprint.classroomId)
     : null;
 
-  // Sessions that belong to this class sprint
+  // Sessions that belong to this class sprint (compare as strings to avoid bigint/number coercion issues)
+  const classSprintIdStr = String(classSprintId);
   const sprintSessions = (sessions as any[]).filter(
-    s => s.classSprintId === classSprintId
+    s => String(s.classSprintId) === classSprintIdStr
   );
-  const sessionIds = new Set<bigint>(sprintSessions.map((s: any) => s.id as bigint));
+  const sessionIdStrs = new Set<string>(sprintSessions.map((s: any) => String(s.id)));
 
   // Answers for those sessions
-  const sprintAnswers = (answers as any[]).filter(a => sessionIds.has(a.sessionId));
+  const sprintAnswers = (answers as any[]).filter(a => sessionIdStrs.has(String(a.sessionId)));
 
   // Ranking — all sessions, completed ones use weightedScore, running ones use live answer scores
   const ranking = sprintSessions
     .map((s: any) => {
       const identityHex = s.playerIdentity.toHexString();
       const player = (players as any[]).find(p => p.identity.toHexString() === identityHex);
-      const sa = sprintAnswers.filter((a: any) => a.sessionId === s.id);
+      const sa = sprintAnswers.filter((a: any) => String(a.sessionId) === String(s.id));
       const correct = sa.filter((a: any) => a.isCorrect).length;
       const total = sa.length;
       const isComplete = s.isComplete as boolean;

@@ -69,11 +69,12 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const endedSprint  = latestSprint && !latestSprint.isActive ? latestSprint : null;
 
   // Sessions + answers belonging to the active/ended sprint (for live ticker + mini LB)
+  const latestSprintIdStr = latestSprint ? String(latestSprint.id) : null;
   const sprintSessions = latestSprint
-    ? (sessions as any[]).filter(s => s.classSprintId === latestSprint.id)
+    ? (sessions as any[]).filter(s => String(s.classSprintId) === latestSprintIdStr)
     : [];
-  const sprintSessionIds = new Set<bigint>(sprintSessions.map((s: any) => s.id as bigint));
-  const sprintAnswers = (answers as any[]).filter(a => sprintSessionIds.has(a.sessionId));
+  const sprintSessionIdStrs = new Set<string>(sprintSessions.map((s: any) => String(s.id)));
+  const sprintAnswers = (answers as any[]).filter(a => sprintSessionIdStrs.has(String(a.sessionId)));
 
   // Last 20 answers sorted newest-first for the live ticker
   const recentAnswers = [...sprintAnswers]
@@ -85,7 +86,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const liveLB = sprintSessions
     .map((s: any) => {
       const p = (players as any[]).find(pl => pl.identity.toHexString() === s.playerIdentity.toHexString());
-      const mine = sprintAnswers.filter((a: any) => a.sessionId === s.id);
+      const mine = sprintAnswers.filter((a: any) => String(a.sessionId) === String(s.id));
       const score = mine
         .filter((a: any) => a.isCorrect)
         .reduce((sum: number, a: any) => {

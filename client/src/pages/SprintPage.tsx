@@ -203,14 +203,19 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // 2. Detect new session for this player
   useEffect(() => {
     if (sessionId !== null) return;
-    const mySession = sessions.find(
-      s => (s as Session).playerIdentity.toHexString() === myIdentityHex && !(s as Session).isComplete
-    );
+    const mySession = sessions.find(s => {
+      const sess = s as Session;
+      if (sess.playerIdentity.toHexString() !== myIdentityHex || sess.isComplete) return false;
+      // For class sprints, only accept the session created for this specific sprint
+      if (classSprintId !== undefined) return String(sess.classSprintId) === String(classSprintId);
+      // Solo sprint: accept any incomplete session (classSprintId === 0n)
+      return !sess.classSprintId || sess.classSprintId === 0n;
+    });
     if (mySession) {
       setSessionId((mySession as Session).id);
       sessionIdRef.current = (mySession as Session).id;
     }
-  }, [sessions, myIdentityHex, sessionId]);
+  }, [sessions, myIdentityHex, sessionId, classSprintId]);
 
   // 3a. When session is detected, kick off the pre-countdown
   useEffect(() => {
