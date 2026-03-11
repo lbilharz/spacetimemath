@@ -271,7 +271,7 @@
     "waitingForAnswers": "Warte auf Antworten…",
     "liveScores": "Live-Punkte",
     "noScoresYet": "Noch keine Punkte",
-    "diagnostic": "Lernstandserhebung (32s)"
+    "diagnostic": "Lernstandserhebung (60s)"
   },
   "tiers": {
     "unlocked1": "×3 und ×4 freigeschaltet!",

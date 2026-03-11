@@ -43,6 +43,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // Teacher QR card modal
   const [qrStudent, setQrStudent] = useState<{ username: string; code: string } | null>(null);
 
+  // Countdown timer for teacher's live feed view
+  const [sprintTimeLeft, setSprintTimeLeft] = useState<number | null>(null);
+
   // Find this specific classroom
   const myClassroom = (classrooms as any[]).find(c => c.id === classroomId) ?? null;
   const myMembership = (classroomMembers as any[]).find(
@@ -135,6 +138,17 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     endClassSprint({ classSprintId: activeSprint.id }).catch(console.error);
   }, [allSessionsComplete, activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
   // Offline-student deadline is handled server-side via the EndSprintSchedule table.
+
+  // Countdown timer — ticks from server startedAt, same logic as SprintPage
+  useEffect(() => {
+    if (!activeSprint || !isTeacher) { setSprintTimeLeft(null); return; }
+    const DURATION = 60;
+    const startMs = Number(activeSprint.startedAt.microsSinceUnixEpoch / 1000n);
+    const tick = () => setSprintTimeLeft(Math.max(0, DURATION - Math.floor((Date.now() - startMs) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── End of class sprint state ───────────────────────────────────────────────
 
@@ -382,6 +396,33 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       {/* Live feed — shown during AND after a class sprint (teacher only) */}
       {isTeacher && latestSprint && (
         <div className="card" style={{ borderColor: 'rgba(255,60,60,0.4)' }}>
+
+          {/* Timer bar — only while sprint is active */}
+          {activeSprint && sprintTimeLeft !== null && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 12, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
+                  {latestSprint?.isDiagnostic ? t('classSprint.diagnostic').replace(/\s*\(.*\)/, '') : t('classSprint.live')}
+                </span>
+                <span style={{
+                  fontSize: 13, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+                  color: sprintTimeLeft <= 10 ? 'var(--wrong)' : sprintTimeLeft <= 20 ? 'var(--warn)' : 'var(--accent)',
+                }}>
+                  {sprintTimeLeft}s
+                </span>
+              </div>
+              <div style={{ height: 5, borderRadius: 3, background: 'var(--card2)', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${(sprintTimeLeft / 60) * 100}%`,
+                  background: sprintTimeLeft <= 10 ? 'var(--wrong)' : sprintTimeLeft <= 20 ? 'var(--warn)' : 'var(--accent)',
+                  transition: 'width 1s linear, background 0.3s',
+                  borderRadius: 3,
+                }} />
+              </div>
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
             {/* Left — Combined class grid */}
