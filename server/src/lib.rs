@@ -959,15 +959,23 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
         ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..s });
     }
 
-    // Insert new ClassSprint
-    let sprint = ctx.db.class_sprints().insert(ClassSprint {
-        id: 0,
-        classroom_id,
-        teacher: sender,
-        started_at: ctx.timestamp,
-        is_active: true,
-        is_diagnostic,
-    });
+    // Insert new ClassSprint — use try_insert retry loop to survive auto_inc desync
+    // (SpacetimeDB resets the counter to 0 on each deploy while existing rows keep higher IDs)
+    let mut sprint_opt: Option<ClassSprint> = None;
+    for _ in 0..200 {
+        if let Ok(s) = ctx.db.class_sprints().try_insert(ClassSprint {
+            id: 0,
+            classroom_id,
+            teacher: sender,
+            started_at: ctx.timestamp,
+            is_active: true,
+            is_diagnostic,
+        }) {
+            sprint_opt = Some(s);
+            break;
+        }
+    }
+    let sprint = sprint_opt.ok_or("Could not create class sprint")?;
 
     // Create a Session for each non-hidden, non-teacher member
     let members: Vec<_> = ctx.db.classroom_members()
@@ -1005,13 +1013,16 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
 
     // Schedule server-side auto-end: 34 s for diagnostic (32s + 2s buffer), 62 s for regular.
     let auto_end_secs: i64 = if is_diagnostic { 34 } else { 62 };
-    ctx.db.end_sprint_schedule().insert(EndSprintSchedule {
-        scheduled_id: 0,
-        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
-            ctx.timestamp.to_micros_since_unix_epoch() + auto_end_secs * 1_000_000,
-        )),
-        class_sprint_id: sprint.id,
-    });
+    let schedule_at = ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
+        ctx.timestamp.to_micros_since_unix_epoch() + auto_end_secs * 1_000_000,
+    ));
+    for _ in 0..200 {
+        if ctx.db.end_sprint_schedule().try_insert(EndSprintSchedule {
+            scheduled_id: 0,
+            scheduled_at: schedule_at.clone(),
+            class_sprint_id: sprint.id,
+        }).is_ok() { break; }
+    }
 
     Ok(())
 }
