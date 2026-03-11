@@ -24,7 +24,7 @@ type Answer = {
 };
 type Session = {
   id: bigint; playerIdentity: { toHexString(): string };
-  isComplete: boolean; weightedScore: number;
+  isComplete: boolean; weightedScore: number; classSprintId: bigint;
 };
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -218,10 +218,15 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   }, [sessions, myIdentityHex, sessionId, classSprintId]);
 
   // 3a. When session is detected, kick off the pre-countdown
+  // Class sprints skip the countdown — the ClassSprintAlert already did one
   useEffect(() => {
     if (sessionId === null || preCountdown !== null || sprintStarted) return;
-    setPreCountdown(3);
-  }, [sessionId, preCountdown, sprintStarted]);
+    if (classSprintId !== undefined) {
+      setSprintStarted(true);
+    } else {
+      setPreCountdown(3);
+    }
+  }, [sessionId, preCountdown, sprintStarted, classSprintId]);
 
   // 3b. Tick the pre-countdown: 3→2→1→0("Go!")→null+sprintStarted
   useEffect(() => {
