@@ -33,20 +33,24 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
   // Answers for those sessions
   const sprintAnswers = (answers as any[]).filter(a => sessionIds.has(a.sessionId));
 
-  // Ranking — completed sessions sorted by weighted score
+  // Ranking — all sessions, completed ones use weightedScore, running ones use live answer scores
   const ranking = sprintSessions
-    .filter((s: any) => s.isComplete)
     .map((s: any) => {
       const identityHex = s.playerIdentity.toHexString();
       const player = (players as any[]).find(p => p.identity.toHexString() === identityHex);
       const sa = sprintAnswers.filter((a: any) => a.sessionId === s.id);
-      return {
-        identityHex,
-        username: player?.username ?? s.username,
-        score: s.weightedScore as number,
-        correct: sa.filter((a: any) => a.isCorrect).length,
-        total: sa.length,
-      };
+      const correct = sa.filter((a: any) => a.isCorrect).length;
+      const total = sa.length;
+      const isComplete = s.isComplete as boolean;
+      // Completed sessions have final weightedScore; running ones: compute live from answers
+      const score = isComplete
+        ? (s.weightedScore as number)
+        : sa.filter((a: any) => a.isCorrect).reduce((sum: number, a: any) => {
+            const key = (a.a as number) * 100 + (a.b as number);
+            const stat = (problemStats as any[]).find(ps => ps.problemKey === key);
+            return sum + (stat?.difficultyWeight ?? 1.0);
+          }, 0);
+      return { identityHex, username: player?.username ?? s.username, score, correct, total, isComplete };
     })
     .sort((a, b) => b.score - a.score);
 
@@ -94,6 +98,7 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
                     style={{
                       borderBottom: '1px solid var(--border)',
                       background: isMe ? 'rgba(251,186,0,0.08)' : 'transparent',
+                      opacity: r.isComplete ? 1 : 0.65,
                     }}
                   >
                     <td style={{ ...td, textAlign: 'center', fontWeight: 700, color: i < 3 ? 'var(--warn)' : 'var(--muted)' }}>
@@ -105,6 +110,9 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
                         <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>
                           {t('common.you')}
                         </span>
+                      )}
+                      {!r.isComplete && (
+                        <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 11 }}>⏱</span>
                       )}
                     </td>
                     <td style={{ ...td, textAlign: 'right', color: 'var(--warn)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>

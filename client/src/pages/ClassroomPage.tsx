@@ -378,8 +378,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         </div>
       </div>
 
-      {/* Live feed — shown during an active class sprint (teacher only) */}
-      {isTeacher && activeSprint && (
+      {/* Live feed — shown during AND after a class sprint (teacher only) */}
+      {isTeacher && latestSprint && (
         <div className="card" style={{ borderColor: 'rgba(255,60,60,0.4)' }}>
 
           {/* 1 — Combined class grid (always on top) */}

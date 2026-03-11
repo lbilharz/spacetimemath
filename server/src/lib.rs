@@ -23,6 +23,7 @@ pub struct Player {
 }
 
 #[table(accessor = sessions, public)]
+#[derive(Clone)]
 pub struct Session {
     #[primary_key]
     #[auto_inc]
@@ -971,7 +972,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
 
     for member in members {
         if let Some(player) = ctx.db.players().identity().find(member.player_identity) {
-            ctx.db.sessions().insert(Session {
+            let row = Session {
                 id: 0,
                 player_identity: member.player_identity,
                 username: player.username,
@@ -982,7 +983,19 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
                 is_complete: false,
                 started_at: ctx.timestamp,
                 class_sprint_id: sprint.id,
-            });
+            };
+            // auto_inc counter may be out of sync with existing data due to a SpacetimeDB
+            // migration resetting it. Retry until the counter moves past existing IDs.
+            let mut success = false;
+            for _ in 0..200 {
+                if ctx.db.sessions().try_insert(row.clone()).is_ok() {
+                    success = true;
+                    break;
+                }
+            }
+            if !success {
+                return Err(format!("Could not insert session for {}", row.username));
+            }
         }
     }
 
