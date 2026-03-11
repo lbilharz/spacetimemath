@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import { capturedToken } from '../auth.js';
+import SplashGrid from '../components/SplashGrid.js';
 
 const CREDS_KEY = 'spacetimemath_credentials';
 
@@ -112,8 +113,8 @@ export default function RegisterPage({ onRegistered }: Props) {
   return (
     <div className="page" style={{ justifyContent: 'center', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: 8 }}>
-        <div style={{ fontSize: 64, marginBottom: 8 }}>{showRestore ? '🔑' : '⚡'}</div>
-        <h1 style={{ fontSize: 36 }}>{showRestore ? t('register.restoreHeading') : 'Math Sprint'}</h1>
+        <div style={{ marginBottom: 8 }}><SplashGrid /></div>
+        <h1 style={{ fontSize: 36 }}>noggin</h1>
         {!showRestore && <p style={{ color: 'var(--muted)', marginTop: 8 }}>{t('register.tagline')}</p>}
       </div>
 
