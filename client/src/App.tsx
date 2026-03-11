@@ -43,7 +43,7 @@ function SplashGrid() {
   }, []);
   return (
     <svg className="splash-bolt" width="80" height="80" viewBox="0 0 100 100" aria-hidden="true">
-      <rect width="100" height="100" rx="22" fill="#2C3E50"/>
+      <rect width="100" height="100" rx="14" fill="#2C3E50"/>
       {CELL_POSITIONS.map((pos, i) => (
         <rect key={i} x={pos.x} y={pos.y} width="26" height="26" rx="5"
           style={{ fill: colors[i], transition: 'fill 0.22s ease' }}

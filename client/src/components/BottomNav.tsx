@@ -44,7 +44,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
             {tab.id === 'lobby' ? (
               <>
                 <svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true">
-                  <rect width="100" height="100" rx="22" fill="#2C3E50"/>
+                  <rect width="100" height="100" rx="14" fill="#2C3E50"/>
                   <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
                   <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
                   <rect x="68" y="6"  width="26" height="26" rx="5" fill="#FBBA00"/>
