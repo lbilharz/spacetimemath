@@ -74,7 +74,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
         body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
       });
       if (!res.ok) throw new Error();
-      await markRecoveryEmailed({});
+      await markRecoveryEmailed();
       setEmailSent(true);
     } catch {
       setEmailError(t('account.emailKeyError'));
