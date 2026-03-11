@@ -188,10 +188,19 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const sessionIdRef = useRef<bigint | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 0. Sync timeLeft with SPRINT_DURATION once class sprint data arrives (before sprint starts)
+  // 0. Sync timeLeft with SPRINT_DURATION (solo) or server startedAt (class sprint)
   useEffect(() => {
-    if (!sprintStarted) setTimeLeft(SPRINT_DURATION);
-  }, [SPRINT_DURATION]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (sprintStarted) return;
+    if (classSprintId !== undefined) {
+      const cs = (classSprints as any[]).find(s => String(s.id) === String(classSprintId));
+      if (cs) {
+        const startMs = Number(cs.startedAt.microsSinceUnixEpoch / 1000n);
+        setTimeLeft(Math.max(0, SPRINT_DURATION - Math.floor((Date.now() - startMs) / 1000)));
+      }
+    } else {
+      setTimeLeft(SPRINT_DURATION);
+    }
+  }, [SPRINT_DURATION, classSprints]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 1. Start session on mount — skip for class sprints (server pre-creates the session)
   useEffect(() => {
@@ -256,24 +265,43 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }
   }, [sprintStarted, problem, problemStats.length, isDiagnostic]);
 
-  // 4. Sprint timer — starts only after pre-countdown finishes
+  // 4. Sprint timer
+  // Class sprint: tick is derived from server's startedAt — survives reloads
+  // Solo sprint: local countdown from SPRINT_DURATION
   useEffect(() => {
     if (!sprintStarted) return;
-    const id = setInterval(() => {
-      setTimeLeft(t => {
-        if (t <= 1) { clearInterval(id); return 0; }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [sprintStarted]);
+    if (classSprintId !== undefined) {
+      const cs = (classSprints as any[]).find(s => String(s.id) === String(classSprintId));
+      if (!cs) return;
+      const startMs = Number(cs.startedAt.microsSinceUnixEpoch / 1000n);
+      const tick = () => setTimeLeft(Math.max(0, SPRINT_DURATION - Math.floor((Date.now() - startMs) / 1000)));
+      tick();
+      const id = setInterval(tick, 1000);
+      return () => clearInterval(id);
+    } else {
+      const id = setInterval(() => {
+        setTimeLeft(t => { if (t <= 1) { clearInterval(id); return 0; } return t - 1; });
+      }, 1000);
+      return () => clearInterval(id);
+    }
+  }, [sprintStarted]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 5. When timer hits 0, end session
+  // 5a. Solo: end session when timer hits 0
   useEffect(() => {
-    if (timeLeft === 0 && sprintStarted && sessionId !== null && !ending) {
+    if (timeLeft === 0 && sprintStarted && sessionId !== null && !ending && classSprintId === undefined) {
       handleEnd();
     }
   }, [timeLeft, sprintStarted, sessionId, ending]);
+
+  // 5b. Class sprint: navigate when server marks session complete OR timer expires
+  useEffect(() => {
+    if (classSprintId === undefined || sessionId === null || ending) return;
+    const mySession = (sessions as any[]).find(s => String(s.id) === String(sessionId));
+    if (mySession?.isComplete || timeLeft === 0) {
+      setEnding(true);
+      onFinished(sessionId);
+    }
+  }, [sessions, timeLeft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEnd = useCallback(async () => {
     const sid = sessionIdRef.current;
@@ -298,8 +326,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     // Submit to SpaceTimeDB (fire-and-forget to keep UX fast)
     submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs });
 
-    // Wrong answer: -2s penalty
-    if (!isCorrect) {
+    // Wrong answer: -2s penalty (solo only — class sprint timer is server-time derived)
+    if (!isCorrect && classSprintId === undefined) {
       setTimeLeft(t => Math.max(0, t - 2));
     }
 
