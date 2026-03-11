@@ -430,7 +430,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {t('classSprint.grid')}
               </h3>
-              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
+              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} tier1Unlocked />
             </div>
 
             {/* Right — Ticker + leaderboard stacked */}
@@ -660,7 +660,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
             {t('classroom.classMasteryDesc', { count: visibleMembers.length })}
           </p>
-          <MasteryGrid answers={classAnswers} problemStats={problemStats as any[]} />
+          <MasteryGrid answers={classAnswers} problemStats={problemStats as any[]} tier1Unlocked />
         </div>
       )}
 
