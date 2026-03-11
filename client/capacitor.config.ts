@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.bettermarks.noggin',
-  appName: 'noggin',
+  appId: 'com.bettermarks.oneup',
+  appName: '1UP',
   webDir: 'dist',
   ios: {
     backgroundColor: '#F5F4F0',   // matches --bg

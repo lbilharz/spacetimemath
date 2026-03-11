@@ -114,7 +114,7 @@ export default function RegisterPage({ onRegistered }: Props) {
     <div className="page" style={{ justifyContent: 'center', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: 8 }}>
         <div style={{ marginBottom: 8 }}><SplashGrid /></div>
-        <h1 style={{ fontSize: 36 }}>noggin</h1>
+        <h1 style={{ fontSize: 36 }}>1UP</h1>
         {!showRestore && <p style={{ color: 'var(--muted)', marginTop: 8 }}>{t('register.tagline')}</p>}
       </div>
 

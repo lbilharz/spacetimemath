@@ -15,13 +15,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const restoreUrl = `${appUrl}/?restore=${encodeURIComponent(code)}`;
 
   const { error } = await resend.emails.send({
-    from: 'noggin <onboarding@resend.dev>',
+    from: '1UP <onboarding@resend.dev>',
     to: email,
-    subject: 'Your noggin recovery key',
+    subject: 'Your 1UP recovery key',
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px">
-        <div style="font-size:32px;margin-bottom:8px">🧠</div>
-        <h1 style="font-size:22px;color:#2C3E50;margin:0 0 8px">Your noggin recovery key</h1>
+        <div style="font-size:32px;margin-bottom:8px">🎮</div>
+        <h1 style="font-size:22px;color:#2C3E50;margin:0 0 8px">Your 1UP recovery key</h1>
         <p style="color:#606060;font-size:15px;margin:0 0 24px">
           Use this to restore your account on any device. Keep it safe.
         </p>

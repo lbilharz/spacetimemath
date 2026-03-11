@@ -241,7 +241,7 @@ export default function App() {
       <div className="splash-screen">
         <div className="splash-glow" />
         <SplashGrid />
-        <div className="splash-title">noggin</div>
+        <div className="splash-title">1UP</div>
         <div className="splash-tagline" style={{ color: 'var(--wrong)', marginTop: 12 }}>
           {t('app.connectionError')}
         </div>
@@ -259,7 +259,7 @@ export default function App() {
       <div className="splash-screen">
         <div className="splash-glow" />
         <SplashGrid />
-        <div className="splash-title">noggin</div>
+        <div className="splash-title">1UP</div>
         <div className="splash-tagline">{t('app.tagline')}</div>
       </div>
     );

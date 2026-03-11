@@ -60,7 +60,7 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
                       <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
                       <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
                     </svg>
-                    <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: '-0.3px' }}>noggin</span>
+                    <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: '-0.3px' }}>1UP</span>
                   </>
                 ) : (
                   <>

@@ -15,12 +15,12 @@
     "code": "code"
   },
   "app": {
-    "brand": "noggin",
+    "brand": "1UP",
     "connecting": "Connecting to SpacetimeDB…",
     "connectionError": "Cannot connect to SpaceTimeDB",
     "connectionErrorHint": "Make sure spacetime start --in-memory is running on port 3000",
     "reconnecting": "Reconnecting…",
-    "tagline": "Knock it in."
+    "tagline": "Know your level."
   },
   "register": {
     "tagline": "60 seconds. Multiplication tables. Live leaderboard.",

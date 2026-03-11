@@ -55,7 +55,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
                   <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
                   <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
                 </svg>
-                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '-0.2px' }}>noggin</span>
+                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '-0.2px' }}>1UP</span>
               </>
             ) : (
               <>

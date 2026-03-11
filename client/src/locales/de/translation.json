@@ -15,12 +15,12 @@
     "code": "Code"
   },
   "app": {
-    "brand": "noggin",
+    "brand": "1UP",
     "connecting": "Verbinde mit SpacetimeDB…",
     "connectionError": "Keine Verbindung zu SpaceTimeDB",
     "connectionErrorHint": "Stelle sicher, dass spacetime start --in-memory auf Port 3000 läuft",
     "reconnecting": "Verbindung wird wiederhergestellt…",
-    "tagline": "Klopf es rein."
+    "tagline": "Kenn dein Level."
   },
   "register": {
     "tagline": "60 Sekunden. Einmaleins. Live-Rangliste.",
