@@ -31,7 +31,7 @@ type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
 
 // ── Diagnostic assessment sprint ─────────────────────────────────────────────
 // 4 phases × 8 seconds = 32 seconds total. Problem set expands each phase.
-const DIAGNOSTIC_PHASE_SECS = 8;
+const DIAGNOSTIC_PHASE_SECS = 15;
 const DIAGNOSTIC_PHASES: (number[] | null)[] = [
   [1, 2, 5, 10],                          // Phase 0  0–8s
   [1, 2, 3, 4, 5, 10],                    // Phase 1  8–16s
@@ -153,7 +153,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const isDiagnostic = classSprintId
     ? !!((classSprints as any[]).find(s => s.id === classSprintId)?.isDiagnostic)
     : false;
-  const SPRINT_DURATION = isDiagnostic ? 32 : 60;
+  const SPRINT_DURATION = isDiagnostic ? 60 : 60;
 
   const playerLearningTier: number = (players as any[]).find(
     p => p.identity.toHexString() === myIdentityHex

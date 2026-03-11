@@ -1012,7 +1012,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
     }
 
     // Schedule server-side auto-end: 34 s for diagnostic (32s + 2s buffer), 62 s for regular.
-    let auto_end_secs: i64 = if is_diagnostic { 34 } else { 62 };
+    let auto_end_secs: i64 = if is_diagnostic { 62 } else { 62 };
     let schedule_at = ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
         ctx.timestamp.to_micros_since_unix_epoch() + auto_end_secs * 1_000_000,
     ));
