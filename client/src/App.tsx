@@ -287,10 +287,13 @@ export default function App() {
       )}
 
       {effectivePlayer && !effectivePlayer.onboardingDone && (
-        <OnboardingOverlay onDone={() => {
-          tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
-          navigate('sprint');
-        }} />
+        <OnboardingOverlay
+          noSprint={window.location.search.includes('join=')}
+          onDone={() => {
+            tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
+            navigate('sprint');
+          }}
+        />
       )}
 
       {/* Class sprint alert — shown to enrolled students when teacher fires a sprint */}

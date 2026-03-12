@@ -11,9 +11,12 @@ const CARDS = [
 
 interface Props {
   onDone: () => void;
+  /** When true (e.g. joining via classroom link), hide "Start Sprint" and
+   *  promote "Okay" as the sole primary CTA on the last card. */
+  noSprint?: boolean;
 }
 
-export default function OnboardingOverlay({ onDone }: Props) {
+export default function OnboardingOverlay({ onDone, noSprint = false }: Props) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [finishing, setFinishing] = useState(false);
@@ -88,7 +91,7 @@ export default function OnboardingOverlay({ onDone }: Props) {
 
         {/* Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', marginTop: 4 }}>
-          {/* Main row: Back (if applicable) + Next / Start Sprint */}
+          {/* Main row: Back (if applicable) + Next / primary CTA */}
           <div style={{ display: 'flex', gap: 10, width: '100%' }}>
             {step > 0 && (
               <button
@@ -108,31 +111,56 @@ export default function OnboardingOverlay({ onDone }: Props) {
                 {t('onboarding.back')}
               </button>
             )}
-            <button
-              onClick={isLast ? handleDone : () => setStep(s => s + 1)}
-              disabled={finishing}
-              style={{
-                flex: 2,
-                padding: isLast ? '16px 0' : '11px 0',
-                background: 'var(--accent)',
-                border: 'none',
-                borderRadius: 10,
-                color: '#2C3E50',
-                fontSize: isLast ? 18 : 15,
-                fontWeight: 900,
-                cursor: finishing ? 'default' : 'pointer',
-                opacity: finishing ? 0.7 : 1,
-                boxShadow: isLast ? '0 4px 20px rgba(251,186,0,0.4)' : 'none',
-                letterSpacing: isLast ? '-0.3px' : 'normal',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >
-              {isLast ? t('onboarding.startSprint') : t('onboarding.next')}
-            </button>
+            {/* On the last card: "Start Sprint" normally, "Okay" (styled primary) when noSprint */}
+            {isLast && noSprint ? (
+              <button
+                onClick={handleOkay}
+                disabled={finishing}
+                style={{
+                  flex: 2,
+                  padding: '16px 0',
+                  background: 'var(--accent)',
+                  border: 'none',
+                  borderRadius: 10,
+                  color: '#2C3E50',
+                  fontSize: 18,
+                  fontWeight: 900,
+                  cursor: finishing ? 'default' : 'pointer',
+                  opacity: finishing ? 0.7 : 1,
+                  boxShadow: '0 4px 20px rgba(251,186,0,0.4)',
+                  letterSpacing: '-0.3px',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                {t('onboarding.okay')}
+              </button>
+            ) : (
+              <button
+                onClick={isLast ? handleDone : () => setStep(s => s + 1)}
+                disabled={finishing}
+                style={{
+                  flex: 2,
+                  padding: isLast ? '16px 0' : '11px 0',
+                  background: 'var(--accent)',
+                  border: 'none',
+                  borderRadius: 10,
+                  color: '#2C3E50',
+                  fontSize: isLast ? 18 : 15,
+                  fontWeight: 900,
+                  cursor: finishing ? 'default' : 'pointer',
+                  opacity: finishing ? 0.7 : 1,
+                  boxShadow: isLast ? '0 4px 20px rgba(251,186,0,0.4)' : 'none',
+                  letterSpacing: isLast ? '-0.3px' : 'normal',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                {isLast ? t('onboarding.startSprint') : t('onboarding.next')}
+              </button>
+            )}
           </div>
 
-          {/* Secondary "Okay" — only on the last card */}
-          {isLast && (
+          {/* Secondary "Okay" — only on the last card, only when Start Sprint is shown */}
+          {isLast && !noSprint && (
             <button
               onClick={handleOkay}
               disabled={finishing}
