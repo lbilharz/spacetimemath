@@ -65,6 +65,14 @@ export default function App() {
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
+  // Persist "joined via classroom link" flag early — ?join= disappears once LobbyPage processes it.
+  // Cleared as soon as onboarding completes (see OnboardingOverlay render below).
+  useEffect(() => {
+    if (window.location.search.includes('join=')) {
+      localStorage.setItem('_joinedViaClassroom', '1');
+    }
+  }, []);
+
   // Hold the splash for at least 2.5 s on first load (not on WS reconnect).
   const [splashDone, setSplashDone] = useState(false);
   useEffect(() => {
@@ -288,11 +296,13 @@ export default function App() {
 
       {effectivePlayer && !effectivePlayer.onboardingDone && (
         <OnboardingOverlay
-          noSprint={window.location.search.includes('join=')}
+          noSprint={!!localStorage.getItem('_joinedViaClassroom')}
           onDone={() => {
+            localStorage.removeItem('_joinedViaClassroom');
             tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
             navigate('sprint');
           }}
+          onClose={() => localStorage.removeItem('_joinedViaClassroom')}
         />
       )}
 

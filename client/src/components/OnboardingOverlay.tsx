@@ -11,12 +11,14 @@ const CARDS = [
 
 interface Props {
   onDone: () => void;
+  /** Called when the overlay closes without starting a sprint (the "Okay" path). */
+  onClose?: () => void;
   /** When true (e.g. joining via classroom link), hide "Start Sprint" and
    *  promote "Okay" as the sole primary CTA on the last card. */
   noSprint?: boolean;
 }
 
-export default function OnboardingOverlay({ onDone, noSprint = false }: Props) {
+export default function OnboardingOverlay({ onDone, onClose, noSprint = false }: Props) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [finishing, setFinishing] = useState(false);
@@ -38,6 +40,7 @@ export default function OnboardingOverlay({ onDone, noSprint = false }: Props) {
     if (finishing) return;
     setFinishing(true);
     await completeOnboarding();
+    onClose?.();
   };
 
   return (
