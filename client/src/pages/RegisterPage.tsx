@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import type { TransferCode, RecoveryKey } from '../module_bindings/types.js';
 import { capturedToken } from '../auth.js';
 import SplashGrid from '../components/SplashGrid.js';
 
@@ -45,7 +46,7 @@ export default function RegisterPage({ onRegistered }: Props) {
   useEffect(() => {
     if (!autoRestoreCode || restoring) return;
 
-    const transfer = (transferCodes as any[]).find(c => c.code === autoRestoreCode);
+    const transfer = (transferCodes as TransferCode[]).find(c => c.code === autoRestoreCode);
     if (transfer) {
       setAutoRestoreCode(null);
       setRestoring(true);
@@ -54,7 +55,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       return;
     }
 
-    const recovery = (recoveryKeys as any[]).find(k => k.code === autoRestoreCode);
+    const recovery = (recoveryKeys as RecoveryKey[]).find(k => k.code === autoRestoreCode);
     if (recovery) {
       setAutoRestoreCode(null);
       setRestoring(true);
@@ -79,8 +80,8 @@ export default function RegisterPage({ onRegistered }: Props) {
         await createRecoveryKey({ token: capturedToken });
       }
       setTimeout(onRegistered, 300);
-    } catch (err: any) {
-      setError(err?.message ?? t('register.usernameError'));
+    } catch (err: unknown) {
+      setError((err as Error)?.message ?? t('register.usernameError'));
       setLoading(false);
     }
   };
@@ -91,7 +92,7 @@ export default function RegisterPage({ onRegistered }: Props) {
     setRestoring(true);
     setRestoreError('');
 
-    const transfer = (transferCodes as any[]).find(c => c.code === upper);
+    const transfer = (transferCodes as TransferCode[]).find(c => c.code === upper);
     if (transfer) {
       localStorage.setItem(CREDS_KEY, JSON.stringify({ token: transfer.token }));
       await applyTransferCode({ code: upper });
@@ -99,7 +100,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       return;
     }
 
-    const recovery = (recoveryKeys as any[]).find(k => k.code === upper);
+    const recovery = (recoveryKeys as RecoveryKey[]).find(k => k.code === upper);
     if (recovery) {
       localStorage.setItem(CREDS_KEY, JSON.stringify({ token: recovery.token }));
       window.location.reload();

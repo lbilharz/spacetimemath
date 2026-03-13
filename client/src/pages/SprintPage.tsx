@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import type { ClassSprint, Player } from '../module_bindings/types.js';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 import DotArray from '../components/DotArray.js';
@@ -151,11 +152,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   // Derive sprint mode from the active class sprint (if any)
   const isDiagnostic = classSprintId
-    ? !!((classSprints as any[]).find(s => s.id === classSprintId)?.isDiagnostic)
+    ? !!((classSprints as ClassSprint[]).find(s => s.id === classSprintId)?.isDiagnostic)
     : false;
   const SPRINT_DURATION = isDiagnostic ? 60 : 60;
 
-  const playerLearningTier: number = (players as any[]).find(
+  const playerLearningTier: number = (players as Player[]).find(
     p => p.identity.toHexString() === myIdentityHex
   )?.learningTier ?? 0;
 
@@ -192,7 +193,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   useEffect(() => {
     if (sprintStarted) return;
     if (classSprintId !== undefined) {
-      const cs = (classSprints as any[]).find(s => String(s.id) === String(classSprintId));
+      const cs = (classSprints as ClassSprint[]).find(s => String(s.id) === String(classSprintId));
       if (cs) {
         const startMs = Number(cs.startedAt.microsSinceUnixEpoch / 1000n);
         setTimeLeft(Math.max(0, SPRINT_DURATION - Math.floor((Date.now() - startMs) / 1000)));
@@ -266,7 +267,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   useEffect(() => {
     if (!sprintStarted) return;
     if (classSprintId !== undefined) {
-      const cs = (classSprints as any[]).find(s => String(s.id) === String(classSprintId));
+      const cs = (classSprints as ClassSprint[]).find(s => String(s.id) === String(classSprintId));
       if (!cs) return;
       const startMs = Number(cs.startedAt.microsSinceUnixEpoch / 1000n);
       const tick = () => setTimeLeft(Math.max(0, SPRINT_DURATION - Math.floor((Date.now() - startMs) / 1000)));
@@ -291,7 +292,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // 5b. Class sprint: navigate when server marks session complete OR timer expires
   useEffect(() => {
     if (classSprintId === undefined || sessionId === null || ending) return;
-    const mySession = (sessions as any[]).find(s => String(s.id) === String(sessionId));
+    const mySession = (sessions as Session[]).find(s => String(s.id) === String(sessionId));
     if (mySession?.isComplete || timeLeft === 0) {
       setEnding(true);
       onFinished(sessionId);

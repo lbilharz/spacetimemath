@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ParseKeys } from 'i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
+import type { ProblemStat } from '../module_bindings/types.js';
 import { getRechenweg } from '../utils/rechenwege.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 
@@ -44,7 +46,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
     .map(ans => ({
       key: `${ans.a}×${ans.b}`,
       a: ans.a, b: ans.b,
-      weight: (problemStats as any[]).find(s => s.problemKey === ans.a * 100 + ans.b)?.difficultyWeight ?? 1,
+      weight: (problemStats as ProblemStat[]).find(s => s.problemKey === ans.a * 100 + ans.b)?.difficultyWeight ?? 1,
     }));
   const uniqueHard = [...new Map(wrongPairs.map(p => [p.key, p])).values()]
     .sort((a, b) => b.weight - a.weight)
@@ -67,10 +69,10 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
         <div className="card" style={{ width: '100%', border: '1px solid var(--accent)', textAlign: 'center' }}>
           <div style={{ fontSize: 32 }}>🎉</div>
           <h2 style={{ color: 'var(--accent)', margin: '8px 0 4px' }}>
-            {t(`tiers.unlocked${newlyUnlockedTier}` as any)}
+            {t(`tiers.unlocked${newlyUnlockedTier}` as ParseKeys)}
           </h2>
           <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 10px' }}>
-            {t(`tiers.unlockedDesc${newlyUnlockedTier}` as any)}
+            {t(`tiers.unlockedDesc${newlyUnlockedTier}` as ParseKeys)}
           </p>
           <a href="/progress#tier-status" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
             {t('results.viewProgress')} →
@@ -152,7 +154,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
                             marginTop: 4,
                           }}>
                             <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                              {t(rw.strategyKey as any)}
+                              {t(rw.strategyKey as ParseKeys)}
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                               {rw.steps.map((step, i) => (
@@ -213,7 +215,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
           </p>
           <MasteryGrid
             answers={myAnswers}
-            problemStats={problemStats as any[]}
+            problemStats={problemStats as ProblemStat[]}
             highlightSession={sessionId}
             sessionAnswers={sessionAnswers}
             tier1Unlocked={playerLearningTier >= 3}
