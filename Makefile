@@ -2,6 +2,7 @@
 # Usage:
 #   make setup           – install git hooks (run once after cloning)
 #   make publish         – build WASM + publish to maincloud (non-interactive)
+#   make publish-test    – publish WASM to spacetimemath-test on maincloud (for integration tests)
 #   make generate        – regenerate TypeScript bindings from server source
 #   make call REDUCER=x  – call a reducer on maincloud
 #   make deploy          – publish + generate in one step
@@ -19,6 +20,11 @@ publish:
 	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
 	$(SPACETIME) publish spacetimemath --server maincloud --bin-path $(WASM_BIN) -y
 
+# Publish WASM to the integration test database on maincloud
+publish-test:
+	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
+	$(SPACETIME) publish spacetimemath-test --server maincloud --bin-path $(WASM_BIN) -y
+
 # Regenerate TypeScript module bindings from the server source
 generate:
 	zsh -c 'source $$HOME/.cargo/env && $(SPACETIME) generate --lang typescript --out-dir client/src/module_bindings --module-path server'
@@ -31,4 +37,4 @@ call:
 # Full deploy: publish + regenerate bindings
 deploy: publish generate
 
-.PHONY: setup publish generate call deploy
+.PHONY: setup publish publish-test generate call deploy
