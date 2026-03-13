@@ -27,7 +27,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
-  const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+  const _createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
   const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
   const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
@@ -103,7 +103,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
       setCodeShownAt(null);
       setCountdown(null);
     }
-  }, [myCode?.code]);
+  }, [myCode?.code]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (codeShownAt === null) return;
@@ -116,7 +116,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [codeShownAt]);
+  }, [codeShownAt]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRename = async () => {
     const name = newName.trim();

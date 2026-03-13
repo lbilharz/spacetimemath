@@ -263,7 +263,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 </head>
 <body>
   <div class="grid">${cards}</div>
-  <script>window.onload = () => window.print();<\/script>
+  <script>window.onload = () => window.print();</script>
 </body>
 </html>`;
 

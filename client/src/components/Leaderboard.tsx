@@ -18,7 +18,7 @@ interface Props {
   myLearningTier?: number;
 }
 
-export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier = 0 }: Props) {
+export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier: _myLearningTier = 0 }: Props) {
   const { t } = useTranslation();
   // -1 means "All tiers"
   const [tierFilter, setTierFilter] = useState<number>(-1);

@@ -165,7 +165,7 @@ export default function App() {
     };
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Browser back / forward
   useEffect(() => {
@@ -404,6 +404,7 @@ export default function App() {
             myIdentityHex={myIdentityHex!}
             playerLearningTier={effectivePlayer?.learningTier ?? 0}
             newlyUnlockedTier={
+              // eslint-disable-next-line react-hooks/refs
               (effectivePlayer?.learningTier ?? 0) > tierAtSprintStartRef.current
                 ? effectivePlayer!.learningTier
                 : undefined

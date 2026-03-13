@@ -56,13 +56,13 @@ const MASTERY_BG: Record<Mastery, string> = {
 const TIER1_A = [11, 12, 15, 20, 25];
 const TIER1_B = [2, 3, 4, 5, 6, 7, 8, 9];
 
-export default function MasteryGrid({ answers, problemStats, highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell, playerLearningTier }: Props) {
+export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell, playerLearningTier }: Props) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
 
   useEffect(() => {
     if (focusCell) setSelected(focusCell);
-  }, [focusCell?.a, focusCell?.b]);
+  }, [focusCell?.a, focusCell?.b]); // eslint-disable-line react-hooks/exhaustive-deps
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
   const cells: React.ReactNode[] = [];

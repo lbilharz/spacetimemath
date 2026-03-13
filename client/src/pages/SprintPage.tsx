@@ -258,7 +258,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
     }
-  }, [sprintStarted, problem, problemStats.length, isDiagnostic]);
+  }, [sprintStarted, problem, problemStats.length, isDiagnostic]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 4. Sprint timer
   // Class sprint: tick is derived from server's startedAt — survives reloads
@@ -286,7 +286,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (timeLeft === 0 && sprintStarted && sessionId !== null && !ending && classSprintId === undefined) {
       handleEnd();
     }
-  }, [timeLeft, sprintStarted, sessionId, ending]);
+  }, [timeLeft, sprintStarted, sessionId, ending]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 5b. Class sprint: navigate when server marks session complete OR timer expires
   useEffect(() => {
@@ -334,7 +334,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }
 
     const fb = { isCorrect, points: pts, correct: correct_answer };
-    isCorrect ? hapticGood() : hapticBad();
+    if (isCorrect) hapticGood(); else hapticBad();
     setFeedback(fb);
     setInput('');
 

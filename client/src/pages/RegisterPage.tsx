@@ -25,7 +25,7 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [restoring, setRestoring] = useState(false);
   const [transferCodes] = useTable(tables.transfer_codes);
   const [recoveryKeys] = useTable(tables.recovery_keys);
-  const useTransferCode = useSTDBReducer(reducers.useTransferCode);
+  const applyTransferCode = useSTDBReducer(reducers.useTransferCode);
 
   // Auto-restore from ?restore=CODE URL param (teacher-generated QR card scan)
   const [autoRestoreCode, setAutoRestoreCode] = useState<string | null>(null);
@@ -50,7 +50,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       setAutoRestoreCode(null);
       setRestoring(true);
       localStorage.setItem(CREDS_KEY, JSON.stringify({ token: transfer.token }));
-      useTransferCode({ code: autoRestoreCode }).finally(() => window.location.reload());
+      applyTransferCode({ code: autoRestoreCode }).finally(() => window.location.reload());
       return;
     }
 
@@ -94,7 +94,7 @@ export default function RegisterPage({ onRegistered }: Props) {
     const transfer = (transferCodes as any[]).find(c => c.code === upper);
     if (transfer) {
       localStorage.setItem(CREDS_KEY, JSON.stringify({ token: transfer.token }));
-      await useTransferCode({ code: upper });
+      await applyTransferCode({ code: upper });
       window.location.reload();
       return;
     }
