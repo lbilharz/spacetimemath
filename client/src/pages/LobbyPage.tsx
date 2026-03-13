@@ -2,9 +2,17 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import type { BestScore, Classroom, ClassroomMember } from '../module_bindings/types.js';
 import Leaderboard from '../components/Leaderboard.js';
 
-type Player = { identity: { toHexString(): string }; username: string; bestScore: number; totalSessions: number; };
+type Player = {
+  identity: { toHexString(): string };
+  username: string;
+  bestScore: number;
+  totalSessions: number;
+  learningTier?: number;
+  recoveryEmailed?: boolean;
+};
 
 interface Props {
   myPlayer: Player | undefined;
@@ -23,11 +31,11 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   const joinClassroom       = useSTDBReducer(reducers.joinClassroom);
 
   // Nag: teacher with students who hasn't emailed their recovery key yet
-  const hasStudents = (classrooms as any[]).some(c =>
+  const hasStudents = (classrooms as unknown as Classroom[]).some(c =>
     c.teacher.toHexString() === myIdentityHex &&
-    (classroomMembers as any[]).some(m => m.classroomId === c.id && !m.isHidden)
+    (classroomMembers as unknown as ClassroomMember[]).some(m => m.classroomId === c.id && !m.isHidden)
   );
-  const showNag = hasStudents && !(myPlayer as any)?.recoveryEmailed;
+  const showNag = hasStudents && !myPlayer?.recoveryEmailed;
 
   const [starting, setStarting]           = useState(false);
   // Pending auto-join code from ?join=CODE URL param; cleared once we navigate
@@ -50,7 +58,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   // (classrooms may be empty when Step 1 fires — SpacetimeDB subscription catches up asynchronously)
   useEffect(() => {
     if (!pendingJoinCode) return;
-    const classroom = (classrooms as any[]).find(c => c.code === pendingJoinCode);
+    const classroom = (classrooms as unknown as Classroom[]).find(c => c.code === pendingJoinCode);
     if (classroom) {
       setPendingJoinCode(null);
       onEnterClassroom(classroom.id);
@@ -94,8 +102,8 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                 href="/progress#tier-status"
                 style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}
               >
-                {['🌱','🔨','⚡','🏆'][Math.min((myPlayer as any).learningTier ?? 0, 3)]}
-                {' '}Tier {(myPlayer as any).learningTier ?? 0}
+                {['🌱','🔨','⚡','🏆'][Math.min(myPlayer.learningTier ?? 0, 3)]}
+                {' '}Tier {myPlayer.learningTier ?? 0}
               </a>
             </p>
           )}
@@ -112,9 +120,9 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
 
       {/* Global Leaderboard */}
       <Leaderboard
-        bestScores={bestScores as any[]}
+        bestScores={bestScores as unknown as BestScore[]}
         myIdentityHex={myIdentityHex}
-        myLearningTier={(myPlayer as any)?.learningTier ?? 0}
+        myLearningTier={myPlayer?.learningTier ?? 0}
       />
     </div>
   );

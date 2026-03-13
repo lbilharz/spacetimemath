@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import type { Classroom, ClassroomMember, RecoveryKey, TransferCode } from '../module_bindings/types.js';
+import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 
 type Player = {
@@ -9,7 +11,10 @@ type Player = {
   username: string;
   bestScore: number;
   totalSessions: number;
+  recoveryEmailed?: boolean;
 };
+
+type ClassroomEntry = { id: bigint; name: string; code: string; memberCount: number; isTeacher: boolean };
 
 interface Props {
   myPlayer: Player;
@@ -38,7 +43,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const [nameSaved, setNameSaved] = useState(false);
 
   // Recovery key
-  const myRecoveryKey = (recoveryKeys as any[]).find(
+  const myRecoveryKey = (recoveryKeys as unknown as RecoveryKey[]).find(
     k => k.owner.toHexString() === myIdentityHex
   );
   const [generatingKey, setGeneratingKey] = useState(false);
@@ -92,7 +97,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
 
   const CODE_TTL = 60 * 60;
 
-  const myCode = (transferCodes as any[]).find(
+  const myCode = (transferCodes as unknown as TransferCode[]).find(
     c => c.owner.toHexString() === myIdentityHex
   );
 
@@ -143,18 +148,18 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   };
 
   // Classrooms
-  const myMemberships = (classroomMembers as any[]).filter(
+  const myMemberships = (classroomMembers as unknown as ClassroomMember[]).filter(
     m => m.playerIdentity.toHexString() === myIdentityHex
   );
   const myClassroomList = myMemberships
-    .map((m: any) => {
-      const c = (classrooms as any[]).find(cl => cl.id === m.classroomId);
+    .map(m => {
+      const c = (classrooms as unknown as Classroom[]).find(cl => cl.id === m.classroomId);
       if (!c) return null;
-      const memberCount = (classroomMembers as any[]).filter(cm => cm.classroomId === c.id).length;
+      const memberCount = (classroomMembers as unknown as ClassroomMember[]).filter(cm => cm.classroomId === c.id).length;
       const isTeacher = c.teacher?.toHexString() === myIdentityHex;
-      return { ...c, memberCount, isTeacher };
+      return { id: c.id, name: c.name, code: c.code, memberCount, isTeacher } satisfies ClassroomEntry;
     })
-    .filter(Boolean);
+    .filter((c): c is ClassroomEntry => c !== null);
 
   const [leavingId, setLeavingId] = useState<bigint | null>(null);
   const handleLeaveClassroom = async (cid: bigint) => {
@@ -237,7 +242,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
       {myClassroomList.length > 0 && (
         <div className="card">
           <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('account.myClassrooms')}</h2>
-          {myClassroomList.map((c: any) => (
+          {myClassroomList.map(c => (
             <div key={String(c.id)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               flexWrap: 'wrap', gap: 8, paddingBottom: 10, marginBottom: 10,
@@ -347,7 +352,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
             </div>
             {/* Email recovery key */}
             <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
-              {emailSent || (myPlayer as any).recoveryEmailed ? (
+              {emailSent || myPlayer.recoveryEmailed ? (
                 <p style={{ fontSize: 13, color: 'var(--correct)', textAlign: 'center' }}>
                   ✓ {t('account.emailKeySent')}
                 </p>
@@ -419,7 +424,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
             rel="noopener noreferrer"
             style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}
           >
-            {t(key as any)}
+            {t(key as ParseKeys)}
           </a>
         ))}
       </div>
