@@ -6,5 +6,6 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+    exclude: ['src/__tests__/integration/**', 'node_modules/**'],
   },
 })
