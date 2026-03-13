@@ -22,8 +22,8 @@ export function getRechenweg(a: number, b: number): Rechenweg {
   };
   if (two === 15 && n >= 2 && n <= 9) return {
     strategyKey: 'rechenweg.fifteen',
-    steps: [`${n} × 10 = ${n * 10}`, `${n * 10} ÷ 2 = ${n * 5}`, `${n * 10} + ${n * 5} = ${n * 15}`],
-    hint: `${n}×10 + ${n}×10÷2`,
+    steps: [`${n} × 10 = ${n * 10}`, `${n} × 5 = ${n * 5}`, `${n * 10} + ${n * 5} = ${n * 15}`],
+    hint: `${n}×10 + ${n}×5`,
   };
   if (two === 20 && n >= 2 && n <= 9) return {
     strategyKey: 'rechenweg.twenty',
@@ -32,8 +32,8 @@ export function getRechenweg(a: number, b: number): Rechenweg {
   };
   if (two === 25 && n >= 2 && n <= 9) return {
     strategyKey: 'rechenweg.twentyfive',
-    steps: [`${n} × 100 = ${n * 100}`, `${n * 100} ÷ 4 = ${n * 25}`],
-    hint: `${n}×100 ÷ 4`,
+    steps: [`${n} × 20 = ${n * 20}`, `${n} × 5 = ${n * 5}`, `${n * 20} + ${n * 5} = ${n * 25}`],
+    hint: `${n}×20 + ${n}×5`,
   };
 
   const [small, big] = a <= b ? [a, b] : [b, a];
@@ -130,7 +130,7 @@ export function getRechenweg(a: number, b: number): Rechenweg {
       };
     default:
       return {
-        strategyKey: 'rechenweg.doubleAndOne',
+        strategyKey: 'rechenweg.direct',
         steps: [`${a} × ${b} = ${a * b}`],
         hint: `= ${a * b}`,
       };
