@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSpacetimeDB, useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from './module_bindings/index.js';
+import type { ClassSprint, Classroom, ClassroomMember, RecoveryKey } from './module_bindings/types.js';
 import { capturedToken } from './auth.js';
 import RegisterPage from './pages/RegisterPage.js';
 import LobbyPage from './pages/LobbyPage.js';
@@ -54,7 +55,7 @@ export default function App() {
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
   const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
   const [activeClassSprintId, setActiveClassSprintId] = useState<bigint | null>(null);
-  const [incomingClassSprint, setIncomingClassSprint] = useState<any>(null);
+  const [incomingClassSprint, setIncomingClassSprint] = useState<ClassSprint | null>(null);
   const seenClassSprintIds = useRef(new Set<bigint>());
   const tierAtSprintStartRef = useRef<number>(0);
   // Ref so event handlers can read current player without stale closure
@@ -93,14 +94,14 @@ export default function App() {
   // New registrations already do this in RegisterPage; this catches everyone else.
   useEffect(() => {
     if (!myPlayer || !capturedToken) return;
-    const hasKey = (recoveryKeys as any[]).some(
-      (k: any) => k.owner.toHexString() === myIdentityHex
+    const hasKey = (recoveryKeys as unknown as RecoveryKey[]).some(
+      k => k.owner.toHexString() === myIdentityHex
     );
     if (!hasKey) createRecoveryKey({ token: capturedToken });
   }, [myPlayer?.identity, recoveryKeys]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const inClassroom = classroomId !== null && myIdentityHex
-    ? (classroomMembers as any[]).some(
+    ? (classroomMembers as unknown as ClassroomMember[]).some(
         m => m.playerIdentity.toHexString() === myIdentityHex && m.classroomId === classroomId
       )
     : false;
@@ -109,11 +110,11 @@ export default function App() {
   useEffect(() => {
     if (!myIdentityHex || page === 'sprint' || page === 'register') return;
 
-    const myClassroomIds = (classroomMembers as any[])
+    const myClassroomIds = (classroomMembers as unknown as ClassroomMember[])
       .filter(m => m.playerIdentity.toHexString() === myIdentityHex)
       .map(m => m.classroomId);
 
-    const activeForMe = (classSprints as any[]).find(
+    const activeForMe = (classSprints as unknown as ClassSprint[]).find(
       s => s.isActive
         && myClassroomIds.includes(s.classroomId)
         && !seenClassSprintIds.current.has(s.id)
@@ -121,7 +122,7 @@ export default function App() {
 
     if (activeForMe) {
       // Only show alert to non-teacher students
-      const classroom = (classrooms as any[]).find(c => c.id === activeForMe.classroomId);
+      const classroom = (classrooms as unknown as Classroom[]).find(c => c.id === activeForMe.classroomId);
       const isTeacher = classroom?.teacher.toHexString() === myIdentityHex;
       if (!isTeacher) {
         seenClassSprintIds.current.add(activeForMe.id);

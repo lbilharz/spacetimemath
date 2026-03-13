@@ -292,7 +292,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // 5b. Class sprint: navigate when server marks session complete OR timer expires
   useEffect(() => {
     if (classSprintId === undefined || sessionId === null || ending) return;
-    const mySession = (sessions as Session[]).find(s => String(s.id) === String(sessionId));
+    const mySession = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId));
     if (mySession?.isComplete || timeLeft === 0) {
       setEnding(true);
       onFinished(sessionId);
