@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)/client"
+
+echo "▶ lint…"
+npm run lint --silent
+
+echo "▶ tests…"
+npm test --silent
+
+echo "✓ all checks passed"

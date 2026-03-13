@@ -1,5 +1,6 @@
 # Makefile for spacetimemath
 # Usage:
+#   make setup           – install git hooks (run once after cloning)
 #   make publish         – build WASM + publish to maincloud (non-interactive)
 #   make generate        – regenerate TypeScript bindings from server source
 #   make call REDUCER=x  – call a reducer on maincloud
@@ -8,6 +9,10 @@
 SPACETIME  := /Users/lbi/.local/bin/spacetime
 CARGO      := /Users/lbi/.cargo/bin/cargo
 WASM_BIN   := server/target/wasm32-unknown-unknown/release/spacetimemath.wasm
+
+# Install git hooks (run once after cloning)
+setup:
+	git config core.hooksPath hooks
 
 # Build WASM then publish to maincloud non-interactively
 publish:
@@ -26,4 +31,4 @@ call:
 # Full deploy: publish + regenerate bindings
 deploy: publish generate
 
-.PHONY: publish generate call deploy
+.PHONY: setup publish generate call deploy
