@@ -33,7 +33,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   // Nag: teacher with students who hasn't emailed their recovery key yet
   const hasStudents = (classrooms as unknown as Classroom[]).some(c =>
     c.teacher.toHexString() === myIdentityHex &&
-    (classroomMembers as unknown as ClassroomMember[]).some(m => m.classroomId === c.id && !m.isHidden)
+    (classroomMembers as unknown as ClassroomMember[]).some(m => m.classroomId === c.id && !m.hidden)
   );
   const showNag = hasStudents && !myPlayer?.recoveryEmailed;
 
