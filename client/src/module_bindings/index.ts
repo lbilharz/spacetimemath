@@ -64,6 +64,7 @@ import BestScoresRow from "./best_scores_table";
 import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
+import OnlinePlayersRow from "./online_players_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
 import RecoveryKeysRow from "./recovery_keys_table";
@@ -151,6 +152,17 @@ const tablesSchema = __schema({
       { name: 'classrooms_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, ClassroomsRow),
+  online_players: __table({
+    name: 'online_players',
+    indexes: [
+      { name: 'identity', algorithm: 'btree', columns: [
+        'identity',
+      ] },
+    ],
+    constraints: [
+      { name: 'online_players_identity_key', constraint: 'unique', columns: ['identity'] },
+    ],
+  }, OnlinePlayersRow),
   players: __table({
     name: 'players',
     indexes: [

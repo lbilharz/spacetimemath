@@ -13,6 +13,7 @@ const ALL_TABLES = [
   'SELECT * FROM transfer_codes',
   'SELECT * FROM recovery_keys',
   'SELECT * FROM problem_stats',
+  'SELECT * FROM online_players',
 ];
 
 export interface ConnectedClient {

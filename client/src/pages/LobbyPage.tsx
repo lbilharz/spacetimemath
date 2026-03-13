@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { BestScore, Classroom, ClassroomMember } from '../module_bindings/types.js';
+import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Session } from '../module_bindings/types.js';
 import Leaderboard from '../components/Leaderboard.js';
+
+const TIER_EMOJI = ['🌱', '🔨', '⚡', '🏆'];
+const liveTd: React.CSSProperties = { padding: '9px 4px', fontSize: 14 };
 
 type Player = {
   identity: { toHexString(): string };
@@ -27,8 +30,38 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   const [bestScores]        = useTable(tables.best_scores);
   const [classrooms]        = useTable(tables.classrooms);
   const [classroomMembers]  = useTable(tables.classroom_members);
+  const [onlinePlayers]     = useTable(tables.online_players);
+  const [sessions]          = useTable(tables.sessions);
   const startSession        = useSTDBReducer(reducers.startSession);
   const joinClassroom       = useSTDBReducer(reducers.joinClassroom);
+
+  // Build the live players list: self first (pinned), then others sorted by username
+  const allOnline = onlinePlayers as unknown as OnlinePlayer[];
+  const selfEntry = allOnline.find(p => p.identity.toHexString() === myIdentityHex);
+  const others = allOnline
+    .filter(p => p.identity.toHexString() !== myIdentityHex)
+    .sort((a, b) => a.username.localeCompare(b.username));
+  const liveList = selfEntry ? [selfEntry, ...others] : others;
+  // connectedAt per identity — used to ignore stale pre-connection sessions
+  const connectedAtMap = new Map(
+    allOnline.map(p => [p.identity.toHexString(), p.connectedAt])
+  );
+  // Only count a session as "active sprint" if it started after the player's current connection.
+  // This filters out orphaned incomplete sessions from previous browser sessions.
+  const sprintingIds = new Set(
+    (sessions as unknown as Session[])
+      .filter(s => {
+        if (s.isComplete) return false;
+        const connectedAt = connectedAtMap.get(s.playerIdentity.toHexString());
+        return connectedAt !== undefined &&
+          s.startedAt.microsSinceUnixEpoch >= connectedAt.microsSinceUnixEpoch;
+      })
+      .map(s => s.playerIdentity.toHexString())
+  );
+
+  // Sorted best scores for rank lookup in the live board
+  const sortedBestScores = [...(bestScores as unknown as BestScore[])]
+    .sort((a, b) => b.bestWeightedScore - a.bestWeightedScore);
 
   // Nag: teacher with students who hasn't emailed their recovery key yet
   const hasStudents = (classrooms as unknown as Classroom[]).some(c =>
@@ -116,6 +149,79 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
         >
           {starting ? t('lobby.starting') : t('lobby.startSprint')}
         </button>
+      </div>
+
+      {/* Live Players */}
+      <div className="card">
+        <h2 style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          background: 'rgba(93,210,60,0.15)', border: '1px solid rgba(93,210,60,0.35)',
+          borderRadius: 20, padding: '3px 10px', fontWeight: 600, color: 'var(--green)', marginBottom: 12 }}>
+          <span style={{ width: 12, height: 12, borderRadius: '50%', background: 'green', display: 'inline-block' }} />
+          {allOnline.length} {t('leaderboard.colPlayer')} {t('lobby.online')}</h2>
+        <div style={{
+          maxHeight: liveList.length > 8 ? 264 : undefined,
+          overflowY: 'auto',
+          borderTop: liveList.length > 0 ? '1px solid var(--border)' : undefined,
+        }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <tbody>
+              {liveList.map(p => {
+                const idHex = p.identity.toHexString();
+                const isSelf = idHex === myIdentityHex;
+                const isSprinting = sprintingIds.has(idHex);
+                const rankIdx = sortedBestScores.findIndex(s => s.playerIdentity.toHexString() === idHex);
+                const scoreEntry = rankIdx >= 0 ? sortedBestScores[rankIdx] : null;
+                return (
+                  <tr
+                    key={idHex}
+                    style={{
+                      borderBottom: '1px solid var(--border)',
+                      background: isSelf ? 'rgba(251,186,0,0.08)' : 'transparent',
+                    }}
+                  >
+                    {/* Rank */}
+                    <td style={{ ...liveTd, textAlign: 'center', fontWeight: 700, color: rankIdx < 3 && rankIdx >= 0 ? 'var(--warn)' : 'var(--muted)', width: 36 }}>
+                      {rankIdx < 0 ? '—' : rankIdx < 3 ? ['🥇','🥈','🥉'][rankIdx] : rankIdx + 1}
+                    </td>
+                    {/* Player name + tier */}
+                    <td style={{ ...liveTd, fontWeight: isSelf ? 700 : 400 }}>
+                      <span>{p.username}</span>
+                      {scoreEntry && (
+                        <span style={{ marginLeft: 6, fontSize: 11 }}>
+                          {TIER_EMOJI[Math.min(scoreEntry.learningTier, 3)]}
+                        </span>
+                      )}
+                      {isSelf && (
+                        <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>
+                          {t('common.you')}
+                        </span>
+                      )}
+                    </td>
+                    {/* Score */}
+                    <td style={{ ...liveTd, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums', width: 52 }}>
+                      {scoreEntry ? scoreEntry.bestWeightedScore.toFixed(1) : '—'}
+                    </td>
+                    {/* Playing badge or empty */}
+                    <td style={{ ...liveTd, textAlign: 'right', width: 110 }}>
+                      {isSprinting && (
+                        <span style={{
+                          display: 'inline-block',
+                          background: 'var(--green)', color: '#fff',
+                          borderRadius: 6, padding: '3px 8px',
+                          fontSize: 12, fontWeight: 700, letterSpacing: '0.3px',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {t('lobby.sprinting')}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Global Leaderboard */}

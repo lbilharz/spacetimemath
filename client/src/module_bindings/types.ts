@@ -66,6 +66,14 @@ export const EndSprintSchedule = __t.object("EndSprintSchedule", {
 });
 export type EndSprintSchedule = __Infer<typeof EndSprintSchedule>;
 
+export const OnlinePlayer = __t.object("OnlinePlayer", {
+  identity: __t.identity(),
+  username: __t.string(),
+  connectedAt: __t.timestamp(),
+  connectionCount: __t.u32(),
+});
+export type OnlinePlayer = __Infer<typeof OnlinePlayer>;
+
 export const Player = __t.object("Player", {
   identity: __t.identity(),
   username: __t.string(),

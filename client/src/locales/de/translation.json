@@ -40,6 +40,10 @@
     "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB"
   },
   "lobby": {
+    "online": "online",
+    "sprinting": "▶ Spielt",
+    "you": "du",
+    "more": "weitere",
     "bestScore": "Beste Punktzahl:",
     "sessions_one": "{{count}} Sprint",
     "sessions_other": "{{count}} Sprints",

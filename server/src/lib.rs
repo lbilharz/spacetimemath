@@ -100,6 +100,18 @@ pub struct BestScore {
     pub learning_tier: u8,
 }
 
+#[table(accessor = online_players, public)]
+pub struct OnlinePlayer {
+    #[primary_key]
+    pub identity: Identity,
+    pub username: String,
+    pub connected_at: Timestamp,
+    /// Number of active WebSocket connections for this identity.
+    /// Removes the row only when the last connection closes.
+    #[default(1)]
+    pub connection_count: u32,
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -108,6 +120,41 @@ pub struct BestScore {
 pub fn init(ctx: &ReducerContext) {
     seed_problem_stats(ctx);
     seed_tier1_problem_stats(ctx);
+}
+
+#[reducer(client_connected)]
+pub fn identity_connected(ctx: &ReducerContext) {
+    if let Some(player) = ctx.db.players().identity().find(ctx.sender()) {
+        if let Some(op) = ctx.db.online_players().identity().find(ctx.sender()) {
+            // Already online (e.g. second tab, reconnect) — increment counter.
+            ctx.db.online_players().identity().update(OnlinePlayer {
+                connection_count: op.connection_count + 1,
+                username: player.username,
+                ..op
+            });
+        } else {
+            let _ = ctx.db.online_players().try_insert(OnlinePlayer {
+                identity: ctx.sender(),
+                username: player.username,
+                connected_at: ctx.timestamp,
+                connection_count: 1,
+            });
+        }
+    }
+}
+
+#[reducer(client_disconnected)]
+pub fn identity_disconnected(ctx: &ReducerContext) {
+    if let Some(op) = ctx.db.online_players().identity().find(ctx.sender()) {
+        if op.connection_count <= 1 {
+            ctx.db.online_players().identity().delete(ctx.sender());
+        } else {
+            ctx.db.online_players().identity().update(OnlinePlayer {
+                connection_count: op.connection_count - 1,
+                ..op
+            });
+        }
+    }
 }
 
 /// One-time migration: seed extended-table problem_stats rows if missing.
@@ -346,11 +393,11 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
     }
     let sender = ctx.sender();
     if let Some(existing) = ctx.db.players().identity().find(sender) {
-        ctx.db.players().identity().update(Player { username: name, ..existing });
+        ctx.db.players().identity().update(Player { username: name.clone(), ..existing });
     } else {
         ctx.db.players().insert(Player {
             identity: sender,
-            username: name,
+            username: name.clone(),
             best_score: 0.0,
             total_sessions: 0,
             total_correct: 0,
@@ -358,6 +405,17 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
             onboarding_done: false,
             learning_tier: 0,
             recovery_emailed: false,
+        });
+    }
+    // Keep online_players in sync (user may have connected before registering)
+    if let Some(op) = ctx.db.online_players().identity().find(sender) {
+        ctx.db.online_players().identity().update(OnlinePlayer { username: name, ..op });
+    } else {
+        let _ = ctx.db.online_players().try_insert(OnlinePlayer {
+            identity: sender,
+            username: name,
+            connected_at: ctx.timestamp,
+            connection_count: 1,
         });
     }
     Ok(())
@@ -661,7 +719,11 @@ pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), St
     ctx.db.players().identity().update(Player { username: name.clone(), ..player });
     // Keep BestScore.username in sync
     if let Some(bs) = ctx.db.best_scores().player_identity().find(ctx.sender()) {
-        ctx.db.best_scores().player_identity().update(BestScore { username: name, ..bs });
+        ctx.db.best_scores().player_identity().update(BestScore { username: name.clone(), ..bs });
+    }
+    // Keep online_players.username in sync
+    if let Some(op) = ctx.db.online_players().identity().find(ctx.sender()) {
+        ctx.db.online_players().identity().update(OnlinePlayer { username: name, ..op });
     }
     Ok(())
 }

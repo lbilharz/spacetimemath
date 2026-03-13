@@ -40,6 +40,10 @@
     "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB"
   },
   "lobby": {
+    "online": "online",
+    "sprinting": "▶ Playing",
+    "you": "you",
+    "more": "more",
     "bestScore": "Best score:",
     "sessions_one": "{{count}} session",
     "sessions_other": "{{count}} sessions",
