@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import type { ParseKeys } from 'i18next';
 import type { Page } from '../App.js';
 
 export type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
@@ -8,7 +9,7 @@ interface Props {
   onNavigate: (tab: NavTab) => void;
 }
 
-const tabs: { id: NavTab; emoji: string | null; labelKey: string }[] = [
+const tabs: { id: NavTab; emoji: string | null; labelKey: ParseKeys }[] = [
   { id: 'lobby',      emoji: null, labelKey: 'nav.home'     },
   { id: 'classrooms', emoji: '🏫', labelKey: 'nav.classes'  },
   { id: 'progress',   emoji: '📊', labelKey: 'nav.progress' },
@@ -61,7 +62,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
               <>
                 <span style={{ fontSize: 22 }}>{tab.emoji}</span>
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.4px', textTransform: 'uppercase' }}>
-                  {t(tab.labelKey as any)}
+                  {t(tab.labelKey)}
                 </span>
               </>
             )}

@@ -122,7 +122,7 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
           </div>
 
           {/* 10 × 10 grid */}
-          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as any }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <table style={{ borderCollapse: 'separate', borderSpacing: 2, fontSize: 11 }}>
               <thead>
                 <tr>
@@ -147,7 +147,7 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>
                 {t('unlock.tier1GridTitle')}
               </div>
-              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as any }}>
+              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 <table style={{ borderCollapse: 'separate', borderSpacing: 2, fontSize: 11 }}>
                   <thead>
                     <tr>

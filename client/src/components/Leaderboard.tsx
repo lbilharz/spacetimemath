@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ParseKeys } from 'i18next';
 
 type BestScore = {
   playerIdentity: { toHexString(): string };
@@ -66,7 +67,7 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
                 color: tierFilter === tier ? '#000' : 'var(--muted)',
               }}
             >
-              {TIER_EMOJI[Math.min(tier, 3)]} {t(`leaderboard.tier${tier}` as any)}
+              {TIER_EMOJI[Math.min(tier, 3)]} {t(`leaderboard.tier${tier}` as ParseKeys)}
             </button>
           ))}
         </div>
@@ -104,7 +105,7 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
                   <td style={{ ...td, fontWeight: isMe ? 700 : 400 }}>
                     <span>{s.username}</span>
                     {tierFilter === -1 && (
-                      <span style={{ marginLeft: 6, fontSize: 11 }} title={t(`tiers.tier${s.learningTier}Name` as any)}>
+                      <span style={{ marginLeft: 6, fontSize: 11 }} title={t(`tiers.tier${s.learningTier}Name` as ParseKeys)}>
                         {TIER_EMOJI[Math.min(s.learningTier, 3)]}
                       </span>
                     )}

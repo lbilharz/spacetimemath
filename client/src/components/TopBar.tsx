@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
+import type { ParseKeys } from 'i18next';
 import type { Page } from '../App.js';
 
 type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
 
-const TABS: { id: NavTab; icon: string; labelKey: string }[] = [
+const TABS: { id: NavTab; icon: string; labelKey: ParseKeys }[] = [
   { id: 'lobby',      icon: '⚡', labelKey: 'nav.home'     },
   { id: 'classrooms', icon: '🏫', labelKey: 'nav.classes'  },
   { id: 'progress',   icon: '📊', labelKey: 'nav.progress' },
@@ -65,7 +66,7 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
                 ) : (
                   <>
                     <span style={{ fontSize: 15 }}>{tab.icon}</span>
-                    {t(tab.labelKey as any)}
+                    {t(tab.labelKey)}
                   </>
                 )}
               </button>

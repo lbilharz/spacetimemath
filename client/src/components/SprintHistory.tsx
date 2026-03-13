@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-type SessionRow = any;
-type AnswerRow  = any;
+import type { Session, Answer } from '../module_bindings/types.js';
 
 interface Props {
-  sessions: SessionRow[];
-  answers:  AnswerRow[];
+  sessions: Session[];
+  answers:  Answer[];
   myIdentityHex: string | undefined;
 }
 
@@ -15,7 +13,7 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
   const [sectionOpen, setSectionOpen] = useState(false);
   const [openId, setOpenId] = useState<bigint | null>(null);
 
-  const mySessions: SessionRow[] = (sessions as SessionRow[])
+  const mySessions: Session[] = (sessions as Session[])
     .filter(s => s.isComplete && s.playerIdentity.toHexString() === myIdentityHex)
     .sort((a, b) => Number(b.startedAt.microsSinceUnixEpoch - a.startedAt.microsSinceUnixEpoch));
 
@@ -37,13 +35,13 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
         </span>
       </button>
       {sectionOpen && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {mySessions.map((session: SessionRow) => {
+        {mySessions.map((session: Session) => {
           const isOpen = openId === session.id;
           const date = new Date(Number(session.startedAt.microsSinceUnixEpoch / 1000n));
           const dateStr = date.toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
           const timeStr = date.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
-          const sessionAnswers: AnswerRow[] = (answers as AnswerRow[])
+          const sessionAnswers: Answer[] = (answers as Answer[])
             .filter(a => a.sessionId === session.id)
             .sort((a, b) => {
               // Wrong answers first; within each group sort by pair
@@ -114,7 +112,7 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                       gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
                       gap: 4,
                     }}>
-                      {sessionAnswers.map((ans: AnswerRow) => {
+                      {sessionAnswers.map((ans: Answer) => {
                         const correct = ans.a * ans.b;
                         const ms = ans.responseMs;
                         const msLabel = ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;

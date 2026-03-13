@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ParseKeys } from 'i18next';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 
@@ -155,7 +156,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
               {selected.a} × {selected.b} = {selected.a * selected.b}
             </span>
             <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {t(rw.strategyKey as any)}
+              {t(rw.strategyKey as ParseKeys)}
             </span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -277,7 +278,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
         return (
           <div style={{ marginTop: 20 }}>
             <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 8 }}>
-              🔓 {t('unlock.tier1GridTitle' as any)}
+              🔓 {t('unlock.tier1GridTitle')}
             </div>
             <div style={{
               display: 'grid',
