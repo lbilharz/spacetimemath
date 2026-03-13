@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, RecoveryKey, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -47,8 +48,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [sprintTimeLeft, setSprintTimeLeft] = useState<number | null>(null);
 
   // Find this specific classroom
-  const myClassroom = (classrooms as any[]).find(c => c.id === classroomId) ?? null;
-  const myMembership = (classroomMembers as any[]).find(
+  const myClassroom = (classrooms as unknown as Classroom[]).find(c => c.id === classroomId) ?? null;
+  const myMembership = (classroomMembers as unknown as ClassroomMember[]).find(
     m => m.classroomId === classroomId && m.playerIdentity.toHexString() === myIdentityHex
   );
 
@@ -57,7 +58,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const amHidden: boolean = myMembership?.hidden ?? false;
 
   // ── Class sprint state ──────────────────────────────────────────────────────
-  const roomSprints = (classSprints as any[])
+  const roomSprints = (classSprints as unknown as ClassSprint[])
     .filter(s => s.classroomId === classroomId)
     .sort((a, b) => Number(b.id - a.id));
   const latestSprint = roomSprints[0] ?? null;
@@ -67,10 +68,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // Sessions + answers belonging to the active/ended sprint (for live ticker + mini LB)
   const latestSprintIdStr = latestSprint ? String(latestSprint.id) : null;
   const sprintSessions = latestSprint
-    ? (sessions as any[]).filter(s => String(s.classSprintId) === latestSprintIdStr)
+    ? (sessions as unknown as Session[]).filter(s => String(s.classSprintId) === latestSprintIdStr)
     : [];
-  const sprintSessionIdStrs = new Set<string>(sprintSessions.map((s: any) => String(s.id)));
-  const sprintAnswers = (answers as any[]).filter(a => sprintSessionIdStrs.has(String(a.sessionId)));
+  const sprintSessionIdStrs = new Set<string>(sprintSessions.map(s => String(s.id)));
+  const sprintAnswers = (answers as unknown as Answer[]).filter(a => sprintSessionIdStrs.has(String(a.sessionId)));
 
   // Last 20 answers sorted newest-first for the live ticker
   const recentAnswers = [...sprintAnswers]
@@ -80,17 +81,17 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // Mini live leaderboard (top 5) — compute score from answers, not session.weightedScore
   // (weightedScore is only written at end_session; it stays 0 during an active sprint)
   const liveLB = sprintSessions
-    .map((s: any) => {
-      const p = (players as any[]).find(pl => pl.identity.toHexString() === s.playerIdentity.toHexString());
-      const mine = sprintAnswers.filter((a: any) => String(a.sessionId) === String(s.id));
+    .map(s => {
+      const p = (players as unknown as Player[]).find(pl => pl.identity.toHexString() === s.playerIdentity.toHexString());
+      const mine = sprintAnswers.filter(a => String(a.sessionId) === String(s.id));
       const score = mine
-        .filter((a: any) => a.isCorrect)
-        .reduce((sum: number, a: any) => {
-          const key = (a.a as number) * 100 + (a.b as number);
-          const stat = (problemStats as any[]).find(ps => ps.problemKey === key);
+        .filter(a => a.isCorrect)
+        .reduce((sum, a) => {
+          const key = a.a * 100 + a.b;
+          const stat = (problemStats as unknown as ProblemStat[]).find(ps => ps.problemKey === key);
           return sum + (stat?.difficultyWeight ?? 1.0);
         }, 0);
-      const correct = mine.filter((a: any) => a.isCorrect).length;
+      const correct = mine.filter(a => a.isCorrect).length;
       return { username: p?.username ?? s.username, score, correct };
     })
     .sort((a, b) => b.score - a.score)
@@ -99,7 +100,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // True once every student session has finished — used to auto-end the sprint
   const allSessionsComplete =
     sprintSessions.length > 0 &&
-    sprintSessions.every((s: any) => s.isComplete as boolean);
+    sprintSessions.every(s => s.isComplete);
 
   // Early exit: call end_class_sprint as soon as all online students finish,
   // rather than waiting for the server's 62 s scheduled auto-end.
@@ -154,14 +155,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   };
 
   // All members of this classroom
-  const members = (classroomMembers as any[]).filter(m => m.classroomId === classroomId);
+  const members = (classroomMembers as unknown as ClassroomMember[]).filter(m => m.classroomId === classroomId);
   // Visible members (included in leaderboard + mastery)
-  const visibleMembers = members.filter((m: any) => !m.hidden);
-  const visibleIds = new Set(visibleMembers.map((m: any) => m.playerIdentity.toHexString()));
+  const visibleMembers = members.filter(m => !m.hidden);
+  const visibleIds = new Set(visibleMembers.map(m => m.playerIdentity.toHexString()));
 
   // Best weighted score per VISIBLE member (across all time)
   const bestByMember = new Map<string, number>();
-  for (const s of sessions as any[]) {
+  for (const s of sessions as unknown as Session[]) {
     if (!s.isComplete || !visibleIds.has(s.playerIdentity.toHexString())) continue;
     const id = s.playerIdentity.toHexString();
     if ((bestByMember.get(id) ?? 0) < s.weightedScore) {
@@ -172,15 +173,15 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // Recovery key lookup (teacher only) — recovery_keys is a public table
   const recoveryKeyByIdentity = new Map<string, string>();
   if (isTeacher) {
-    for (const k of recoveryKeys as any[]) {
+    for (const k of recoveryKeys as unknown as RecoveryKey[]) {
       recoveryKeyByIdentity.set(k.owner.toHexString(), k.code);
     }
   }
 
   // All member rows (for the Members card — shows everyone)
-  const memberRows = members.map((m: any) => {
+  const memberRows = members.map(m => {
     const id = m.playerIdentity.toHexString();
-    const player = (players as any[]).find(p => p.identity.toHexString() === id);
+    const player = (players as unknown as Player[]).find(p => p.identity.toHexString() === id);
     const recoveryCode = recoveryKeyByIdentity.get(id);
     return {
       id,
@@ -195,7 +196,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const leaderRows = memberRows.filter(m => !m.hidden && m.best !== undefined);
 
   // Mastery grid — only answers from visible members
-  const classAnswers = (answers as any[]).filter(a => visibleIds.has(a.playerIdentity.toHexString()));
+  const classAnswers = (answers as unknown as Answer[]).filter(a => visibleIds.has(a.playerIdentity.toHexString()));
 
   const handleToggleVisibility = async () => {
     setTogglingVis(true);
@@ -431,7 +432,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               <h3 style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {t('classSprint.grid')}
               </h3>
-              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} tier1Unlocked />
+              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as unknown as ProblemStat[]} tier1Unlocked />
             </div>
 
             {/* Right — Ticker + leaderboard stacked */}
@@ -446,8 +447,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                   <span style={{ color: 'var(--muted)', fontSize: 13 }}>{t('classSprint.waitingForAnswers')}</span>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {recentAnswers.map((a: any) => {
-                      const p = (players as any[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
+                    {recentAnswers.map(a => {
+                      const p = (players as unknown as Player[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
                       const name = p?.username ?? '?';
                       return (
                         <div key={String(a.id)} style={{
@@ -661,7 +662,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
             {t('classroom.classMasteryDesc', { count: visibleMembers.length })}
           </p>
-          <MasteryGrid answers={classAnswers} problemStats={problemStats as any[]} tier1Unlocked />
+          <MasteryGrid answers={classAnswers} problemStats={problemStats as unknown as ProblemStat[]} tier1Unlocked />
         </div>
       )}
 

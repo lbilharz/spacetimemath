@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
+import type { Classroom, ClassroomMember } from '../module_bindings/types.js';
 
 interface Props {
   myIdentityHex: string | undefined;
@@ -24,11 +25,11 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const [submitting, setSubmitting] = useState(false);
 
   const myMemberships = myIdentityHex
-    ? (classroomMembers as any[]).filter(m => m.playerIdentity.toHexString() === myIdentityHex)
+    ? (classroomMembers as unknown as ClassroomMember[]).filter(m => m.playerIdentity.toHexString() === myIdentityHex)
     : [];
   const myClassrooms = myMemberships
-    .map((m: any) => (classrooms as any[]).find(c => c.id === m.classroomId))
-    .filter(Boolean);
+    .map(m => (classrooms as unknown as Classroom[]).find(c => c.id === m.classroomId))
+    .filter((c): c is Classroom => c !== undefined);
 
   const openPanel = (p: Panel) => {
     setPanel(p); setClassError(''); setClassName(''); setJoinCode('');
@@ -41,13 +42,13 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
     setSubmitting(true); setClassError('');
     try {
       await createClassroom({ name });
-      const created = (classrooms as any[])
-        .filter((c: any) => c.teacher?.toHexString() === myIdentityHex)
-        .sort((a: any, b: any) => Number(b.id - a.id))[0];
+      const created = (classrooms as unknown as Classroom[])
+        .filter(c => c.teacher?.toHexString() === myIdentityHex)
+        .sort((a, b) => Number(b.id - a.id))[0];
       if (created) onEnterClassroom(created.id);
       else { setPanel('none'); setClassName(''); }
-    } catch (err: any) {
-      setClassError(err?.message ?? 'Failed to create classroom');
+    } catch (err: unknown) {
+      setClassError((err as Error)?.message ?? 'Failed to create classroom');
       setSubmitting(false);
     }
   };
@@ -59,11 +60,11 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
     setSubmitting(true); setClassError('');
     try {
       await joinClassroom({ code });
-      const classroom = (classrooms as any[]).find(c => c.code === code);
+      const classroom = (classrooms as unknown as Classroom[]).find(c => c.code === code);
       if (classroom) onEnterClassroom(classroom.id);
       else { setPanel('none'); setJoinCode(''); }
-    } catch (err: any) {
-      setClassError(err?.message ?? 'Classroom not found');
+    } catch (err: unknown) {
+      setClassError((err as Error)?.message ?? 'Classroom not found');
       setSubmitting(false);
     }
   };
@@ -74,9 +75,9 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       {/* Classroom list */}
       {myClassrooms.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {myClassrooms.map((c: any) => {
+          {myClassrooms.map(c => {
             const isTeacher  = c.teacher?.toHexString() === myIdentityHex;
-            const memberCount = (classroomMembers as any[]).filter(m => m.classroomId === c.id).length;
+            const memberCount = (classroomMembers as unknown as ClassroomMember[]).filter(m => m.classroomId === c.id).length;
             return (
               <div
                 key={String(c.id)}

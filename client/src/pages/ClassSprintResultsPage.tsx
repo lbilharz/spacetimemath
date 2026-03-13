@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
+import type { Answer, ClassSprint, Classroom, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 
 interface Props {
@@ -19,36 +20,36 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
   const [problemStats]  = useTable(tables.problem_stats);
 
   // Meta
-  const classSprint = (classSprints as any[]).find(s => s.id === classSprintId);
+  const classSprint = (classSprints as unknown as ClassSprint[]).find(s => s.id === classSprintId);
   const classroom   = classSprint
-    ? (classrooms as any[]).find(c => c.id === classSprint.classroomId)
+    ? (classrooms as unknown as Classroom[]).find(c => c.id === classSprint.classroomId)
     : null;
 
   // Sessions that belong to this class sprint (compare as strings to avoid bigint/number coercion issues)
   const classSprintIdStr = String(classSprintId);
-  const sprintSessions = (sessions as any[]).filter(
+  const sprintSessions = (sessions as unknown as Session[]).filter(
     s => String(s.classSprintId) === classSprintIdStr
   );
-  const sessionIdStrs = new Set<string>(sprintSessions.map((s: any) => String(s.id)));
+  const sessionIdStrs = new Set<string>(sprintSessions.map(s => String(s.id)));
 
   // Answers for those sessions
-  const sprintAnswers = (answers as any[]).filter(a => sessionIdStrs.has(String(a.sessionId)));
+  const sprintAnswers = (answers as unknown as Answer[]).filter(a => sessionIdStrs.has(String(a.sessionId)));
 
   // Ranking — all sessions, completed ones use weightedScore, running ones use live answer scores
   const ranking = sprintSessions
-    .map((s: any) => {
+    .map(s => {
       const identityHex = s.playerIdentity.toHexString();
-      const player = (players as any[]).find(p => p.identity.toHexString() === identityHex);
-      const sa = sprintAnswers.filter((a: any) => String(a.sessionId) === String(s.id));
-      const correct = sa.filter((a: any) => a.isCorrect).length;
+      const player = (players as unknown as Player[]).find(p => p.identity.toHexString() === identityHex);
+      const sa = sprintAnswers.filter(a => String(a.sessionId) === String(s.id));
+      const correct = sa.filter(a => a.isCorrect).length;
       const total = sa.length;
-      const isComplete = s.isComplete as boolean;
+      const isComplete = s.isComplete;
       // Completed sessions have final weightedScore; running ones: compute live from answers
       const score = isComplete
-        ? (s.weightedScore as number)
-        : sa.filter((a: any) => a.isCorrect).reduce((sum: number, a: any) => {
-            const key = (a.a as number) * 100 + (a.b as number);
-            const stat = (problemStats as any[]).find(ps => ps.problemKey === key);
+        ? s.weightedScore
+        : sa.filter(a => a.isCorrect).reduce((sum, a) => {
+            const key = a.a * 100 + a.b;
+            const stat = (problemStats as unknown as ProblemStat[]).find(ps => ps.problemKey === key);
             return sum + (stat?.difficultyWeight ?? 1.0);
           }, 0);
       return { identityHex, username: player?.username ?? s.username, score, correct, total, isComplete };
@@ -56,7 +57,7 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
     .sort((a, b) => b.score - a.score);
 
   // Incomplete-session players still running
-  const running = sprintSessions.filter((s: any) => !s.isComplete).length;
+  const running = sprintSessions.filter(s => !s.isComplete).length;
 
   const medals = ['🥇', '🥈', '🥉'];
 
@@ -137,7 +138,7 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
           <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
             {t('classSprint.gridDesc')}
           </p>
-          <MasteryGrid answers={sprintAnswers} problemStats={problemStats as any[]} />
+          <MasteryGrid answers={sprintAnswers} problemStats={problemStats as unknown as ProblemStat[]} />
         </div>
       )}
 
