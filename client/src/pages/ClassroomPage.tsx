@@ -52,15 +52,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     m => m.classroomId === classroomId && m.playerIdentity.toHexString() === myIdentityHex
   );
 
-  if (!myClassroom) {
-    return (
-      <div className="loading">
-        <span style={{ color: 'var(--muted)', fontSize: 14 }}>{t('classroom.notFound')}</span>
-      </div>
-    );
-  }
-
-  const isTeacher = myClassroom.teacher.toHexString() === myIdentityHex;
+  // Derived state — computed unconditionally so hooks below are never called after an early return.
+  const isTeacher = myClassroom?.teacher.toHexString() === myIdentityHex;
   const amHidden: boolean = myMembership?.hidden ?? false;
 
   // ── Class sprint state ──────────────────────────────────────────────────────
@@ -108,6 +101,35 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     sprintSessions.length > 0 &&
     sprintSessions.every((s: any) => s.isComplete as boolean);
 
+  // Early exit: call end_class_sprint as soon as all online students finish,
+  // rather than waiting for the server's 62 s scheduled auto-end.
+  useEffect(() => {
+    if (!isTeacher || !activeSprint || !allSessionsComplete) return;
+    endClassSprint({ classSprintId: activeSprint.id }).catch(console.error);
+  }, [allSessionsComplete, activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Offline-student deadline is handled server-side via the EndSprintSchedule table.
+
+  // Countdown timer — ticks from server startedAt, same logic as SprintPage
+  useEffect(() => {
+    if (!activeSprint || !isTeacher) { setSprintTimeLeft(null); return; }
+    const DURATION = 60;
+    const startMs = Number(activeSprint.startedAt.microsSinceUnixEpoch / 1000n);
+    const tick = () => setSprintTimeLeft(Math.max(0, DURATION - Math.floor((Date.now() - startMs) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── End of class sprint state ───────────────────────────────────────────────
+
+  if (!myClassroom) {
+    return (
+      <div className="loading">
+        <span style={{ color: 'var(--muted)', fontSize: 14 }}>{t('classroom.notFound')}</span>
+      </div>
+    );
+  }
+
   const handleStartClassSprint = async () => {
     setStartingClassSprint(true);
     setSprintError(null);
@@ -130,27 +152,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       setEndingClassSprint(false);
     }
   };
-
-  // Early exit: call end_class_sprint as soon as all online students finish,
-  // rather than waiting for the server's 62 s scheduled auto-end.
-  useEffect(() => {
-    if (!isTeacher || !activeSprint || !allSessionsComplete) return;
-    endClassSprint({ classSprintId: activeSprint.id }).catch(console.error);
-  }, [allSessionsComplete, activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Offline-student deadline is handled server-side via the EndSprintSchedule table.
-
-  // Countdown timer — ticks from server startedAt, same logic as SprintPage
-  useEffect(() => {
-    if (!activeSprint || !isTeacher) { setSprintTimeLeft(null); return; }
-    const DURATION = 60;
-    const startMs = Number(activeSprint.startedAt.microsSinceUnixEpoch / 1000n);
-    const tick = () => setSprintTimeLeft(Math.max(0, DURATION - Math.floor((Date.now() - startMs) / 1000)));
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── End of class sprint state ───────────────────────────────────────────────
 
   // All members of this classroom
   const members = (classroomMembers as any[]).filter(m => m.classroomId === classroomId);
