@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { ClassSprint, Player } from '../module_bindings/types.js';
+import type { Identity } from 'spacetimedb';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 import DotArray from '../components/DotArray.js';
@@ -26,6 +27,10 @@ type Answer = {
 type Session = {
   id: bigint; playerIdentity: { toHexString(): string };
   isComplete: boolean; weightedScore: number; classSprintId: bigint;
+};
+type IssuedProblemResult = {
+  owner: Identity;
+  token: string;
 };
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -167,6 +172,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const startSession = useSTDBReducer(reducers.startSession);
   const submitAnswer = useSTDBReducer(reducers.submitAnswer);
   const endSession = useSTDBReducer(reducers.endSession);
+  const issueProblem = useSTDBReducer(reducers.issueProblem);
+
+  // SEC-10: Read back the server-issued problem token
+  const [issuedProblemResults] = useTable(tables.issued_problem_results);
 
   // My answers (all-time — used for mastery-based problem selection)
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[];
@@ -258,6 +267,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       setProblem(p);
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
+      // SEC-10: issue the problem token so the server can verify the answer
+      if (sessionIdRef.current !== null) {
+        issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
+      }
     }
   }, [sprintStarted, problem, problemStats.length, isDiagnostic]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -319,8 +332,17 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     const stat = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
     const pts = isCorrect ? (stat?.difficultyWeight ?? 1.0) : 0;
 
+    // SEC-10: Get the current token for this player
+    const tokenRow = (issuedProblemResults as unknown as IssuedProblemResult[]).find(
+      r => r.owner.toHexString() === myIdentityHex
+    );
+    if (!tokenRow) {
+      // Token not yet available — rare race condition; skip submission
+      return;
+    }
+
     // Submit to SpaceTimeDB (fire-and-forget to keep UX fast)
-    submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs });
+    submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, problemToken: tokenRow.token });
 
     // Wrong answer: -2s penalty (solo only — class sprint timer is server-time derived)
     if (!isCorrect && classSprintId === undefined) {
@@ -349,6 +371,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       setProblem(next);
       lastKeyRef.current = next.a * 100 + next.b;
       problemStartRef.current = Date.now();
+      // SEC-10: issue the problem token for the next problem
+      if (sessionIdRef.current !== null) {
+        issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
+      }
       // Only auto-focus input on non-touch devices (avoids mobile keyboard pop-up)
       if (!('ontouchstart' in window)) inputRef.current?.focus();
     }, !fb.isCorrect ? 1000 : 600);

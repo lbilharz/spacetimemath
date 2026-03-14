@@ -14,7 +14,4 @@ export default {
   sessionId: __t.u64(),
   a: __t.u8(),
   b: __t.u8(),
-  userAnswer: __t.u32(),
-  responseMs: __t.u32(),
-  problemToken: __t.string(),
 };

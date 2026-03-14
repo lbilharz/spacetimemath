@@ -13,6 +13,7 @@ import CreateTransferCodeReducer from "../create_transfer_code_reducer";
 import EndClassSprintReducer from "../end_class_sprint_reducer";
 import EndSessionReducer from "../end_session_reducer";
 import GetMyRecoveryCodeReducer from "../get_my_recovery_code_reducer";
+import IssueProblemReducer from "../issue_problem_reducer";
 import JoinClassroomReducer from "../join_classroom_reducer";
 import LeaveClassroomReducer from "../leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "../mark_recovery_emailed_reducer";
@@ -36,6 +37,7 @@ export type CreateTransferCodeParams = __Infer<typeof CreateTransferCodeReducer>
 export type EndClassSprintParams = __Infer<typeof EndClassSprintReducer>;
 export type EndSessionParams = __Infer<typeof EndSessionReducer>;
 export type GetMyRecoveryCodeParams = __Infer<typeof GetMyRecoveryCodeReducer>;
+export type IssueProblemParams = __Infer<typeof IssueProblemReducer>;
 export type JoinClassroomParams = __Infer<typeof JoinClassroomReducer>;
 export type LeaveClassroomParams = __Infer<typeof LeaveClassroomReducer>;
 export type MarkRecoveryEmailedParams = __Infer<typeof MarkRecoveryEmailedReducer>;

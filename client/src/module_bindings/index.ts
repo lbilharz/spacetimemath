@@ -41,6 +41,7 @@ import CreateTransferCodeReducer from "./create_transfer_code_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
 import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
+import IssueProblemReducer from "./issue_problem_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
@@ -65,6 +66,7 @@ import BestScoresRow from "./best_scores_table";
 import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
+import IssuedProblemResultsRow from "./issued_problem_results_table";
 import OnlinePlayersRow from "./online_players_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
@@ -154,6 +156,17 @@ const tablesSchema = __schema({
       { name: 'classrooms_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, ClassroomsRow),
+  issued_problem_results: __table({
+    name: 'issued_problem_results',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'issued_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, IssuedProblemResultsRow),
   online_players: __table({
     name: 'online_players',
     indexes: [
@@ -244,6 +257,7 @@ const reducersSchema = __reducers(
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
   __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
+  __reducerSchema("issue_problem", IssueProblemReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),

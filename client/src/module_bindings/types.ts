@@ -66,6 +66,21 @@ export const EndSprintSchedule = __t.object("EndSprintSchedule", {
 });
 export type EndSprintSchedule = __Infer<typeof EndSprintSchedule>;
 
+export const IssuedProblem = __t.object("IssuedProblem", {
+  id: __t.u64(),
+  sessionId: __t.u64(),
+  a: __t.u8(),
+  b: __t.u8(),
+  token: __t.string(),
+});
+export type IssuedProblem = __Infer<typeof IssuedProblem>;
+
+export const IssuedProblemResult = __t.object("IssuedProblemResult", {
+  owner: __t.identity(),
+  token: __t.string(),
+});
+export type IssuedProblemResult = __Infer<typeof IssuedProblemResult>;
+
 export const OnlinePlayer = __t.object("OnlinePlayer", {
   identity: __t.identity(),
   username: __t.string(),
