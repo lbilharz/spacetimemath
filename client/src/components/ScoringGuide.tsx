@@ -61,33 +61,33 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
   }
 
   const HeaderTh = ({ n }: { n: number }) => (
-    <th style={{ width: CELL, textAlign: 'center', fontWeight: 700, color: 'var(--muted)', paddingBottom: 4, fontSize: 11 }}>{n}</th>
+    <th className="tbl-th fw-bold text-xs" style={{ width: CELL, paddingBottom: 4 }}>{n}</th>
   );
 
   const RowTh = ({ n }: { n: number }) => (
-    <td style={{ textAlign: 'right', paddingRight: 6, fontWeight: 700, color: 'var(--muted)', fontSize: 11, whiteSpace: 'nowrap' }}>{n}</td>
+    <td className="tbl-td--right fw-bold text-muted text-xs" style={{ paddingRight: 6, whiteSpace: 'nowrap' }}>{n}</td>
   );
 
   return (
     <div id="scoring-guide" className="card">
       <button
         onClick={() => setOpen(o => !o)}
+        className="row-between w-full"
         style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+          background: 'none', border: 'none', cursor: 'pointer',
           color: 'var(--text)', padding: 0, textAlign: 'left',
           WebkitTapHighlightColor: 'transparent',
         }}
       >
-        <span style={{ fontSize: 15, fontWeight: 700 }}>📊 {t('scoring.title')}</span>
-        <span style={{ fontSize: 12, color: 'var(--muted)' }}>{open ? '▲' : '▼'}</span>
+        <span className="fw-bold" style={{ fontSize: 15 }}>📊 {t('scoring.title')}</span>
+        <span className="text-xs text-muted">{open ? '▲' : '▼'}</span>
       </button>
 
       {open && (
-        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="col gap-16 mt-4">
 
           {/* Formula */}
-          <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7 }}>
+          <div className="text-sm text-muted" style={{ lineHeight: 1.7 }}>
             <b style={{ color: 'var(--text)' }}>{t('scoring.howTitle')}</b><br />
             {t('scoring.howBody')}<br />
             <code style={{
@@ -98,15 +98,15 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
               w = 0.2 + 1.8 × error_rate + 0.5 × (avg_ms / 10 000)
             </code>
             <br />
-            <span style={{ fontSize: 11 }}>{t('scoring.calibNote')}</span>
+            <span className="text-xs">{t('scoring.calibNote')}</span>
             <br />
-            <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600 }}>
+            <span className="text-xs text-accent fw-semibold">
               ＋ {t('scoring.digitBonus')}
             </span>
           </div>
 
           {/* Legend */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div className="row-wrap gap-8">
             {([
               [0.35, `${t('sprint.tagEasy')} < 0.8`],
               [1.0,  `${t('sprint.tagMedium')} 0.8–1.4`],
@@ -122,11 +122,11 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
           </div>
 
           {/* 10 × 10 grid */}
-          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div className="scroll-x">
             <table style={{ borderCollapse: 'separate', borderSpacing: 2, fontSize: 11 }}>
               <thead>
                 <tr>
-                  <th style={{ width: 20, color: 'var(--muted)', textAlign: 'right', paddingRight: 6, fontSize: 11 }}>×</th>
+                  <th className="text-muted tbl-td--right text-xs" style={{ width: 20, paddingRight: 6 }}>×</th>
                   {COLS.map(b => <HeaderTh key={b} n={b} />)}
                 </tr>
               </thead>
@@ -144,14 +144,14 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
           {/* Extended table (tier 3) */}
           {playerLearningTier >= 3 && (
             <>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>
+              <div className="text-sm fw-bold text-accent">
                 {t('unlock.tier1GridTitle')}
               </div>
-              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <div className="scroll-x">
                 <table style={{ borderCollapse: 'separate', borderSpacing: 2, fontSize: 11 }}>
                   <thead>
                     <tr>
-                      <th style={{ width: 28, color: 'var(--muted)', textAlign: 'right', paddingRight: 6, fontSize: 11 }}>×</th>
+                      <th className="text-muted tbl-td--right text-xs" style={{ width: 28, paddingRight: 6 }}>×</th>
                       {EXT_COLS.map(b => <HeaderTh key={b} n={b} />)}
                     </tr>
                   </thead>
@@ -168,7 +168,7 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
             </>
           )}
 
-          <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: -4 }}>
+          <p className="text-xs text-muted" style={{ marginTop: -4 }}>
             {t('scoring.calibLegend')}
           </p>
         </div>

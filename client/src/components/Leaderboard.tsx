@@ -42,11 +42,11 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 12 }}>{t('leaderboard.title')}</h2>
+      <h2 className="mb-3">{t('leaderboard.title')}</h2>
 
       {/* Tier filter tabs */}
       {tiersPresent.length > 1 && (
-        <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+        <div className="row-wrap gap-6 mb-4">
           <button
             onClick={() => setTierFilter(-1)}
             style={{
@@ -74,18 +74,18 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
       )}
 
       {rows.length === 0 ? (
-        <p style={{ color: 'var(--muted)', fontSize: 14 }}>
+        <p className="text-muted text-sm">
           {t('leaderboard.empty')}
         </p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="table-full">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={th}>{t('leaderboard.colHash')}</th>
-              <th style={{ ...th, textAlign: 'left' }}>{t('leaderboard.colPlayer')}</th>
-              <th style={th}>{t('leaderboard.colScore')}</th>
-              <th style={th}>{t('leaderboard.colAccuracy')}</th>
-              <th style={th}>{t('leaderboard.colAnswers')}</th>
+            <tr className="divider-bottom">
+              <th className="tbl-th">{t('leaderboard.colHash')}</th>
+              <th className="tbl-th tbl-th--left">{t('leaderboard.colPlayer')}</th>
+              <th className="tbl-th">{t('leaderboard.colScore')}</th>
+              <th className="tbl-th">{t('leaderboard.colAccuracy')}</th>
+              <th className="tbl-th">{t('leaderboard.colAnswers')}</th>
             </tr>
           </thead>
           <tbody>
@@ -99,25 +99,25 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
                     background: isMe ? 'rgba(251,186,0,0.08)' : 'transparent',
                   }}
                 >
-                  <td style={{ ...td, fontWeight: 700, color: i < 3 ? 'var(--warn)' : 'var(--muted)', textAlign: 'center' }}>
+                  <td className="tbl-td fw-bold text-center tabular-nums" style={{ color: i < 3 ? 'var(--warn)' : 'var(--muted)' }}>
                     {i < 3 ? medals[i] : i + 1}
                   </td>
-                  <td style={{ ...td, fontWeight: isMe ? 700 : 400 }}>
+                  <td className={`tbl-td${isMe ? ' fw-bold' : ''}`}>
                     <span>{s.username}</span>
                     {tierFilter === -1 && (
-                      <span style={{ marginLeft: 6, fontSize: 11 }} title={t(`tiers.tier${s.learningTier}Name` as ParseKeys)}>
+                      <span className="text-xs" style={{ marginLeft: 6 }} title={t(`tiers.tier${s.learningTier}Name` as ParseKeys)}>
                         {TIER_EMOJI[Math.min(s.learningTier, 3)]}
                       </span>
                     )}
-                    {isMe && <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>{t('leaderboard.you')}</span>}
+                    {isMe && <span className="text-accent text-xs" style={{ marginLeft: 6 }}>{t('leaderboard.you')}</span>}
                   </td>
-                  <td style={{ ...td, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums">
                     {s.bestWeightedScore.toFixed(1)}
                   </td>
-                  <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
                     {s.bestAccuracyPct}%
                   </td>
-                  <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
                     {s.bestTotalAnswered}
                   </td>
                 </tr>
@@ -127,28 +127,28 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
             {myRow && (
               <>
                 <tr>
-                  <td colSpan={5} style={{ padding: '4px 0', textAlign: 'center', color: 'var(--muted)', fontSize: 13, letterSpacing: 2 }}>
+                  <td colSpan={5} className="text-center text-muted text-sm" style={{ padding: '4px 0', letterSpacing: 2 }}>
                     ···
                   </td>
                 </tr>
                 <tr style={{ background: 'rgba(251,186,0,0.08)', borderTop: '1px solid var(--border)' }}>
-                  <td style={{ ...td, fontWeight: 700, color: 'var(--muted)', textAlign: 'center' }}>
+                  <td className="tbl-td fw-bold text-muted text-center">
                     {myRankIndex + 1}
                   </td>
-                  <td style={{ ...td, fontWeight: 700 }}>
+                  <td className="tbl-td fw-bold">
                     <span>{myRow.username}</span>
                     {tierFilter === -1 && (
-                      <span style={{ marginLeft: 6, fontSize: 11 }}>{TIER_EMOJI[Math.min(myRow.learningTier, 3)]}</span>
+                      <span className="text-xs" style={{ marginLeft: 6 }}>{TIER_EMOJI[Math.min(myRow.learningTier, 3)]}</span>
                     )}
-                    <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>{t('leaderboard.you')}</span>
+                    <span className="text-accent text-xs" style={{ marginLeft: 6 }}>{t('leaderboard.you')}</span>
                   </td>
-                  <td style={{ ...td, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums">
                     {myRow.bestWeightedScore.toFixed(1)}
                   </td>
-                  <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
                     {myRow.bestAccuracyPct}%
                   </td>
-                  <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
                     {myRow.bestTotalAnswered}
                   </td>
                 </tr>
@@ -157,12 +157,9 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
           </tbody>
         </table>
       )}
-      <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>
+      <p className="text-xs text-muted mt-2">
         {t('leaderboard.footer')}
       </p>
     </div>
   );
 }
-
-const th: React.CSSProperties = { padding: '8px 4px', fontSize: 12, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' };
-const td: React.CSSProperties = { padding: '10px 4px', fontSize: 15 };

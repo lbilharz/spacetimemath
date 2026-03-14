@@ -23,18 +23,18 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
     <div className="card">
       <button
         onClick={() => setSectionOpen(o => !o)}
+        className="row-between w-full"
         style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+          background: 'none', border: 'none', cursor: 'pointer',
           color: 'var(--text)', padding: 0, marginBottom: sectionOpen ? 12 : 0,
         }}
       >
         <h2 style={{ margin: 0 }}>{t('history.title')}</h2>
-        <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+        <span className="text-xs text-muted">
           {mySessions.length} · {sectionOpen ? '▲' : '▼'}
         </span>
       </button>
-      {sectionOpen && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {sectionOpen && <div className="col gap-6">
         {mySessions.map((session: Session) => {
           const isOpen = openId === session.id;
           const date = new Date(Number(session.startedAt.microsSinceUnixEpoch / 1000n));
@@ -72,26 +72,26 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                   transition: 'border-color 0.15s',
                 }}
               >
-                <span style={{ fontSize: 13, color: 'var(--muted)', minWidth: 90 }}>
+                <span className="text-sm text-muted" style={{ minWidth: 90 }}>
                   {dateStr} · {timeStr}
                 </span>
-                <span style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 13 }}>
+                <span className="row gap-12 row-wrap">
+                  <span className="text-sm">
                     ✓ {session.rawScore}
-                    <span style={{ color: 'var(--muted)', fontWeight: 400 }}>/{session.totalAnswered}</span>
+                    <span className="text-muted" style={{ fontWeight: 400 }}>/{session.totalAnswered}</span>
                   </span>
                   {wrongCount > 0 && (
-                    <span style={{ fontSize: 12, color: 'var(--wrong)', fontWeight: 600 }}>
+                    <span className="text-xs fw-semibold text-error">
                       ✗ {wrongCount}
                     </span>
                   )}
-                  <span style={{ fontSize: 13, color: 'var(--warn)', fontWeight: 600 }}>
+                  <span className="text-sm fw-semibold text-warn">
                     {session.weightedScore.toFixed(1)} pts
                   </span>
-                  <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                  <span className="text-xs text-muted">
                     {session.accuracyPct}%
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--muted)' }}>{isOpen ? '▲' : '▼'}</span>
+                  <span className="text-xs text-muted">{isOpen ? '▲' : '▼'}</span>
                 </span>
               </button>
 
@@ -105,7 +105,7 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                   background: 'var(--card2)',
                 }}>
                   {sessionAnswers.length === 0 ? (
-                    <p style={{ color: 'var(--muted)', fontSize: 13 }}>{t('history.noAnswers')}</p>
+                    <p className="text-muted text-sm">{t('history.noAnswers')}</p>
                   ) : (
                     <div style={{
                       display: 'grid',
@@ -119,11 +119,8 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                         return (
                           <div
                             key={String(ans.id)}
+                            className="row gap-4 text-sm"
                             style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 5,
-                              fontSize: 13,
                               padding: '4px 7px',
                               borderRadius: 5,
                               background: ans.isCorrect
@@ -135,25 +132,24 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                             }}
                           >
                             {/* Problem */}
-                            <span style={{ fontWeight: 700, minWidth: 40 }}>
+                            <span className="fw-bold" style={{ minWidth: 40 }}>
                               {ans.a}×{ans.b}
                             </span>
-                            <span style={{ color: 'var(--muted)' }}>=</span>
+                            <span className="text-muted">=</span>
                             {/* What they typed */}
-                            <span style={{
-                              fontWeight: 700,
+                            <span className="fw-bold" style={{
                               color: ans.isCorrect ? 'var(--accent)' : 'var(--wrong)',
                             }}>
                               {ans.userAnswer}
                             </span>
                             {/* Correct answer hint */}
                             {!ans.isCorrect && (
-                              <span style={{ color: 'var(--muted)', fontSize: 11 }}>
+                              <span className="text-xs text-muted">
                                 →{correct}
                               </span>
                             )}
                             {/* Response time */}
-                            <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--muted)', flexShrink: 0 }}>
+                            <span className="text-muted" style={{ marginLeft: 'auto', fontSize: 10, flexShrink: 0 }}>
                               {msLabel}
                             </span>
                           </div>

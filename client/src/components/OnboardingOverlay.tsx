@@ -44,44 +44,23 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.75)',
-      zIndex: 1000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 24,
-    }}>
-      <div style={{
-        background: 'var(--card)',
-        border: '1px solid var(--border)',
-        borderRadius: 16,
-        maxWidth: 380,
-        width: '100%',
-        padding: '40px 32px 32px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 20,
-        textAlign: 'center',
-      }}>
+    <div className="modal-backdrop">
+      <div className="modal-card">
         {/* Emoji */}
         <div style={{ fontSize: 56, lineHeight: 1 }}>{card.emoji}</div>
 
         {/* Title */}
-        <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', lineHeight: 1.2 }}>
+        <div className="fw-extrabold" style={{ fontSize: 20, color: 'var(--text)', lineHeight: 1.2 }}>
           {t(card.titleKey)}
         </div>
 
         {/* Body */}
-        <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.6 }}>
+        <div className="text-muted" style={{ fontSize: 15, lineHeight: 1.6 }}>
           {t(card.bodyKey)}
         </div>
 
         {/* Step dots */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+        <div className="row gap-8 mt-1">
           {CARDS.map((_, i) => (
             <div key={i} style={{
               width: 8, height: 8,
@@ -93,9 +72,9 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', marginTop: 4 }}>
+        <div className="col gap-8 w-full mt-1">
           {/* Main row: Back (if applicable) + Next / primary CTA */}
-          <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+          <div className="row gap-10 w-full">
             {step > 0 && (
               <button
                 onClick={() => setStep(s => s - 1)}
@@ -167,8 +146,8 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
             <button
               onClick={handleOkay}
               disabled={finishing}
+              className="w-full"
               style={{
-                width: '100%',
                 padding: '10px 0',
                 background: 'var(--card2)',
                 border: '1px solid var(--border)',

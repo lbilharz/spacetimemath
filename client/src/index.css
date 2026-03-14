@@ -316,3 +316,19 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
 /* TopBar BEM modifiers */
 .topbar-tab         { background: none; border: none; cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: 600; border-bottom: 2px solid transparent; color: var(--muted); }
 .topbar-tab--active { border-bottom-color: var(--accent); color: var(--text); }
+
+/* MasteryGrid cell base */
+.mastery-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: default;
+  font-size: 12px;
+  transition: opacity 0.2s;
+  min-width: 0;
+  padding: 0;
+  font-family: inherit;
+}
+.mastery-cell--label { background: transparent; }

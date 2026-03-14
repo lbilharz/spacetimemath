@@ -68,10 +68,10 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   const cells: React.ReactNode[] = [];
   // Header row: b labels
-  cells.push(<div key="h0" style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>×</div>);
+  cells.push(<div key="h0" className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>);
   for (let b = 1; b <= 10; b++) {
     cells.push(
-      <div key={`hb${b}`} style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>
+      <div key={`hb${b}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
         {b}
       </div>
     );
@@ -80,7 +80,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
   for (let a = 1; a <= 10; a++) {
     // Row label
     cells.push(
-      <div key={`ha${a}`} style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>
+      <div key={`ha${a}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
         {a}
       </div>
     );
@@ -98,10 +98,10 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       cells.push(
         <button
           key={`${a}-${b}`}
+          className="mastery-cell"
           title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
           onClick={() => !isLocked && setSelected(isSelected ? null : { a, b })}
           style={{
-            ...cell,
             background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
             border: isSelected
               ? `2px solid ${MASTERY_COLORS[mastery]}`
@@ -144,26 +144,24 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
       {/* Rechenweg panel */}
       {selected && rw && (
-        <div style={{
-          marginTop: 12,
+        <div className="mt-4" style={{
           background: 'var(--card2)',
           border: '1px solid var(--border)',
           borderRadius: 8,
           padding: '10px 14px',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <span style={{ fontWeight: 700, fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>
+          <div className="row gap-10 mb-2">
+            <span className="fw-bold tabular-nums" style={{ fontSize: 15 }}>
               {selected.a} × {selected.b} = {selected.a * selected.b}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span className="text-xs text-muted fw-semibold label-caps">
               {t(rw.strategyKey as ParseKeys)}
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <div className="col gap-4">
             {rw.steps.map((step, i) => (
-              <div key={i} style={{
+              <div key={i} className="tabular-nums" style={{
                 fontSize: 15,
-                fontVariantNumeric: 'tabular-nums',
                 fontWeight: i === rw.steps.length - 1 ? 700 : 400,
                 color: i === rw.steps.length - 1 ? 'var(--accent)' : 'var(--text)',
               }}>
@@ -182,13 +180,13 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
             const recent = pair.slice(-10);
             const correct = recent.filter(x => x.isCorrect).length;
             return (
-              <div style={{ marginTop: 10, borderTop: '1px solid var(--border)', paddingTop: 8 }}>
-                <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6, fontWeight: 600 }}>
+              <div className="divider-top mt-2">
+                <div className="text-xs text-muted fw-semibold mb-2">
                   {correct}/{recent.length} correct (last {recent.length} of {pair.length})
                 </div>
-                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                <div className="row-wrap gap-4">
                   {recent.map((ans, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <div key={i} className="col gap-1" style={{ alignItems: 'center' }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: 4,
                         background: ans.isCorrect ? 'rgba(93,210,60,0.15)' : 'rgba(232,57,29,0.12)',
@@ -205,7 +203,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
                         </div>
                       )}
                       {ans.responseMs !== undefined && (
-                        <div style={{ fontSize: 9, color: 'var(--muted)' }}>
+                        <div className="text-muted" style={{ fontSize: 9 }}>
                           {(ans.responseMs / 1000).toFixed(1)}s
                         </div>
                       )}
@@ -221,17 +219,17 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       {/* Tier-1 extended grid (unlocked) */}
       {tier1Unlocked && (() => {
         const t1cells: React.ReactNode[] = [];
-        t1cells.push(<div key="t1h0" style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>×</div>);
+        t1cells.push(<div key="t1h0" className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>);
         for (const b of TIER1_B) {
           t1cells.push(
-            <div key={`t1hb${b}`} style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>
+            <div key={`t1hb${b}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
               {b}
             </div>
           );
         }
         for (const a of TIER1_A) {
           t1cells.push(
-            <div key={`t1ha${a}`} style={{ ...cell, background: 'transparent', color: 'var(--muted)', fontSize: 11, fontWeight: 700 }}>
+            <div key={`t1ha${a}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
               {a}
             </div>
           );
@@ -246,10 +244,10 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
             t1cells.push(
               <button
                 key={`t1-${a}-${b}`}
+                className="mastery-cell"
                 title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
                 onClick={() => setSelected(isSelected ? null : { a, b })}
                 style={{
-                  ...cell,
                   background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
                   border: isSelected
                     ? `2px solid ${MASTERY_COLORS[mastery]}`
@@ -276,8 +274,8 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
           }
         }
         return (
-          <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 8 }}>
+          <div className="mt-5">
+            <div className="text-xs text-accent fw-bold mb-2">
               🔓 {t('unlock.tier1GridTitle')}
             </div>
             <div style={{
@@ -292,37 +290,22 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       })()}
 
       {/* Legend */}
-      <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap' }}>
+      <div className="row-wrap gap-16 mt-3">
         {(['mastered', 'learning', 'struggling', 'untouched'] as Mastery[]).map(m => (
-          <div key={m} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div key={m} className="row gap-6">
             <div style={{
               width: 12, height: 12, borderRadius: 3,
               background: MASTERY_BG[m],
               border: `1px solid ${MASTERY_COLORS[m]}`,
             }} />
-            <span style={{ fontSize: 12, color: 'var(--muted)' }}>{t(`mastery.${m}` as const)}</span>
+            <span className="text-xs text-muted">{t(`mastery.${m}` as const)}</span>
           </div>
         ))}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div className="row gap-6">
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--wrong)' }} />
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>{t('mastery.hardDiff')}</span>
+          <span className="text-xs text-muted">{t('mastery.hardDiff')}</span>
         </div>
       </div>
     </div>
   );
 }
-
-const cell: React.CSSProperties = {
-  aspectRatio: '1',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 4,
-  cursor: 'default',
-  fontSize: 12,
-  transition: 'opacity 0.2s',
-  minWidth: 0,
-  // reset button styles
-  padding: 0,
-  fontFamily: 'inherit',
-};
