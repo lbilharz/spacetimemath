@@ -1,6 +1,14 @@
 use spacetimedb::{table, reducer, Table, ReducerContext, Identity, Timestamp, ScheduleAt};
 
 // ============================================================
+// CONSTANTS
+// ============================================================
+
+const MAX_ANSWERS_PER_SESSION: usize = 80;
+const MIN_RESPONSE_MS: u32 = 200;
+const MAX_RESPONSE_MS: u32 = 120_000;
+
+// ============================================================
 // TABLES
 // ============================================================
 
@@ -385,12 +393,28 @@ fn bootstrap_weight(a: u8, b: u8, category: u8) -> f32 {
 // REDUCERS
 // ============================================================
 
+/// Validate a username for length, control characters, and Unicode script (SEC-08).
+/// Allows Latin, Latin-1 Supplement, Latin Extended-A/B (covers EU languages).
+/// Rejects null bytes, control characters, and characters above U+024F.
+fn validate_username(name: &str) -> Result<(), String> {
+    if name.is_empty() || name.len() > 24 {
+        return Err("Username must be 1\u{2013}24 characters".into());
+    }
+    if name.chars().any(|c| c.is_control()) {
+        return Err("Username contains invalid characters".into());
+    }
+    // Reject non-Latin scripts (above U+024F) to prevent Unicode homoglyph attacks.
+    // Latin, Latin-1 Supplement, Latin Extended-A/B cover EU languages including German.
+    if name.chars().any(|c| (c as u32) > 0x024F) {
+        return Err("Username contains unsupported characters".into());
+    }
+    Ok(())
+}
+
 #[reducer]
 pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
     let name = username.trim().to_string();
-    if name.is_empty() || name.len() > 24 {
-        return Err("Username must be 1-24 characters".into());
-    }
+    validate_username(&name)?;
     let sender = ctx.sender();
     if let Some(existing) = ctx.db.players().identity().find(sender) {
         ctx.db.players().identity().update(Player { username: name.clone(), ..existing });
@@ -453,12 +477,36 @@ pub fn submit_answer(
     response_ms: u32,
 ) -> Result<(), String> {
     let sender = ctx.sender();
-    let _player = get_player(ctx)?;
+    let player = get_player(ctx)?;
 
     let session = ctx.db.sessions().id().find(session_id)
         .ok_or("Session not found")?;
     if session.player_identity != sender { return Err("Not your session".into()); }
     if session.is_complete { return Err("Session already complete".into()); }
+
+    // SEC-05: response_ms bounds
+    if response_ms < MIN_RESPONSE_MS {
+        return Err("Response time below minimum threshold".into());
+    }
+    if response_ms > MAX_RESPONSE_MS {
+        return Err("Response time above maximum threshold".into());
+    }
+
+    // SEC-04: per-session answer cap
+    let existing_count = ctx.db.answers()
+        .iter()
+        .filter(|ans| ans.session_id == session_id)
+        .count();
+    if existing_count >= MAX_ANSWERS_PER_SESSION {
+        return Err("Session answer limit reached".into());
+    }
+
+    // SEC-06: (a, b) pair must be within player's learning tier
+    let pair_tier = pair_learning_tier(a, b)
+        .ok_or_else(|| "Invalid problem pair".to_string())?;
+    if pair_tier > player.learning_tier {
+        return Err("Problem pair above player's current tier".into());
+    }
 
     let correct_answer = (a as u32) * (b as u32);
     let is_correct = user_answer == correct_answer;
@@ -699,7 +747,7 @@ fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_id: u64) {
 // ACCOUNT MANAGEMENT
 // ============================================================
 
-#[table(accessor = transfer_codes, public)]
+#[table(accessor = transfer_codes)]
 pub struct TransferCode {
     #[primary_key]
     pub code: String,
@@ -721,9 +769,7 @@ pub struct TransferCodeResult {
 #[reducer]
 pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), String> {
     let name = new_username.trim().to_string();
-    if name.is_empty() || name.len() > 24 {
-        return Err("Username must be 1–24 characters".into());
-    }
+    validate_username(&name)?;
     let player = get_player(ctx)?;
     ctx.db.players().identity().update(Player { username: name.clone(), ..player });
     // Keep BestScore.username in sync
@@ -795,10 +841,10 @@ pub fn create_transfer_code(ctx: &ReducerContext, token: String) -> Result<(), S
 /// Called by the new device after it has read and stored the token — deletes the row.
 #[reducer]
 pub fn use_transfer_code(ctx: &ReducerContext, code: String) -> Result<(), String> {
-    // Save the owner before deleting so we can clean up the result table.
-    if let Some(tc) = ctx.db.transfer_codes().code().find(code.clone()) {
-        ctx.db.transfer_code_results().owner().delete(tc.owner);
-    }
+    let record = ctx.db.transfer_codes().code().find(code.clone())
+        .ok_or("Transfer code not found or already used")?;
+    // Delete the result entry for the owner so the UI clears
+    ctx.db.transfer_code_results().owner().delete(record.owner);
     ctx.db.transfer_codes().code().delete(code);
     Ok(())
 }
@@ -809,7 +855,7 @@ pub fn use_transfer_code(ctx: &ReducerContext, code: String) -> Result<(), Strin
 
 /// One permanent recovery key per player. Never expires, survives logout.
 /// Lets you reclaim your account from any device at any future point.
-#[table(accessor = recovery_keys, public)]
+#[table(accessor = recovery_keys)]
 pub struct RecoveryKey {
     #[primary_key]
     pub code: String,
