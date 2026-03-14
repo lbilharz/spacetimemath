@@ -2,9 +2,9 @@ import { DbConnection } from '../module_bindings/index.js';
 import type { Identity } from 'spacetimedb';
 
 // All tables we subscribe to in tests — must not mix with subscribeToAllTables()
-// NOTE: recovery_keys and transfer_codes are intentionally absent — these tables
-// will become private in Plan 03. Subscribing to private tables via this list
-// would break all tests once the schema change ships.
+// NOTE: recovery_keys and transfer_codes are private after Plan 03; removed from this list.
+// Private tables (recovery_code_results, transfer_code_results) cannot be subscribed to via
+// SELECT * — SpacetimeDB pushes private table rows automatically to the owning identity.
 const ALL_TABLES = [
   'SELECT * FROM players',
   'SELECT * FROM sessions',
