@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase-complete
-stopped_at: "Completed 01-05-PLAN.md — Phase 1 Security Hardening fully done"
-last_updated: "2026-03-14T00:00:00Z"
-last_activity: "2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); Phase 1 complete"
+status: completed
+stopped_at: Completed 02-01-PLAN.md — Wave 0 test scaffolds for Phase 2
+last_updated: "2026-03-14T17:29:09.953Z"
+last_activity: "2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); all Phase 1 plans done"
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 9
+  completed_plans: 6
   percent: 100
 ---
 
@@ -54,6 +54,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 01-security-hardening P04 | 18min | 2 tasks | 1 file |
 | Phase 01-security-hardening P03 | 20 | 2 tasks | 5 files |
 | Phase 01-security-hardening P05 | ~25min | 3 tasks | 9 files |
+| Phase 02-scoring-integrity-and-gdpr-baseline P01 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Recent decisions affecting current work:
 - [Phase 01-security-hardening]: make_code() reused for problem token generation; 6-char FNV-1a adequate for short-lived session token
 - [Phase 01-security-hardening]: Silent skip on missing token in SprintPage (rare race condition on slow connections) — better UX than error message
 - [Phase 01-security-hardening]: Phase 1 Security Hardening fully complete — SEC-01 through SEC-10 all verified. Known regression: AccountPage recovery code display broken because recovery_code_results/transfer_code_results are private tables; deferred to Phase 3.
+- [Phase 02-scoring-integrity-and-gdpr-baseline]: learningTier tier progression tests use it.todo (pending) not failing assertions to satisfy must_haves 'skipped or pending' criterion and avoid blocking pre-commit hook
+- [Phase 02-scoring-integrity-and-gdpr-baseline]: gdpr.test.ts uses (as any) cast for deletePlayer reducer — not yet in generated bindings, same pattern as security.test.ts
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14
-Stopped at: Completed 01-05-PLAN.md (Task 3 human-verify approved). Phase 1 Security Hardening complete.
+Last session: 2026-03-14T17:29:09.951Z
+Stopped at: Completed 02-01-PLAN.md — Wave 0 test scaffolds for Phase 2
 Resume file: None
