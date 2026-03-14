@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Classroom, ClassroomMember, RecoveryKey, TransferCode } from '../module_bindings/types.js';
+import type { Classroom, ClassroomMember, RecoveryCodeResult, TransferCodeResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 
@@ -25,8 +25,9 @@ interface Props {
 
 export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom }: Props) {
   const { t, i18n } = useTranslation();
-  const [transferCodes] = useTable(tables.transfer_codes);
-  const [recoveryKeys] = useTable(tables.recovery_keys);
+  const [transferCodeResults] = useTable(tables.transfer_code_results);
+  const [recoveryCodeResults] = useTable(tables.recovery_code_results);
+  const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
@@ -42,17 +43,24 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const [nameSaving, setNameSaving] = useState(false);
   const [nameSaved, setNameSaved] = useState(false);
 
-  // Recovery key
-  const myRecoveryKey = (recoveryKeys as unknown as RecoveryKey[]).find(
-    k => k.owner.toHexString() === myIdentityHex
+  // Recovery key — read from private result table populated by getMyRecoveryCode reducer (SEC-03)
+  const myRecoveryKey = (recoveryCodeResults as unknown as RecoveryCodeResult[]).find(
+    r => r.owner.toHexString() === myIdentityHex
   );
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
+
+  // Populate recovery_code_results for this client on mount (SEC-03 write-to-private-table pattern)
+  useEffect(() => {
+    getMyRecoveryCode({});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
     await regenerateRecoveryKey({ token: capturedToken });
+    // Refresh result table so the new code appears immediately
+    await getMyRecoveryCode({});
     setGeneratingKey(false);
   };
 
@@ -95,9 +103,10 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
   const [codeShownAt, setCodeShownAt] = useState<number | null>(null);
   const [transferCopied, setTransferCopied] = useState(false);
 
-  const CODE_TTL = 60 * 60;
+  const CODE_TTL = 10 * 60; // 600 seconds — matches server TTL set in Plan 03 (SEC-03)
 
-  const myCode = (transferCodes as unknown as TransferCode[]).find(
+  // Transfer code — read from private result table populated by createTransferCode reducer (SEC-03)
+  const myCode = (transferCodeResults as unknown as TransferCodeResult[]).find(
     c => c.owner.toHexString() === myIdentityHex
   );
 

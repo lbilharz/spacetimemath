@@ -40,6 +40,7 @@ import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import CreateTransferCodeReducer from "./create_transfer_code_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
+import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
@@ -67,8 +68,10 @@ import ClassroomsRow from "./classrooms_table";
 import OnlinePlayersRow from "./online_players_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
+import RecoveryCodeResultsRow from "./recovery_code_results_table"; // private table (SEC-03) — hand-written
 import RecoveryKeysRow from "./recovery_keys_table";
 import SessionsRow from "./sessions_table";
+import TransferCodeResultsRow from "./transfer_code_results_table"; // private table (SEC-03) — hand-written
 import TransferCodesRow from "./transfer_codes_table";
 import UnlockLogsRow from "./unlock_logs_table";
 
@@ -194,6 +197,17 @@ const tablesSchema = __schema({
       { name: 'problem_stats_problem_key_key', constraint: 'unique', columns: ['problemKey'] },
     ],
   }, ProblemStatsRow),
+  recovery_code_results: __table({
+    name: 'recovery_code_results',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'recovery_code_results_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, RecoveryCodeResultsRow),
   recovery_keys: __table({
     name: 'recovery_keys',
     indexes: [
@@ -216,6 +230,17 @@ const tablesSchema = __schema({
       { name: 'sessions_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, SessionsRow),
+  transfer_code_results: __table({
+    name: 'transfer_code_results',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'transfer_code_results_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, TransferCodeResultsRow),
   transfer_codes: __table({
     name: 'transfer_codes',
     indexes: [
@@ -248,6 +273,7 @@ const reducersSchema = __reducers(
   __reducerSchema("create_transfer_code", CreateTransferCodeReducer),
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
+  __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
