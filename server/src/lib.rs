@@ -128,6 +128,12 @@ pub struct OnlinePlayer {
 pub fn init(ctx: &ReducerContext) {
     seed_problem_stats(ctx);
     seed_tier1_problem_stats(ctx);
+    // Start recurring transfer code cleanup (SEC-09)
+    let first_cleanup = ctx.timestamp.to_micros_since_unix_epoch() + TRANSFER_CODE_CLEANUP_INTERVAL_MICROS;
+    ctx.db.transfer_code_cleanup_schedule().insert(TransferCodeCleanupSchedule {
+        scheduled_id: 0,
+        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(first_cleanup)),
+    });
 }
 
 #[reducer(client_connected)]
@@ -765,6 +771,18 @@ pub struct TransferCodeResult {
     pub code: String,
 }
 
+const TRANSFER_CODE_TTL_MICROS: i64 = 10 * 60 * 1_000_000; // 10 minutes
+const TRANSFER_CODE_CLEANUP_INTERVAL_MICROS: i64 = 5 * 60 * 1_000_000; // check every 5 min
+
+/// Scheduled recurring table — SpacetimeDB fires `expire_transfer_codes` at each scheduled_at (SEC-09).
+#[table(accessor = transfer_code_cleanup_schedule, scheduled(expire_transfer_codes))]
+pub struct TransferCodeCleanupSchedule {
+    #[primary_key]
+    #[auto_inc]
+    pub scheduled_id: u64,
+    pub scheduled_at: ScheduleAt,
+}
+
 /// Update display name (also patches all existing incomplete sessions)
 #[reducer]
 pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), String> {
@@ -846,6 +864,31 @@ pub fn use_transfer_code(ctx: &ReducerContext, code: String) -> Result<(), Strin
     // Delete the result entry for the owner so the UI clears
     ctx.db.transfer_code_results().owner().delete(record.owner);
     ctx.db.transfer_codes().code().delete(code);
+    Ok(())
+}
+
+/// Scheduled reducer: deletes transfer codes older than TRANSFER_CODE_TTL_MICROS (10 min)
+/// and re-schedules itself for the next run (recurring pattern, SEC-09).
+#[reducer]
+pub fn expire_transfer_codes(ctx: &ReducerContext, _arg: TransferCodeCleanupSchedule)
+    -> Result<(), String>
+{
+    let cutoff = ctx.timestamp.to_micros_since_unix_epoch() - TRANSFER_CODE_TTL_MICROS;
+    let expired: Vec<_> = ctx.db.transfer_codes()
+        .iter()
+        .filter(|c| c.created_at.to_micros_since_unix_epoch() < cutoff)
+        .map(|c| (c.code.clone(), c.owner))
+        .collect();
+    for (code, owner) in expired {
+        ctx.db.transfer_codes().code().delete(code);
+        ctx.db.transfer_code_results().owner().delete(owner);
+    }
+    // Re-schedule for next run (recurring pattern)
+    let next_at = ctx.timestamp.to_micros_since_unix_epoch() + TRANSFER_CODE_CLEANUP_INTERVAL_MICROS;
+    ctx.db.transfer_code_cleanup_schedule().insert(TransferCodeCleanupSchedule {
+        scheduled_id: 0,
+        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(next_at)),
+    });
     Ok(())
 }
 
