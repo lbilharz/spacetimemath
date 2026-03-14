@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Classroom, ClassroomMember, RecoveryCodeResult, TransferCodeResult } from '../module_bindings/types.js';
+import type { RecoveryCodeResult, TransferCodeResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 
@@ -14,30 +14,23 @@ type Player = {
   recoveryEmailed?: boolean;
 };
 
-type ClassroomEntry = { id: bigint; name: string; code: string; memberCount: number; isTeacher: boolean };
-
 interface Props {
   myPlayer: Player;
   myIdentityHex: string;
-  onEnterClassroom: (id: bigint) => void;
   onBack: () => void;
 }
 
-export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom }: Props) {
+export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const { t, i18n } = useTranslation();
   const [transferCodeResults] = useTable(tables.transfer_code_results);
   const [recoveryCodeResults] = useTable(tables.recovery_code_results);
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
-  const [classrooms] = useTable(tables.classrooms);
-  const [classroomMembers] = useTable(tables.classroom_members);
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
   const _createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
   const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
-  const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
-
   // Username rename
   const [newName, setNewName] = useState(myPlayer.username);
   const [nameSaving, setNameSaving] = useState(false);
@@ -156,27 +149,6 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
     setTimeout(() => setTransferCopied(false), 2000);
   };
 
-  // Classrooms
-  const myMemberships = (classroomMembers as unknown as ClassroomMember[]).filter(
-    m => m.playerIdentity.toHexString() === myIdentityHex
-  );
-  const myClassroomList = myMemberships
-    .map(m => {
-      const c = (classrooms as unknown as Classroom[]).find(cl => cl.id === m.classroomId);
-      if (!c) return null;
-      const memberCount = (classroomMembers as unknown as ClassroomMember[]).filter(cm => cm.classroomId === c.id).length;
-      const isTeacher = c.teacher?.toHexString() === myIdentityHex;
-      return { id: c.id, name: c.name, code: c.code, memberCount, isTeacher } satisfies ClassroomEntry;
-    })
-    .filter((c): c is ClassroomEntry => c !== null);
-
-  const [leavingId, setLeavingId] = useState<bigint | null>(null);
-  const handleLeaveClassroom = async (cid: bigint) => {
-    setLeavingId(cid);
-    await leaveClassroom({ classroomId: cid });
-    setLeavingId(null);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('spacetimemath_credentials');
     window.location.reload();
@@ -246,49 +218,6 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
           </button>
         </div>
       </div>
-
-      {/* Classrooms */}
-      {myClassroomList.length > 0 && (
-        <div className="card">
-          <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('account.myClassrooms')}</h2>
-          {myClassroomList.map(c => (
-            <div key={String(c.id)} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              flexWrap: 'wrap', gap: 8, paddingBottom: 10, marginBottom: 10,
-              borderBottom: '1px solid var(--border)',
-            }}>
-              <div>
-                <button
-                  onClick={() => onEnterClassroom(c.id)}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: 'var(--accent)', fontSize: 15 }}
-                >
-                  {c.name}
-                </button>
-                <span style={{ fontSize: 13, color: 'var(--muted)', marginLeft: 8 }}>
-                  {c.isTeacher ? t('common.teacher') : t('common.student')} · {t('account.members', { count: c.memberCount })} · {t('common.code')} <code style={{ color: 'var(--text)' }}>{c.code}</code>
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => onEnterClassroom(c.id)}
-                  style={{ fontSize: 12 }}
-                >
-                  {t('account.viewClass')}
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => handleLeaveClassroom(c.id)}
-                  disabled={leavingId === c.id}
-                  style={{ fontSize: 12 }}
-                >
-                  {leavingId === c.id ? '…' : c.isTeacher ? t('account.closeClass') : t('account.leaveClass')}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Account recovery */}
       <div className="card">

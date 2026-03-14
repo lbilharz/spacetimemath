@@ -65,7 +65,12 @@ Plans:
   3. The ClassroomPage renders without layout breakage on a mobile viewport
   4. There is exactly one "view class results" path in ClassroomPage — the redundant variant is gone
   5. Navigating away from and back to the account page (or reconnecting) does not generate a new recovery code
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Wave 1: AccountPage cleanup — remove classroom section (UX-01), move recovery code fetch to App.tsx (UX-05)
+- [ ] 03-02-PLAN.md — Wave 1: ClassroomPage fixes — hide join code from students (UX-02), mobile layout (UX-03), active-sprint-only live feed (UX-04)
+- [ ] 03-03-PLAN.md — Wave 2: Human verification checkpoint for all five UX fixes
 
 ### Phase 4: CSS Design System Migration
 **Goal**: Every static visual style is expressed as a named CSS class; no inline style props remain except for runtime-computed values
@@ -87,5 +92,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in paralle
 |-------|----------------|--------|-----------|
 | 1. Security Hardening | 5/5 | Complete   | 2026-03-14 |
 | 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
-| 3. UX and Client Bug Fixes | 0/? | Not started | - |
+| 3. UX and Client Bug Fixes | 0/3 | Not started | - |
 | 4. CSS Design System Migration | 0/? | Not started | - |
