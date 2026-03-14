@@ -22,3 +22,7 @@ dist/
 
 # OS
 .DS_Store
+
+# GSD planning docs (local only)
+.planning/
+!.planning/codebase/
