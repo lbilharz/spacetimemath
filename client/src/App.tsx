@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSpacetimeDB, useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
-import { tables, reducers } from './module_bindings/index.js';
-import type { ClassSprint, Classroom, ClassroomMember, RecoveryKey } from './module_bindings/types.js';
-import { capturedToken } from './auth.js';
+import { useSpacetimeDB, useTable } from 'spacetimedb/react';
+import { tables } from './module_bindings/index.js';
+import type { ClassSprint, Classroom, ClassroomMember } from './module_bindings/types.js';
+// capturedToken import removed (SEC-01): recovery key auto-gen no longer needed here
 import RegisterPage from './pages/RegisterPage.js';
 import LobbyPage from './pages/LobbyPage.js';
 import ProgressPage from './pages/ProgressPage.js';
@@ -48,8 +48,7 @@ export default function App() {
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [classSprints] = useTable(tables.class_sprints);
-  const [recoveryKeys] = useTable(tables.recovery_keys);
-  const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+  // recovery_keys is now a private table (SEC-01) — AccountPage fetches via getMyRecoveryCode reducer
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
@@ -90,15 +89,8 @@ export default function App() {
 
   useEffect(() => { myPlayerRef.current = effectivePlayer; }, [effectivePlayer]);
 
-  // Silently generate a recovery key for any existing user who doesn't have one yet.
-  // New registrations already do this in RegisterPage; this catches everyone else.
-  useEffect(() => {
-    if (!myPlayer || !capturedToken) return;
-    const hasKey = (recoveryKeys as unknown as RecoveryKey[]).some(
-      k => k.owner.toHexString() === myIdentityHex
-    );
-    if (!hasKey) createRecoveryKey({ token: capturedToken });
-  }, [myPlayer?.identity, recoveryKeys]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Recovery key auto-generation removed (SEC-01): recovery_keys is now private.
+  // AccountPage calls getMyRecoveryCode on mount and shows a "Generate" button if no key exists.
 
   const inClassroom = classroomId !== null && myIdentityHex
     ? (classroomMembers as unknown as ClassroomMember[]).some(

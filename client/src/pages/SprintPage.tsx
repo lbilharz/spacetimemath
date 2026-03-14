@@ -197,6 +197,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const problemStartRef = useRef(Date.now());
   const sessionIdRef = useRef<bigint | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // SEC-10: queue an answer if the token hasn't arrived yet, retry when it does
+  const pendingAnswerRef = useRef<{ sessionId: bigint; a: number; b: number; userAnswer: number; responseMs: number } | null>(null);
 
   // 0. Sync timeLeft with SPRINT_DURATION (solo) or server startedAt (class sprint)
   useEffect(() => {
@@ -337,7 +339,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       r => r.owner.toHexString() === myIdentityHex
     );
     if (!tokenRow) {
-      // Token not yet available — rare race condition; skip submission
+      // Token not yet available — queue and retry when it arrives (useEffect below)
+      pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs };
       return;
     }
 
@@ -379,6 +382,18 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       if (!('ontouchstart' in window)) inputRef.current?.focus();
     }, !fb.isCorrect ? 1000 : 600);
   };
+
+  // SEC-10: Retry any queued answer once the token arrives
+  useEffect(() => {
+    const pending = pendingAnswerRef.current;
+    if (!pending) return;
+    const tokenRow = (issuedProblemResults as unknown as IssuedProblemResult[]).find(
+      r => r.owner.toHexString() === myIdentityHex
+    );
+    if (!tokenRow) return;
+    pendingAnswerRef.current = null;
+    submitAnswer({ ...pending, problemToken: tokenRow.token });
+  }, [issuedProblemResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

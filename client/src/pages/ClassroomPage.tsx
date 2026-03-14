@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, RecoveryKey, Session } from '../module_bindings/types.js';
+import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -23,7 +23,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [answers]           = useTable(tables.answers);
   const [players]           = useTable(tables.players);
   const [problemStats]      = useTable(tables.problem_stats);
-  const [recoveryKeys]      = useTable(tables.recovery_keys);
+  // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
   const leaveClassroom   = useSTDBReducer(reducers.leaveClassroom);
   const startSession     = useSTDBReducer(reducers.startSession);
@@ -170,13 +170,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     }
   }
 
-  // Recovery key lookup (teacher only) — recovery_keys is a public table
+  // Recovery key lookup removed (SEC-01): recovery_keys is now private
   const recoveryKeyByIdentity = new Map<string, string>();
-  if (isTeacher) {
-    for (const k of recoveryKeys as unknown as RecoveryKey[]) {
-      recoveryKeyByIdentity.set(k.owner.toHexString(), k.code);
-    }
-  }
 
   // All member rows (for the Members card — shows everyone)
   const memberRows = members.map(m => {

@@ -1,12 +1,12 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
-import { tables, reducers } from '../module_bindings/index.js';
-import type { TransferCode, RecoveryKey } from '../module_bindings/types.js';
+import { useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { reducers } from '../module_bindings/index.js';
+// transfer_codes and recovery_keys are now private tables (SEC-01/SEC-02).
+// Account restore via code entry is temporarily broken — requires a server-side restore reducer.
 import { capturedToken } from '../auth.js';
 import SplashGrid from '../components/SplashGrid.js';
 
-const CREDS_KEY = 'spacetimemath_credentials';
 
 interface Props {
   onRegistered: () => void;
@@ -24,11 +24,9 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [code, setCode] = useState('');
   const [restoreError, setRestoreError] = useState('');
   const [restoring, setRestoring] = useState(false);
-  const [transferCodes] = useTable(tables.transfer_codes);
-  const [recoveryKeys] = useTable(tables.recovery_keys);
-  const applyTransferCode = useSTDBReducer(reducers.useTransferCode);
-
-  // Auto-restore from ?restore=CODE URL param (teacher-generated QR card scan)
+  // TODO (post-SEC): restore via code is temporarily disabled — transfer_codes and recovery_keys
+  // are now private (SEC-01/02). A server-side restore reducer is needed to return the token.
+  // For now: auto-restore from URL still populates the code field but cannot complete automatically.
   const [autoRestoreCode, setAutoRestoreCode] = useState<string | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -36,33 +34,12 @@ export default function RegisterPage({ onRegistered }: Props) {
     if (restore && restore.trim().length >= 6) {
       const upper = restore.trim().toUpperCase();
       window.history.replaceState({}, '', '/'); // clean URL immediately
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCode(upper);
       setShowRestore(true);
       setAutoRestoreCode(upper);
     }
   }, []);
-
-  // Once recovery_keys subscription delivers data, auto-restore (no button tap needed)
-  useEffect(() => {
-    if (!autoRestoreCode || restoring) return;
-
-    const transfer = (transferCodes as TransferCode[]).find(c => c.code === autoRestoreCode);
-    if (transfer) {
-      setAutoRestoreCode(null);
-      setRestoring(true);
-      localStorage.setItem(CREDS_KEY, JSON.stringify({ token: transfer.token }));
-      applyTransferCode({ code: autoRestoreCode }).finally(() => window.location.reload());
-      return;
-    }
-
-    const recovery = (recoveryKeys as RecoveryKey[]).find(k => k.code === autoRestoreCode);
-    if (recovery) {
-      setAutoRestoreCode(null);
-      setRestoring(true);
-      localStorage.setItem(CREDS_KEY, JSON.stringify({ token: recovery.token }));
-      window.location.reload();
-    }
-  }, [autoRestoreCode, recoveryKeys, transferCodes]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -88,25 +65,9 @@ export default function RegisterPage({ onRegistered }: Props) {
 
   const handleRestore = async (e: FormEvent) => {
     e.preventDefault();
-    const upper = code.trim().toUpperCase();
-    setRestoring(true);
-    setRestoreError('');
-
-    const transfer = (transferCodes as TransferCode[]).find(c => c.code === upper);
-    if (transfer) {
-      localStorage.setItem(CREDS_KEY, JSON.stringify({ token: transfer.token }));
-      await applyTransferCode({ code: upper });
-      window.location.reload();
-      return;
-    }
-
-    const recovery = (recoveryKeys as RecoveryKey[]).find(k => k.code === upper);
-    if (recovery) {
-      localStorage.setItem(CREDS_KEY, JSON.stringify({ token: recovery.token }));
-      window.location.reload();
-      return;
-    }
-
+    // TODO (post-SEC): restore via code lookup is temporarily disabled (SEC-01/02).
+    // transfer_codes and recovery_keys are now private tables. A server-side
+    // restore reducer is needed before this feature works again.
     setRestoreError(t('register.restoreError'));
     setRestoring(false);
   };
