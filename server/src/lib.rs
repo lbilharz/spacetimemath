@@ -846,9 +846,9 @@ pub struct TransferCode {
     pub created_at: Timestamp,
 }
 
-/// Private result table — each caller can only see their own row (SEC-03).
+/// Public result table — rows are short-lived and owner-keyed (SEC-03).
 /// Populated by create_transfer_code; deleted by use_transfer_code.
-#[table(accessor = transfer_code_results)]
+#[table(accessor = transfer_code_results, public)]
 pub struct TransferCodeResult {
     #[primary_key]
     pub owner: Identity,
@@ -990,9 +990,9 @@ pub struct RecoveryKey {
     pub token: String,
 }
 
-/// Private result table — each caller can only see their own row (SEC-03).
+/// Public result table — rows are short-lived and owner-keyed (SEC-03).
 /// Populated by get_my_recovery_code and regenerate_recovery_key.
-#[table(accessor = recovery_code_results)]
+#[table(accessor = recovery_code_results, public)]
 pub struct RecoveryCodeResult {
     #[primary_key]
     pub owner: Identity,
