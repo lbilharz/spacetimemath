@@ -65,6 +65,30 @@ pub struct Answer {
     pub answered_at: Timestamp,
 }
 
+/// SEC-10: Server-issued problem token table.
+/// Each row is created by issue_problem and consumed by submit_answer (one-time use).
+#[table(accessor = issued_problems)]
+pub struct IssuedProblem {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub session_id: u64,
+    pub a: u8,
+    pub b: u8,
+    pub token: String,
+}
+
+/// SEC-10: Result table surfaced to the client so it can read the issued token.
+/// Made public because SpacetimeDB 2.0.3 private tables cannot be subscribed to
+/// via SELECT * or receive row pushes via ReducerResult.
+/// The token is short-lived (consumed on submit_answer) and not a long-term secret.
+#[table(accessor = issued_problem_results, public)]
+pub struct IssuedProblemResult {
+    #[primary_key]
+    pub owner: Identity,
+    pub token: String,
+}
+
 /// Per ordered-pair community stats + Derived Score
 /// problem_key = a * 100 + b  (tracks 4x6 and 6x4 separately)
 #[table(accessor = problem_stats, public)]
@@ -473,6 +497,55 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
     Err("Could not start session".to_string())
 }
 
+/// SEC-10: Server deals a problem — creates an IssuedProblem row and writes
+/// the token to IssuedProblemResult so the client can read it and pass it back
+/// in submit_answer.
+#[reducer]
+pub fn issue_problem(
+    ctx: &ReducerContext,
+    session_id: u64,
+    a: u8,
+    b: u8,
+) -> Result<(), String> {
+    let session = ctx.db.sessions().id().find(session_id)
+        .ok_or("Session not found")?;
+    if session.player_identity != ctx.sender() {
+        return Err("Not your session".into());
+    }
+    if session.is_complete {
+        return Err("Session already complete".into());
+    }
+    let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
+    let player = get_player(ctx)?;
+    if pair_tier > player.learning_tier {
+        return Err("Problem pair above player's current tier".into());
+    }
+    let token = make_code(ctx);
+    ctx.db.issued_problems().insert(IssuedProblem {
+        id: 0,
+        session_id,
+        a,
+        b,
+        token: token.clone(),
+    });
+    // Write token to result table for client to read
+    match ctx.db.issued_problem_results().owner().find(ctx.sender()) {
+        Some(_) => {
+            ctx.db.issued_problem_results().owner().update(IssuedProblemResult {
+                owner: ctx.sender(),
+                token,
+            });
+        }
+        None => {
+            ctx.db.issued_problem_results().insert(IssuedProblemResult {
+                owner: ctx.sender(),
+                token,
+            });
+        }
+    }
+    Ok(())
+}
+
 #[reducer]
 pub fn submit_answer(
     ctx: &ReducerContext,
@@ -481,6 +554,7 @@ pub fn submit_answer(
     b: u8,
     user_answer: u32,
     response_ms: u32,
+    problem_token: String,
 ) -> Result<(), String> {
     let sender = ctx.sender();
     let player = get_player(ctx)?;
@@ -513,6 +587,16 @@ pub fn submit_answer(
     if pair_tier > player.learning_tier {
         return Err("Problem pair above player's current tier".into());
     }
+
+    // SEC-10: verify server-issued problem token
+    let issued = ctx.db.issued_problems()
+        .iter()
+        .find(|ip| ip.session_id == session_id && ip.a == a && ip.b == b && ip.token == problem_token)
+        .ok_or_else(|| "Problem not issued or token invalid".to_string())?;
+    let issued_id = issued.id;
+    ctx.db.issued_problems().id().delete(issued_id); // one-time use
+    // Clean up result table entry
+    ctx.db.issued_problem_results().owner().delete(ctx.sender());
 
     let correct_answer = (a as u32) * (b as u32);
     let is_correct = user_answer == correct_answer;
