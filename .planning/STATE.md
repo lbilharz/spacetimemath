@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-01-PLAN.md — AccountPage cleanup (UX-01, UX-05)
-last_updated: "2026-03-14T22:15:09.380Z"
-last_activity: "2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); all Phase 1 plans done"
+stopped_at: Completed 03-03-PLAN.md — Phase 3 UX verification (all five UX fixes human-confirmed)
+last_updated: "2026-03-14T22:25:57Z"
+last_activity: "2026-03-14 — Completed 03-03 (human verification of all five Phase 3 UX fixes); Phase 3 done"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 100
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 1 of 4 (Security Hardening)
-Plan: 5 of 5 in current phase (01-05 complete)
-Status: Phase 1 complete
-Last activity: 2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); all Phase 1 plans done
+Phase: 3 of 4 (UX and Client Bug Fixes)
+Plan: 3 of 3 in current phase (03-03 complete)
+Status: Phase 3 complete
+Last activity: 2026-03-14 — Completed 03-03 (human verification of all five Phase 3 UX fixes); Phase 3 done
 
-Progress: [██████████] 100% (Phase 1)
+Progress: [████████░░] 75% (3 of 4 phases complete)
 
 ## Performance Metrics
 
@@ -59,6 +59,8 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 02-scoring-integrity-and-gdpr-baseline P03 | 2min | 2 tasks | 3 files |
 | Phase 02-scoring-integrity-and-gdpr-baseline P04 | 4 | 2 tasks | 7 files |
 | Phase 03-ux-and-client-bug-fixes P01 | 3min | 2 tasks | 2 files |
+| Phase 03-ux-and-client-bug-fixes P02 | 1min | 1 tasks | 1 files |
+| Phase 03-ux-and-client-bug-fixes P03 | 5min | 2 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -92,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: issued_problems deletion ordered before sessions — session_ids collected first to avoid orphaned rows
 - [Phase 03-ux-and-client-bug-fixes]: Recovery code hydration moved to App.tsx single-fire pattern using hasFetchedRecoveryCodeRef; AccountPage reads recovery_code_results via useTable only
 - [Phase 03-ux-and-client-bug-fixes]: onEnterClassroom prop removed from AccountPage; classrooms tab (ClassroomsPage) is canonical classroom entry point
+- [Phase 03-ux-and-client-bug-fixes]: Join code card gated on isTeacher (not a separate prop) — role derived from classroom.teacher identity match; activeSprint used for live feed guard so feed disappears cleanly when sprint ends
+- [Phase 03-ux-and-client-bug-fixes]: All five UX requirements (UX-01 through UX-05) confirmed correct by human smoke test — Phase 3 complete
 
 ### Pending Todos
 
@@ -104,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T22:15:09.378Z
-Stopped at: Completed 03-01-PLAN.md — AccountPage cleanup (UX-01, UX-05)
+Last session: 2026-03-14T22:25:57Z
+Stopped at: Completed 03-03-PLAN.md — Phase 3 UX verification (all five UX fixes human-confirmed)
 Resume file: None

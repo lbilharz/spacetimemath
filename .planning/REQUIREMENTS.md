@@ -48,9 +48,9 @@ Requirements for the safe-for-public-launch milestone. All map to roadmap phases
 ### UX & Bug Fixes
 
 - [x] **UX-01**: Account page no longer shows classroom list
-- [ ] **UX-02**: ClassroomPage hides the join/login code from student role (visible to teacher only)
-- [ ] **UX-03**: ClassroomPage renders correctly on mobile (no layout breakage)
-- [ ] **UX-04**: Redundant "view class results" variant removed from ClassroomPage
+- [x] **UX-02**: ClassroomPage hides the join/login code from student role (visible to teacher only)
+- [x] **UX-03**: ClassroomPage renders correctly on mobile (no layout breakage)
+- [x] **UX-04**: Redundant "view class results" variant removed from ClassroomPage
 - [x] **UX-05**: Recovery code is not regenerated on routine navigation or reconnection
 
 ## v2 Requirements
@@ -111,9 +111,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CSS-03 | Phase 4 | Pending |
 | CSS-04 | Phase 4 | Pending |
 | UX-01 | Phase 3 | Complete |
-| UX-02 | Phase 3 | Pending |
-| UX-03 | Phase 3 | Pending |
-| UX-04 | Phase 3 | Pending |
+| UX-02 | Phase 3 | Complete |
+| UX-03 | Phase 3 | Complete |
+| UX-04 | Phase 3 | Complete |
 | UX-05 | Phase 3 | Complete |
 
 **Coverage:**
