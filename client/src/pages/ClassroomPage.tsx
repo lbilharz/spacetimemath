@@ -345,7 +345,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                     className="btn btn-primary btn-lg"
                     onClick={handleStartClassSprint}
                     disabled={startingClassSprint}
-                    style={{ minWidth: 160 }}
                   >
                     {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
                   </button>
@@ -361,7 +360,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                   className="btn btn-primary btn-lg"
                   onClick={handleEndClassSprint}
                   disabled={endingClassSprint}
-                  style={{ minWidth: 160, background: 'var(--wrong)', borderColor: 'var(--wrong)' }}
+                  style={{ background: 'var(--wrong)', borderColor: 'var(--wrong)' }}
                 >
                   {t('classSprint.end')}
                 </button>
@@ -370,7 +369,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
                 <button
                   className="btn btn-secondary"
                   onClick={() => onStartClassSprint(endedSprint.id)}
-                  style={{ minWidth: 160, fontSize: 13 }}
+                  style={{ fontSize: 13 }}
                 >
                   {t('classSprint.viewResults')}
                 </button>
@@ -390,8 +389,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         </div>
       </div>
 
-      {/* Live feed — shown during AND after a class sprint (teacher only) */}
-      {isTeacher && latestSprint && (
+      {/* Live feed — shown only during an active class sprint (teacher only) */}
+      {isTeacher && activeSprint && (
         <div className="card" style={{ borderColor: 'rgba(255,60,60,0.4)' }}>
 
           {/* Timer bar — only while sprint is active */}
@@ -489,41 +488,43 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         </div>
       )}
 
-      {/* Join code + QR */}
-      <div className="card">
-        <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.joinCode')}</h2>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
-          <div>
-            <button
-              onClick={handleCopyCodeText}
-              title={t('classroom.copyCodeHint')}
-              style={{
-                fontFamily: 'monospace', fontSize: 36, fontWeight: 800,
-                letterSpacing: 10, color: 'var(--accent)', marginBottom: 4,
-                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                display: 'block', WebkitTapHighlightColor: 'transparent',
-              }}
-            >
-              {myClassroom.code}
-            </button>
-            <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 10px' }}>
-              {codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}
-            </p>
-            <button className="btn btn-secondary" onClick={handleCopyLink} style={{ fontSize: 13 }}>
-              {codeCopied ? t('common.copied') : t('classroom.copyLink')}
-            </button>
-            <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8, maxWidth: 220 }}>
-              {t('classroom.joinHint')}
-            </p>
-          </div>
-          <div style={{ background: '#fff', padding: 8, borderRadius: 8, lineHeight: 0 }}>
-            <QRCodeSVG
-              value={`${window.location.origin}/?join=${myClassroom.code}`}
-              size={120}
-            />
+      {/* Join code + QR — teacher only (UX-02) */}
+      {isTeacher && (
+        <div className="card">
+          <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classroom.joinCode')}</h2>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
+            <div>
+              <button
+                onClick={handleCopyCodeText}
+                title={t('classroom.copyCodeHint')}
+                style={{
+                  fontFamily: 'monospace', fontSize: 36, fontWeight: 800,
+                  letterSpacing: 10, color: 'var(--accent)', marginBottom: 4,
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  display: 'block', WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                {myClassroom.code}
+              </button>
+              <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 10px' }}>
+                {codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}
+              </p>
+              <button className="btn btn-secondary" onClick={handleCopyLink} style={{ fontSize: 13 }}>
+                {codeCopied ? t('common.copied') : t('classroom.copyLink')}
+              </button>
+              <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8, maxWidth: 220 }}>
+                {t('classroom.joinHint')}
+              </p>
+            </div>
+            <div style={{ background: '#fff', padding: 8, borderRadius: 8, lineHeight: 0 }}>
+              <QRCodeSVG
+                value={`${window.location.origin}/?join=${myClassroom.code}`}
+                size={120}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Members + Leaderboard */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
