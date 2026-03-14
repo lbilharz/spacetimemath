@@ -52,7 +52,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
 
   // Populate recovery_code_results for this client on mount (SEC-03 write-to-private-table pattern)
   useEffect(() => {
-    getMyRecoveryCode({});
+    getMyRecoveryCode();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGenerateRecoveryKey = async () => {
@@ -60,7 +60,7 @@ export default function AccountPage({ myPlayer, myIdentityHex, onEnterClassroom 
     setGeneratingKey(true);
     await regenerateRecoveryKey({ token: capturedToken });
     // Refresh result table so the new code appears immediately
-    await getMyRecoveryCode({});
+    await getMyRecoveryCode();
     setGeneratingKey(false);
   };
 
