@@ -47,7 +47,13 @@ Plans:
   2. Class sprint completion triggers tier unlock evaluation — a student can unlock a new tier from a class sprint session
   3. The tier progression (×1/×2/×10 → ×3 → ×5 → ×4 → ×6 → ×7 → ×8 → ×9) is reflected in problem selection and unlock gates
   4. Calling the delete_player reducer removes all data linked to the calling identity (player, sessions, answers, scores, online presence, keys, classroom memberships)
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Wave 1: Test scaffolds for SCORE-01, SCORE-02, SCORE-03, GDPR-01 (scoring.test.ts, gdpr.test.ts, learningTier.test.ts)
+- [ ] 02-02-PLAN.md — Wave 2: Class sprint score credit — credit_session_to_player helper + finalize_class_sprint_sessions fix (SCORE-01, SCORE-02)
+- [ ] 02-03-PLAN.md — Wave 2: Tier structure redesign — 8-tier factor_tier + migrate_recompute_tiers_v2 + learningTier.ts update (SCORE-03)
+- [ ] 02-04-PLAN.md — Wave 2: delete_player cascade reducer (GDPR-01)
 
 ### Phase 3: UX and Client Bug Fixes
 **Goal**: The classroom page works correctly on mobile and shows teachers the join code but not students; the account page is uncluttered; recovery codes remain stable across sessions
@@ -80,6 +86,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in paralle
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Hardening | 5/5 | Complete   | 2026-03-14 |
-| 2. Scoring Integrity and GDPR Baseline | 0/? | Not started | - |
+| 2. Scoring Integrity and GDPR Baseline | 0/4 | Not started | - |
 | 3. UX and Client Bug Fixes | 0/? | Not started | - |
 | 4. CSS Design System Migration | 0/? | Not started | - |
