@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-04-PLAN.md — delete_player GDPR cascade (GDPR-01)
-last_updated: "2026-03-14T17:52:26.243Z"
+stopped_at: Completed 03-01-PLAN.md — AccountPage cleanup (UX-01, UX-05)
+last_updated: "2026-03-14T22:15:09.380Z"
 last_activity: "2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); all Phase 1 plans done"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 12
+  completed_plans: 10
   percent: 100
 ---
 
@@ -58,6 +58,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 02-scoring-integrity-and-gdpr-baseline P02 | 6min | 2 tasks | 2 files |
 | Phase 02-scoring-integrity-and-gdpr-baseline P03 | 2min | 2 tasks | 3 files |
 | Phase 02-scoring-integrity-and-gdpr-baseline P04 | 4 | 2 tasks | 7 files |
+| Phase 03-ux-and-client-bug-fixes P01 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,8 @@ Recent decisions affecting current work:
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: ×5 moved from tier 0 to tier 2 (8-tier model); migrate_recompute_tiers_v2 uses reset+check_and_unlock for consistency with live game logic
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: delete_player has no player-row gate: cleans all tables regardless of whether player row exists — handles orphaned data from partial registrations
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: issued_problems deletion ordered before sessions — session_ids collected first to avoid orphaned rows
+- [Phase 03-ux-and-client-bug-fixes]: Recovery code hydration moved to App.tsx single-fire pattern using hasFetchedRecoveryCodeRef; AccountPage reads recovery_code_results via useTable only
+- [Phase 03-ux-and-client-bug-fixes]: onEnterClassroom prop removed from AccountPage; classrooms tab (ClassroomsPage) is canonical classroom entry point
 
 ### Pending Todos
 
@@ -101,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:48:49.858Z
-Stopped at: Completed 02-04-PLAN.md — delete_player GDPR cascade (GDPR-01)
+Last session: 2026-03-14T22:15:09.378Z
+Stopped at: Completed 03-01-PLAN.md — AccountPage cleanup (UX-01, UX-05)
 Resume file: None
