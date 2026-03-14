@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-security-hardening/01-03-PLAN.md
-last_updated: "2026-03-14T12:31:48.799Z"
+stopped_at: "Checkpoint: Task 3 human-verify in 01-05-PLAN.md"
+last_updated: "2026-03-14T12:38:48.470Z"
 last_activity: "2026-03-14 — Completed 01-04 (submit_answer hardening: SEC-04, SEC-05, SEC-06)"
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 80
 ---
 
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 01-security-hardening]: Integration tests use spacetimemath-test DB on maincloud — publish-test required after server changes, separate from make publish
 - [Phase 01-security-hardening]: SpacetimeDB 2.0.3 private tables cannot be subscribed to via SELECT * nor receive row pushes via ReducerResult — SEC-03 test skipped with documented limitation
 - [Phase 01-security-hardening]: expire_transfer_codes uses self-re-scheduling pattern (inserts new TransferCodeCleanupSchedule at end of each run) for recurring 5-min TTL cycle
+- [Phase 01-security-hardening]: IssuedProblemResult is public (not private) — SpacetimeDB 2.0.3 cannot push private table rows; token is short-lived so public exposure is acceptable
+- [Phase 01-security-hardening]: make_code() reused for problem token generation; 6-char FNV-1a adequate for short-lived session token
+- [Phase 01-security-hardening]: Silent skip on missing token in SprintPage (rare race condition on slow connections) — better UX than error message
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T12:31:48.797Z
-Stopped at: Completed 01-security-hardening/01-03-PLAN.md
+Last session: 2026-03-14T12:38:42.192Z
+Stopped at: Checkpoint: Task 3 human-verify in 01-05-PLAN.md
 Resume file: None

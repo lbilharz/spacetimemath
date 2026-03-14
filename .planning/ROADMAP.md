@@ -12,7 +12,7 @@ This milestone hardens the app for safe public school rollout. A working app use
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Security Hardening** - Close live auth-token exposure and score-manipulation vectors server-side
+- [x] **Phase 1: Security Hardening** - Close live auth-token exposure and score-manipulation vectors server-side (completed 2026-03-14)
 - [ ] **Phase 2: Scoring Integrity and GDPR Baseline** - Fix leaderboard bugs, redesign tier structure, and add right-to-erasure reducer
 - [ ] **Phase 3: UX and Client Bug Fixes** - Fix classroom page issues, recovery code instability, and account page clutter
 - [ ] **Phase 4: CSS Design System Migration** - Replace all inline styles with design system classes for maintainability
@@ -79,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in paralle
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Security Hardening | 4/5 | In Progress|  |
+| 1. Security Hardening | 5/5 | Complete   | 2026-03-14 |
 | 2. Scoring Integrity and GDPR Baseline | 0/? | Not started | - |
 | 3. UX and Client Bug Fixes | 0/? | Not started | - |
 | 4. CSS Design System Migration | 0/? | Not started | - |
