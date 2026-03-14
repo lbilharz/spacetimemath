@@ -100,4 +100,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in paralle
 | 1. Security Hardening | 5/5 | Complete   | 2026-03-14 |
 | 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
 | 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
-| 4. CSS Design System Migration | 1/5 | In Progress|  |
+| 4. CSS Design System Migration | 2/5 | In Progress|  |
