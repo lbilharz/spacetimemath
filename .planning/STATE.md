@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: "Checkpoint: Task 3 human-verify in 01-05-PLAN.md"
-last_updated: "2026-03-14T12:38:48.470Z"
-last_activity: "2026-03-14 — Completed 01-04 (submit_answer hardening: SEC-04, SEC-05, SEC-06)"
+status: phase-complete
+stopped_at: "Completed 01-05-PLAN.md — Phase 1 Security Hardening fully done"
+last_updated: "2026-03-14T00:00:00Z"
+last_activity: "2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); Phase 1 complete"
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 5
   completed_plans: 5
-  percent: 80
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 1 of 4 (Security Hardening)
-Plan: 4 of 5 in current phase (01-04 complete)
-Status: In progress
-Last activity: 2026-03-14 — Completed 01-04 (submit_answer hardening: SEC-04, SEC-05, SEC-06)
+Plan: 5 of 5 in current phase (01-05 complete)
+Status: Phase 1 complete
+Last activity: 2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); all Phase 1 plans done
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100% (Phase 1)
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [████████░░] 80%
 | Phase 01-security-hardening P02 | 20min | 2 tasks | 5 files |
 | Phase 01-security-hardening P04 | 18min | 2 tasks | 1 file |
 | Phase 01-security-hardening P03 | 20 | 2 tasks | 5 files |
+| Phase 01-security-hardening P05 | ~25min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,7 @@ Recent decisions affecting current work:
 - [Phase 01-security-hardening]: IssuedProblemResult is public (not private) — SpacetimeDB 2.0.3 cannot push private table rows; token is short-lived so public exposure is acceptable
 - [Phase 01-security-hardening]: make_code() reused for problem token generation; 6-char FNV-1a adequate for short-lived session token
 - [Phase 01-security-hardening]: Silent skip on missing token in SprintPage (rare race condition on slow connections) — better UX than error message
+- [Phase 01-security-hardening]: Phase 1 Security Hardening fully complete — SEC-01 through SEC-10 all verified. Known regression: AccountPage recovery code display broken because recovery_code_results/transfer_code_results are private tables; deferred to Phase 3.
 
 ### Pending Todos
 
@@ -88,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T12:38:42.192Z
-Stopped at: Checkpoint: Task 3 human-verify in 01-05-PLAN.md
+Last session: 2026-03-14
+Stopped at: Completed 01-05-PLAN.md (Task 3 human-verify approved). Phase 1 Security Hardening complete.
 Resume file: None

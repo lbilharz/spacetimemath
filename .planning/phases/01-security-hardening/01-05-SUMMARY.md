@@ -51,7 +51,7 @@ patterns-established:
 requirements-completed: [SEC-10]
 
 # Metrics
-duration: 4min
+duration: ~25min
 completed: 2026-03-14
 ---
 
@@ -61,10 +61,10 @@ completed: 2026-03-14
 
 ## Performance
 
-- **Duration:** ~4 min (automated tasks 1-2); awaiting human verification checkpoint
+- **Duration:** ~25 min (Tasks 1-2 automated, Task 3 human verified)
 - **Started:** 2026-03-14T12:33:10Z
-- **Completed (auto tasks):** 2026-03-14T12:37:29Z
-- **Tasks:** 2 of 3 completed (Task 3 is human verification checkpoint)
+- **Completed:** 2026-03-14
+- **Tasks:** 3 of 3 completed
 - **Files modified:** 7 files
 
 ## Accomplishments
@@ -85,7 +85,7 @@ Each task was committed atomically:
 
 1. **Task 1: Add IssuedProblem tables, issue_problem reducer, update submit_answer** - `86403bc` (feat)
 2. **Task 2: Regenerate bindings and update SprintPage.tsx to use issue_problem flow** - `b5634eb` (feat)
-3. **Task 3: Human end-to-end verification** — checkpoint, awaiting human approval
+3. **Task 3: Human end-to-end verification** — APPROVED (5/5 correct answers, 100% accuracy, score 6.4; issueProblem → submitAnswer token flow confirmed end-to-end)
 
 ## Files Created/Modified
 
@@ -135,12 +135,15 @@ Each task was committed atomically:
 3. Run `make generate` (already done in this plan)
 4. Rebuild client: `cd client && npm run build`
 
+## Known Regression: AccountPage Recovery Code Display
+
+The `recovery_code_results` and `transfer_code_results` tables on the server are private (not `public`). This means the AccountPage's recovery code display is currently broken — the subscription cannot receive rows from private tables. This is a known regression deferred to Phase 3 (UX and Client Bug Fixes). Not introduced in this plan; inherited from Plan 02/03 private table decisions.
+
 ## Next Phase Readiness
 
-- SEC-10 automated implementation complete; awaiting human end-to-end verification
-- After checkpoint approval: Phase 1 (Security Hardening) is complete — all SEC-01 through SEC-10 requirements closed
-- Phase 2 (GDPR Compliance) can begin after Phase 1 checkpoint passes
+- Phase 1 (Security Hardening) is COMPLETE — all SEC-01 through SEC-10 requirements closed and verified
+- Phase 2 (Scoring Integrity and GDPR Baseline) can begin
 
 ---
 *Phase: 01-security-hardening*
-*Completed: 2026-03-14 (partial — Task 3 checkpoint pending)*
+*Completed: 2026-03-14*
