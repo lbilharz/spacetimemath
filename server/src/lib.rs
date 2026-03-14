@@ -708,6 +708,15 @@ pub struct TransferCode {
     pub created_at: Timestamp,
 }
 
+/// Private result table — each caller can only see their own row (SEC-03).
+/// Populated by create_transfer_code; deleted by use_transfer_code.
+#[table(accessor = transfer_code_results)]
+pub struct TransferCodeResult {
+    #[primary_key]
+    pub owner: Identity,
+    pub code: String,
+}
+
 /// Update display name (also patches all existing incomplete sessions)
 #[reducer]
 pub fn set_username(ctx: &ReducerContext, new_username: String) -> Result<(), String> {
@@ -759,17 +768,37 @@ pub fn create_transfer_code(ctx: &ReducerContext, token: String) -> Result<(), S
 
     let code = make_code(ctx);
     ctx.db.transfer_codes().insert(TransferCode {
-        code,
+        code: code.clone(),
         owner: ctx.sender(),
         token,
         created_at: ctx.timestamp,
     });
+
+    // Write to private result table so the client can read back its own code (SEC-03).
+    match ctx.db.transfer_code_results().owner().find(ctx.sender()) {
+        Some(_) => {
+            ctx.db.transfer_code_results().owner().update(TransferCodeResult {
+                owner: ctx.sender(),
+                code: code.clone(),
+            });
+        }
+        None => {
+            ctx.db.transfer_code_results().insert(TransferCodeResult {
+                owner: ctx.sender(),
+                code,
+            });
+        }
+    }
     Ok(())
 }
 
 /// Called by the new device after it has read and stored the token — deletes the row.
 #[reducer]
 pub fn use_transfer_code(ctx: &ReducerContext, code: String) -> Result<(), String> {
+    // Save the owner before deleting so we can clean up the result table.
+    if let Some(tc) = ctx.db.transfer_codes().code().find(code.clone()) {
+        ctx.db.transfer_code_results().owner().delete(tc.owner);
+    }
     ctx.db.transfer_codes().code().delete(code);
     Ok(())
 }
@@ -786,6 +815,15 @@ pub struct RecoveryKey {
     pub code: String,
     pub owner: Identity,
     pub token: String,
+}
+
+/// Private result table — each caller can only see their own row (SEC-03).
+/// Populated by get_my_recovery_code and regenerate_recovery_key.
+#[table(accessor = recovery_code_results)]
+pub struct RecoveryCodeResult {
+    #[primary_key]
+    pub owner: Identity,
+    pub code: String,
 }
 
 /// Ensure the caller has a permanent recovery key — no-op if one already exists.
@@ -807,6 +845,32 @@ pub fn create_recovery_key(ctx: &ReducerContext, token: String) -> Result<(), St
     Ok(())
 }
 
+/// Fetch the caller's own recovery code into the private RecoveryCodeResult table (SEC-03).
+/// Client subscribes to recovery_code_results to read the value.
+#[reducer]
+pub fn get_my_recovery_code(ctx: &ReducerContext) -> Result<(), String> {
+    let _player = get_player(ctx)?;
+    let record = ctx.db.recovery_keys()
+        .iter()
+        .find(|k| k.owner == ctx.sender())
+        .ok_or("No recovery key found")?;
+    match ctx.db.recovery_code_results().owner().find(ctx.sender()) {
+        Some(_) => {
+            ctx.db.recovery_code_results().owner().update(RecoveryCodeResult {
+                owner: ctx.sender(),
+                code: record.code.clone(),
+            });
+        }
+        None => {
+            ctx.db.recovery_code_results().insert(RecoveryCodeResult {
+                owner: ctx.sender(),
+                code: record.code.clone(),
+            });
+        }
+    }
+    Ok(())
+}
+
 /// Explicitly replace the caller's recovery key with a new one.
 /// Only called when the user clicks "Regenerate" in the Account page.
 #[reducer]
@@ -820,10 +884,26 @@ pub fn regenerate_recovery_key(ctx: &ReducerContext, token: String) -> Result<()
 
     let code = make_recovery_code(ctx);
     ctx.db.recovery_keys().insert(RecoveryKey {
-        code,
+        code: code.clone(),
         owner: ctx.sender(),
         token,
     });
+
+    // Keep recovery_code_results in sync so client sees the new code immediately (SEC-03).
+    match ctx.db.recovery_code_results().owner().find(ctx.sender()) {
+        Some(_) => {
+            ctx.db.recovery_code_results().owner().update(RecoveryCodeResult {
+                owner: ctx.sender(),
+                code,
+            });
+        }
+        None => {
+            ctx.db.recovery_code_results().insert(RecoveryCodeResult {
+                owner: ctx.sender(),
+                code,
+            });
+        }
+    }
     Ok(())
 }
 
