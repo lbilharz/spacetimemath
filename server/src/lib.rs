@@ -278,6 +278,40 @@ pub fn migrate_recompute_tiers(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// Migration v2: recompute every player's learning_tier using the new 8-tier (MAX_TIER=7) model.
+/// Resets each player to tier 0, then advances via check_and_unlock from their most recent
+/// completed session. Also syncs BestScore.learning_tier.
+/// Idempotent — safe to call multiple times.
+#[reducer]
+pub fn migrate_recompute_tiers_v2(ctx: &ReducerContext) -> Result<(), String> {
+    let players: Vec<Player> = ctx.db.players().iter().collect();
+    for player in players {
+        let identity = player.identity;
+
+        // Reset player learning_tier to 0 to re-derive from scratch
+        ctx.db.players().identity().update(Player { learning_tier: 0, ..player });
+
+        // Re-advance using check_and_unlock from the most recent completed session
+        let last_session = ctx.db.sessions().iter()
+            .filter(|s| s.player_identity == identity && s.is_complete)
+            .max_by_key(|s| s.id);
+        if let Some(session) = last_session {
+            check_and_unlock(ctx, identity, session.id);
+        }
+
+        // Sync BestScore.learning_tier to match re-computed Player.learning_tier
+        if let Some(updated_player) = ctx.db.players().identity().find(identity) {
+            if let Some(bs) = ctx.db.best_scores().player_identity().find(identity) {
+                ctx.db.best_scores().player_identity().update(BestScore {
+                    learning_tier: updated_player.learning_tier,
+                    ..bs
+                });
+            }
+        }
+    }
+    Ok(())
+}
+
 /// One-time migration: seed best_scores from existing completed sessions.
 /// Idempotent — safe to call multiple times.
 #[reducer]
@@ -693,14 +727,24 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
     Ok(())
 }
 
-/// Returns the learning tier for a factor value (None = excluded, i.e. ×0).
+/// Maximum learning tier index (inclusive). Tiers 0–7 = 8 distinct tiers.
+const MAX_TIER: u8 = 7;
+
+/// Returns the learning tier for a factor value.
+/// Returns None for excluded factors (×0 and extended: ×11, ×12, ×15, ×20, ×25).
+/// Tier ladder: ×1/×2/×10 (0) → ×3 (1) → ×5 (2) → ×4 (3) → ×6 (4) → ×7 (5) → ×8 (6) → ×9 (7).
 fn factor_tier(x: u8) -> Option<u8> {
     match x {
         0 => None,
-        1 | 2 | 5 | 10 => Some(0),
-        3 | 4 => Some(1),
-        6 | 7 | 8 | 9 => Some(2),
-        _ => Some(3), // 11, 12, 15, 20, 25
+        1 | 2 | 10 => Some(0), // starter: ×1, ×2, ×10
+        3 => Some(1),
+        5 => Some(2),
+        4 => Some(3),
+        6 => Some(4),
+        7 => Some(5),
+        8 => Some(6),
+        9 => Some(7),
+        _ => None, // 11, 12, 15, 20, 25 — excluded
     }
 }
 
@@ -782,7 +826,7 @@ fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_id: u64) {
 
     let mut new_tier = player.learning_tier;
 
-    for target_tier in (player.learning_tier + 1)..=3u8 {
+    for target_tier in (player.learning_tier + 1)..=MAX_TIER {
         let check_tier = target_tier - 1;
 
         // All problem_stat pairs belonging to check_tier
