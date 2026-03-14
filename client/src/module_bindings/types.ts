@@ -99,6 +99,12 @@ export const ProblemStat = __t.object("ProblemStat", {
 });
 export type ProblemStat = __Infer<typeof ProblemStat>;
 
+export const RecoveryCodeResult = __t.object("RecoveryCodeResult", {
+  owner: __t.identity(),
+  code: __t.string(),
+});
+export type RecoveryCodeResult = __Infer<typeof RecoveryCodeResult>;
+
 export const RecoveryKey = __t.object("RecoveryKey", {
   code: __t.string(),
   owner: __t.identity(),
@@ -127,6 +133,12 @@ export const TransferCode = __t.object("TransferCode", {
   createdAt: __t.timestamp(),
 });
 export type TransferCode = __Infer<typeof TransferCode>;
+
+export const TransferCodeResult = __t.object("TransferCodeResult", {
+  owner: __t.identity(),
+  code: __t.string(),
+});
+export type TransferCodeResult = __Infer<typeof TransferCodeResult>;
 
 export const UnlockLog = __t.object("UnlockLog", {
   id: __t.u64(),
