@@ -33,16 +33,31 @@ describe('SEC-01 & SEC-02: recovery_keys and transfer_codes are private tables',
   });
 
   it('SEC-01: a second identity sees 0 rows from recovery_keys', () => {
-    // After Plan 03 makes recovery_keys private, clientB (different identity,
-    // never subscribed to this table explicitly) should see zero rows.
-    const rows = [...(clientB.conn.db as any).recovery_keys.iter()];
-    expect(rows).toHaveLength(0);
+    // After Plan 03 makes recovery_keys private, the table is not available in
+    // client bindings at all (codegen skips private tables). Accessing it via
+    // the DB object returns undefined — which means clientB can see no rows.
+    const tableAccessor = (clientB.conn.db as any).recovery_keys;
+    if (tableAccessor === undefined) {
+      // Private table — not accessible via client SDK. This is correct SEC-01 behavior.
+      expect(tableAccessor).toBeUndefined();
+    } else {
+      const rows = [...tableAccessor.iter()];
+      expect(rows).toHaveLength(0);
+    }
   });
 
   it('SEC-02: a second identity sees 0 rows from transfer_codes', () => {
-    // After Plan 03 makes transfer_codes private, clientB should see zero rows.
-    const rows = [...(clientB.conn.db as any).transfer_codes.iter()];
-    expect(rows).toHaveLength(0);
+    // After Plan 03 makes transfer_codes private, the table is not available in
+    // client bindings at all (codegen skips private tables). Accessing it via
+    // the DB object returns undefined — which means clientB can see no rows.
+    const tableAccessor = (clientB.conn.db as any).transfer_codes;
+    if (tableAccessor === undefined) {
+      // Private table — not accessible via client SDK. This is correct SEC-02 behavior.
+      expect(tableAccessor).toBeUndefined();
+    } else {
+      const rows = [...tableAccessor.iter()];
+      expect(rows).toHaveLength(0);
+    }
   });
 });
 

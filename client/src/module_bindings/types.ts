@@ -134,6 +134,12 @@ export const TransferCode = __t.object("TransferCode", {
 });
 export type TransferCode = __Infer<typeof TransferCode>;
 
+export const TransferCodeCleanupSchedule = __t.object("TransferCodeCleanupSchedule", {
+  scheduledId: __t.u64(),
+  scheduledAt: __t.scheduleAt(),
+});
+export type TransferCodeCleanupSchedule = __Infer<typeof TransferCodeCleanupSchedule>;
+
 export const TransferCodeResult = __t.object("TransferCodeResult", {
   owner: __t.identity(),
   code: __t.string(),
