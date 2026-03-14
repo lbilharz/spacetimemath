@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-02-PLAN.md — 9 components migrated to utility classes
-last_updated: "2026-03-14T23:36:47.450Z"
+stopped_at: Completed 04-03-PLAN.md — 8 pages migrated to utility classes
+last_updated: "2026-03-14T23:50:09.755Z"
 last_activity: 2026-03-14 — Completed 03-03 (human verification of all five Phase 3 UX fixes); Phase 3 done
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 17
-  completed_plans: 14
+  completed_plans: 15
   percent: 75
 ---
 
@@ -63,6 +63,7 @@ Progress: [████████░░] 75% (3 of 4 phases complete)
 | Phase 03-ux-and-client-bug-fixes P03 | 5min | 2 tasks | 0 files |
 | Phase 04-css-design-system-migration P01 | 2min | 1 tasks | 1 files |
 | Phase 04-css-design-system-migration P02 | 7min | 2 tasks | 10 files |
+| Phase 04-css-design-system-migration P03 | 11min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,8 @@ Recent decisions affecting current work:
 - [Phase 04-css-design-system-migration]: Utility class section appended at end of index.css to avoid modifying existing structural rules; all colors use design tokens (var(--*))
 - [Phase 04-css-design-system-migration]: Added .mastery-cell BEM class to index.css — Plan 01 utilities did not cover the aspect-ratio grid cell base pattern used by MasteryGrid
 - [Phase 04-css-design-system-migration]: SplashGrid had no changes needed — its only style={} is runtime-animated SVG fill; topbar-tab--active className ternary replaces inline border/color active-state in TopBar
+- [Phase 04-css-design-system-migration]: Ghost link button (.btn-link) added to index.css — appears in RegisterPage (2x) and 5+ files across codebase; .code-box utility captures shared monospace/accent styling for transfer code and recovery key displays
+- [Phase 04-css-design-system-migration]: liveTd constant in LobbyPage deleted; live players table uses .tbl-td with inline padding overrides (9px 4px, 14px) since live feed has different density than tbl-td defaults
 
 ### Pending Todos
 
@@ -113,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T23:36:47.448Z
-Stopped at: Completed 04-02-PLAN.md — 9 components migrated to utility classes
+Last session: 2026-03-14T23:50:09.752Z
+Stopped at: Completed 04-03-PLAN.md — 8 pages migrated to utility classes
 Resume file: None
