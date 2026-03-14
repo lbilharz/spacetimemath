@@ -24,7 +24,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const { t, i18n } = useTranslation();
   const [transferCodeResults] = useTable(tables.transfer_code_results);
   const [recoveryCodeResults] = useTable(tables.recovery_code_results);
-  const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
@@ -43,17 +42,10 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
 
-  // Populate recovery_code_results for this client on mount (SEC-03 write-to-private-table pattern)
-  useEffect(() => {
-    getMyRecoveryCode();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
     await regenerateRecoveryKey({ token: capturedToken });
-    // Refresh result table so the new code appears immediately
-    await getMyRecoveryCode();
     setGeneratingKey(false);
   };
 

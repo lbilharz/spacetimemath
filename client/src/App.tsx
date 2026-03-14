@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSpacetimeDB, useTable } from 'spacetimedb/react';
-import { tables } from './module_bindings/index.js';
+import { useSpacetimeDB, useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { tables, reducers } from './module_bindings/index.js';
 import type { ClassSprint, Classroom, ClassroomMember } from './module_bindings/types.js';
 // capturedToken import removed (SEC-01): recovery key auto-gen no longer needed here
 import RegisterPage from './pages/RegisterPage.js';
@@ -48,7 +48,7 @@ export default function App() {
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [classSprints] = useTable(tables.class_sprints);
-  // recovery_keys is now a private table (SEC-01) — AccountPage fetches via getMyRecoveryCode reducer
+  // recovery_keys is now a private table (SEC-01) — App.tsx fetches via getMyRecoveryCode once per session (UX-05)
   const [page, setPage] = useState<Page>('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
@@ -59,6 +59,9 @@ export default function App() {
   const tierAtSprintStartRef = useRef<number>(0);
   // Ref so event handlers can read current player without stale closure
   const myPlayerRef = useRef<{ learningTier?: number } | undefined>(undefined);
+  const hasFetchedRecoveryCodeRef = useRef(false);
+
+  const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
@@ -89,8 +92,13 @@ export default function App() {
 
   useEffect(() => { myPlayerRef.current = effectivePlayer; }, [effectivePlayer]);
 
-  // Recovery key auto-generation removed (SEC-01): recovery_keys is now private.
-  // AccountPage calls getMyRecoveryCode on mount and shows a "Generate" button if no key exists.
+  // Hydrate recovery_code_results once per session (UX-05: prevents flash-of-empty on every AccountPage mount)
+  useEffect(() => {
+    if (myPlayer && isActive && !hasFetchedRecoveryCodeRef.current) {
+      hasFetchedRecoveryCodeRef.current = true;
+      getMyRecoveryCode();
+    }
+  }, [myPlayer?.identity?.toHexString(), isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const inClassroom = classroomId !== null && myIdentityHex
     ? (classroomMembers as unknown as ClassroomMember[]).some(
@@ -413,7 +421,6 @@ export default function App() {
           <AccountPage
             myPlayer={effectivePlayer!}
             myIdentityHex={myIdentityHex!}
-            onEnterClassroom={goToClassroom}
             onBack={() => navigate('lobby')}
           />
         )}
