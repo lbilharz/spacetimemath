@@ -59,46 +59,45 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
 
   return (
     <div className="page" style={{ alignItems: 'center' }}>
-      <div style={{ textAlign: 'center', paddingTop: 24 }}>
+      <div className="text-center" style={{ paddingTop: 24 }}>
         <div style={{ fontSize: 48, marginBottom: 4 }}>🏁</div>
         <h1>{t('results.heading')}</h1>
       </div>
 
       {/* Tier-up unlock toast */}
       {newlyUnlockedTier !== undefined && (
-        <div className="card" style={{ width: '100%', border: '1px solid var(--accent)', textAlign: 'center' }}>
+        <div className="card w-full text-center" style={{ border: '1px solid var(--accent)' }}>
           <div style={{ fontSize: 32 }}>🎉</div>
-          <h2 style={{ color: 'var(--accent)', margin: '8px 0 4px' }}>
+          <h2 className="text-accent" style={{ margin: '8px 0 4px' }}>
             {t(`tiers.unlocked${newlyUnlockedTier}` as ParseKeys)}
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 10px' }}>
+          <p className="text-sm text-muted" style={{ margin: '0 0 10px' }}>
             {t(`tiers.unlockedDesc${newlyUnlockedTier}` as ParseKeys)}
           </p>
-          <a href="/progress#tier-status" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
+          <a href="/progress#tier-status" className="text-sm text-accent fw-semibold" style={{ textDecoration: 'none' }}>
             {t('results.viewProgress')} →
           </a>
         </div>
       )}
 
       {/* Score card */}
-      <div className="card" style={{ width: '100%', textAlign: 'center' }}>
+      <div className="card w-full text-center">
         {!isComplete ? (
-          <p style={{ color: 'var(--muted)' }}>{t('results.finalizing')}</p>
+          <p className="text-muted">{t('results.finalizing')}</p>
         ) : (
           <>
-            <div style={{
+            <div className="text-warn fw-extrabold" style={{
               fontSize: 72,
-              fontWeight: 800,
-              color: 'var(--warn)',
               lineHeight: 1,
               marginBottom: 8,
             }}>
               {session!.weightedScore.toFixed(1)}
             </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>{t('results.weightedScore')}</p>
+            <p className="text-muted text-base">{t('results.weightedScore')}</p>
             <a
               href="/progress#scoring-guide"
-              style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none', marginTop: 2, display: 'inline-block' }}
+              className="text-sm text-muted"
+              style={{ textDecoration: 'none', marginTop: 2, display: 'inline-block' }}
             >
               {t('results.scoringExplained')} →
             </a>
@@ -119,8 +118,8 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
 
             {uniqueHard.length > 0 && (
               <div style={{ marginTop: 20, textAlign: 'left' }}>
-                <h3 style={{ marginBottom: 12 }}>{t('results.struggled')}</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <h3 className="mb-3">{t('results.struggled')}</h3>
+                <div className="col gap-6">
                   {uniqueHard.map(p => {
                     const rw = getRechenweg(p.a, p.b);
                     const isOpen = expandedKey === p.key;
@@ -141,7 +140,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
                           <span className="tag tag-red" style={{ fontSize: 14, padding: '4px 12px' }}>
                             {p.key} = {p.a * p.b}
                           </span>
-                          <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                          <span className="text-muted" style={{ fontSize: 12 }}>
                             {isOpen ? '▲' : '▼'}
                           </span>
                         </button>
@@ -153,7 +152,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
                             padding: '10px 14px',
                             marginTop: 4,
                           }}>
-                            <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            <div className="text-xs text-muted fw-semibold mb-1" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                               {t(rw.strategyKey as ParseKeys)}
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -174,7 +173,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
                     );
                   })}
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 10 }}>
+                <p className="text-muted" style={{ fontSize: 12, marginTop: 10 }}>
                   {t('results.struggledHint')}
                 </p>
               </div>
@@ -208,9 +207,9 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
 
       {/* Mastery grid */}
       {myAnswers.length > 0 && (
-        <div ref={gridRef} className="card" style={{ width: '100%' }}>
-          <h2 style={{ marginBottom: 4 }}>{t('results.masteryTitle')}</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
+        <div ref={gridRef} className="card w-full">
+          <h2 className="mb-1">{t('results.masteryTitle')}</h2>
+          <p className="text-sm text-muted mb-4">
             {t('results.masteryDesc')}
           </p>
           <MasteryGrid
@@ -225,7 +224,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
         </div>
       )}
 
-      <button className="btn btn-secondary" onClick={onBack} style={{ width: '100%', maxWidth: 320, fontSize: 14 }}>
+      <button className="btn btn-secondary w-full text-base" onClick={onBack} style={{ maxWidth: 320 }}>
         {t('results.backToLobby')}
       </button>
     </div>
@@ -240,7 +239,7 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
         fontWeight: 700,
         color: accent ? 'var(--accent)' : 'var(--text)',
       }}>{value}</div>
-      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{label}</div>
+      <div className="text-muted" style={{ fontSize: 12, marginTop: 2 }}>{label}</div>
     </div>
   );
 }

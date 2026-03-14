@@ -313,6 +313,7 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
 .divider-top    { border-top: 1px solid var(--border); padding-top: 8px; }
 .divider-bottom { border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 .btn-link       { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: underline; padding: 0; }
+.code-box       { font-family: monospace; font-weight: 800; color: var(--accent); background: var(--card2); border: 2px solid var(--accent); border-radius: 10px; text-align: center; margin-bottom: 8px; }
 
 /* TopBar BEM modifiers */
 .topbar-tab         { background: none; border: none; cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: 600; border-bottom: 2px solid transparent; color: var(--muted); }

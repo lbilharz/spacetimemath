@@ -164,18 +164,18 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         }}>
           {initials}
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: 20, color: 'var(--text)' }}>{myPlayer.username}</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
+        <div className="flex-1">
+          <div className="fw-bold" style={{ fontSize: 20, color: 'var(--text)' }}>{myPlayer.username}</div>
+          <div className="text-sm text-muted mt-1">
             {t('account.sessions', { count: myPlayer.totalSessions })}
-            {' · '}{t('account.best')} <span style={{ color: 'var(--warn)', fontWeight: 600 }}>{myPlayer.bestScore.toFixed(1)}</span>
+            {' · '}{t('account.best')} <span className="text-warn fw-semibold">{myPlayer.bestScore.toFixed(1)}</span>
           </div>
         </div>
       </div>
 
       {/* Language selector */}
-      <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontWeight: 600, fontSize: 15 }}>{t('account.language')}</span>
+      <div className="card row-between">
+        <span className="fw-semibold" style={{ fontSize: 15 }}>{t('account.language')}</span>
         <button
           onClick={() => i18n.changeLanguage(i18n.language.startsWith('de') ? 'en' : 'de')}
           style={{
@@ -191,14 +191,13 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Display name */}
       <div className="card">
-        <h2 style={{ marginBottom: 16, fontSize: 16 }}>{t('account.displayName')}</h2>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <h2 className="mb-4" style={{ fontSize: 16 }}>{t('account.displayName')}</h2>
+        <div className="row gap-10">
           <input
-            className="field"
+            className="field flex-1"
             value={newName}
             onChange={e => setNewName(e.target.value)}
             maxLength={24}
-            style={{ flex: 1 }}
             onKeyDown={e => e.key === 'Enter' && handleRename()}
           />
           <button
@@ -213,43 +212,38 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Account recovery */}
       <div className="card">
-        <h2 style={{ marginBottom: 4, fontSize: 16 }}>{t('account.recovery')}</h2>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>
+        <h2 className="mb-1" style={{ fontSize: 16 }}>{t('account.recovery')}</h2>
+        <p className="text-sm text-muted mb-5">
           {t('account.recoveryDesc')}
         </p>
 
         {/* Transfer code */}
-        <h3 style={{ marginBottom: 4 }}>{t('account.transferCode')}</h3>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 12 }}>
+        <h3 className="mb-1">{t('account.transferCode')}</h3>
+        <p className="text-sm text-muted mb-3">
           {t('account.transferDesc')}
         </p>
         {myCode ? (
-          <div style={{ marginBottom: 20 }}>
-            <div style={{
-              fontFamily: 'monospace', fontSize: 34, fontWeight: 800, letterSpacing: 8,
-              color: 'var(--accent)', background: 'var(--card2)', border: '2px solid var(--accent)',
-              borderRadius: 10, padding: '14px 20px', marginBottom: 8, textAlign: 'center',
-            }}>
+          <div className="mb-5">
+            <div className="code-box" style={{ fontSize: 34, letterSpacing: 8, padding: '14px 20px' }}>
               {myCode.code}
             </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-              <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={handleCopyTransfer}>
+            <div className="row-center gap-8">
+              <button className="btn btn-primary text-sm" onClick={handleCopyTransfer}>
                 {transferCopied ? t('common.copied') : t('common.copy')}
               </button>
-              <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={handleGenerateCode} disabled={generating}>
+              <button className="btn btn-secondary text-sm" onClick={handleGenerateCode} disabled={generating}>
                 {t('account.newCode')}
               </button>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', marginTop: 8 }}>
+            <p className="text-muted text-center mt-2" style={{ fontSize: 12 }}>
               {countdown !== null && countdown > 0 ? t('account.transferExpires', { time: fmtCountdown(countdown) }) : t('account.transferExpired')}
             </p>
           </div>
         ) : (
           <button
-            className="btn btn-primary"
+            className="btn btn-primary w-full mb-5"
             onClick={handleGenerateCode}
             disabled={generating || !capturedToken}
-            style={{ width: '100%', marginBottom: 20 }}
           >
             {generating ? t('common.generating') : t('account.generateCode')}
           </button>
@@ -259,70 +253,66 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         <div style={{ borderTop: '1px solid var(--border)', margin: '4px 0 20px' }} />
 
         {/* Recovery key */}
-        <h3 style={{ marginBottom: 4 }}>{t('account.recoveryKey')}</h3>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 12 }}>
+        <h3 className="mb-1">{t('account.recoveryKey')}</h3>
+        <p className="text-sm text-muted mb-3">
           {t('account.recoveryKeyDesc')}
         </p>
         {myRecoveryKey ? (
           <div>
-            <div style={{
-              fontFamily: 'monospace', fontSize: 22, fontWeight: 800, letterSpacing: 5,
-              color: 'var(--accent)', background: 'var(--card2)', border: '2px solid var(--accent)',
-              borderRadius: 10, padding: '12px 16px', marginBottom: 8, textAlign: 'center',
-            }}>
+            <div className="code-box" style={{ fontSize: 22, letterSpacing: 5, padding: '12px 16px' }}>
               {myRecoveryKey.code}
             </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-              <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={handleCopyKey}>
+            <div className="row-center gap-8">
+              <button className="btn btn-primary text-sm" onClick={handleCopyKey}>
                 {keyCopied ? t('common.copied') : t('common.copy')}
               </button>
-              <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
+              <button className="btn btn-secondary text-sm" onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
                 {t('account.regenerate')}
               </button>
             </div>
             {/* Email recovery key */}
             <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
               {emailSent || myPlayer.recoveryEmailed ? (
-                <p style={{ fontSize: 13, color: 'var(--correct)', textAlign: 'center' }}>
+                <p className="text-sm text-correct text-center">
                   ✓ {t('account.emailKeySent')}
                 </p>
               ) : (
                 <>
-                  <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>
+                  <p className="text-sm text-muted mb-2">
                     {t('account.emailKeyDesc')}
                   </p>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  <div className="row gap-8">
                     <input
                       type="email"
                       value={emailInput}
                       onChange={e => setEmailInput(e.target.value)}
                       placeholder={t('account.emailKeyPlaceholder')}
+                      className="flex-1"
                       style={{
-                        flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)',
+                        padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)',
                         background: 'var(--card2)', color: 'var(--text)', fontSize: 14,
                       }}
                       onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
                     />
                     <button
-                      className="btn btn-primary"
-                      style={{ fontSize: 13, whiteSpace: 'nowrap' }}
+                      className="btn btn-primary text-sm"
+                      style={{ whiteSpace: 'nowrap' }}
                       onClick={handleEmailKey}
                       disabled={emailSending || !emailInput.trim()}
                     >
                       {emailSending ? '…' : t('account.emailKeySend')}
                     </button>
                   </div>
-                  {emailError && <p style={{ fontSize: 12, color: 'var(--wrong)', marginTop: 6 }}>{emailError}</p>}
+                  {emailError && <p className="text-error" style={{ fontSize: 12, marginTop: 6 }}>{emailError}</p>}
                 </>
               )}
             </div>
           </div>
         ) : (
           <button
-            className="btn btn-primary"
+            className="btn btn-primary w-full"
             onClick={handleGenerateRecoveryKey}
             disabled={generatingKey || !capturedToken}
-            style={{ width: '100%' }}
           >
             {generatingKey ? t('common.generating') : t('account.generateRecoveryKey')}
           </button>
@@ -331,17 +321,17 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Danger zone */}
       <div className="card" style={{ borderColor: 'rgba(232,57,29,0.4)' }}>
-        <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('account.session')}</h2>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
+        <h2 className="mb-2" style={{ fontSize: 16 }}>{t('account.session')}</h2>
+        <p className="text-sm text-muted mb-4">
           {t('account.logoutDesc')}
         </p>
-        <button className="btn btn-danger" onClick={handleLogout} style={{ width: '100%' }}>
+        <button className="btn btn-danger w-full" onClick={handleLogout}>
           {t('account.logout')}
         </button>
       </div>
 
       {/* Legal */}
-      <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', paddingBottom: 8 }}>
+      <div className="row-center gap-16" style={{ flexWrap: 'wrap', paddingBottom: 8 }}>
         {[
           { key: 'account.imprint',  href: 'https://www.bettermarks.com/impressum/' },
           { key: 'account.privacy',  href: 'https://www.bettermarks.com/datenschutz/' },
@@ -352,7 +342,8 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}
+            className="text-muted"
+            style={{ fontSize: 12, textDecoration: 'none' }}
           >
             {t(key as ParseKeys)}
           </a>

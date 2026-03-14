@@ -408,7 +408,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   if (sessionId === null) {
     return (
       <div className="loading">
-        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{t('sprint.startingSession')}</span>
+        <span className="text-sm text-muted">{t('sprint.startingSession')}</span>
       </div>
     );
   }
@@ -420,7 +420,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         alignItems: 'center', justifyContent: 'center',
         minHeight: '80vh', gap: 20, textAlign: 'center',
       }}>
-        <div style={{ fontSize: 13, color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>
+        <div className="text-sm text-muted fw-semibold" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           {t('sprint.getReady')}
         </div>
         <div style={{
@@ -441,7 +441,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   if (!problem) {
     return (
       <div className="loading">
-        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{t('sprint.loadingQuestions')}</span>
+        <span className="text-sm text-muted">{t('sprint.loadingQuestions')}</span>
       </div>
     );
   }
@@ -450,16 +450,16 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     <div className="page" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '80vh', gap: 24 }}>
 
       {/* Timer bar */}
-      <div style={{ width: '100%', maxWidth: 520 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 13, color: 'var(--muted)' }}>
+      <div className="w-full" style={{ maxWidth: 520 }}>
+        <div className="row-between" style={{ marginBottom: 6 }}>
+          <span className="text-sm text-muted">
             {isDiagnostic
               ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b>{' · '}{DIAGNOSTIC_PHASE_LABELS[Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3)]}</>
               : t('sprint.stats', { correct, answered })
             }
           </span>
-          <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-            {t('sprint.score')} <b style={{ color: 'var(--warn)' }}>{score.toFixed(1)}</b>
+          <span className="text-sm text-muted">
+            {t('sprint.score')} <b className="text-warn">{score.toFixed(1)}</b>
           </span>
         </div>
         <div style={{
@@ -478,17 +478,18 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
 
       {/* Problem card */}
-      <div className="card" style={{
-        width: '100%',
-        maxWidth: 520,
-        textAlign: 'center',
-        padding: '40px 32px',
-        position: 'relative',
-        border: feedback
-          ? `2px solid ${feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)'}`
-          : '1px solid var(--border)',
-        transition: 'border-color 0.2s',
-      }}>
+      <div
+        className="card w-full text-center"
+        style={{
+          maxWidth: 520,
+          padding: '40px 32px',
+          position: 'relative',
+          border: feedback
+            ? `2px solid ${feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)'}`
+            : '1px solid var(--border)',
+          transition: 'border-color 0.2s',
+        }}
+      >
         {/* Difficulty hint */}
         {(() => {
           const s = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
@@ -509,7 +510,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
           if (learningTierOf(problem.a, problem.b) !== 0) return null;
           if (mastery === 'mastered' || mastery === 'learning') return null;
           return (
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+            <div className="row-center mb-2">
               <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
             </div>
           );
@@ -528,7 +529,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
         {/* Feedback overlay */}
         {feedback ? (
-          <div style={{ marginBottom: 8 }}>
+          <div className="mb-2">
             <div style={{
               fontSize: 32,
               fontWeight: 700,
@@ -539,13 +540,13 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                 : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
             </div>
             {!feedback.isCorrect && (
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 6, fontVariantNumeric: 'tabular-nums' }}>
+              <div className="text-sm text-muted mt-2 tabular-nums">
                 {getRechenweg(problem.a, problem.b).hint}
               </div>
             )}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <form onSubmit={handleSubmit} className="row-center gap-12">
             <input
               ref={inputRef}
               className="field"
@@ -579,11 +580,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       </div>
 
       {/* Numpad */}
-      <div style={{
+      <div className="w-full" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 8,
-        width: '100%',
         maxWidth: 360,
       }}>
         {([1,2,3,4,5,6,7,8,9,'←',0,'OK'] as const).map((key) => {
@@ -628,10 +628,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
       {/* End sprint button */}
       <button
-        className="btn btn-secondary"
+        className="btn btn-secondary text-base"
         onClick={handleEnd}
         disabled={ending}
-        style={{ fontSize: 14 }}
       >
         {ending ? t('sprint.ending') : t('sprint.endSprint')}
       </button>

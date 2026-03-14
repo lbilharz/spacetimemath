@@ -64,13 +64,13 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
   return (
     <div className="page">
       {/* Header */}
-      <div style={{ marginBottom: 8 }}>
+      <div className="mb-2">
         <h1 style={{ fontSize: 22 }}>{t('classSprint.resultsTitle')}</h1>
         {classroom && (
-          <p style={{ color: 'var(--muted)', fontSize: 14 }}>📚 {classroom.name}</p>
+          <p className="text-muted text-base">📚 {classroom.name}</p>
         )}
         {running > 0 && (
-          <p style={{ color: 'var(--accent)', fontSize: 13, marginTop: 4 }}>
+          <p className="text-accent text-sm mt-1">
             ⏱ {running} still running…
           </p>
         )}
@@ -78,17 +78,17 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
 
       {/* Class ranking */}
       <div className="card">
-        <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('classSprint.rankingTitle')}</h2>
+        <h2 className="mb-3" style={{ fontSize: 16 }}>{t('classSprint.rankingTitle')}</h2>
         {ranking.length === 0 ? (
-          <p style={{ color: 'var(--muted)', fontSize: 14 }}>{t('classSprint.noResults')}</p>
+          <p className="text-muted text-base">{t('classSprint.noResults')}</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table className="table-full">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={th}>#</th>
-                <th style={{ ...th, textAlign: 'left' }}>{t('classroom.colPlayer')}</th>
-                <th style={th}>{t('classSprint.colScore')}</th>
-                <th style={th}>{t('classSprint.colCorrect')}</th>
+                <th className="tbl-th">#</th>
+                <th className="tbl-th tbl-th--left">{t('classroom.colPlayer')}</th>
+                <th className="tbl-th">{t('classSprint.colScore')}</th>
+                <th className="tbl-th">{t('classSprint.colCorrect')}</th>
               </tr>
             </thead>
             <tbody>
@@ -103,24 +103,24 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
                       opacity: r.isComplete ? 1 : 0.65,
                     }}
                   >
-                    <td style={{ ...td, textAlign: 'center', fontWeight: 700, color: i < 3 ? 'var(--warn)' : 'var(--muted)' }}>
+                    <td className="tbl-td text-center fw-bold" style={{ color: i < 3 ? 'var(--warn)' : 'var(--muted)' }}>
                       {i < 3 ? medals[i] : i + 1}
                     </td>
-                    <td style={{ ...td, fontWeight: isMe ? 700 : 400 }}>
+                    <td className="tbl-td" style={{ fontWeight: isMe ? 700 : 400 }}>
                       {r.username}
                       {isMe && (
-                        <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>
+                        <span className="text-accent" style={{ marginLeft: 6, fontSize: 12 }}>
                           {t('common.you')}
                         </span>
                       )}
                       {!r.isComplete && (
-                        <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 11 }}>⏱</span>
+                        <span className="text-accent" style={{ marginLeft: 6, fontSize: 11 }}>⏱</span>
                       )}
                     </td>
-                    <td style={{ ...td, textAlign: 'right', color: 'var(--warn)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                    <td className="tbl-td tbl-td--right text-warn fw-bold tabular-nums">
                       {r.score.toFixed(1)}
                     </td>
-                    <td style={{ ...td, textAlign: 'right', color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>
+                    <td className="tbl-td tbl-td--right text-muted tabular-nums">
                       {r.correct}/{r.total}
                     </td>
                   </tr>
@@ -134,23 +134,17 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex, o
       {/* Combined mastery grid for this sprint */}
       {sprintAnswers.length > 0 && (
         <div className="card">
-          <h2 style={{ marginBottom: 4, fontSize: 16 }}>{t('classSprint.grid')}</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
+          <h2 className="mb-1" style={{ fontSize: 16 }}>{t('classSprint.grid')}</h2>
+          <p className="text-sm text-muted mb-4">
             {t('classSprint.gridDesc')}
           </p>
           <MasteryGrid answers={sprintAnswers} problemStats={problemStats as unknown as ProblemStat[]} />
         </div>
       )}
 
-      <button className="btn btn-secondary" onClick={onBack} style={{ fontSize: 14 }}>
+      <button className="btn btn-secondary text-base" onClick={onBack}>
         {t('classSprint.backToClass')}
       </button>
     </div>
   );
 }
-
-const th: React.CSSProperties = {
-  padding: '8px 4px', fontSize: 12, fontWeight: 600, color: 'var(--muted)',
-  textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right',
-};
-const td: React.CSSProperties = { padding: '10px 4px', fontSize: 15 };
