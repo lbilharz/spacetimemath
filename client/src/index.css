@@ -319,6 +319,116 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
 .topbar-tab         { background: none; border: none; cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: 600; border-bottom: 2px solid transparent; color: var(--muted); }
 .topbar-tab--active { border-bottom-color: var(--accent); color: var(--text); }
 
+/* Spacing extras */
+.mt-3 { margin-top: 12px; }
+.mr-2 { margin-right: 8px; }
+.ml-2 { margin-left: 8px; }
+.ml-1 { margin-left: 6px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-6 { margin-bottom: 6px; }
+.mb-20 { margin-bottom: 20px; }
+
+/* Flex helpers */
+.flex-none { flex: 0 0 auto; }
+.align-start { align-items: flex-start; }
+.align-end { align-items: flex-end; }
+.justify-end { justify-content: flex-end; }
+
+/* Typography extras */
+.text-lg { font-size: 18px; }
+.text-md { font-size: 16px; }
+.italic { font-style: italic; }
+.cursor-pointer { cursor: pointer; }
+.mono { font-family: monospace; }
+.letter-spacing-3 { letter-spacing: 3px; }
+.w-4 { width: 16px; }
+.max-w-220 { max-width: 220px; }
+
+/* Button size variant */
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-danger-outline { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* Classroom layout */
+.classroom-two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* Live sprint card border override */
+.classroom-live-card { border-color: rgba(255, 60, 60, 0.4); }
+
+/* Sprint timer progress track */
+.sprint-timer-track {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--card2);
+  overflow: hidden;
+}
+
+/* Sprint ticker right panel */
+.sprint-ticker-panel { flex: 1 1 240px; }
+
+/* Sprint error message */
+.sprint-error { margin: 0; max-width: 220px; }
+
+/* Member row in classroom members list */
+.classroom-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+/* QR white-background wrapper */
+.qr-white-box {
+  background: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  line-height: 0;
+}
+.qr-white-box--lg {
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+/* Join code button (large monospace code display) */
+.join-code-btn {
+  font-family: monospace;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 10px;
+  color: var(--accent);
+  margin-bottom: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: block;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Icon-only button (e.g. QR key icon) */
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Leaderboard highlight row */
+.tr-highlight { background: rgba(251, 186, 0, 0.08); }
+
+/* Modal card narrow variant */
+.modal-card--narrow { max-width: 300px; }
+
+/* Student sprint button */
+.btn-sprint { min-width: 140px; }
+
 /* MasteryGrid cell base */
 .mastery-cell {
   aspect-ratio: 1;
