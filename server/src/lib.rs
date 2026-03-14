@@ -681,7 +681,7 @@ fn finalize_session(ctx: &ReducerContext, session: Session) {
 #[reducer]
 pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> {
     let sender = ctx.sender();
-    let player = get_player(ctx)?;
+    let _player = get_player(ctx)?;
 
     let session = ctx.db.sessions().id().find(session_id)
         .ok_or("Session not found")?;
@@ -689,51 +689,7 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
     if session.is_complete { return Ok(()); }
 
     finalize_session(ctx, session);
-
-    // Re-read to get the scores written by finalize_session
-    let session = ctx.db.sessions().id().find(session_id).ok_or("Session not found")?;
-    let weighted_score = session.weighted_score;
-    let raw_score = session.raw_score;
-    let accuracy_pct = session.accuracy_pct;
-    let total = session.total_answered;
-
-    let new_best = player.best_score.max(weighted_score);
-    ctx.db.players().identity().update(Player {
-        best_score: new_best,
-        total_sessions: player.total_sessions + 1,
-        total_correct: player.total_correct + raw_score,
-        total_answered: player.total_answered + total,
-        ..player
-    });
-    check_and_unlock(ctx, sender, session_id);
-
-    // Upsert BestScore — re-read player to pick up updated learning_tier from check_and_unlock
-    if let Some(up) = ctx.db.players().identity().find(sender) {
-        match ctx.db.best_scores().player_identity().find(sender) {
-            Some(prev) => {
-                // Always refresh username + tier; keep whichever score is higher
-                let keep = prev.best_weighted_score >= weighted_score;
-                ctx.db.best_scores().player_identity().update(BestScore {
-                    username: up.username.clone(),
-                    best_weighted_score: if keep { prev.best_weighted_score } else { weighted_score },
-                    best_accuracy_pct:   if keep { prev.best_accuracy_pct   } else { accuracy_pct  },
-                    best_total_answered: if keep { prev.best_total_answered  } else { total         },
-                    learning_tier: up.learning_tier,
-                    ..prev
-                });
-            }
-            None => {
-                ctx.db.best_scores().insert(BestScore {
-                    player_identity: sender,
-                    username: up.username.clone(),
-                    best_weighted_score: weighted_score,
-                    best_accuracy_pct: accuracy_pct,
-                    best_total_answered: total,
-                    learning_tier: up.learning_tier,
-                });
-            }
-        }
-    }
+    credit_session_to_player(ctx, sender, session_id);
     Ok(())
 }
 
@@ -754,6 +710,59 @@ fn pair_learning_tier(a: u8, b: u8) -> Option<u8> {
     match (factor_tier(a), factor_tier(b)) {
         (Some(ta), Some(tb)) => Some(ta.max(tb)),
         _ => None,
+    }
+}
+
+fn credit_session_to_player(ctx: &ReducerContext, identity: Identity, session_id: u64) {
+    let session = match ctx.db.sessions().id().find(session_id) {
+        Some(s) => s,
+        None => return,
+    };
+    let player = match ctx.db.players().identity().find(identity) {
+        Some(p) => p,
+        None => return,
+    };
+
+    let weighted_score = session.weighted_score;
+    let raw_score = session.raw_score;
+    let accuracy_pct = session.accuracy_pct;
+    let total = session.total_answered;
+
+    let new_best = player.best_score.max(weighted_score);
+    ctx.db.players().identity().update(Player {
+        best_score: new_best,
+        total_sessions: player.total_sessions + 1,
+        total_correct: player.total_correct + raw_score,
+        total_answered: player.total_answered + total,
+        ..player
+    });
+    check_and_unlock(ctx, identity, session_id);
+
+    // Re-read player to pick up learning_tier update from check_and_unlock
+    if let Some(up) = ctx.db.players().identity().find(identity) {
+        match ctx.db.best_scores().player_identity().find(identity) {
+            Some(prev) => {
+                let keep = prev.best_weighted_score >= weighted_score;
+                ctx.db.best_scores().player_identity().update(BestScore {
+                    username: up.username.clone(),
+                    best_weighted_score: if keep { prev.best_weighted_score } else { weighted_score },
+                    best_accuracy_pct:   if keep { prev.best_accuracy_pct   } else { accuracy_pct  },
+                    best_total_answered: if keep { prev.best_total_answered  } else { total         },
+                    learning_tier: up.learning_tier,
+                    ..prev
+                });
+            }
+            None => {
+                ctx.db.best_scores().insert(BestScore {
+                    player_identity: identity,
+                    username: up.username.clone(),
+                    best_weighted_score: weighted_score,
+                    best_accuracy_pct: accuracy_pct,
+                    best_total_answered: total,
+                    learning_tier: up.learning_tier,
+                });
+            }
+        }
     }
 }
 
@@ -1375,6 +1384,9 @@ fn finalize_class_sprint_sessions(ctx: &ReducerContext, class_sprint_id: u64) {
         .filter(|s| s.class_sprint_id == class_sprint_id && !s.is_complete)
         .collect();
     for session in incomplete {
+        let player_identity = session.player_identity;
+        let session_id = session.id;
         finalize_session(ctx, session);
+        credit_session_to_player(ctx, player_identity, session_id);
     }
 }
