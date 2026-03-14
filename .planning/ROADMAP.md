@@ -81,7 +81,14 @@ Plans:
   2. Zero inline style={} props remain in client/src/components/ for static token values
   3. Zero inline style={} props remain in client/src/pages/ for static token values
   4. All pages are visually consistent — no outlier page differs in layout, spacing, typography, or color treatment
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Wave 1: Utility class layer in index.css (CSS-01)
+- [ ] 04-02-PLAN.md — Wave 2: Migrate all 9 components (CSS-02)
+- [ ] 04-03-PLAN.md — Wave 2: Migrate 8 pages — all except ClassroomPage (CSS-03)
+- [ ] 04-04-PLAN.md — Wave 3: Migrate ClassroomPage — largest file, 88 occurrences (CSS-03)
+- [ ] 04-05-PLAN.md — Wave 4: Human visual verification — all 9 pages desktop + mobile (CSS-04)
 
 ## Progress
 
@@ -93,4 +100,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in paralle
 | 1. Security Hardening | 5/5 | Complete   | 2026-03-14 |
 | 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
 | 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
-| 4. CSS Design System Migration | 0/? | Not started | - |
+| 4. CSS Design System Migration | 0/5 | Not started | - |
