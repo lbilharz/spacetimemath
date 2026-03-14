@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-03-PLAN.md — 8-tier tier structure redesign (SCORE-03)
-last_updated: "2026-03-14T17:42:25.986Z"
+stopped_at: Completed 02-04-PLAN.md — delete_player GDPR cascade (GDPR-01)
+last_updated: "2026-03-14T17:48:49.860Z"
 last_activity: "2026-03-14 — Completed 01-05 (server-issued problem token: SEC-10); all Phase 1 plans done"
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 100
 ---
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 02-scoring-integrity-and-gdpr-baseline P01 | 3min | 2 tasks | 3 files |
 | Phase 02-scoring-integrity-and-gdpr-baseline P02 | 6min | 2 tasks | 2 files |
 | Phase 02-scoring-integrity-and-gdpr-baseline P03 | 2min | 2 tasks | 3 files |
+| Phase 02-scoring-integrity-and-gdpr-baseline P04 | 4 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: credit_session_to_player reads session from DB not as parameter, called from both end_session and finalize_class_sprint_sessions
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: Class sprint test exercises finalize_class_sprint_sessions code path — student never calls startSession/endSession; server creates session in startClassSprint
 - [Phase 02-scoring-integrity-and-gdpr-baseline]: ×5 moved from tier 0 to tier 2 (8-tier model); migrate_recompute_tiers_v2 uses reset+check_and_unlock for consistency with live game logic
+- [Phase 02-scoring-integrity-and-gdpr-baseline]: delete_player has no player-row gate: cleans all tables regardless of whether player row exists — handles orphaned data from partial registrations
+- [Phase 02-scoring-integrity-and-gdpr-baseline]: issued_problems deletion ordered before sessions — session_ids collected first to avoid orphaned rows
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:42:25.982Z
-Stopped at: Completed 02-03-PLAN.md — 8-tier tier structure redesign (SCORE-03)
+Last session: 2026-03-14T17:48:49.858Z
+Stopped at: Completed 02-04-PLAN.md — delete_player GDPR cascade (GDPR-01)
 Resume file: None
