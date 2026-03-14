@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
@@ -6,7 +6,6 @@ import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Session } fro
 import Leaderboard from '../components/Leaderboard.js';
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🏆'];
-const liveTd: React.CSSProperties = { padding: '9px 4px', fontSize: 14 };
 
 type Player = {
   identity: { toHexString(): string };
@@ -108,32 +107,32 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     <div className="page">
       {/* Recovery key nag for teachers with students */}
       {showNag && (
-        <div style={{
+        <div className="row-wrap gap-12" style={{
           background: 'rgba(251,186,0,0.12)', border: '1.5px solid var(--accent)',
-          borderRadius: 10, padding: '12px 16px', display: 'flex',
-          alignItems: 'center', gap: 12, flexWrap: 'wrap',
+          borderRadius: 10, padding: '12px 16px',
         }}>
           <span style={{ fontSize: 20 }}>⚠️</span>
-          <p style={{ flex: 1, fontSize: 13, color: 'var(--text)', margin: 0 }}>
+          <p className="flex-1 text-sm" style={{ color: 'var(--text)', margin: 0 }}>
             {t('lobby.recoveryNag')}
           </p>
-          <button className="btn btn-primary" style={{ fontSize: 13, whiteSpace: 'nowrap' }} onClick={onGoToAccount}>
+          <button className="btn btn-primary text-sm" style={{ whiteSpace: 'nowrap' }} onClick={onGoToAccount}>
             {t('lobby.recoveryNagCta')}
           </button>
         </div>
       )}
 
       {/* Sprint CTA */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+      <div className="row-between gap-8" style={{ flexWrap: 'wrap' }}>
         <div>
           {myPlayer && (
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-              {t('lobby.bestScore')} <b style={{ color: 'var(--warn)' }}>{myPlayer.bestScore.toFixed(1)}</b>
+            <p className="text-muted text-base">
+              {t('lobby.bestScore')} <b className="text-warn">{myPlayer.bestScore.toFixed(1)}</b>
               {' · '}{t('lobby.sessions', { count: myPlayer.totalSessions })}
               {' · '}
               <a
                 href="/progress#tier-status"
-                style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}
+                className="text-accent fw-semibold"
+                style={{ textDecoration: 'none' }}
               >
                 {['🌱','🔨','⚡','🏆'][Math.min(myPlayer.learningTier ?? 0, 3)]}
                 {' '}Tier {myPlayer.learningTier ?? 0}
@@ -164,7 +163,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
           overflowY: 'auto',
           borderTop: liveList.length > 0 ? '1px solid var(--border)' : undefined,
         }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table className="table-full">
             <tbody>
               {liveList.map(p => {
                 const idHex = p.identity.toHexString();
@@ -181,11 +180,16 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                     }}
                   >
                     {/* Rank */}
-                    <td style={{ ...liveTd, textAlign: 'center', fontWeight: 700, color: rankIdx < 3 && rankIdx >= 0 ? 'var(--warn)' : 'var(--muted)', width: 36 }}>
+                    <td className="tbl-td text-center fw-bold tabular-nums" style={{
+                      color: rankIdx < 3 && rankIdx >= 0 ? 'var(--warn)' : 'var(--muted)',
+                      width: 36,
+                      padding: '9px 4px',
+                      fontSize: 14,
+                    }}>
                       {rankIdx < 0 ? '—' : rankIdx < 3 ? ['🥇','🥈','🥉'][rankIdx] : rankIdx + 1}
                     </td>
                     {/* Player name + tier */}
-                    <td style={{ ...liveTd, fontWeight: isSelf ? 700 : 400 }}>
+                    <td className="tbl-td" style={{ padding: '9px 4px', fontSize: 14, fontWeight: isSelf ? 700 : 400 }}>
                       <span>{p.username}</span>
                       {scoreEntry && (
                         <span style={{ marginLeft: 6, fontSize: 11 }}>
@@ -193,17 +197,17 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                         </span>
                       )}
                       {isSelf && (
-                        <span style={{ color: 'var(--accent)', marginLeft: 6, fontSize: 12 }}>
+                        <span className="text-accent" style={{ marginLeft: 6, fontSize: 12 }}>
                           {t('common.you')}
                         </span>
                       )}
                     </td>
                     {/* Score */}
-                    <td style={{ ...liveTd, textAlign: 'right', fontWeight: 700, color: 'var(--warn)', fontVariantNumeric: 'tabular-nums', width: 52 }}>
+                    <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums" style={{ padding: '9px 4px', fontSize: 14, width: 52 }}>
                       {scoreEntry ? scoreEntry.bestWeightedScore.toFixed(1) : '—'}
                     </td>
                     {/* Playing badge or empty */}
-                    <td style={{ ...liveTd, textAlign: 'right', width: 110 }}>
+                    <td className="tbl-td tbl-td--right" style={{ padding: '9px 4px', fontSize: 14, width: 110 }}>
                       {isSprinting && (
                         <span style={{
                           display: 'inline-block',

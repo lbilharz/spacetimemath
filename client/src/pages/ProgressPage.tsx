@@ -29,27 +29,32 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
   return (
     <div className="page">
       {/* Tier status card */}
-      <div id="tier-status" className="card" style={{
-        border: `1px solid ${isMaxTier ? 'var(--accent)' : 'var(--border)'}`,
-        display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px',
-      }}>
+      <div
+        id="tier-status"
+        className="card row gap-12"
+        style={{
+          border: `1px solid ${isMaxTier ? 'var(--accent)' : 'var(--border)'}`,
+          padding: '14px 20px',
+        }}
+      >
         <span style={{ fontSize: 28, lineHeight: 1 }}>{TIER_EMOJI[Math.min(playerLearningTier, 3)]}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontWeight: 700, fontSize: 15,
-            color: isMaxTier ? 'var(--accent)' : 'var(--text)',
-            display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-          }}>
+        <div className="flex-1" style={{ minWidth: 0 }}>
+          <div
+            className="row-wrap fw-bold gap-8"
+            style={{
+              fontSize: 15,
+              color: isMaxTier ? 'var(--accent)' : 'var(--text)',
+            }}
+          >
             {t(`tiers.tier${playerLearningTier}Name` as ParseKeys)}
-            <span style={{
-              fontSize: 11, fontWeight: 700, color: 'var(--muted)',
+            <span className="text-xs fw-bold text-muted" style={{
               background: 'var(--card2)', padding: '2px 8px',
               borderRadius: 6, border: '1px solid var(--border)',
             }}>
               {t('tiers.statusLevel', { tier: playerLearningTier })}
             </span>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>
+          <div className="text-sm text-muted" style={{ marginTop: 3 }}>
             {isMaxTier
               ? t('tiers.allUnlocked')
               : t(`tiers.nextUnlock${playerLearningTier}` as ParseKeys)}
@@ -58,8 +63,8 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
       </div>
 
       <div id="mastery" className="card">
-        <h2 style={{ marginBottom: 4 }}>{t('lobby.masteryTitle')}</h2>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
+        <h2 className="mb-1">{t('lobby.masteryTitle')}</h2>
+        <p className="text-sm text-muted mb-4">
           {t('lobby.masteryDesc')}
         </p>
         <MasteryGrid

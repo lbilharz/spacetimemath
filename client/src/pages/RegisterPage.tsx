@@ -74,16 +74,16 @@ export default function RegisterPage({ onRegistered }: Props) {
 
   return (
     <div className="page" style={{ justifyContent: 'center', minHeight: '80vh' }}>
-      <div style={{ textAlign: 'center', marginBottom: 8 }}>
-        <div style={{ marginBottom: 8 }}><SplashGrid /></div>
+      <div className="text-center mb-2">
+        <div className="mb-2"><SplashGrid /></div>
         <h1 style={{ fontSize: 36 }}>1UP</h1>
-        {!showRestore && <p style={{ color: 'var(--muted)', marginTop: 8 }}>{t('register.tagline')}</p>}
+        {!showRestore && <p className="text-muted mt-2">{t('register.tagline')}</p>}
       </div>
 
       {!showRestore ? (
         <div className="card">
-          <h2 style={{ marginBottom: 16 }}>{t('register.chooseName')}</h2>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <h2 className="mb-4">{t('register.chooseName')}</h2>
+          <form onSubmit={handleSubmit} className="col gap-12">
             <input
               className="field"
               type="text"
@@ -94,7 +94,7 @@ export default function RegisterPage({ onRegistered }: Props) {
               autoFocus
               disabled={loading}
             />
-            {error && <p style={{ color: 'var(--wrong)', fontSize: 14 }}>⚠ {error}</p>}
+            {error && <p className="text-error text-base">⚠ {error}</p>}
             <button
               className="btn btn-primary btn-lg"
               type="submit"
@@ -106,27 +106,23 @@ export default function RegisterPage({ onRegistered }: Props) {
 
           <button
             onClick={() => setShowRestore(true)}
-            style={{
-              marginTop: 16, background: 'none', border: 'none',
-              color: 'var(--muted)', fontSize: 13, cursor: 'pointer',
-              textDecoration: 'underline', padding: 0,
-            }}
+            className="btn-link mt-4"
           >
             {t('register.restoreLink')}
           </button>
         </div>
       ) : (
         <div className="card">
-          <h2 style={{ marginBottom: 8, fontSize: 16 }}>{t('register.restoreHeading')}</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 16 }}>
+          <h2 className="mb-2" style={{ fontSize: 16 }}>{t('register.restoreHeading')}</h2>
+          <p className="text-sm text-muted mb-4">
             {t('register.restoreDesc')}
           </p>
           {autoRestoreCode ? (
-            <p style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
+            <p className="text-center text-muted text-base">
               {t('register.restoring')}
             </p>
           ) : (
-            <form onSubmit={handleRestore} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <form onSubmit={handleRestore} className="col gap-12">
               <input
                 className="field"
                 type="text"
@@ -138,7 +134,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                 disabled={restoring}
                 style={{ textAlign: 'center', fontSize: 20, letterSpacing: 4, fontWeight: 700 }}
               />
-              {restoreError && <p style={{ color: 'var(--wrong)', fontSize: 14 }}>⚠ {restoreError}</p>}
+              {restoreError && <p className="text-error text-base">⚠ {restoreError}</p>}
               <button
                 className="btn btn-primary btn-lg"
                 type="submit"
@@ -151,18 +147,14 @@ export default function RegisterPage({ onRegistered }: Props) {
 
           <button
             onClick={() => { setShowRestore(false); setCode(''); setRestoreError(''); setAutoRestoreCode(null); }}
-            style={{
-              marginTop: 16, background: 'none', border: 'none',
-              color: 'var(--muted)', fontSize: 13, cursor: 'pointer',
-              textDecoration: 'underline', padding: 0,
-            }}
+            className="btn-link mt-4"
           >
             {t('register.newAccount')}
           </button>
         </div>
       )}
 
-      <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--muted)' }}>
+      <p className="text-center text-sm text-muted">
         {t('register.footer')}
       </p>
     </div>

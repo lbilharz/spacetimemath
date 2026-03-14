@@ -74,19 +74,19 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
 
       {/* Classroom list */}
       {myClassrooms.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="col gap-10">
           {myClassrooms.map(c => {
             const isTeacher  = c.teacher?.toHexString() === myIdentityHex;
             const memberCount = (classroomMembers as unknown as ClassroomMember[]).filter(m => m.classroomId === c.id).length;
             return (
               <div
                 key={String(c.id)}
-                className="card"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', padding: '14px 18px' }}
+                className="card row-between gap-12"
+                style={{ flexWrap: 'wrap', padding: '14px 18px' }}
               >
                 <div>
-                  <div style={{ fontWeight: 700, color: 'var(--accent)', fontSize: 16 }}>{c.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
+                  <div className="fw-bold text-accent" style={{ fontSize: 16 }}>{c.name}</div>
+                  <div className="text-sm text-muted" style={{ marginTop: 2 }}>
                     {isTeacher ? t('common.teacher') : t('common.student')}
                     {' · '}
                     {t('classroom.members', { count: memberCount })}
@@ -94,7 +94,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
                     {t('common.code')} <code style={{ color: 'var(--text)', letterSpacing: 2 }}>{c.code}</code>
                   </div>
                 </div>
-                <button className="btn btn-primary" onClick={() => onEnterClassroom(c.id)} style={{ fontSize: 13 }}>
+                <button className="btn btn-primary text-sm" onClick={() => onEnterClassroom(c.id)}>
                   {t('lobby.viewClass')}
                 </button>
               </div>
@@ -103,23 +103,23 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
         </div>
       ) : (
         panel === 'none' && (
-          <div style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--muted)' }}>
+          <div className="text-center text-muted" style={{ padding: '48px 16px' }}>
             <div style={{ fontSize: 44, marginBottom: 12 }}>🏫</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+            <div className="fw-semibold" style={{ fontSize: 16, color: 'var(--text)', marginBottom: 6 }}>
               {t('classes.empty')}
             </div>
-            <div style={{ fontSize: 14 }}>{t('classes.emptyHint')}</div>
+            <div className="text-base">{t('classes.emptyHint')}</div>
           </div>
         )
       )}
 
       {/* Action buttons */}
       {panel === 'none' && (
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-secondary" onClick={() => openPanel('create')} style={{ fontSize: 13 }}>
+        <div className="row gap-8">
+          <button className="btn btn-secondary text-sm" onClick={() => openPanel('create')}>
             {t('lobby.createClass')}
           </button>
-          <button className="btn btn-secondary" onClick={() => openPanel('join')} style={{ fontSize: 13 }}>
+          <button className="btn btn-secondary text-sm" onClick={() => openPanel('join')}>
             {t('lobby.joinClass')}
           </button>
         </div>
@@ -128,10 +128,10 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       {/* Create form */}
       {panel === 'create' && (
         <div className="card">
-          <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('lobby.createClassHeading')}</h2>
-          <form onSubmit={handleCreate} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <h2 className="mb-3" style={{ fontSize: 16 }}>{t('lobby.createClassHeading')}</h2>
+          <form onSubmit={handleCreate} className="row-wrap gap-8">
             <input
-              className="field"
+              className="field flex-1"
               type="text"
               placeholder={t('lobby.classNamePlaceholder')}
               value={className}
@@ -139,7 +139,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
               maxLength={40}
               autoFocus
               disabled={submitting}
-              style={{ flex: 1, minWidth: 180 }}
+              style={{ minWidth: 180 }}
             />
             <button className="btn btn-primary" type="submit" disabled={submitting || !className.trim()}>
               {submitting ? t('lobby.creating') : t('lobby.create')}
@@ -148,15 +148,15 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
               {t('common.cancel')}
             </button>
           </form>
-          {classError && <p style={{ color: 'var(--wrong)', fontSize: 13, marginTop: 8 }}>⚠ {classError}</p>}
+          {classError && <p className="text-error text-sm mt-2">⚠ {classError}</p>}
         </div>
       )}
 
       {/* Join form */}
       {panel === 'join' && (
         <div className="card">
-          <h2 style={{ marginBottom: 12, fontSize: 16 }}>{t('lobby.joinClassHeading')}</h2>
-          <form onSubmit={handleJoin} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <h2 className="mb-3" style={{ fontSize: 16 }}>{t('lobby.joinClassHeading')}</h2>
+          <form onSubmit={handleJoin} className="row-wrap gap-8">
             <input
               className="field"
               type="text"
@@ -175,7 +175,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
               {t('common.cancel')}
             </button>
           </form>
-          {classError && <p style={{ color: 'var(--wrong)', fontSize: 13, marginTop: 8 }}>⚠ {classError}</p>}
+          {classError && <p className="text-error text-sm mt-2">⚠ {classError}</p>}
         </div>
       )}
 
