@@ -27,10 +27,8 @@ export default function BottomNav({ active, onNavigate }: Props) {
           <button
             key={tab.id}
             onClick={() => onNavigate(tab.id)}
+            className="col flex-1"
             style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
               gap: 3,
               background: 'none',
@@ -56,12 +54,12 @@ export default function BottomNav({ active, onNavigate }: Props) {
                   <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
                   <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
                 </svg>
-                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '-0.2px' }}>1UP</span>
+                <span className="fw-extrabold" style={{ fontSize: 10, letterSpacing: '-0.2px' }}>1UP</span>
               </>
             ) : (
               <>
                 <span style={{ fontSize: 22 }}>{tab.emoji}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                <span className="fw-semibold label-caps" style={{ fontSize: 10 }}>
                   {t(tab.labelKey)}
                 </span>
               </>

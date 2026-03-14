@@ -25,27 +25,14 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
     <div className="topbar">
       {/* Tab links — only when a player is registered */}
       {myPlayer && (
-        <div style={{ display: 'flex', gap: 2, flex: 1, justifyContent: 'center' }}>
+        <div className="row-center gap-4 flex-1">
           {TABS.map(tab => {
             const isActive = active === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => onNavigate(tab.id)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: (isActive && tab.id !== 'lobby') ? '2px solid var(--accent)' : '2px solid transparent',
-                  color: isActive ? 'var(--text)' : 'var(--muted)',
-                  cursor: 'pointer',
-                  padding: '8px 18px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  transition: 'color 0.15s',
-                }}
+                className={`topbar-tab row gap-6${isActive ? ' topbar-tab--active' : ''}`}
               >
                 {tab.id === 'lobby' ? (
                   <>
@@ -61,7 +48,7 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
                       <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
                       <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
                     </svg>
-                    <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: '-0.3px' }}>1UP</span>
+                    <span className="fw-extrabold" style={{ fontSize: 15, letterSpacing: '-0.3px' }}>1UP</span>
                   </>
                 ) : (
                   <>
@@ -78,13 +65,12 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
       {/* Language toggle */}
       <button
         onClick={() => i18n.changeLanguage(otherLang)}
+        className="text-xs fw-bold text-muted"
         style={{
-          fontSize: 11, fontWeight: 700,
           background: 'var(--card2)',
           border: '1px solid var(--border)',
           borderRadius: 4,
           padding: '2px 7px',
-          color: 'var(--muted)',
           cursor: 'pointer',
           letterSpacing: '0.5px',
           flexShrink: 0,

@@ -13,14 +13,16 @@ interface Props {
  */
 export default function DotArray({ a, b, faded = false }: Props) {
   return (
-    <div style={{
-      opacity: faded ? 0.2 : 1,
-      transition: 'opacity 1s',
-      marginBottom: 10,
-      display: 'inline-block',
-    }}>
+    <div
+      className="mb-3"
+      style={{
+        opacity: faded ? 0.2 : 1,
+        transition: 'opacity 1s',
+        display: 'inline-block',
+      }}
+    >
       {Array.from({ length: a }, (_, row) => (
-        <div key={row} style={{ display: 'flex', gap: 3, marginBottom: 3 }}>
+        <div key={row} className="row mb-1" style={{ gap: 3 }}>
           {Array.from({ length: b }, (_, col) => (
             <div key={col} style={{
               width: 8,
