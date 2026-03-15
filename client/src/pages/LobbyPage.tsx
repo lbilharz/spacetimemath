@@ -112,38 +112,37 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
           borderRadius: 10, padding: '12px 16px',
         }}>
           <span style={{ fontSize: 20 }}>⚠️</span>
-          <p className="flex-1 text-sm" style={{ color: 'var(--text)', margin: 0 }}>
+          <p className="flex-1 text-sm">
             {t('lobby.recoveryNag')}
           </p>
-          <button className="btn btn-primary text-sm" style={{ whiteSpace: 'nowrap' }} onClick={onGoToAccount}>
+          <button className="btn btn-primary text-sm nowrap" onClick={onGoToAccount}>
             {t('lobby.recoveryNagCta')}
           </button>
         </div>
       )}
 
       {/* Welcome + Sprint CTA */}
-      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="card col gap-16">
         {myPlayer && (
           <>
             <div>
-              <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
+              <h2 className="text-22 fw-extrabold mb-6">
                 {t('lobby.hello', { name: myPlayer.username })} 👋
               </h2>
-              <div className="row gap-12" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
+              <div className="row flex-wrap gap-12">
                 <a
                   href="/progress#tier-status"
-                  className="fw-semibold"
-                  style={{ textDecoration: 'none', color: 'var(--accent)', fontSize: 14 }}
+                  className="fw-semibold text-accent no-underline text-14"
                 >
                   {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
                   {' '}Tier {myPlayer.learningTier ?? 0}
                 </a>
-                <span className="text-muted" style={{ fontSize: 13 }}>·</span>
-                <span className="text-muted" style={{ fontSize: 14 }}>
+                <span className="text-muted text-12">·</span>
+                <span className="text-muted text-14">
                   {t('lobby.bestScore')} <b className="text-warn">{myPlayer.bestScore.toFixed(1)}</b>
                 </span>
-                <span className="text-muted" style={{ fontSize: 13 }}>·</span>
-                <span className="text-muted" style={{ fontSize: 14 }}>
+                <span className="text-muted text-12">·</span>
+                <span className="text-muted text-14">
                   {t('lobby.sessions', { count: myPlayer.totalSessions })}
                 </span>
               </div>
@@ -201,12 +200,12 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                     <td className="tbl-td" style={{ padding: '9px 4px', fontSize: 14, fontWeight: isSelf ? 700 : 400 }}>
                       <span>{p.username}</span>
                       {scoreEntry && (
-                        <span style={{ marginLeft: 6, fontSize: 11 }}>
+                        <span className="ml-6 text-11">
                           {TIER_EMOJI[Math.min(scoreEntry.learningTier, 7)]}
                         </span>
                       )}
                       {isSelf && (
-                        <span className="text-accent" style={{ marginLeft: 6, fontSize: 12 }}>
+                        <span className="text-accent ml-6 text-12">
                           {t('common.you')}
                         </span>
                       )}
@@ -218,13 +217,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                     {/* Playing badge or empty */}
                     <td className="tbl-td tbl-td--right" style={{ padding: '9px 4px', fontSize: 14, width: 110 }}>
                       {isSprinting && (
-                        <span style={{
-                          display: 'inline-block',
-                          background: 'var(--green)', color: '#fff',
-                          borderRadius: 6, padding: '3px 8px',
-                          fontSize: 12, fontWeight: 700, letterSpacing: '0.3px',
-                          whiteSpace: 'nowrap',
-                        }}>
+                        <span className="badge-playing">
                           {t('lobby.sprinting')}
                         </span>
                       )}

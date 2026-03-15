@@ -176,7 +176,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
           {initials}
         </div>
         <div className="flex-1">
-          <div className="fw-bold" style={{ fontSize: 20, color: 'var(--text)' }}>{myPlayer.username}</div>
+          <div className="fw-bold text-20">{myPlayer.username}</div>
           <div className="text-sm text-muted mt-1">
             {t('account.sessions', { count: myPlayer.totalSessions })}
             {' · '}{t('account.best')} <span className="text-warn fw-semibold">{myPlayer.bestScore.toFixed(1)}</span>
@@ -186,7 +186,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Language selector */}
       <div className="card row-between">
-        <span className="fw-semibold" style={{ fontSize: 15 }}>{t('account.language')}</span>
+        <span className="fw-semibold text-15">{t('account.language')}</span>
         <button
           onClick={() => i18n.changeLanguage(i18n.language.startsWith('de') ? 'en' : 'de')}
           style={{
@@ -202,7 +202,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Display name */}
       <div className="card">
-        <h2 className="mb-4" style={{ fontSize: 16 }}>{t('account.displayName')}</h2>
+        <h2 className="mb-4 text-16">{t('account.displayName')}</h2>
         <div className="row gap-10">
           <input
             className="field flex-1"
@@ -223,7 +223,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Account recovery */}
       <div className="card">
-        <h2 className="mb-1" style={{ fontSize: 16 }}>{t('account.recovery')}</h2>
+        <h2 className="mb-1 text-16">{t('account.recovery')}</h2>
         <p className="text-sm text-muted mb-5">
           {t('account.recoveryDesc')}
         </p>
@@ -246,7 +246,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
                 {t('account.newCode')}
               </button>
             </div>
-            <p className="text-muted text-center mt-2" style={{ fontSize: 12 }}>
+            <p className="text-muted text-center mt-2 text-12">
               {countdown !== null && countdown > 0 ? t('account.transferExpires', { time: fmtCountdown(countdown) }) : t('account.transferExpired')}
             </p>
           </div>
@@ -282,7 +282,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
               </button>
             </div>
             {/* Email recovery key */}
-            <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
+            <div className="divider-top">
               {emailSent || myPlayer.recoveryEmailed ? (
                 <p className="text-sm text-correct text-center">
                   ✓ {t('account.emailKeySent')}
@@ -314,7 +314,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
                       {emailSending ? '…' : t('account.emailKeySend')}
                     </button>
                   </div>
-                  {emailError && <p className="text-error" style={{ fontSize: 12, marginTop: 6 }}>{emailError}</p>}
+                  {emailError && <p className="text-error text-12 mt-1">{emailError}</p>}
                 </>
               )}
             </div>
@@ -332,7 +332,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
       {/* Danger zone */}
       <div className="card" style={{ borderColor: 'rgba(232,57,29,0.4)' }}>
-        <h2 className="mb-2" style={{ fontSize: 16 }}>{t('account.session')}</h2>
+        <h2 className="mb-2 text-16">{t('account.session')}</h2>
         <p className="text-sm text-muted mb-4">
           {t('account.logoutDesc')}
         </p>
@@ -366,7 +366,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         )}
 
         {!confirmDelete && (
-          <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <div className="text-center mt-12">
             <button
               onClick={() => setConfirmDelete(true)}
               style={{
@@ -388,7 +388,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
       </div>
 
       {/* Legal */}
-      <div className="row-center gap-16" style={{ flexWrap: 'wrap', paddingBottom: 8 }}>
+      <div className="row-center gap-16 flex-wrap pb-2">
         {[
           { key: 'account.imprint',  href: 'https://www.bettermarks.com/impressum/' },
           { key: 'account.privacy',  href: 'https://www.bettermarks.com/datenschutz/' },
@@ -399,8 +399,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted"
-            style={{ fontSize: 12, textDecoration: 'none' }}
+            className="text-muted text-12 no-underline"
           >
             {t(key as ParseKeys)}
           </a>

@@ -52,10 +52,10 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
           padding: '14px 20px',
         }}
       >
-        <span style={{ fontSize: 28, lineHeight: 1 }}>
+        <span className="text-28 lh-1">
           {TIER_EMOJI[Math.min(playerLearningTier, 7)]}
         </span>
-        <div className="flex-1" style={{ minWidth: 0 }}>
+        <div className="flex-1 min-w-0">
           <div
             className="row-wrap fw-bold gap-8"
             style={{
@@ -71,7 +71,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
               {t('tiers.statusLevel', { tier: playerLearningTier })}
             </span>
           </div>
-          <div className="text-sm text-muted" style={{ marginTop: 3 }}>
+          <div className="text-sm text-muted mt-1">
             {isMaxTier
               ? t('tiers.allUnlocked')
               : t(`tiers.nextUnlock${playerLearningTier}` as ParseKeys)}
@@ -81,8 +81,8 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
 
       {/* Tier ladder */}
       <div className="card col gap-12">
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ margin: 0 }}>{t('tierPicker.adjustTitle')}</h2>
+        <div className="row-between">
+          <h2>{t('tierPicker.adjustTitle')}</h2>
           {!adjusting && (
             <button
               onClick={() => { setPendingTier(playerLearningTier); setAdjusting(true); }}
@@ -95,7 +95,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
 
         {adjusting ? (
           <>
-            <p className="text-sm text-muted" style={{ margin: 0 }}>
+            <p className="text-sm text-muted">
               {t('tierPicker.adjustBody')}
             </p>
             <TierLadder

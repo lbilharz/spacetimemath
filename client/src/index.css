@@ -310,7 +310,7 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
 }
 
 /* Misc */
-.divider-top    { border-top: 1px solid var(--border); padding-top: 8px; }
+.divider-top    { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 14px; }
 .divider-bottom { border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 .btn-link       { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: underline; padding: 0; }
 .code-box       { font-family: monospace; font-weight: 800; color: var(--accent); background: var(--card2); border: 2px solid var(--accent); border-radius: 10px; text-align: center; margin-bottom: 8px; }
@@ -444,3 +444,128 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
   font-family: inherit;
 }
 .mastery-cell--label { background: transparent; }
+
+/* ─── Additional typography scale ───────────────────────────── */
+.text-11  { font-size: 11px; }
+.text-12  { font-size: 12px; }
+.text-14  { font-size: 14px; }
+.text-15  { font-size: 15px; }
+.text-16  { font-size: 16px; }
+.text-18  { font-size: 18px; }
+.text-20  { font-size: 20px; }
+.text-22  { font-size: 22px; }
+.text-28  { font-size: 28px; }
+
+/* ─── Additional spacing ─────────────────────────────────────── */
+.mt-0    { margin-top: 0; }
+.mt-12   { margin-top: 12px; }
+.ml-6    { margin-left: 6px; }
+.ml-8    { margin-left: 8px; }
+.pb-2    { padding-bottom: 8px; }
+.pt-0    { padding-top: 0; }
+
+/* ─── Text helpers ───────────────────────────────────────────── */
+.no-underline  { text-decoration: none; }
+.nowrap        { white-space: nowrap; }
+.leading-tight { line-height: 1.2; }
+.leading-loose { line-height: 1.6; }
+.lh-1          { line-height: 1; }
+
+/* ─── Layout helpers ─────────────────────────────────────────── */
+.flex-wrap  { flex-wrap: wrap; }
+.shrink-0   { flex-shrink: 0; }
+.min-w-0    { min-width: 0; }
+
+/* ─── Component classes ──────────────────────────────────────── */
+/* Sprinting badge in lobby live list */
+.badge-playing {
+  display: inline-block;
+  background: var(--correct);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* BottomNav tab button */
+.bottomnav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 4px;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-icon  { font-size: 22px; }
+.nav-label { font-size: 10px; letter-spacing: -0.2px; }
+
+/* Reconnecting pill (App.tsx) */
+.reconnecting-pill {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Class-sprint alert overlay (App.tsx) */
+.class-sprint-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44,62,80,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 24px;
+}
+.class-sprint-card {
+  background: var(--accent);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* TopBar language toggle */
+.lang-toggle {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.lang-btn {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+.lang-btn--active {
+  background: var(--accent);
+  color: var(--text);
+}

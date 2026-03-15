@@ -58,10 +58,10 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
         {isTierStep ? (
           /* Tier picker card */
           <>
-            <div className="fw-extrabold" style={{ fontSize: 18, color: 'var(--text)', lineHeight: 1.2, textAlign: 'center' }}>
+            <div className="fw-extrabold text-18 leading-tight text-center">
               {t('tierPicker.cardTitle')}
             </div>
-            <div className="text-muted" style={{ fontSize: 13, lineHeight: 1.5, textAlign: 'center' }}>
+            <div className="text-muted text-sm text-center">
               {t('tierPicker.cardBody')}
             </div>
             <div style={{ width: '100%', maxHeight: 320, overflowY: 'auto' }}>
@@ -75,11 +75,11 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
         ) : (
           /* Info cards */
           <>
-            <div style={{ fontSize: 56, lineHeight: 1 }}>{card!.emoji}</div>
-            <div className="fw-extrabold" style={{ fontSize: 20, color: 'var(--text)', lineHeight: 1.2 }}>
+            <div className="lh-1" style={{ fontSize: 56 }}>{card!.emoji}</div>
+            <div className="fw-extrabold text-20 leading-tight">
               {t(card!.titleKey)}
             </div>
-            <div className="text-muted" style={{ fontSize: 15, lineHeight: 1.6 }}>
+            <div className="text-muted text-15">
               {t(card!.bodyKey)}
             </div>
           </>
