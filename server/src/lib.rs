@@ -1054,9 +1054,12 @@ pub struct RecoveryCodeResult {
     pub code: String,
 }
 
-/// ACCT-03: Result table for restore_account — private, holds recovered token for anonymous caller.
-/// Keyed by the anonymous caller's identity; row is consumed client-side on reload.
-#[table(accessor = restore_results)]
+/// ACCT-03: Result table for restore_account.
+/// Made public (not private) because SpacetimeDB 2.0.3 private tables cannot
+/// push rows to subscribers — same limitation as IssuedProblemResult (SEC-10).
+/// The token is short-lived: consumed the moment the client reloads, and the
+/// row is deleted in identity_disconnected so the window is <1 s.
+#[table(accessor = restore_results, public)]
 pub struct RestoreResult {
     #[primary_key]
     pub caller: Identity,

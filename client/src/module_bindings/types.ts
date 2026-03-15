@@ -33,6 +33,15 @@ export const BestScore = __t.object("BestScore", {
 });
 export type BestScore = __Infer<typeof BestScore>;
 
+export const ClassRecoveryResult = __t.object("ClassRecoveryResult", {
+  memberIdentity: __t.identity(),
+  teacherIdentity: __t.identity(),
+  classroomId: __t.u64(),
+  username: __t.string(),
+  code: __t.string(),
+});
+export type ClassRecoveryResult = __Infer<typeof ClassRecoveryResult>;
+
 export const ClassSprint = __t.object("ClassSprint", {
   id: __t.u64(),
   classroomId: __t.u64(),
@@ -126,6 +135,12 @@ export const RecoveryKey = __t.object("RecoveryKey", {
   token: __t.string(),
 });
 export type RecoveryKey = __Infer<typeof RecoveryKey>;
+
+export const RestoreResult = __t.object("RestoreResult", {
+  caller: __t.identity(),
+  token: __t.string(),
+});
+export type RestoreResult = __Infer<typeof RestoreResult>;
 
 export const Session = __t.object("Session", {
   id: __t.u64(),
