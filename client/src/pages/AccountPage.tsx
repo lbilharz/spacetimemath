@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { RecoveryCodeResult, TransferCodeResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
@@ -22,8 +22,13 @@ interface Props {
 
 export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const { t, i18n } = useTranslation();
+  const { identity } = useSpacetimeDB();
   const [transferCodeResults] = useTable(tables.transfer_code_results);
-  const [recoveryCodeResults] = useTable(tables.recovery_code_results);
+  const [recoveryCodeResults] = useTable(
+    identity
+      ? tables.recovery_code_results.where(r => r.owner.eq(identity))
+      : tables.recovery_code_results
+  );
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const createTransferCode = useSTDBReducer(reducers.createTransferCode);
   const cleanupCode = useSTDBReducer(reducers.useTransferCode);
@@ -36,9 +41,8 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const [nameSaved, setNameSaved] = useState(false);
 
   // Recovery key — read from private result table populated by getMyRecoveryCode reducer (SEC-03)
-  const myRecoveryKey = (recoveryCodeResults as unknown as RecoveryCodeResult[]).find(
-    r => r.owner.toHexString() === myIdentityHex
-  );
+  // Subscription is scoped to the caller's identity, so [0] is the only possible row.
+  const myRecoveryKey = (recoveryCodeResults as unknown as RecoveryCodeResult[])[0];
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
 
