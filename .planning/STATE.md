@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-02-PLAN.md — auth.rs and security.rs populated
-last_updated: "2026-03-15T19:59:26.041Z"
+stopped_at: Completed 07-03-PLAN.md — sprint.rs populated with 5 reducers + 2 pub(crate) helpers
+last_updated: "2026-03-15T20:04:27.241Z"
 last_activity: 2026-03-15 — Completed 07-01 (pub(crate) visibility promotion, mod declarations, five stub files)
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 29
-  completed_plans: 27
+  completed_plans: 28
   percent: 90
 ---
 
@@ -76,6 +76,7 @@ Progress: [█████████░] 90% (26 of 29 plans complete)
 | Phase 06-server-side-sprint-problem-sequencing P04 | 2min | 2 tasks | 0 files |
 | Phase 07-split-server-lib-rs-into-modules P01 | 5min | 2 tasks | 6 files |
 | Phase 07-split-server-lib-rs-into-modules P02 | 8min | 2 tasks | 3 files |
+| Phase 07-split-server-lib-rs-into-modules P03 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,8 @@ Recent decisions affecting current work:
 - [Phase 07-split-server-lib-rs-into-modules]: mod declarations placed immediately after use spacetimedb line, before CONSTANTS section — keeps imports at the top of the crate root
 - [Phase 07-split-server-lib-rs-into-modules]: SpacetimeDB table accessor traits must be explicitly imported per-module via use crate::{table_name}; — not inherited from lib.rs
 - [Phase 07-split-server-lib-rs-into-modules]: expire_transfer_codes moved to security.rs requires pub use security::expire_transfer_codes in lib.rs for scheduled() macro visibility at crate root
+- [Phase 07-split-server-lib-rs-into-modules]: fnv_index not imported in sprint.rs — only build_sequence (in lib.rs) uses it; sprint.rs functions don't call it directly
+- [Phase 07-split-server-lib-rs-into-modules]: finalize_class_sprint_sessions in lib.rs calls sprint::finalize_session and sprint::credit_session_to_player using module path syntax
 
 ### Roadmap Evolution
 
@@ -158,6 +161,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T19:59:26.037Z
-Stopped at: Completed 07-02-PLAN.md — auth.rs and security.rs populated
+Last session: 2026-03-15T20:04:27.238Z
+Stopped at: Completed 07-03-PLAN.md — sprint.rs populated with 5 reducers + 2 pub(crate) helpers
 Resume file: None
