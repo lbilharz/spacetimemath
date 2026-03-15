@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-03-PLAN.md — sprint.rs populated with 5 reducers + 2 pub(crate) helpers
-last_updated: "2026-03-15T20:04:27.241Z"
-last_activity: 2026-03-15 — Completed 07-01 (pub(crate) visibility promotion, mod declarations, five stub files)
+stopped_at: Completed 07-04-PLAN.md — classroom.rs + gdpr.rs extracted, lib.rs finalized, deployed to maincloud
+last_updated: "2026-03-15T20:20:26.892Z"
+last_activity: 2026-03-15 — Completed 07-04 (classroom.rs + gdpr.rs extraction, live deploy verified)
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 29
-  completed_plans: 28
-  percent: 90
+  completed_plans: 29
+  percent: 97
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 7 of 8 (Split server lib.rs into modules)
-Plan: 1 of 4 in current phase (07-01 complete)
+Plan: 4 of 4 in current phase (07-04 complete — Phase 7 DONE)
 Status: In Progress
-Last activity: 2026-03-15 — Completed 07-01 (pub(crate) visibility promotion, mod declarations, five stub files)
+Last activity: 2026-03-15 — Completed 07-04 (classroom.rs + gdpr.rs extraction, live deploy verified)
 
-Progress: [█████████░] 90% (26 of 29 plans complete)
+Progress: [█████████░] 97% (29 of 29 plans complete in phases 1-7)
 
 ## Performance Metrics
 
@@ -77,6 +77,7 @@ Progress: [█████████░] 90% (26 of 29 plans complete)
 | Phase 07-split-server-lib-rs-into-modules P01 | 5min | 2 tasks | 6 files |
 | Phase 07-split-server-lib-rs-into-modules P02 | 8min | 2 tasks | 3 files |
 | Phase 07-split-server-lib-rs-into-modules P03 | 3min | 2 tasks | 2 files |
+| Phase 07-split-server-lib-rs-into-modules P04 | ~15min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -143,6 +144,9 @@ Recent decisions affecting current work:
 - [Phase 07-split-server-lib-rs-into-modules]: expire_transfer_codes moved to security.rs requires pub use security::expire_transfer_codes in lib.rs for scheduled() macro visibility at crate root
 - [Phase 07-split-server-lib-rs-into-modules]: fnv_index not imported in sprint.rs — only build_sequence (in lib.rs) uses it; sprint.rs functions don't call it directly
 - [Phase 07-split-server-lib-rs-into-modules]: finalize_class_sprint_sessions in lib.rs calls sprint::finalize_session and sprint::credit_session_to_player using module path syntax
+- [Phase 07-split-server-lib-rs-into-modules]: finalize_class_sprint_sessions kept private in classroom.rs (not pub(crate)) — internal implementation detail of end_class_sprint and auto_end_class_sprint only
+- [Phase 07-split-server-lib-rs-into-modules]: lib.rs final state: schema tables + mod declarations + lifecycle reducers + migrate_* reducers + pub(crate) helpers/constants; all extracted reducers removed; line count reduced from ~1850 to ~700-900
+- [Phase 07-split-server-lib-rs-into-modules]: Phase 7 fully complete — six-file server module split deployed and verified live on maincloud (MOD-04 satisfied)
 
 ### Roadmap Evolution
 
@@ -161,6 +165,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:04:27.238Z
-Stopped at: Completed 07-03-PLAN.md — sprint.rs populated with 5 reducers + 2 pub(crate) helpers
+Last session: 2026-03-15T20:30:00.000Z
+Stopped at: Completed 07-04-PLAN.md — classroom.rs + gdpr.rs extracted, lib.rs finalized, deployed to maincloud
 Resume file: None
