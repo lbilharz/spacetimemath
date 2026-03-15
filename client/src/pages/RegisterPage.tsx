@@ -1,7 +1,7 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReducer as useSTDBReducer } from 'spacetimedb/react';
-import { reducers } from '../module_bindings/index.js';
+import { useReducer as useSTDBReducer, useTable } from 'spacetimedb/react';
+import { reducers, tables } from '../module_bindings/index.js';
 // transfer_codes and recovery_keys are now private tables (SEC-01/SEC-02).
 // Account restore via code entry is temporarily broken — requires a server-side restore reducer.
 import { capturedToken } from '../auth.js';
@@ -24,9 +24,6 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [code, setCode] = useState('');
   const [restoreError, setRestoreError] = useState('');
   const [restoring, setRestoring] = useState(false);
-  // TODO (post-SEC): restore via code is temporarily disabled — transfer_codes and recovery_keys
-  // are now private (SEC-01/02). A server-side restore reducer is needed to return the token.
-  // For now: auto-restore from URL still populates the code field but cannot complete automatically.
   const [autoRestoreCode, setAutoRestoreCode] = useState<string | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -40,6 +37,12 @@ export default function RegisterPage({ onRegistered }: Props) {
       setAutoRestoreCode(upper);
     }
   }, []);
+
+  const restoreAccount = useSTDBReducer(reducers.restoreAccount);
+  const [restoreResults] = useTable(tables.restore_results);
+  // Ref so the async polling loop always reads the latest rows (avoids stale closure)
+  const restoreResultsRef = useRef<typeof restoreResults>([]);
+  useEffect(() => { restoreResultsRef.current = restoreResults; }, [restoreResults]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -65,12 +68,49 @@ export default function RegisterPage({ onRegistered }: Props) {
 
   const handleRestore = async (e: FormEvent) => {
     e.preventDefault();
-    // TODO (post-SEC): restore via code lookup is temporarily disabled (SEC-01/02).
-    // transfer_codes and recovery_keys are now private tables. A server-side
-    // restore reducer is needed before this feature works again.
-    setRestoreError(t('register.restoreError'));
-    setRestoring(false);
+    const upper = code.trim().toUpperCase();
+    if (upper.length !== 12) {
+      setRestoreError(t('register.restoreError'));
+      return;
+    }
+    setRestoring(true);
+    setRestoreError('');
+    try {
+      await restoreAccount({ code: upper });
+      // Poll for result row (private table rows arrive automatically to our identity)
+      const POLL_INTERVAL = 50;
+      const TIMEOUT = 5_000;
+      const deadline = Date.now() + TIMEOUT;
+      type RestoreRow = { caller: { toHexString: () => string }; token: string };
+      const getRow = () =>
+        (restoreResultsRef.current as unknown as RestoreRow[]).find(r => r.token.length > 0);
+      let row = getRow();
+      while (!row && Date.now() < deadline) {
+        await new Promise(res => setTimeout(res, POLL_INTERVAL));
+        row = getRow();
+      }
+      if (!row) {
+        setRestoreError(t('register.restoreError'));
+        setRestoring(false);
+        return;
+      }
+      const CREDS_KEY = 'spacetimemath_credentials';
+      localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: '', token: row.token }));
+      window.location.reload();
+    } catch {
+      setRestoreError(t('register.restoreError'));
+      setRestoring(false);
+    }
   };
+
+  // Auto-trigger restore when code is pre-populated from URL
+  useEffect(() => {
+    if (autoRestoreCode && !restoring) {
+      const synth = { preventDefault: () => {} } as unknown as FormEvent;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleRestore(synth);
+    }
+  }, [autoRestoreCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="page" style={{ justifyContent: 'center', minHeight: '80vh' }}>
