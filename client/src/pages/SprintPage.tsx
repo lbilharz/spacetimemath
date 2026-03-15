@@ -188,10 +188,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   }, [sessions, myIdentityHex, sessionId, classSprintId]);
 
   // 3a. When session is detected, kick off the pre-countdown
+  // Normal sprint: pre-fetch first problem immediately so it arrives before countdown ends
   useEffect(() => {
     if (sessionId === null || preCountdown !== null || sprintStarted) return;
     setPreCountdown(3);
-  }, [sessionId, preCountdown, sprintStarted]);
+    if (!isDiagnostic) {
+      nextProblem({ sessionId });
+    }
+  }, [sessionId, preCountdown, sprintStarted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 3b. Tick the pre-countdown: 3→2→1→0("Go!")→null+sprintStarted
   useEffect(() => {
