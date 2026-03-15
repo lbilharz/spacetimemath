@@ -157,7 +157,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
           background: 'rgba(93,210,60,0.15)', border: '1px solid rgba(93,210,60,0.35)',
           borderRadius: 20, padding: '3px 10px', fontWeight: 600, color: 'var(--green)', marginBottom: 12 }}>
           <span style={{ width: 12, height: 12, borderRadius: '50%', background: 'green', display: 'inline-block' }} />
-          {allOnline.length} {t('leaderboard.colPlayer')} {t('lobby.online')}</h2>
+          {t('lobby.onlineCount', { count: allOnline.length })}</h2>
         <div style={{
           maxHeight: liveList.length > 8 ? 264 : undefined,
           overflowY: 'auto',

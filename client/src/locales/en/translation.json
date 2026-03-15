@@ -41,6 +41,8 @@
   },
   "lobby": {
     "online": "online",
+    "onlineCount_one": "{{count}} player online",
+    "onlineCount_other": "{{count}} players online",
     "sprinting": "▶ Playing",
     "you": "you",
     "more": "more",
