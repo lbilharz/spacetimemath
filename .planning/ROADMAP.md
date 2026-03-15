@@ -147,10 +147,11 @@ Plans:
 
 ### Phase 8: tokenized fetch for sensitive one-shot results
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Server-enforced subscription scoping and consume-after-read for the three sensitive result tables — other connected clients receive zero rows; the restore_results row is deleted immediately after the restore token is written to localStorage
+**Requirements**: SCOPE-01, SCOPE-02, SCOPE-03, CONSUME-01
 **Depends on:** Phase 7
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 8 to break down)
+- [ ] 08-01-PLAN.md — Wave 1: Client subscription scoping — scope all three useTable() calls to caller's identity (AccountPage, RegisterPage, ClassroomPage)
+- [ ] 08-02-PLAN.md — Wave 2: Server consume_restore_result reducer + client consume call in RegisterPage + make deploy
