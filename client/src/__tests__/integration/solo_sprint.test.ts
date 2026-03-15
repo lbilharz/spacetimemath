@@ -15,22 +15,32 @@ const ANSWERS = [
 ];
 
 /**
- * SEC-10: issue a problem and return the server-issued token so it can be
- * passed to submitAnswer.
+ * Normal sprint path: call nextProblem and return the server-delivered
+ * (a, b, token) from next_problem_results.
  */
-async function getToken(
+async function getNextProblemToken(
   client: ConnectedClient,
   sessionId: bigint,
-  a: number,
-  b: number,
-): Promise<string> {
-  await client.conn.reducers.issueProblem({ sessionId, a, b });
+): Promise<{ a: number; b: number; token: string }> {
+  // Capture current token to detect when a fresh result arrives
+  let before: string | undefined;
+  for (const r of (client.conn.db as any).next_problem_results.iter()) {
+    if (r.owner.toHexString() === client.identity.toHexString()) {
+      before = r.token;
+      break;
+    }
+  }
+
+  await client.conn.reducers.nextProblem({ sessionId });
+
   const result = await waitFor(() => {
-    for (const r of client.conn.db.issued_problem_results.iter()) {
-      if (r.owner.toHexString() === client.identity.toHexString()) return r;
+    for (const r of (client.conn.db as any).next_problem_results.iter()) {
+      if (r.owner.toHexString() === client.identity.toHexString()) {
+        if (r.token !== before) return r; // fresh result
+      }
     }
   }, 5_000);
-  return result.token;
+  return { a: result.a, b: result.b, token: result.token };
 }
 
 describe('solo sprint (start → submit → end)', () => {
@@ -61,39 +71,52 @@ describe('solo sprint (start → submit → end)', () => {
   });
 
   it('submit_answer records correct answers and increments totalAnswered', async () => {
-    for (const ans of ANSWERS) {
-      const token = await getToken(client, sessionId, ans.a, ans.b);
-      await client.conn.reducers.submitAnswer({ sessionId, ...ans, problemToken: token });
+    const idHex = client.identity.toHexString();
+    const countBefore = [...client.conn.db.answers.iter()].filter(
+      a => a.playerIdentity.toHexString() === idHex
+    ).length;
+
+    // Normal sprint path: let the server pick 4 problems via nextProblem
+    for (let i = 0; i < ANSWERS.length; i++) {
+      const { a, b, token } = await getNextProblemToken(client, sessionId);
+      await client.conn.reducers.submitAnswer({
+        sessionId,
+        a,
+        b,
+        userAnswer: a * b, // always correct
+        responseMs: 800,
+        problemToken: token,
+      });
     }
 
-    const idHex = client.identity.toHexString();
     // Wait until all 4 answers are recorded
     const answers = await waitFor(() => {
       const all = [...client.conn.db.answers.iter()].filter(
         a => a.playerIdentity.toHexString() === idHex
       );
-      return all.length >= ANSWERS.length ? all : undefined;
+      return all.length >= countBefore + ANSWERS.length ? all : undefined;
     });
 
-    const correct = answers.filter(a => a.isCorrect);
+    const newAnswers = answers.slice(countBefore);
+    const correct = newAnswers.filter(a => a.isCorrect);
     expect(correct).toHaveLength(ANSWERS.length); // all 4 are correct
   });
 
   it('wrong answer is recorded as isCorrect = false', async () => {
     const idHex = client.identity.toHexString();
-    // Use a tier-0 pair (a:1, b:2) with a deliberate wrong answer
-    const token = await getToken(client, sessionId, 1, 2);
-    await client.conn.reducers.submitAnswer({ sessionId, a: 1, b: 2, userAnswer: 99, responseMs: 1000, problemToken: token });
+    // Normal sprint path: get a server-picked pair and submit the wrong answer
+    const { a, b, token } = await getNextProblemToken(client, sessionId);
+    const wrongAnswer = (a * b) + 1; // definitely wrong
+    await client.conn.reducers.submitAnswer({ sessionId, a, b, userAnswer: wrongAnswer, responseMs: 1000, problemToken: token });
 
     const wrong = await waitFor(() => {
-      for (const a of client.conn.db.answers.iter()) {
-        if (a.playerIdentity.toHexString() === idHex && !a.isCorrect) return a;
+      for (const ans of client.conn.db.answers.iter()) {
+        if (ans.playerIdentity.toHexString() === idHex && !ans.isCorrect) return ans;
       }
     });
 
-    expect(wrong.a).toBe(1);
-    expect(wrong.b).toBe(2);
-    expect(wrong.userAnswer).toBe(99);
+    expect(wrong.isCorrect).toBe(false);
+    expect(wrong.userAnswer).toBe(wrongAnswer);
   });
 
   it('end_session marks session complete and sets a positive weightedScore', async () => {

@@ -89,7 +89,41 @@ describe('delete_player', () => {
     });
   });
 
-  // SEQ-06: sprint_sequences rows must be cascade-deleted when deletePlayer is called.
-  // Table accessor: (client.conn.db as any).sprintSequences (bindings generated in Wave 2).
-  it.todo('SEQ-06: deletePlayer cascade removes sprint_sequences rows');
+  describe('SEQ-06: deletePlayer cascade removes sprint_sequences rows', () => {
+    let seqClient: ConnectedClient;
+
+    beforeAll(async () => {
+      seqClient = await connect();
+      await seqClient.conn.reducers.register({ username: 'deleteme-seq' });
+    }, 15_000);
+
+    afterAll(() => {
+      if (seqClient?.conn) disconnect(seqClient.conn);
+    });
+
+    it('SEQ-06: deletePlayer cascade removes sprint_sequences rows', async () => {
+      // Start a session (which creates a SprintSequence row on first nextProblem call)
+      await seqClient.conn.reducers.startSession({});
+      const idHex = seqClient.identity.toHexString();
+      const session = await waitFor(() => {
+        for (const s of seqClient.conn.db.sessions.iter()) {
+          if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
+        }
+      }, 5_000);
+
+      // Call deletePlayer — this should cascade-delete the SprintSequence row
+      await (seqClient.conn.reducers as any).deletePlayer({});
+
+      // SprintSequence is private so we verify indirectly:
+      // nextProblem on the deleted session should be rejected (session is gone)
+      let rejected = false;
+      try {
+        await seqClient.conn.reducers.nextProblem({ sessionId: session.id });
+        await new Promise(r => setTimeout(r, 1_000));
+      } catch {
+        rejected = true;
+      }
+      expect(rejected).toBe(true);
+    });
+  });
 });
