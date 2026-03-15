@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 07-01-PLAN.md — lib.rs visibility promotion + five stub modules
-last_updated: "2026-03-15T20:52:30Z"
+status: executing
+stopped_at: Completed 07-02-PLAN.md — auth.rs and security.rs populated
+last_updated: "2026-03-15T19:59:26.041Z"
 last_activity: 2026-03-15 — Completed 07-01 (pub(crate) visibility promotion, mod declarations, five stub files)
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 29
-  completed_plans: 26
+  completed_plans: 27
   percent: 90
 ---
 
@@ -75,6 +75,7 @@ Progress: [█████████░] 90% (26 of 29 plans complete)
 | Phase 06-server-side-sprint-problem-sequencing P03 | 8min | 2 tasks | 5 files |
 | Phase 06-server-side-sprint-problem-sequencing P04 | 2min | 2 tasks | 0 files |
 | Phase 07-split-server-lib-rs-into-modules P01 | 5min | 2 tasks | 6 files |
+| Phase 07-split-server-lib-rs-into-modules P02 | 8min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,8 @@ Recent decisions affecting current work:
 - [Phase 06-server-side-sprint-problem-sequencing]: Phase 6 security goal confirmed by human DevTools inspection — no future problem sequence visible in React DevTools state or refs during a live normal sprint; all six SEQ requirements satisfied
 - [Phase 07-split-server-lib-rs-into-modules]: Visibility promotion done as isolated atomic step — compiler verifies pub(crate) changes compile before any code moves across module boundaries
 - [Phase 07-split-server-lib-rs-into-modules]: mod declarations placed immediately after use spacetimedb line, before CONSTANTS section — keeps imports at the top of the crate root
+- [Phase 07-split-server-lib-rs-into-modules]: SpacetimeDB table accessor traits must be explicitly imported per-module via use crate::{table_name}; — not inherited from lib.rs
+- [Phase 07-split-server-lib-rs-into-modules]: expire_transfer_codes moved to security.rs requires pub use security::expire_transfer_codes in lib.rs for scheduled() macro visibility at crate root
 
 ### Roadmap Evolution
 
@@ -155,6 +158,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:52:30Z
-Stopped at: Completed 07-01-PLAN.md — lib.rs visibility promotion + five stub modules
+Last session: 2026-03-15T19:59:26.037Z
+Stopped at: Completed 07-02-PLAN.md — auth.rs and security.rs populated
 Resume file: None
