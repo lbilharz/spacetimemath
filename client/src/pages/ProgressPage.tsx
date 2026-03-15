@@ -1,30 +1,45 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
-import { useTable } from 'spacetimedb/react';
-import { tables } from '../module_bindings/index.js';
+import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { tables, reducers } from '../module_bindings/index.js';
 import type { Answer, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import SprintHistory from '../components/SprintHistory.js';
 import ScoringGuide from '../components/ScoringGuide.js';
+import TierLadder from '../components/TierLadder.js';
 
 interface Props {
   myIdentityHex: string;
   playerLearningTier?: number;
 }
 
-const TIER_EMOJI = ['🌱', '🔨', '⚡', '🏆'];
+const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
 
 export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: Props) {
   const { t } = useTranslation();
   const [sessions]     = useTable(tables.sessions);
   const [answers]      = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
+  const setLearningTier = useSTDBReducer(reducers.setLearningTier);
+
+  const [adjusting, setAdjusting]     = useState(false);
+  const [pendingTier, setPendingTier] = useState(playerLearningTier);
+  const [saving, setSaving]           = useState(false);
 
   const myAnswers = (answers as unknown as Answer[]).filter(
     a => a.playerIdentity.toHexString() === myIdentityHex
   );
 
-  const isMaxTier = playerLearningTier >= 3;
+  const isMaxTier = playerLearningTier >= 7;
+
+  const handleSetTier = async () => {
+    if (saving || pendingTier === playerLearningTier) { setAdjusting(false); return; }
+    setSaving(true);
+    await setLearningTier({ tier: pendingTier });
+    setSaving(false);
+    setAdjusting(false);
+  };
 
   return (
     <div className="page">
@@ -37,7 +52,9 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
           padding: '14px 20px',
         }}
       >
-        <span style={{ fontSize: 28, lineHeight: 1 }}>{TIER_EMOJI[Math.min(playerLearningTier, 3)]}</span>
+        <span style={{ fontSize: 28, lineHeight: 1 }}>
+          {TIER_EMOJI[Math.min(playerLearningTier, 7)]}
+        </span>
         <div className="flex-1" style={{ minWidth: 0 }}>
           <div
             className="row-wrap fw-bold gap-8"
@@ -62,6 +79,52 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
         </div>
       </div>
 
+      {/* Tier ladder */}
+      <div className="card col gap-12">
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ margin: 0 }}>{t('tierPicker.adjustTitle')}</h2>
+          {!adjusting && (
+            <button
+              onClick={() => { setPendingTier(playerLearningTier); setAdjusting(true); }}
+              className="btn btn-secondary btn-sm"
+            >
+              ✏️ {t('tierPicker.adjustTitle')}
+            </button>
+          )}
+        </div>
+
+        {adjusting ? (
+          <>
+            <p className="text-sm text-muted" style={{ margin: 0 }}>
+              {t('tierPicker.adjustBody')}
+            </p>
+            <TierLadder
+              currentTier={playerLearningTier}
+              selectedTier={pendingTier}
+              onSelect={setPendingTier}
+            />
+            <div className="row gap-8">
+              <button
+                onClick={() => setAdjusting(false)}
+                className="btn btn-secondary btn-sm flex-1"
+              >
+                {t('onboarding.back')}
+              </button>
+              <button
+                onClick={handleSetTier}
+                disabled={saving}
+                className="btn btn-primary btn-sm flex-1"
+                style={{ opacity: saving ? 0.7 : 1 }}
+              >
+                {saving ? '…' : t('tierPicker.setLevel')}
+              </button>
+            </div>
+          </>
+        ) : (
+          <TierLadder currentTier={playerLearningTier} />
+        )}
+      </div>
+
       <div id="mastery" className="card">
         <h2 className="mb-1">{t('lobby.masteryTitle')}</h2>
         <p className="text-sm text-muted mb-4">
@@ -70,7 +133,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
         <MasteryGrid
           answers={myAnswers}
           problemStats={problemStats as unknown as ProblemStat[]}
-          tier1Unlocked={playerLearningTier >= 3}
+          tier1Unlocked={playerLearningTier >= 7}
           playerLearningTier={playerLearningTier}
         />
       </div>

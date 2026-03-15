@@ -27,6 +27,7 @@ import MigrateSeedExtendedPairsReducer from "../migrate_seed_extended_pairs_redu
 import RegenerateRecoveryKeyReducer from "../regenerate_recovery_key_reducer";
 import RegisterReducer from "../register_reducer";
 import RestoreAccountReducer from "../restore_account_reducer";
+import SetLearningTierReducer from "../set_learning_tier_reducer";
 import SetUsernameReducer from "../set_username_reducer";
 import StartClassSprintReducer from "../start_class_sprint_reducer";
 import StartSessionReducer from "../start_session_reducer";
@@ -55,6 +56,7 @@ export type MigrateSeedExtendedPairsParams = __Infer<typeof MigrateSeedExtendedP
 export type RegenerateRecoveryKeyParams = __Infer<typeof RegenerateRecoveryKeyReducer>;
 export type RegisterParams = __Infer<typeof RegisterReducer>;
 export type RestoreAccountParams = __Infer<typeof RestoreAccountReducer>;
+export type SetLearningTierParams = __Infer<typeof SetLearningTierReducer>;
 export type SetUsernameParams = __Infer<typeof SetUsernameReducer>;
 export type StartClassSprintParams = __Infer<typeof StartClassSprintReducer>;
 export type StartSessionParams = __Infer<typeof StartSessionReducer>;

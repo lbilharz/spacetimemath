@@ -55,6 +55,7 @@ import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reduc
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
 import RestoreAccountReducer from "./restore_account_reducer";
+import SetLearningTierReducer from "./set_learning_tier_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartClassSprintReducer from "./start_class_sprint_reducer";
 import StartSessionReducer from "./start_session_reducer";
@@ -305,6 +306,7 @@ const reducersSchema = __reducers(
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("restore_account", RestoreAccountReducer),
+  __reducerSchema("set_learning_tier", SetLearningTierReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_class_sprint", StartClassSprintReducer),
   __reducerSchema("start_session", StartSessionReducer),

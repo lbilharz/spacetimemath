@@ -278,6 +278,21 @@
     "noScoresYet": "Noch keine Punkte",
     "diagnostic": "Lernstandserhebung (60s)"
   },
+  "tierPicker": {
+    "cardTitle": "Wähle dein Startniveau",
+    "cardBody": "Sag uns, was du schon kannst — du kannst es jederzeit ändern.",
+    "adjustTitle": "Niveau anpassen",
+    "adjustBody": "Übe einfachere Tabellen oder steige höher ein.",
+    "setLevel": "Niveau setzen",
+    "tier0Desc": "Ich fange gerade erst an",
+    "tier1Desc": "Ich kenne ×1, ×2 und ×10",
+    "tier2Desc": "Ich kenne auch ×3",
+    "tier3Desc": "Ich kenne auch ×5",
+    "tier4Desc": "Ich kenne auch ×4",
+    "tier5Desc": "Ich kenne auch ×6",
+    "tier6Desc": "Ich kenne auch ×7",
+    "tier7Desc": "Ich kenne alle Einmaleins-Reihen!"
+  },
   "tiers": {
     "unlocked1": "×3 freigeschaltet!",
     "unlockedDesc1": "Die 3er-Reihe ist offen. Übe 3×1 bis 3×10.",

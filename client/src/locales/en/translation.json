@@ -278,6 +278,21 @@
     "noScoresYet": "No scores yet",
     "diagnostic": "Diagnostic assessment (60s)"
   },
+  "tierPicker": {
+    "cardTitle": "Pick Your Starting Level",
+    "cardBody": "Choose where you want to begin — you can always adjust later.",
+    "adjustTitle": "Adjust Level",
+    "adjustBody": "Practice easier tables or jump ahead.",
+    "setLevel": "Set Level",
+    "tier0Desc": "Just starting out",
+    "tier1Desc": "I know ×1, ×2 and ×10",
+    "tier2Desc": "I also know ×3",
+    "tier3Desc": "I also know ×5",
+    "tier4Desc": "I also know ×4",
+    "tier5Desc": "I also know ×6",
+    "tier6Desc": "I also know ×7",
+    "tier7Desc": "I know all my tables!"
+  },
   "tiers": {
     "unlocked1": "×3 unlocked!",
     "unlockedDesc1": "The 3s table is open. Practice 3×1 through 3×10.",

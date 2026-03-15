@@ -948,6 +948,23 @@ pub fn complete_onboarding(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// Let a player declare their starting learning tier (0–MAX_TIER).
+/// Used in onboarding to skip tiers the player already knows.
+/// Also allows downgrading from ProgressPage if a player wants more practice on easier tables.
+#[reducer]
+pub fn set_learning_tier(ctx: &ReducerContext, tier: u8) -> Result<(), String> {
+    if tier > MAX_TIER {
+        return Err(format!("Tier must be 0–{}", MAX_TIER));
+    }
+    let player = get_player(ctx)?;
+    ctx.db.players().identity().update(Player { learning_tier: tier, ..player });
+    // Also sync BestScore.learning_tier if it exists
+    if let Some(bs) = ctx.db.best_scores().player_identity().find(ctx.sender()) {
+        ctx.db.best_scores().player_identity().update(BestScore { learning_tier: tier, ..bs });
+    }
+    Ok(())
+}
+
 /// Mark that the player has emailed themselves their recovery key.
 /// Persisted server-side so the nag banner stays gone across all devices.
 #[reducer]
