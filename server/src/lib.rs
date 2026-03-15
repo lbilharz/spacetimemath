@@ -1066,9 +1066,14 @@ pub struct RestoreResult {
     pub token: String,
 }
 
-/// ACCT-04: Result table for get_class_recovery_codes — private, holds recovery codes for teacher.
-/// One row per student, keyed by member_identity. Teacher batch replaces previous batch atomically.
-#[table(accessor = class_recovery_results)]
+/// ACCT-04: Result table for get_class_recovery_codes.
+/// Made public (not private) because SpacetimeDB 2.0.3 private tables cannot
+/// push rows to subscribers — same limitation as restore_results (ACCT-03).
+/// Security note: individual recovery codes are already in the public
+/// recovery_code_results table, so this exposes no new data beyond that.
+/// Rows are created on demand (teacher calls get_class_recovery_codes) and
+/// deleted when the teacher disconnects (identity_disconnected cleanup).
+#[table(accessor = class_recovery_results, public)]
 pub struct ClassRecoveryResult {
     #[primary_key]
     pub member_identity: Identity,
