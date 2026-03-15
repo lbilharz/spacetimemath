@@ -87,6 +87,13 @@ None.
 - Recovery code display will work correctly: App.tsx hydrates once on connect, AccountPage reads from the table
 - Ready to proceed to next plan in Phase 03
 
+## Self-Check: PASSED
+
+- SUMMARY.md created at `.planning/phases/03-ux-and-client-bug-fixes/03-01-SUMMARY.md` - FOUND
+- Task 1 commit `b75d169` - FOUND
+- Task 2 commit `a2fed69` - FOUND
+- Metadata commit `756bac6` - FOUND
+
 ---
 *Phase: 03-ux-and-client-bug-fixes*
 *Completed: 2026-03-14*

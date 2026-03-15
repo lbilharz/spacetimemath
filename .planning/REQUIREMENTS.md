@@ -57,6 +57,11 @@ Requirements for the safe-for-public-launch milestone. All map to roadmap phases
 
 Deferred to a future milestone. Tracked but not in current roadmap.
 
+### Account Recovery
+
+- **ACCT-03**: Account restore via recovery key works end-to-end — a new anonymous connection can enter a recovery code and reclaim the original account session token via a server-side reducer (no client-side table lookup of private `recovery_keys`)
+- **ACCT-04**: Teachers can re-download the recovery code sheet for their class at any time from ClassroomPage — not just at classroom creation
+
 ### Legal Documents
 
 - **LEGAL-01**: German Datenschutzerklärung (privacy policy, GDPR Art. 13)
@@ -92,6 +97,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| ACCT-03 | Phase 5 | Planned |
+| ACCT-04 | Phase 5 | Planned |
 | SEC-01 | Phase 1 | Complete |
 | SEC-02 | Phase 1 | Complete |
 | SEC-03 | Phase 1 | Complete |
@@ -118,7 +125,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1 requirements: 23 total
-- Mapped to phases: 23 (complete)
+- v2 requirements promoted to v1: ACCT-03, ACCT-04
+- Mapped to phases: 25 (complete)
 - Unmapped: 0 ✓
 
 ---

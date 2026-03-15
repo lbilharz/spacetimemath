@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { useTable } from 'spacetimedb/react';
-import { tables } from '../module_bindings/index.js';
+import { tables } from '../module_bindings';
 import type { ProblemStat } from '../module_bindings/types.js';
 import { getRechenweg } from '../utils/rechenwege.js';
 import MasteryGrid from '../components/MasteryGrid.js';
