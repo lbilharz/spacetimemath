@@ -195,11 +195,7 @@
     "colAnswers": "Ans.",
     "you": "you",
     "footer": "Score = Σ difficulty weight of correct answers · Updates live via SpaceTimeDB",
-    "tierAll": "All",
-    "tier0": "Starter",
-    "tier1": "Building",
-    "tier2": "Advanced",
-    "tier3": "Extended"
+    "tierAll": "All"
   },
   "unlock": {
     "tier1Title": "2-Digit Multiplier Unlocked!",

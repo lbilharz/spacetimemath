@@ -195,11 +195,7 @@
     "colAnswers": "Ant.",
     "you": "du",
     "footer": "Punkte = Σ Schwierigkeit aller richtigen Antworten · Live via SpaceTimeDB",
-    "tierAll": "Alle",
-    "tier0": "Einsteiger",
-    "tier1": "Aufbau",
-    "tier2": "Fortgeschritten",
-    "tier3": "Erweitert"
+    "tierAll": "Alle"
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",

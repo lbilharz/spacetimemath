@@ -11,7 +11,7 @@ type BestScore = {
   learningTier: number;
 };
 
-const TIER_EMOJI = ['🌱', '🔨', '⚡', '🏆'];
+const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
 interface Props {
   bestScores: BestScore[];
@@ -67,7 +67,7 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
                 color: tierFilter === tier ? '#000' : 'var(--muted)',
               }}
             >
-              {TIER_EMOJI[Math.min(tier, 3)]} {t(`leaderboard.tier${tier}` as ParseKeys)}
+              {TIER_EMOJI[Math.min(tier, 7)]} {t(`tiers.tier${tier}Name` as ParseKeys)}
             </button>
           ))}
         </div>
