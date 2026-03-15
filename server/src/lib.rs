@@ -541,7 +541,7 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
 pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
     for _ in 0..200 {
-        if ctx.db.sessions().try_insert(Session {
+        if let Ok(inserted) = ctx.db.sessions().try_insert(Session {
             id: 0,
             player_identity: ctx.sender(),
             username: player.username.clone(),
@@ -552,7 +552,15 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
             is_complete: false,
             started_at: ctx.timestamp,
             class_sprint_id: 0,
-        }).is_ok() {
+        }) {
+            // SEQ: generate and store problem sequence for this session
+            let seq_str = build_sequence(ctx, inserted.id, player.learning_tier);
+            ctx.db.sprint_sequences().insert(SprintSequence {
+                session_id: inserted.id,
+                player_identity: ctx.sender(),
+                sequence: seq_str,
+                index: 0,
+            });
             return Ok(());
         }
     }
@@ -789,6 +797,8 @@ pub fn submit_answer(
 fn finalize_session(ctx: &ReducerContext, session: Session) {
     if session.is_complete { return; }
     let session_id = session.id;
+    // SEQ: clean up sprint sequence (no longer needed after session ends)
+    ctx.db.sprint_sequences().session_id().delete(session_id);
     let answers: Vec<Answer> = ctx.db.answers().iter().filter(|a| a.session_id == session_id).collect();
     let total = answers.len() as u32;
     if total == 0 {
@@ -1656,7 +1666,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
             // migration resetting it. Retry until the counter moves past existing IDs.
             let mut success = false;
             for _ in 0..200 {
-                if ctx.db.sessions().try_insert(Session {
+                if let Ok(inserted_sess) = ctx.db.sessions().try_insert(Session {
                     id: 0,
                     player_identity: member.player_identity,
                     username: player.username.clone(),
@@ -1667,7 +1677,15 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
                     is_complete: false,
                     started_at: ctx.timestamp,
                     class_sprint_id: sprint.id,
-                }).is_ok() {
+                }) {
+                    // SEQ: generate and store problem sequence for this student session
+                    let seq_str = build_sequence(ctx, inserted_sess.id, player.learning_tier);
+                    ctx.db.sprint_sequences().insert(SprintSequence {
+                        session_id: inserted_sess.id,
+                        player_identity: member.player_identity,
+                        sequence: seq_str,
+                        index: 0,
+                    });
                     success = true;
                     break;
                 }
@@ -1758,6 +1776,11 @@ pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
             .map(|ip| ip.id)
             .collect();
         for id in to_delete { ctx.db.issued_problems().id().delete(id); }
+    }
+
+    // 2b. Delete sprint_sequences for those sessions (SEQ-06 GDPR cascade)
+    for sid in &session_ids {
+        ctx.db.sprint_sequences().session_id().delete(*sid);
     }
 
     // 3. Delete answers

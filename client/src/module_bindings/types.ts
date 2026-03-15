@@ -90,6 +90,15 @@ export const IssuedProblemResult = __t.object("IssuedProblemResult", {
 });
 export type IssuedProblemResult = __Infer<typeof IssuedProblemResult>;
 
+export const NextProblemResult = __t.object("NextProblemResult", {
+  owner: __t.identity(),
+  sessionId: __t.u64(),
+  a: __t.u8(),
+  b: __t.u8(),
+  token: __t.string(),
+});
+export type NextProblemResult = __Infer<typeof NextProblemResult>;
+
 export const OnlinePlayer = __t.object("OnlinePlayer", {
   identity: __t.identity(),
   username: __t.string(),
@@ -155,6 +164,14 @@ export const Session = __t.object("Session", {
   classSprintId: __t.u64(),
 });
 export type Session = __Infer<typeof Session>;
+
+export const SprintSequence = __t.object("SprintSequence", {
+  sessionId: __t.u64(),
+  playerIdentity: __t.identity(),
+  sequence: __t.string(),
+  index: __t.u32(),
+});
+export type SprintSequence = __Infer<typeof SprintSequence>;
 
 export const TransferCode = __t.object("TransferCode", {
   code: __t.string(),

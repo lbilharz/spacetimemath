@@ -24,6 +24,7 @@ import MigrateRecomputeTiersV2Reducer from "../migrate_recompute_tiers_v_2_reduc
 import MigrateResetWeightsReducer from "../migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "../migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "../migrate_seed_extended_pairs_reducer";
+import NextProblemReducer from "../next_problem_reducer";
 import RegenerateRecoveryKeyReducer from "../regenerate_recovery_key_reducer";
 import RegisterReducer from "../register_reducer";
 import RestoreAccountReducer from "../restore_account_reducer";
@@ -53,6 +54,7 @@ export type MigrateRecomputeTiersV2Params = __Infer<typeof MigrateRecomputeTiers
 export type MigrateResetWeightsParams = __Infer<typeof MigrateResetWeightsReducer>;
 export type MigrateSeedBestScoresParams = __Infer<typeof MigrateSeedBestScoresReducer>;
 export type MigrateSeedExtendedPairsParams = __Infer<typeof MigrateSeedExtendedPairsReducer>;
+export type NextProblemParams = __Infer<typeof NextProblemReducer>;
 export type RegenerateRecoveryKeyParams = __Infer<typeof RegenerateRecoveryKeyReducer>;
 export type RegisterParams = __Infer<typeof RegisterReducer>;
 export type RestoreAccountParams = __Infer<typeof RestoreAccountReducer>;

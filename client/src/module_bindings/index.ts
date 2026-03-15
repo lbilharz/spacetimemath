@@ -52,6 +52,7 @@ import MigrateRecomputeTiersV2Reducer from "./migrate_recompute_tiers_v_2_reduce
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
+import NextProblemReducer from "./next_problem_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
 import RestoreAccountReducer from "./restore_account_reducer";
@@ -73,6 +74,7 @@ import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
 import IssuedProblemResultsRow from "./issued_problem_results_table";
+import NextProblemResultsRow from "./next_problem_results_table";
 import OnlinePlayersRow from "./online_players_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
@@ -184,6 +186,17 @@ const tablesSchema = __schema({
       { name: 'issued_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
     ],
   }, IssuedProblemResultsRow),
+  next_problem_results: __table({
+    name: 'next_problem_results',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'next_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, NextProblemResultsRow),
   online_players: __table({
     name: 'online_players',
     indexes: [
@@ -303,6 +316,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
   __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),
   __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
+  __reducerSchema("next_problem", NextProblemReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("restore_account", RestoreAccountReducer),
