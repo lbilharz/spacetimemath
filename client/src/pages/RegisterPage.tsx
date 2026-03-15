@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReducer as useSTDBReducer, useTable } from 'spacetimedb/react';
+import { useReducer as useSTDBReducer, useTable, useSpacetimeDB } from 'spacetimedb/react';
 import { reducers, tables } from '../module_bindings/index.js';
 // transfer_codes and recovery_keys are now private tables (SEC-01/SEC-02).
 // Account restore via code entry is temporarily broken — requires a server-side restore reducer.
@@ -38,8 +38,13 @@ export default function RegisterPage({ onRegistered }: Props) {
     }
   }, []);
 
+  const { identity } = useSpacetimeDB();
   const restoreAccount = useSTDBReducer(reducers.restoreAccount);
-  const [restoreResults] = useTable(tables.restore_results);
+  const [restoreResults] = useTable(
+    identity
+      ? tables.restore_results.where(r => r.caller.eq(identity))
+      : tables.restore_results
+  );
   // Ref so the async polling loop always reads the latest rows (avoids stale closure)
   const restoreResultsRef = useRef<typeof restoreResults>([]);
   useEffect(() => { restoreResultsRef.current = restoreResults; }, [restoreResults]);

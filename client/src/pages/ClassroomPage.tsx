@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
@@ -38,8 +38,13 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const toggleVisibility      = useSTDBReducer(reducers.toggleClassroomVisibility);
   const startClassSprint      = useSTDBReducer(reducers.startClassSprint);
   const endClassSprint        = useSTDBReducer(reducers.endClassSprint);
+  const { identity } = useSpacetimeDB();
   const getClassRecoveryCodes = useSTDBReducer(reducers.getClassRecoveryCodes);
-  const [classRecoveryResults] = useTable(tables.class_recovery_results);
+  const [classRecoveryResults] = useTable(
+    identity
+      ? tables.class_recovery_results.where(r => r.teacherIdentity.eq(identity))
+      : tables.class_recovery_results
+  );
   // Ref so async polling in handleDownloadCodes always reads the latest rows
   const classRecoveryResultsRef = useRef<ClassRecoveryResult[]>([]);
   useEffect(() => {
@@ -187,8 +192,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   }
 
   // ACCT-04: Populate from class_recovery_results (teacher's private result table)
+  // Subscription is already scoped to this teacher's identity server-side; only filter by classroomId.
   const myClassRecoveryCodes = (classRecoveryResults as unknown as ClassRecoveryResult[])
-    .filter(r => r.teacherIdentity.toHexString() === myIdentityHex && r.classroomId === classroomId);
+    .filter(r => r.classroomId === classroomId);
   const recoveryKeyByIdentity = new Map<string, string>(
     myClassRecoveryCodes.map(r => [r.memberIdentity.toHexString(), r.code])
   );
@@ -267,7 +273,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       let resultRows: ClassRecoveryResult[] = [];
       while (Date.now() < deadline) {
         resultRows = classRecoveryResultsRef.current.filter(
-          r => r.teacherIdentity.toHexString() === myIdentityHex && r.classroomId === classroomId
+          r => r.classroomId === classroomId
         );
         if (resultRows.length > 0) break;
         await new Promise(res => setTimeout(res, POLL));
