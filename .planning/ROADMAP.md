@@ -16,6 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Scoring Integrity and GDPR Baseline** - Fix leaderboard bugs, redesign tier structure, and add right-to-erasure reducer
 - [x] **Phase 3: UX and Client Bug Fixes** - Fix classroom page issues, recovery code instability, and account page clutter (completed 2026-03-14)
 - [x] **Phase 4: CSS Design System Migration** - Replace all inline styles with design system classes for maintainability (completed 2026-03-15)
+- [ ] **Phase 5: Account Recovery and Classroom Code Management** - Fix broken account restore flow and enable teachers to re-download student recovery codes at any time
 
 ## Phase Details
 
@@ -90,10 +91,25 @@ Plans:
 - [ ] 04-04-PLAN.md — Wave 3: Migrate ClassroomPage — largest file, 88 occurrences (CSS-03)
 - [ ] 04-05-PLAN.md — Wave 4: Human visual verification — all 9 pages desktop + mobile (CSS-04)
 
+### Phase 5: Account Recovery and Classroom Code Management
+**Goal**: Teachers can re-download the student recovery code sheet from ClassroomPage at any time, and any student who has a recovery code can successfully restore their account session on a new device or shared device
+**Depends on**: Phase 1 (private table architecture)
+**Requirements**: ACCT-03, ACCT-04
+**Success Criteria** (what must be TRUE):
+  1. A new anonymous connection entering a valid recovery code on RegisterPage is redirected to the original account (session token returned via server-side reducer, no private table lookup client-side)
+  2. A teacher on ClassroomPage can click "Download codes" at any time and receive a printable/saveable sheet of all student names and their recovery codes
+**Plans**: 4 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Wave 1: Server tables + reducers (RestoreResult, restore_account, ClassRecoveryResult, get_class_recovery_codes) + integration test stubs (ACCT-03, ACCT-04)
+- [ ] 05-02-PLAN.md — Wave 2: Client bindings + RegisterPage restore flow (ACCT-03)
+- [ ] 05-03-PLAN.md — Wave 2: Client bindings + ClassroomPage Download codes button (ACCT-04)
+- [ ] 05-04-PLAN.md — Wave 3: Automated checks + human smoke test (ACCT-03, ACCT-04)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in parallel with 2 and 3 if desired)
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -101,3 +117,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 (Phase 4 can run in paralle
 | 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
 | 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
 | 4. CSS Design System Migration | 5/5 | Complete   | 2026-03-15 |
+| 5. Account Recovery and Classroom Code Management | 0/4 | Planned |  |

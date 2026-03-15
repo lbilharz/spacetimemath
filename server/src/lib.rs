@@ -193,6 +193,8 @@ pub fn identity_disconnected(ctx: &ReducerContext) {
             });
         }
     }
+    // ACCT-03: Clean up any restore result row for disconnecting anonymous identity
+    ctx.db.restore_results().caller().delete(ctx.sender());
 }
 
 /// One-time migration: seed extended-table problem_stats rows if missing.
@@ -1052,6 +1054,15 @@ pub struct RecoveryCodeResult {
     pub code: String,
 }
 
+/// ACCT-03: Result table for restore_account — private, holds recovered token for anonymous caller.
+/// Keyed by the anonymous caller's identity; row is consumed client-side on reload.
+#[table(accessor = restore_results)]
+pub struct RestoreResult {
+    #[primary_key]
+    pub caller: Identity,
+    pub token: String,
+}
+
 /// Ensure the caller has a permanent recovery key — no-op if one already exists.
 /// Safe to call on every app load; will never overwrite an existing key.
 #[reducer]
@@ -1091,6 +1102,35 @@ pub fn get_my_recovery_code(ctx: &ReducerContext) -> Result<(), String> {
             ctx.db.recovery_code_results().insert(RecoveryCodeResult {
                 owner: ctx.sender(),
                 code: record.code.clone(),
+            });
+        }
+    }
+    Ok(())
+}
+
+/// ACCT-03: Restore an account session via recovery code.
+/// Called by an anonymous connection (no player row required).
+/// Normalises code to uppercase, looks it up in recovery_keys, then writes the stored
+/// session token to RestoreResult keyed by the caller's anonymous identity.
+#[reducer]
+pub fn restore_account(ctx: &ReducerContext, code: String) -> Result<(), String> {
+    let upper = code.trim().to_uppercase();
+    if upper.len() != 12 {
+        return Err("Invalid recovery code length".into());
+    }
+    let record = ctx.db.recovery_keys().code().find(upper)
+        .ok_or("Recovery code not found")?;
+    match ctx.db.restore_results().caller().find(ctx.sender()) {
+        Some(_) => {
+            ctx.db.restore_results().caller().update(RestoreResult {
+                caller: ctx.sender(),
+                token: record.token.clone(),
+            });
+        }
+        None => {
+            ctx.db.restore_results().insert(RestoreResult {
+                caller: ctx.sender(),
+                token: record.token,
             });
         }
     }
