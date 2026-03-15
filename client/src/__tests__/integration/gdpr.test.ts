@@ -88,4 +88,8 @@ describe('delete_player', () => {
       expect(noSessions).toBe(true);
     });
   });
+
+  // SEQ-06: sprint_sequences rows must be cascade-deleted when deletePlayer is called.
+  // Table accessor: (client.conn.db as any).sprintSequences (bindings generated in Wave 2).
+  it.todo('SEQ-06: deletePlayer cascade removes sprint_sequences rows');
 });
