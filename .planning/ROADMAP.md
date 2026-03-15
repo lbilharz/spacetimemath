@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Scoring Integrity and GDPR Baseline** - Fix leaderboard bugs, redesign tier structure, and add right-to-erasure reducer
 - [x] **Phase 3: UX and Client Bug Fixes** - Fix classroom page issues, recovery code instability, and account page clutter (completed 2026-03-14)
 - [x] **Phase 4: CSS Design System Migration** - Replace all inline styles with design system classes for maintainability (completed 2026-03-15)
-- [ ] **Phase 5: Account Recovery and Classroom Code Management** - Fix broken account restore flow and enable teachers to re-download student recovery codes at any time
+- [x] **Phase 5: Account Recovery and Classroom Code Management** - Fix broken account restore flow and enable teachers to re-download student recovery codes at any time (completed 2026-03-15)
 
 ## Phase Details
 
@@ -117,4 +117,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
 | 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
 | 4. CSS Design System Migration | 5/5 | Complete   | 2026-03-15 |
-| 5. Account Recovery and Classroom Code Management | 3/4 | In Progress|  |
+| 5. Account Recovery and Classroom Code Management | 4/4 | Complete   | 2026-03-15 |
