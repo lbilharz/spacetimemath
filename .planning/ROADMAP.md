@@ -117,4 +117,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
 | 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
 | 4. CSS Design System Migration | 5/5 | Complete   | 2026-03-15 |
-| 5. Account Recovery and Classroom Code Management | 1/4 | In Progress|  |
+| 5. Account Recovery and Classroom Code Management | 2/4 | In Progress|  |

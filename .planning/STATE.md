@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 05-01-PLAN.md — RestoreResult + ClassRecoveryResult tables deployed to maincloud; test stubs written
-last_updated: "2026-03-15T08:26:01.721Z"
-last_activity: 2026-03-15 — Completed 04-04 (ClassroomPage.tsx migration, CSS-03 done); Phase 4 complete
+status: in_progress
+stopped_at: Completed 05-02-PLAN.md — Client bindings for restore_results + restore_account; RegisterPage restore flow functional
+last_updated: "2026-03-15T08:30:00Z"
+last_activity: 2026-03-15 — Completed 05-02 (restore_results binding, RegisterPage handleRestore implemented)
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 21
-  completed_plans: 18
-  percent: 100
+  completed_plans: 19
+  percent: 90
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 4 of 4 (CSS Design System Migration)
-Plan: 4 of 4 in current phase (04-04 complete)
-Status: ALL PHASES COMPLETE
-Last activity: 2026-03-15 — Completed 04-04 (ClassroomPage.tsx migration, CSS-03 done); Phase 4 complete
+Phase: 5 of 5 (Account Recovery and Classroom Code Management)
+Plan: 2 of 3 in current phase (05-02 complete)
+Status: In Progress
+Last activity: 2026-03-15 — Completed 05-02 (restore_results binding, RegisterPage handleRestore implemented)
 
-Progress: [██████████] 100% (4 of 4 phases complete)
+Progress: [█████████░] 90% (19 of 21 plans complete)
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [██████████] 100% (4 of 4 phases complete)
 | Phase 04-css-design-system-migration P04 | 15min | 1 tasks | 2 files |
 | Phase 04-css-design-system-migration P05 | 5min | 2 tasks | 0 files |
 | Phase 05-account-recovery-and-classroom-code-management P01 | 3min | 3 tasks | 2 files |
+| Phase 05-account-recovery-and-classroom-code-management P02 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,9 @@ Recent decisions affecting current work:
 - [Phase 05-account-recovery-and-classroom-code-management]: SECURITY DECISION — get_class_recovery_codes exposes student recovery codes to the classroom teacher. Authorization guard: ctx.sender() must equal classroom.teacher AND the student must be a member of that specific classroom. Known residual risk: a student tricked into joining a malicious classroom exposes their recovery key to that classroom's "teacher" — this is a social engineering vector, not a passive data leak. Accepted trade-off: classroom context requires teacher authority over student credentials; threat model is kids on shared devices, not adversarial actors. Students should only join classrooms from trusted teachers (UI should reinforce this).
 - [Phase 05-account-recovery-and-classroom-code-management]: restore_account skips get_player() — anonymous callers have no player row; code normalised to uppercase with 12-char length guard for defence in depth
 - [Phase 05-account-recovery-and-classroom-code-management]: ClassRecoveryResult uses member_identity as primary key; delete-all-for-teacher then insert is atomic batch replacement pattern
+- [Phase 05-account-recovery-and-classroom-code-management]: Reducer arg schema uses plain object (not __t.row()) — matches all existing generated reducer bindings in module_bindings/
+- [Phase 05-account-recovery-and-classroom-code-management]: restoreResultsRef pattern in RegisterPage prevents stale closure in async polling loop; useEffect keeps ref current on every render
+- [Phase 05-account-recovery-and-classroom-code-management]: RegisterPage restore flow: call restoreAccount reducer, poll restoreResultsRef every 50ms up to 5s, write localStorage spacetimemath_credentials + reload on success
 
 ### Pending Todos
 
