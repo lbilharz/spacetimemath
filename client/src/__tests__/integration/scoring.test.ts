@@ -1,27 +1,21 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { connect, waitFor, disconnect, type ConnectedClient } from '../helpers.js';
 
-// Tier-0 pairs only: a and b both from {1, 2, 5, 10}.
-// These are never rejected by SEC-06 for a fresh player (learning_tier = 0).
-// 16 ordered pairs total — submitting all of them with correct answers and
+// Tier-0 pairs only: a and b both from {1, 2, 10}.
+// Tier ladder: ×1/×2/×10 (tier 0) → ×3 (tier 1) → ×5 (tier 2) → …
+// ×5 is tier 2, NOT tier 0. Only {1, 2, 10} factors are safe for learning_tier = 0.
+// 9 ordered pairs total — submitting all of them with correct answers and
 // fast response times (< 2 s) triggers the speed bonus and crosses the 0.5
 // mastery threshold required by check_and_unlock to advance to tier 1.
 const TIER0_PAIRS: { a: number; b: number; responseMs: number }[] = [
-  { a: 1, b: 1, responseMs: 800 },
-  { a: 1, b: 2, responseMs: 820 },
-  { a: 1, b: 5, responseMs: 810 },
+  { a: 1, b: 1,  responseMs: 800 },
+  { a: 1, b: 2,  responseMs: 820 },
   { a: 1, b: 10, responseMs: 830 },
-  { a: 2, b: 1, responseMs: 800 },
-  { a: 2, b: 2, responseMs: 790 },
-  { a: 2, b: 5, responseMs: 850 },
+  { a: 2, b: 1,  responseMs: 800 },
+  { a: 2, b: 2,  responseMs: 790 },
   { a: 2, b: 10, responseMs: 860 },
-  { a: 5, b: 1, responseMs: 800 },
-  { a: 5, b: 2, responseMs: 820 },
-  { a: 5, b: 5, responseMs: 900 },
-  { a: 5, b: 10, responseMs: 870 },
-  { a: 10, b: 1, responseMs: 800 },
-  { a: 10, b: 2, responseMs: 810 },
-  { a: 10, b: 5, responseMs: 820 },
+  { a: 10, b: 1,  responseMs: 800 },
+  { a: 10, b: 2,  responseMs: 810 },
   { a: 10, b: 10, responseMs: 900 },
 ];
 

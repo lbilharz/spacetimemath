@@ -2,21 +2,36 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { connect, waitFor, disconnect, type ConnectedClient } from '../helpers.js';
 
 /**
- * A sequence of answers that gives a deterministic, verifiable weighted score.
- *
- * We use only ×2 problems (trivial tier, difficulty_weight ≈ 0.2 from seed).
+ * Tier-0 pairs only: both factors from {1, 2, 10}.
+ * Tier ladder: ×1/×2/×10 (tier 0) → ×3 (tier 1) → ×5 (tier 2) → …
+ * Fresh players start at learning_tier = 0 (SEC-06 rejects higher-tier pairs).
  * 4 correct answers, 0 wrong answers.
- *
- * The server computes weightedScore = Σ difficulty_weight for correct answers.
- * For ×2 pairs the seeded weight is 0.2, so expected ≈ 4 × 0.2 = 0.8.
- * We assert it's > 0 (not 0.0) to avoid floating-point brittleness.
  */
 const ANSWERS = [
-  { a: 2, b: 3, userAnswer: 6,  responseMs: 800 },
-  { a: 2, b: 4, userAnswer: 8,  responseMs: 750 },
-  { a: 2, b: 5, userAnswer: 10, responseMs: 900 },
-  { a: 2, b: 6, userAnswer: 12, responseMs: 850 },
+  { a: 2, b: 2,  userAnswer: 4,  responseMs: 800 },
+  { a: 1, b: 2,  userAnswer: 2,  responseMs: 750 },
+  { a: 1, b: 10, userAnswer: 10, responseMs: 900 },
+  { a: 2, b: 10, userAnswer: 20, responseMs: 850 },
 ];
+
+/**
+ * SEC-10: issue a problem and return the server-issued token so it can be
+ * passed to submitAnswer.
+ */
+async function getToken(
+  client: ConnectedClient,
+  sessionId: bigint,
+  a: number,
+  b: number,
+): Promise<string> {
+  await client.conn.reducers.issueProblem({ sessionId, a, b });
+  const result = await waitFor(() => {
+    for (const r of client.conn.db.issued_problem_results.iter()) {
+      if (r.owner.toHexString() === client.identity.toHexString()) return r;
+    }
+  }, 5_000);
+  return result.token;
+}
 
 describe('solo sprint (start → submit → end)', () => {
   let client: ConnectedClient;
@@ -47,7 +62,8 @@ describe('solo sprint (start → submit → end)', () => {
 
   it('submit_answer records correct answers and increments totalAnswered', async () => {
     for (const ans of ANSWERS) {
-      await client.conn.reducers.submitAnswer({ sessionId, ...ans });
+      const token = await getToken(client, sessionId, ans.a, ans.b);
+      await client.conn.reducers.submitAnswer({ sessionId, ...ans, problemToken: token });
     }
 
     const idHex = client.identity.toHexString();
@@ -65,7 +81,9 @@ describe('solo sprint (start → submit → end)', () => {
 
   it('wrong answer is recorded as isCorrect = false', async () => {
     const idHex = client.identity.toHexString();
-    await client.conn.reducers.submitAnswer({ sessionId, a: 3, b: 4, userAnswer: 99, responseMs: 1000 });
+    // Use a tier-0 pair (a:1, b:2) with a deliberate wrong answer
+    const token = await getToken(client, sessionId, 1, 2);
+    await client.conn.reducers.submitAnswer({ sessionId, a: 1, b: 2, userAnswer: 99, responseMs: 1000, problemToken: token });
 
     const wrong = await waitFor(() => {
       for (const a of client.conn.db.answers.iter()) {
@@ -73,8 +91,8 @@ describe('solo sprint (start → submit → end)', () => {
       }
     });
 
-    expect(wrong.a).toBe(3);
-    expect(wrong.b).toBe(4);
+    expect(wrong.a).toBe(1);
+    expect(wrong.b).toBe(2);
     expect(wrong.userAnswer).toBe(99);
   });
 
