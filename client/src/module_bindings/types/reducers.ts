@@ -7,6 +7,7 @@ import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
 import CompleteOnboardingReducer from "../complete_onboarding_reducer";
+import ConsumeRestoreResultReducer from "../consume_restore_result_reducer";
 import CreateClassroomReducer from "../create_classroom_reducer";
 import CreateRecoveryKeyReducer from "../create_recovery_key_reducer";
 import CreateTransferCodeReducer from "../create_transfer_code_reducer";
@@ -37,6 +38,7 @@ import ToggleClassroomVisibilityReducer from "../toggle_classroom_visibility_red
 import UseTransferCodeReducer from "../use_transfer_code_reducer";
 
 export type CompleteOnboardingParams = __Infer<typeof CompleteOnboardingReducer>;
+export type ConsumeRestoreResultParams = __Infer<typeof ConsumeRestoreResultReducer>;
 export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;
 export type CreateRecoveryKeyParams = __Infer<typeof CreateRecoveryKeyReducer>;
 export type CreateTransferCodeParams = __Infer<typeof CreateTransferCodeReducer>;

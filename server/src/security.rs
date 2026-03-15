@@ -159,6 +159,14 @@ pub fn restore_account(ctx: &ReducerContext, code: String) -> Result<(), String>
     Ok(())
 }
 
+/// CONSUME-01: Delete the restore_results row for the caller after a successful account restore.
+/// Idempotent — no error if the row is already gone (identity_disconnected may have cleaned it).
+#[reducer]
+pub fn consume_restore_result(ctx: &ReducerContext) -> Result<(), String> {
+    ctx.db.restore_results().caller().delete(ctx.sender());
+    Ok(())
+}
+
 /// ACCT-04: Teacher reducer to retrieve all student recovery codes for a classroom.
 /// Verifies teacher ownership, deletes previous results for this teacher, then inserts
 /// one row per student with a recovery key.
