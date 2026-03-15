@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 06-04-PLAN.md — human smoke test, Phase 6 security goal human-verified
-last_updated: "2026-03-15T18:31:42Z"
-last_activity: 2026-03-15 — Completed 06-04 (human smoke test — server-driven sprint sequencing verified in production)
+status: in-progress
+stopped_at: Completed 07-01-PLAN.md — lib.rs visibility promotion + five stub modules
+last_updated: "2026-03-15T20:52:30Z"
+last_activity: 2026-03-15 — Completed 07-01 (pub(crate) visibility promotion, mod declarations, five stub files)
 progress:
-  total_phases: 6
-  completed_phases: 5
-  total_plans: 25
-  completed_plans: 24
-  percent: 95
+  total_phases: 8
+  completed_phases: 6
+  total_plans: 29
+  completed_plans: 26
+  percent: 90
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 6 of 6 (Server-Side Sprint Problem Sequencing)
-Plan: 4 of 4 in current phase (06-04 complete)
-Status: Complete
-Last activity: 2026-03-15 — Completed 06-04 (human smoke test — Phase 6 security goal verified)
+Phase: 7 of 8 (Split server lib.rs into modules)
+Plan: 1 of 4 in current phase (07-01 complete)
+Status: In Progress
+Last activity: 2026-03-15 — Completed 07-01 (pub(crate) visibility promotion, mod declarations, five stub files)
 
-Progress: [██████████] 100% (25 of 25 plans complete)
+Progress: [█████████░] 90% (26 of 29 plans complete)
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [██████████] 100% (25 of 25 plans complete)
 | Phase 06-server-side-sprint-problem-sequencing P02 | 3 | 2 tasks | 6 files |
 | Phase 06-server-side-sprint-problem-sequencing P03 | 8min | 2 tasks | 5 files |
 | Phase 06-server-side-sprint-problem-sequencing P04 | 2min | 2 tasks | 0 files |
+| Phase 07-split-server-lib-rs-into-modules P01 | 5min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -134,10 +135,14 @@ Recent decisions affecting current work:
 - [Phase 06-server-side-sprint-problem-sequencing]: Remove selectNextProblem client-side function — server now owns problem sequencing for normal sprints; dead code after the switch
 - [Phase 06-server-side-sprint-problem-sequencing]: next_problem_results accessor uses snake_case in tests (SpacetimeDB SDK preserves table name case for db.* accessors)
 - [Phase 06-server-side-sprint-problem-sequencing]: Phase 6 security goal confirmed by human DevTools inspection — no future problem sequence visible in React DevTools state or refs during a live normal sprint; all six SEQ requirements satisfied
+- [Phase 07-split-server-lib-rs-into-modules]: Visibility promotion done as isolated atomic step — compiler verifies pub(crate) changes compile before any code moves across module boundaries
+- [Phase 07-split-server-lib-rs-into-modules]: mod declarations placed immediately after use spacetimedb line, before CONSTANTS section — keeps imports at the top of the crate root
 
 ### Roadmap Evolution
 
 - Phase 6 added: Server-side sprint problem sequencing
+- Phase 7 added: Split server lib.rs into modules
+- Phase 8 added: Tokenized fetch for sensitive one-shot results
 
 ### Pending Todos
 
@@ -150,6 +155,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T18:31:42Z
-Stopped at: Completed 06-04-PLAN.md — human smoke test, Phase 6 fully verified
+Last session: 2026-03-15T20:52:30Z
+Stopped at: Completed 07-01-PLAN.md — lib.rs visibility promotion + five stub modules
 Resume file: None

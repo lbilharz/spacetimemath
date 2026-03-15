@@ -137,10 +137,20 @@ Plans:
 **Goal:** Split the 1850-line server/src/lib.rs monolith into six focused files with no behaviour changes — zero API changes, zero schema changes, identical TS bindings
 **Requirements**: MOD-01, MOD-02, MOD-03, MOD-04
 **Depends on:** Phase 6
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 07-01-PLAN.md — Wave 1: Promote helpers/constants to pub(crate), add mod declarations, create empty stub files (MOD-01)
 - [ ] 07-02-PLAN.md — Wave 2: Extract auth.rs + security.rs, verify WASM + bindings + client tests (MOD-01, MOD-02, MOD-03)
 - [ ] 07-03-PLAN.md — Wave 3: Extract sprint.rs with pub(crate) helpers for classroom.rs (MOD-01, MOD-03)
 - [ ] 07-04-PLAN.md — Wave 4: Extract classroom.rs + gdpr.rs, final lib.rs cleanup, deploy smoke test (MOD-01, MOD-02, MOD-03, MOD-04)
+
+### Phase 8: tokenized fetch for sensitive one-shot results
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 8 to break down)
