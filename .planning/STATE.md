@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-03-15T21:32:24.349Z"
-last_activity: 2026-03-15 — Completed 07-04 (classroom.rs + gdpr.rs extraction, live deploy verified)
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-03-15T22:36:00.000Z"
+last_activity: 2026-03-15 — Completed 08-02 (consume_restore_result reducer deployed, RegisterPage wired)
 progress:
   total_phases: 8
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 31
-  completed_plans: 30
-  percent: 97
+  completed_plans: 31
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 7 of 8 (Split server lib.rs into modules)
-Plan: 4 of 4 in current phase (07-04 complete — Phase 7 DONE)
-Status: In Progress
-Last activity: 2026-03-15 — Completed 07-04 (classroom.rs + gdpr.rs extraction, live deploy verified)
+Phase: 8 of 8 (Tokenized fetch for sensitive one-shot results)
+Plan: 2 of 2 in current phase (08-02 complete — Phase 8 DONE)
+Status: Complete
+Last activity: 2026-03-15 — Completed 08-02 (consume_restore_result reducer deployed, RegisterPage wired)
 
-Progress: [█████████░] 97% (29 of 29 plans complete in phases 1-7)
+Progress: [██████████] 100% (31 of 31 plans complete in phases 1-8)
 
 ## Performance Metrics
 
@@ -79,6 +79,7 @@ Progress: [█████████░] 97% (29 of 29 plans complete in phase
 | Phase 07-split-server-lib-rs-into-modules P03 | 3min | 2 tasks | 2 files |
 | Phase 07-split-server-lib-rs-into-modules P04 | ~15min | 2 tasks | 3 files |
 | Phase 08-tokenized-fetch-for-sensitive-one-shot-results P01 | 5min | 2 tasks | 3 files |
+| Phase 08-tokenized-fetch-for-sensitive-one-shot-results P02 | 10min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -149,6 +150,8 @@ Recent decisions affecting current work:
 - [Phase 07-split-server-lib-rs-into-modules]: lib.rs final state: schema tables + mod declarations + lifecycle reducers + migrate_* reducers + pub(crate) helpers/constants; all extracted reducers removed; line count reduced from ~1850 to ~700-900
 - [Phase 07-split-server-lib-rs-into-modules]: Phase 7 fully complete — six-file server module split deployed and verified live on maincloud (MOD-04 satisfied)
 - [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: Identity-guard fallback: identity ? tables.x.where(r => r.field.eq(identity)) : tables.x — pre-identity connections get unscoped subscription but rows are always identity-owned anyway
+- [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: consume_restore_result is idempotent — no error if row already gone; identity_disconnected is backstop
+- [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: consume call in RegisterPage is best-effort (try/catch) — restore UX completes even if consume reducer fails
 - [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: myRecoveryKey simplified from .find(identity filter) to [0] — subscription is server-scoped so array contains at most one row
 - [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: classroomId filter preserved in ClassroomPage after removing teacherIdentity filter — teacher may have codes for multiple classrooms in subscription
 
