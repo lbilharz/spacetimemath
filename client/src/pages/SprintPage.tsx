@@ -32,6 +32,13 @@ type IssuedProblemResult = {
   owner: Identity;
   token: string;
 };
+type NextProblemResult = {
+  owner: Identity;
+  sessionId: bigint;
+  a: number;
+  b: number;
+  token: string;
+};
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
 
@@ -74,67 +81,6 @@ function getMasteryLocal(answers: Answer[], a: number, b: number): Mastery {
   return 'struggling';
 }
 
-function selectNextProblem(
-  stats: ProblemStat[],
-  myAnswers: Answer[],
-  playerLearningTier: number,
-  lastKey?: number
-): { a: number; b: number } {
-  // Group answers by problem key (myAnswers is in insertion/id order)
-  const byKey = new Map<number, Answer[]>();
-  for (const ans of myAnswers) {
-    const key = ans.a * 100 + ans.b;
-    if (!byKey.has(key)) byKey.set(key, []);
-    byKey.get(key)!.push(ans);
-  }
-
-  // last-10 accuracy per problem (more responsive than all-time)
-  const accMap = new Map<number, { correct: number; total: number; allTotal: number }>();
-  for (const [key, answers] of byKey) {
-    const recent = answers.slice(-10);
-    accMap.set(key, {
-      correct: recent.filter(a => a.isCorrect).length,
-      total: recent.length,
-      allTotal: answers.length,
-    });
-  }
-
-  // Selection weight = difficulty × (1.5 − last10_accuracy) × masteryMultiplier
-  // The mastery multiplier ensures blank/orange cells are introduced before the
-  // algorithm settles into optimising pure score on already-green problems.
-  // Once everything is mastered the multipliers equalise and difficulty takes over,
-  // naturally surfacing the highest-point problems for score runs.
-  const MASTERY_MULT: Record<Mastery, number> = {
-    untouched:  4.0,  // strongly prefer introducing unseen problems
-    struggling: 3.0,  // highest priority to fix errors
-    learning:   2.0,  // reinforce in-progress problems
-    mastered:   0.5,  // de-prioritise once solid
-  };
-
-  const weighted = stats.map(stat => {
-    const personal = accMap.get(stat.problemKey);
-    const accuracy = personal ? personal.correct / personal.total : 0;
-    const mastery  = getMasteryLocal(myAnswers, stat.a, stat.b);
-    let w = stat.difficultyWeight * (1.5 - accuracy) * MASTERY_MULT[mastery];
-    // Suppress lower-tier pairs once the player has advanced and clearly mastered them
-    if (learningTierOf(stat.a, stat.b) < playerLearningTier
-        && personal && personal.allTotal >= 10 && accuracy >= 0.9) {
-      w = 0.1;
-    }
-    // Avoid same problem twice in a row
-    const samePenalty = stat.problemKey === lastKey ? 0.05 : 1.0;
-    return { stat, weight: Math.max(w * samePenalty, 0.01) };
-  });
-
-  const total = weighted.reduce((s, w) => s + w.weight, 0);
-  let rand = Math.random() * total;
-  for (const { stat, weight } of weighted) {
-    rand -= weight;
-    if (rand <= 0) return { a: stat.a, b: stat.b };
-  }
-  const fb = stats[Math.floor(Math.random() * stats.length)];
-  return { a: fb.a, b: fb.b };
-}
 
 interface Props {
   myIdentityHex: string;
@@ -173,9 +119,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const submitAnswer = useSTDBReducer(reducers.submitAnswer);
   const endSession = useSTDBReducer(reducers.endSession);
   const issueProblem = useSTDBReducer(reducers.issueProblem);
+  const nextProblem = useSTDBReducer(reducers.nextProblem);
 
-  // SEC-10: Read back the server-issued problem token
+  // SEC-10: Read back the server-issued problem token (diagnostic sprint)
   const [issuedProblemResults] = useTable(tables.issued_problem_results);
+  // Server-driven problem delivery (normal sprint)
+  const [nextProblemResults] = useTable(tables.next_problem_results);
 
   // My answers (all-time — used for mastery-based problem selection)
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[];
@@ -262,19 +211,36 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   // 3c. Select first problem when sprint starts + stats are ready
   useEffect(() => {
-    if (sprintStarted && !problem && (isDiagnostic || eligibleStats.length > 0)) {
-      const p = isDiagnostic
-        ? selectDiagnosticProblem(0, undefined)
-        : selectNextProblem(eligibleStats, myAnswers, playerLearningTier);
-      setProblem(p);
-      lastKeyRef.current = p.a * 100 + p.b;
-      problemStartRef.current = Date.now();
-      // SEC-10: issue the problem token so the server can verify the answer
-      if (sessionIdRef.current !== null) {
-        issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
+    if (sprintStarted && !problem) {
+      if (isDiagnostic && eligibleStats.length > 0) {
+        // Diagnostic: client selects as before
+        const p = selectDiagnosticProblem(0, undefined);
+        setProblem(p);
+        lastKeyRef.current = p.a * 100 + p.b;
+        problemStartRef.current = Date.now();
+        if (sessionIdRef.current !== null) {
+          issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
+        }
+      } else if (!isDiagnostic && sessionIdRef.current !== null) {
+        // Normal sprint: request first problem from server
+        nextProblem({ sessionId: sessionIdRef.current });
       }
     }
   }, [sprintStarted, problem, problemStats.length, isDiagnostic]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 3d. Receive server-delivered problem from NextProblemResult subscription (normal sprint only)
+  useEffect(() => {
+    if (isDiagnostic || !sprintStarted || ending) return;
+    const row = (nextProblemResults as unknown as NextProblemResult[]).find(
+      r => r.owner.toHexString() === myIdentityHex
+    );
+    if (!row) return;
+    // Only update if this is for our current session
+    if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
+    setProblem({ a: row.a, b: row.b });
+    problemStartRef.current = Date.now();
+    if (!('ontouchstart' in window)) inputRef.current?.focus();
+  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex]);
 
   // 4. Sprint timer
   // Class sprint: tick is derived from server's startedAt — survives reloads
@@ -334,10 +300,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     const stat = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
     const pts = isCorrect ? (stat?.difficultyWeight ?? 1.0) : 0;
 
-    // SEC-10: Get the current token for this player
-    const tokenRow = (issuedProblemResults as unknown as IssuedProblemResult[]).find(
-      r => r.owner.toHexString() === myIdentityHex
-    );
+    // SEC-10: Get the current token for this player (source differs by sprint type)
+    const tokenRow = isDiagnostic
+      ? (issuedProblemResults as unknown as IssuedProblemResult[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        )
+      : (nextProblemResults as unknown as NextProblemResult[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        );
     if (!tokenRow) {
       // Token not yet available — queue and retry when it arrives (useEffect below)
       pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs };
@@ -367,33 +337,41 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     // Show feedback briefly, then next problem
     setTimeout(() => {
       setFeedback(null);
-      const elapsed = SPRINT_DURATION - timeLeft;
-      const next = isDiagnostic
-        ? selectDiagnosticProblem(elapsed, lastKeyRef.current)
-        : selectNextProblem(eligibleStats, myAnswers, playerLearningTier, lastKeyRef.current);
-      setProblem(next);
-      lastKeyRef.current = next.a * 100 + next.b;
-      problemStartRef.current = Date.now();
-      // SEC-10: issue the problem token for the next problem
-      if (sessionIdRef.current !== null) {
-        issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
+      if (isDiagnostic) {
+        // Diagnostic: client selects next problem
+        const elapsed = SPRINT_DURATION - timeLeft;
+        const next = selectDiagnosticProblem(elapsed, lastKeyRef.current);
+        setProblem(next);
+        lastKeyRef.current = next.a * 100 + next.b;
+        problemStartRef.current = Date.now();
+        if (sessionIdRef.current !== null) {
+          issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
+        }
+        if (!('ontouchstart' in window)) inputRef.current?.focus();
+      } else {
+        // Normal sprint: ask server for next problem (setProblem happens via subscription effect)
+        if (sessionIdRef.current !== null) {
+          nextProblem({ sessionId: sessionIdRef.current });
+        }
       }
-      // Only auto-focus input on non-touch devices (avoids mobile keyboard pop-up)
-      if (!('ontouchstart' in window)) inputRef.current?.focus();
     }, !fb.isCorrect ? 1000 : 600);
   };
 
-  // SEC-10: Retry any queued answer once the token arrives
+  // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
   useEffect(() => {
     const pending = pendingAnswerRef.current;
     if (!pending) return;
-    const tokenRow = (issuedProblemResults as unknown as IssuedProblemResult[]).find(
-      r => r.owner.toHexString() === myIdentityHex
-    );
+    const tokenRow = isDiagnostic
+      ? (issuedProblemResults as unknown as IssuedProblemResult[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        )
+      : (nextProblemResults as unknown as NextProblemResult[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        );
     if (!tokenRow) return;
     pendingAnswerRef.current = null;
     submitAnswer({ ...pending, problemToken: tokenRow.token });
-  }, [issuedProblemResults]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [issuedProblemResults, nextProblemResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
