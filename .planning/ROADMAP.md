@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 **Goal:** The server generates and owns the full problem sequence for each normal sprint — the client never receives future problems, closing the client-side foreknowledge cheating vector
 **Requirements**: SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06
 **Depends on:** Phase 5
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [ ] 06-01-PLAN.md — Wave 1: Test scaffolds — sprint_sequencing.test.ts (SEQ-01 to SEQ-05 stubs) + gdpr.test.ts SEQ-06 stub

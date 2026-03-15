@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 06-02-PLAN.md — SprintSequence tables, build_sequence, next_problem reducer, TS bindings regenerated
-last_updated: "2026-03-15T16:14:06.916Z"
+stopped_at: Completed 06-03-PLAN.md — SprintPage server-driven flow, SEQ-01 through SEQ-06 integration tests all passing
+last_updated: "2026-03-15T16:25:29.119Z"
 last_activity: 2026-03-15 — Completed 05-03 (class_recovery_results binding, ClassroomPage Download codes button)
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 25
-  completed_plans: 23
+  completed_plans: 24
   percent: 95
 ---
 
@@ -72,6 +72,7 @@ Progress: [██████████] 95% (20 of 21 plans complete)
 | Phase 05-account-recovery-and-classroom-code-management P04 | 5min | 2 tasks | 0 files |
 | Phase 06-server-side-sprint-problem-sequencing P01 | 2min | 2 tasks | 2 files |
 | Phase 06-server-side-sprint-problem-sequencing P02 | 3 | 2 tasks | 6 files |
+| Phase 06-server-side-sprint-problem-sequencing P03 | 8min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,8 @@ Recent decisions affecting current work:
 - [Phase 06-server-side-sprint-problem-sequencing]: SprintSequence is private; codegen skips it; NextProblemResult is public for SpacetimeDB 2.0.3 row-push
 - [Phase 06-server-side-sprint-problem-sequencing]: start_session rewritten to capture Ok(inserted) from try_insert — needed to get auto_inc session id for SprintSequence insert
 - [Phase 06-server-side-sprint-problem-sequencing]: make generate produces next_problem_results_table.ts (not _type.ts) — SpacetimeDB codegen uses _table.ts suffix for table row types
+- [Phase 06-server-side-sprint-problem-sequencing]: Remove selectNextProblem client-side function — server now owns problem sequencing for normal sprints; dead code after the switch
+- [Phase 06-server-side-sprint-problem-sequencing]: next_problem_results accessor uses snake_case in tests (SpacetimeDB SDK preserves table name case for db.* accessors)
 
 ### Roadmap Evolution
 
@@ -145,6 +148,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T16:14:06.913Z
-Stopped at: Completed 06-02-PLAN.md — SprintSequence tables, build_sequence, next_problem reducer, TS bindings regenerated
+Last session: 2026-03-15T16:25:29.117Z
+Stopped at: Completed 06-03-PLAN.md — SprintPage server-driven flow, SEQ-01 through SEQ-06 integration tests all passing
 Resume file: None
