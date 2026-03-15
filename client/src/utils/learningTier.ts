@@ -17,9 +17,14 @@ function factorTier(x: number): number {
 }
 
 /**
- * Learning tier of an ordered pair = max(tier(a), tier(b)).
- * Returns 99 for excluded pairs (those involving ×0).
+ * Learning tier of an ordered pair = min(tier(a), tier(b)).
+ * A pair belongs to the tier of its easier factor: 2×7 and 7×2 are both tier 0
+ * (part of the ×2 table), even though ×7 hasn't been unlocked yet.
+ * Old design used Math.max; changed to Math.min so pools are [unlocked] × [1–10].
  */
 export function learningTierOf(a: number, b: number): number {
-  return Math.max(factorTier(a), factorTier(b));
+  const ta = factorTier(a);
+  const tb = factorTier(b);
+  if (ta === 99 || tb === 99) return 99; // either factor excluded → pair excluded
+  return Math.min(ta, tb);
 }

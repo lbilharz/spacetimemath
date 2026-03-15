@@ -750,11 +750,15 @@ fn factor_tier(x: u8) -> Option<u8> {
     }
 }
 
-/// Learning tier of an ordered pair = max(tier(a), tier(b)).
+/// Learning tier of an ordered pair = min(tier(a), tier(b)).
+/// A pair belongs to the tier of its *easier* factor — so 2×7 is a tier-0 pair
+/// because it's part of the ×2 table, even though 7 hasn't been unlocked yet.
+/// This means both 2×7 and 7×2 are tier-0 pairs (symmetric, as expected).
+/// Old design used max(); changed to min() so pools are [unlocked_factors] × [1–10].
 /// Returns None for excluded pairs (those involving ×0).
 fn pair_learning_tier(a: u8, b: u8) -> Option<u8> {
     match (factor_tier(a), factor_tier(b)) {
-        (Some(ta), Some(tb)) => Some(ta.max(tb)),
+        (Some(ta), Some(tb)) => Some(ta.min(tb)),
         _ => None,
     }
 }
