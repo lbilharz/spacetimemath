@@ -90,15 +90,16 @@ export default function RegisterPage({ onRegistered }: Props) {
         row = getRow();
       }
       if (!row) {
-        setRestoreError(t('register.restoreError'));
+        setRestoreError('Timeout waiting for server response — try again');
         setRestoring(false);
         return;
       }
       const CREDS_KEY = 'spacetimemath_credentials';
       localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: '', token: row.token }));
       window.location.reload();
-    } catch {
-      setRestoreError(t('register.restoreError'));
+    } catch (err: unknown) {
+      const msg = (err instanceof Error ? err.message : String(err)) || t('register.restoreError');
+      setRestoreError(msg);
       setRestoring(false);
     }
   };
