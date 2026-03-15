@@ -118,3 +118,16 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
 | 4. CSS Design System Migration | 5/5 | Complete   | 2026-03-15 |
 | 5. Account Recovery and Classroom Code Management | 4/4 | Complete   | 2026-03-15 |
+
+### Phase 6: Server-side sprint problem sequencing
+
+**Goal:** The server generates and owns the full problem sequence for each normal sprint — the client never receives future problems, closing the client-side foreknowledge cheating vector
+**Requirements**: SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06
+**Depends on:** Phase 5
+**Plans:** 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Wave 1: Test scaffolds — sprint_sequencing.test.ts (SEQ-01 to SEQ-05 stubs) + gdpr.test.ts SEQ-06 stub
+- [ ] 06-02-PLAN.md — Wave 2: Server — SprintSequence + NextProblemResult tables, build_sequence fn, next_problem reducer, cascade updates, make generate
+- [ ] 06-03-PLAN.md — Wave 3: Client — SprintPage server-driven flow + implement SEQ-01 to SEQ-06 integration tests
+- [ ] 06-04-PLAN.md — Wave 4: Deploy to maincloud + human smoke test (DevTools inspection)
