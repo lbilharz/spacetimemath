@@ -106,7 +106,7 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
                     <span>{s.username}</span>
                     {tierFilter === -1 && (
                       <span className="text-xs" style={{ marginLeft: 6 }} title={t(`tiers.tier${s.learningTier}Name` as ParseKeys)}>
-                        {TIER_EMOJI[Math.min(s.learningTier, 3)]}
+                        {TIER_EMOJI[Math.min(s.learningTier, 7)]}
                       </span>
                     )}
                     {isMe && <span className="text-accent text-xs" style={{ marginLeft: 6 }}>{t('leaderboard.you')}</span>}
@@ -138,7 +138,7 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
                   <td className="tbl-td fw-bold">
                     <span>{myRow.username}</span>
                     {tierFilter === -1 && (
-                      <span className="text-xs" style={{ marginLeft: 6 }}>{TIER_EMOJI[Math.min(myRow.learningTier, 3)]}</span>
+                      <span className="text-xs" style={{ marginLeft: 6 }}>{TIER_EMOJI[Math.min(myRow.learningTier, 7)]}</span>
                     )}
                     <span className="text-accent text-xs" style={{ marginLeft: 6 }}>{t('leaderboard.you')}</span>
                   </td>

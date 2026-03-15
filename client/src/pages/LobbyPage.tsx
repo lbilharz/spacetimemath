@@ -5,7 +5,7 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Session } from '../module_bindings/types.js';
 import Leaderboard from '../components/Leaderboard.js';
 
-const TIER_EMOJI = ['🌱', '🔨', '⚡', '🏆'];
+const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
 type Player = {
   identity: { toHexString(): string };
@@ -134,7 +134,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                 className="text-accent fw-semibold"
                 style={{ textDecoration: 'none' }}
               >
-                {['🌱','🔨','⚡','🏆'][Math.min(myPlayer.learningTier ?? 0, 3)]}
+                {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
                 {' '}Tier {myPlayer.learningTier ?? 0}
               </a>
             </p>
@@ -193,7 +193,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                       <span>{p.username}</span>
                       {scoreEntry && (
                         <span style={{ marginLeft: 6, fontSize: 11 }}>
-                          {TIER_EMOJI[Math.min(scoreEntry.learningTier, 3)]}
+                          {TIER_EMOJI[Math.min(scoreEntry.learningTier, 7)]}
                         </span>
                       )}
                       {isSelf && (
