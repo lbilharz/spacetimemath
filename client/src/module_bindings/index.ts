@@ -53,6 +53,7 @@ import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
+import RestoreAccountReducer from "./restore_account_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartClassSprintReducer from "./start_class_sprint_reducer";
 import StartSessionReducer from "./start_session_reducer";
@@ -73,6 +74,7 @@ import OnlinePlayersRow from "./online_players_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
 import RecoveryCodeResultsRow from "./recovery_code_results_table";
+import RestoreResultsRow from "./restore_results_table";
 import SessionsRow from "./sessions_table";
 import TransferCodeResultsRow from "./transfer_code_results_table";
 import UnlockLogsRow from "./unlock_logs_table";
@@ -221,6 +223,17 @@ const tablesSchema = __schema({
       { name: 'recovery_code_results_owner_key', constraint: 'unique', columns: ['owner'] },
     ],
   }, RecoveryCodeResultsRow),
+  restore_results: __table({
+    name: 'restore_results',
+    indexes: [
+      { name: 'caller', algorithm: 'btree', columns: [
+        'caller',
+      ] },
+    ],
+    constraints: [
+      { name: 'restore_results_caller_key', constraint: 'unique', columns: ['caller'] },
+    ],
+  }, RestoreResultsRow),
   sessions: __table({
     name: 'sessions',
     indexes: [
@@ -277,6 +290,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
+  __reducerSchema("restore_account", RestoreAccountReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_class_sprint", StartClassSprintReducer),
   __reducerSchema("start_session", StartSessionReducer),
