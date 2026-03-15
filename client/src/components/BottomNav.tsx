@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
-import type { Page } from '../App.js';
+import type { Page } from '../navigation.js';
 
 export type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
 
@@ -27,18 +27,8 @@ export default function BottomNav({ active, onNavigate }: Props) {
           <button
             key={tab.id}
             onClick={() => onNavigate(tab.id)}
-            className="col flex-1"
-            style={{
-              alignItems: 'center',
-              gap: 3,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '5px 4px',
-              color: isActive ? 'var(--accent)' : 'var(--muted)',
-              transition: 'color 0.15s',
-              WebkitTapHighlightColor: 'transparent',
-            }}
+            className="bottomnav-btn"
+            style={{ color: isActive ? 'var(--accent)' : 'var(--muted)' }}
           >
             {tab.id === 'lobby' ? (
               <>
@@ -54,12 +44,12 @@ export default function BottomNav({ active, onNavigate }: Props) {
                   <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
                   <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
                 </svg>
-                <span className="fw-extrabold" style={{ fontSize: 10, letterSpacing: '-0.2px' }}>1UP</span>
+                <span className="fw-extrabold nav-label">1UP</span>
               </>
             ) : (
               <>
-                <span style={{ fontSize: 22 }}>{tab.emoji}</span>
-                <span className="fw-semibold label-caps" style={{ fontSize: 10 }}>
+                <span className="nav-icon">{tab.emoji}</span>
+                <span className="fw-semibold label-caps nav-label">
                   {t(tab.labelKey)}
                 </span>
               </>

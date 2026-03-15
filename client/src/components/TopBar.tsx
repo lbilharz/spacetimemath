@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
-import type { Page } from '../App.js';
+import type { Page } from '../navigation.js';
 
 type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
 
@@ -36,7 +36,7 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
               >
                 {tab.id === 'lobby' ? (
                   <>
-                    <svg width="20" height="20" viewBox="0 0 100 100" aria-hidden="true" style={{ flexShrink: 0 }}>
+                    <svg width="20" height="20" viewBox="0 0 100 100" aria-hidden="true" className="shrink-0">
                       <rect width="100" height="100" rx="14" fill="#2C3E50"/>
                       <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
                       <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
@@ -65,16 +65,7 @@ export default function TopBar({ myPlayer, active, onNavigate }: Props) {
       {/* Language toggle */}
       <button
         onClick={() => i18n.changeLanguage(otherLang)}
-        className="text-xs fw-bold text-muted"
-        style={{
-          background: 'var(--card2)',
-          border: '1px solid var(--border)',
-          borderRadius: 4,
-          padding: '2px 7px',
-          cursor: 'pointer',
-          letterSpacing: '0.5px',
-          flexShrink: 0,
-        }}
+        className="lang-btn shrink-0 fw-bold label-caps"
       >
         {otherLang.toUpperCase()}
       </button>
