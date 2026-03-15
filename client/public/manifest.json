@@ -1,0 +1,18 @@
+{
+  "name": "1UP – Mathe lernen",
+  "short_name": "1UP",
+  "description": "Einmaleins üben mit Gegner",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2C3E50",
+  "theme_color": "#FBBA00",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
