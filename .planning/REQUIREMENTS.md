@@ -43,7 +43,7 @@ Requirements for the safe-for-public-launch milestone. All map to roadmap phases
 - [x] **CSS-01**: `index.css` extended with utility classes covering all recurring inline style patterns (text color, font size, spacing, flex layout)
 - [x] **CSS-02**: All inline `style={}` props in `client/src/components/` replaced with CSS classes
 - [x] **CSS-03**: All inline `style={}` props in `client/src/pages/` replaced with CSS classes
-- [ ] **CSS-04**: All pages use consistent layout, spacing, typography, and color — no visual outliers
+- [x] **CSS-04**: All pages use consistent layout, spacing, typography, and color — no visual outliers
 
 ### UX & Bug Fixes
 
@@ -109,7 +109,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CSS-01 | Phase 4 | Complete |
 | CSS-02 | Phase 4 | Complete |
 | CSS-03 | Phase 4 | Complete |
-| CSS-04 | Phase 4 | Pending |
+| CSS-04 | Phase 4 | Complete |
 | UX-01 | Phase 3 | Complete |
 | UX-02 | Phase 3 | Complete |
 | UX-03 | Phase 3 | Complete |
