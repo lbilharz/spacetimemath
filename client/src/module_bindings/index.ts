@@ -41,6 +41,7 @@ import CreateTransferCodeReducer from "./create_transfer_code_reducer";
 import DeletePlayerReducer from "./delete_player_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
+import GetClassRecoveryCodesReducer from "./get_class_recovery_codes_reducer";
 import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
 import IssueProblemReducer from "./issue_problem_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
@@ -66,6 +67,7 @@ import UseTransferCodeReducer from "./use_transfer_code_reducer";
 // Import all table schema definitions
 import AnswersRow from "./answers_table";
 import BestScoresRow from "./best_scores_table";
+import ClassRecoveryResultsRow from "./class_recovery_results_table";
 import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
@@ -114,6 +116,16 @@ const tablesSchema = __schema({
       { name: 'best_scores_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
     ],
   }, BestScoresRow),
+  class_recovery_results: __table({
+    name: 'class_recovery_results',
+    indexes: [
+      { name: 'member_identity', algorithm: 'btree', columns: ['memberIdentity'] },
+      { name: 'teacher_identity', algorithm: 'btree', columns: ['teacherIdentity'] },
+    ],
+    constraints: [
+      { name: 'class_recovery_results_member_identity_key', constraint: 'unique', columns: ['memberIdentity'] },
+    ],
+  }, ClassRecoveryResultsRow),
   class_sprints: __table({
     name: 'class_sprints',
     indexes: [
@@ -226,9 +238,7 @@ const tablesSchema = __schema({
   restore_results: __table({
     name: 'restore_results',
     indexes: [
-      { name: 'caller', algorithm: 'btree', columns: [
-        'caller',
-      ] },
+      { name: 'caller', algorithm: 'btree', columns: ['caller'] },
     ],
     constraints: [
       { name: 'restore_results_caller_key', constraint: 'unique', columns: ['caller'] },
@@ -278,6 +288,7 @@ const reducersSchema = __reducers(
   __reducerSchema("delete_player", DeletePlayerReducer),
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
+  __reducerSchema("get_class_recovery_codes", GetClassRecoveryCodesReducer),
   __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
   __reducerSchema("issue_problem", IssueProblemReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
