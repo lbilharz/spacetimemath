@@ -1063,6 +1063,18 @@ pub struct RestoreResult {
     pub token: String,
 }
 
+/// ACCT-04: Result table for get_class_recovery_codes — private, holds recovery codes for teacher.
+/// One row per student, keyed by member_identity. Teacher batch replaces previous batch atomically.
+#[table(accessor = class_recovery_results)]
+pub struct ClassRecoveryResult {
+    #[primary_key]
+    pub member_identity: Identity,
+    pub teacher_identity: Identity,
+    pub classroom_id: u64,
+    pub username: String,
+    pub code: String,
+}
+
 /// Ensure the caller has a permanent recovery key — no-op if one already exists.
 /// Safe to call on every app load; will never overwrite an existing key.
 #[reducer]
@@ -1133,6 +1145,56 @@ pub fn restore_account(ctx: &ReducerContext, code: String) -> Result<(), String>
                 token: record.token,
             });
         }
+    }
+    Ok(())
+}
+
+/// ACCT-04: Teacher reducer to retrieve all student recovery codes for a classroom.
+/// Verifies teacher ownership, deletes previous results for this teacher, then inserts
+/// one row per student with a recovery key.
+#[reducer]
+pub fn get_class_recovery_codes(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
+    let classroom = ctx.db.classrooms().id().find(classroom_id)
+        .ok_or("Classroom not found")?;
+    if classroom.teacher != ctx.sender() {
+        return Err("Not the teacher of this classroom".into());
+    }
+
+    // Delete stale result rows for this teacher
+    let old: Vec<Identity> = ctx.db.class_recovery_results()
+        .iter()
+        .filter(|r| r.teacher_identity == ctx.sender())
+        .map(|r| r.member_identity)
+        .collect();
+    for id in old {
+        ctx.db.class_recovery_results().member_identity().delete(id);
+    }
+
+    // Iterate members, look up recovery key, write results
+    let members: Vec<_> = ctx.db.classroom_members()
+        .iter()
+        .filter(|m| m.classroom_id == classroom_id)
+        .collect();
+
+    for member in members {
+        let player = match ctx.db.players().identity().find(member.player_identity) {
+            Some(p) => p,
+            None => continue,
+        };
+        let key = match ctx.db.recovery_keys()
+            .iter()
+            .find(|k| k.owner == member.player_identity)
+        {
+            Some(k) => k,
+            None => continue,
+        };
+        ctx.db.class_recovery_results().insert(ClassRecoveryResult {
+            member_identity: member.player_identity,
+            teacher_identity: ctx.sender(),
+            classroom_id,
+            username: player.username.clone(),
+            code: key.code.clone(),
+        });
     }
     Ok(())
 }
