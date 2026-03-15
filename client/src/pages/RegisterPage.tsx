@@ -40,6 +40,7 @@ export default function RegisterPage({ onRegistered }: Props) {
 
   const { identity } = useSpacetimeDB();
   const restoreAccount = useSTDBReducer(reducers.restoreAccount);
+  const consumeRestoreResult = useSTDBReducer(reducers.consumeRestoreResult);
   const [restoreResults] = useTable(
     identity
       ? tables.restore_results.where(r => r.caller.eq(identity))
@@ -101,6 +102,8 @@ export default function RegisterPage({ onRegistered }: Props) {
       }
       const CREDS_KEY = 'spacetimemath_credentials';
       localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: '', token: row.token }));
+      // Consume the restore result row (best-effort; identity_disconnected is the backstop)
+      try { await consumeRestoreResult(); } catch { /* ignore */ }
       window.location.reload();
     } catch (err: unknown) {
       const msg = (err instanceof Error ? err.message : String(err)) || t('register.restoreError');
