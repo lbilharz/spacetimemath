@@ -48,6 +48,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const [codeCopied, setCodeCopied] = useState(false);
   const [codeTextCopied, setCodeTextCopied] = useState(false);
+  const [printing, setPrinting] = useState(false);
   const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
   const [isDiagnostic, setIsDiagnostic] = useState(false);
@@ -244,19 +245,46 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const restoreUrl = (code: string) => `${window.location.origin}/?restore=${code}`;
 
-  /** Open a printable window with one card per student. Accepts explicit rows to avoid stale closures. */
-  const openPrintWindow = (printRows: { username: string; code: string }[], classroomName: string) => {
-    if (printRows.length === 0) return;
-    const cards = printRows.map(m => `
-      <div class="card">
-        <div class="name">${m.username}</div>
-        <div class="class">${classroomName}</div>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(restoreUrl(m.code))}" width="160" height="160" />
-        <div class="code">${m.code}</div>
-        <div class="hint">Scan or type to log in on any device</div>
-      </div>
-    `).join('');
-    const html = `<!DOCTYPE html>
+  /**
+   * Fetch fresh recovery codes from the server and open the printable card sheet.
+   *
+   * window.open() must be called synchronously (before the first await) so the
+   * browser treats it as a direct response to the user's click — otherwise the
+   * popup would be blocked or open as empty about:blank.
+   * Content is written to the already-open window once rows arrive via subscription.
+   */
+  const handlePrintAll = async () => {
+    if (printing || !myClassroom) return;
+    setPrinting(true);
+    // Open the print window NOW, while still in the synchronous click handler.
+    // The content is written below once we have the data.
+    const win = window.open('', '_blank');
+    try {
+      await getClassRecoveryCodes({ classroomId });
+      // Poll the ref until rows arrive (subscription push, typically <200 ms)
+      const POLL = 50, TIMEOUT = 5_000;
+      const deadline = Date.now() + TIMEOUT;
+      let resultRows: ClassRecoveryResult[] = [];
+      while (Date.now() < deadline) {
+        resultRows = classRecoveryResultsRef.current.filter(
+          r => r.teacherIdentity.toHexString() === myIdentityHex && r.classroomId === classroomId
+        );
+        if (resultRows.length > 0) break;
+        await new Promise(res => setTimeout(res, POLL));
+      }
+      if (!win) return;
+      if (resultRows.length === 0) { win.close(); return; }
+      const classroomName = myClassroom.name;
+      const cards = resultRows.map(r => `
+        <div class="card">
+          <div class="name">${r.username}</div>
+          <div class="class">${classroomName}</div>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(restoreUrl(r.code))}" width="160" height="160" />
+          <div class="code">${r.code}</div>
+          <div class="hint">Scan or type to log in on any device</div>
+        </div>
+      `).join('');
+      win.document.write(`<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -277,41 +305,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   <div class="grid">${cards}</div>
   <script>window.onload = () => window.print();</script>
 </body>
-</html>`;
-    const win = window.open('', '_blank');
-    if (win) { win.document.write(html); win.document.close(); }
-  };
-
-  /** "Print cards" button — uses current React state (always up to date at click time). */
-  const handlePrintAll = () => {
-    const printRows = memberRows
-      .filter(m => m.recoveryCode)
-      .map(m => ({ username: m.username, code: m.recoveryCode! }));
-    openPrintWindow(printRows, myClassroom?.name ?? '');
-  };
-
-  /** "Download codes" button — calls reducer then polls the ref for rows so we don't rely
-   *  on React re-rendering synchronously. Builds print window from live ref data. */
-  const handleDownloadCodes = async () => {
-    await getClassRecoveryCodes({ classroomId });
-    const POLL = 50, TIMEOUT = 5_000;
-    const deadline = Date.now() + TIMEOUT;
-    let resultRows: ClassRecoveryResult[] = [];
-    while (Date.now() < deadline) {
-      resultRows = classRecoveryResultsRef.current.filter(
-        r => r.teacherIdentity.toHexString() === myIdentityHex && r.classroomId === classroomId
-      );
-      if (resultRows.length > 0) break;
-      await new Promise(res => setTimeout(res, POLL));
+</html>`);
+      win.document.close();
+    } finally {
+      setPrinting(false);
     }
-    openPrintWindow(
-      resultRows.map(r => ({ username: r.username, code: r.code })),
-      myClassroom?.name ?? '',
-    );
   };
 
   const medals = ['🥇', '🥈', '🥉'];
-  const studentsWithCards = memberRows.filter(m => m.recoveryCode).length;
 
 
   return (
@@ -559,18 +560,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               {isTeacher && (
                 <button
                   className="btn btn-secondary btn-sm"
-                  onClick={handleDownloadCodes}
-                  disabled={members.length === 0}
-                >
-                  {t('classroom.downloadCodes')}
-                </button>
-              )}
-              {isTeacher && studentsWithCards > 0 && (
-                <button
-                  className="btn btn-secondary btn-sm"
                   onClick={handlePrintAll}
+                  disabled={members.length === 0 || printing}
                 >
-                  🖨 {t('classroom.printCards')}
+                  {printing ? '…' : `🖨 ${t('classroom.printCards')}`}
                 </button>
               )}
               <button
