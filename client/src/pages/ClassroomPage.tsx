@@ -14,6 +14,14 @@ interface Props {
   onLeave: () => void;
 }
 
+interface ClassRecoveryResult {
+  memberIdentity: { toHexString: () => string };
+  teacherIdentity: { toHexString: () => string };
+  classroomId: bigint;
+  username: string;
+  code: string;
+}
+
 export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onStartClassSprint, onLeave }: Props) {
   const { t } = useTranslation();
   const [classrooms]        = useTable(tables.classrooms);
@@ -25,11 +33,13 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [problemStats]      = useTable(tables.problem_stats);
   // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
-  const leaveClassroom   = useSTDBReducer(reducers.leaveClassroom);
-  const startSession     = useSTDBReducer(reducers.startSession);
-  const toggleVisibility = useSTDBReducer(reducers.toggleClassroomVisibility);
-  const startClassSprint = useSTDBReducer(reducers.startClassSprint);
-  const endClassSprint   = useSTDBReducer(reducers.endClassSprint);
+  const leaveClassroom        = useSTDBReducer(reducers.leaveClassroom);
+  const startSession          = useSTDBReducer(reducers.startSession);
+  const toggleVisibility      = useSTDBReducer(reducers.toggleClassroomVisibility);
+  const startClassSprint      = useSTDBReducer(reducers.startClassSprint);
+  const endClassSprint        = useSTDBReducer(reducers.endClassSprint);
+  const getClassRecoveryCodes = useSTDBReducer(reducers.getClassRecoveryCodes);
+  const [classRecoveryResults] = useTable(tables.class_recovery_results);
 
   const [codeCopied, setCodeCopied] = useState(false);
   const [codeTextCopied, setCodeTextCopied] = useState(false);
@@ -170,8 +180,12 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     }
   }
 
-  // Recovery key lookup removed (SEC-01): recovery_keys is now private
-  const recoveryKeyByIdentity = new Map<string, string>();
+  // ACCT-04: Populate from class_recovery_results (teacher's private result table)
+  const myClassRecoveryCodes = (classRecoveryResults as unknown as ClassRecoveryResult[])
+    .filter(r => r.teacherIdentity.toHexString() === myIdentityHex && r.classroomId === classroomId);
+  const recoveryKeyByIdentity = new Map<string, string>(
+    myClassRecoveryCodes.map(r => [r.memberIdentity.toHexString(), r.code])
+  );
 
   // All member rows (for the Members card — shows everyone)
   const memberRows = members.map(m => {
@@ -265,6 +279,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
     const win = window.open('', '_blank');
     if (win) { win.document.write(html); win.document.close(); }
+  };
+
+  const handleDownloadCodes = async () => {
+    await getClassRecoveryCodes({ classroomId });
+    // recoveryKeyByIdentity will be populated via subscription update triggering re-render.
+    // handlePrintAll reads from recoveryKeyByIdentity which is derived from classRecoveryResults.
+    // We call handlePrintAll after a short delay to allow the React state to update.
+    setTimeout(() => handlePrintAll(), 300);
   };
 
   const medals = ['🥇', '🥈', '🥉'];
@@ -513,6 +535,15 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
           <div className="row-between row-wrap gap-8 mb-3">
             <h2 className="text-md">{t('classroom.membersHeading')}</h2>
             <div className="row gap-8">
+              {isTeacher && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleDownloadCodes}
+                  disabled={members.length === 0}
+                >
+                  {t('classroom.downloadCodes')}
+                </button>
+              )}
               {isTeacher && studentsWithCards > 0 && (
                 <button
                   className="btn btn-secondary btn-sm"

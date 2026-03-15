@@ -144,6 +144,7 @@
     "closeClass": "✕ Close class",
     "leaveClass": "← Leave class",
     "closeHint": "Closing the class removes all members from the session.",
+    "downloadCodes": "Download codes",
     "printCards": "Print login cards",
     "showLoginCard": "Show login QR card",
     "studentLoginHint": "Scan to log in on any device — no password needed."
