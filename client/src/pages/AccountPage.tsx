@@ -340,36 +340,50 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
           {t('account.logout')}
         </button>
 
-        <div style={{ borderTop: '1px solid rgba(232,57,29,0.25)', margin: '16px 0 4px' }} />
-
-        {confirmDelete ? (
-          <div className="col gap-8">
-            <p className="text-sm text-muted">{t('account.deleteDesc')}</p>
-            <div className="row gap-8">
-              <button
-                className="btn btn-secondary btn-sm flex-1"
-                onClick={() => setConfirmDelete(false)}
-                disabled={deleting}
-              >
-                {t('account.deleteCancel')}
-              </button>
-              <button
-                className="btn btn-danger btn-sm flex-1"
-                onClick={handleDeleteAccount}
-                disabled={deleting}
-              >
-                {deleting ? '…' : t('account.deleteConfirm')}
-              </button>
+        {confirmDelete && (
+          <>
+            <div style={{ borderTop: '1px solid rgba(232,57,29,0.25)', margin: '16px 0 12px' }} />
+            <div className="col gap-8">
+              <p className="text-sm text-muted">{t('account.deleteDesc')}</p>
+              <div className="row gap-8">
+                <button
+                  className="btn btn-secondary btn-sm flex-1"
+                  onClick={() => setConfirmDelete(false)}
+                  disabled={deleting}
+                >
+                  {t('account.deleteCancel')}
+                </button>
+                <button
+                  className="btn btn-danger btn-sm flex-1"
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                >
+                  {deleting ? '…' : t('account.deleteConfirm')}
+                </button>
+              </div>
             </div>
+          </>
+        )}
+
+        {!confirmDelete && (
+          <div style={{ textAlign: 'center', marginTop: 12 }}>
+            <button
+              onClick={() => setConfirmDelete(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '4px 8px',
+                cursor: 'pointer',
+                color: 'rgba(232,57,29,0.55)',
+                fontSize: 12,
+                textDecoration: 'underline',
+                textDecorationStyle: 'dotted',
+                textUnderlineOffset: 3,
+              }}
+            >
+              {t('account.deleteAccount')}
+            </button>
           </div>
-        ) : (
-          <button
-            className="btn btn-secondary btn-sm w-full"
-            style={{ color: 'var(--red)', borderColor: 'rgba(232,57,29,0.4)' }}
-            onClick={() => setConfirmDelete(true)}
-          >
-            {t('account.deleteAccount')}
-          </button>
         )}
       </div>
 
