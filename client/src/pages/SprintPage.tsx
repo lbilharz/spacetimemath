@@ -221,12 +221,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         if (sessionIdRef.current !== null) {
           issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
         }
-      } else if (!isDiagnostic && sessionIdRef.current !== null) {
+      } else if (!isDiagnostic && sessionId !== null) {
         // Normal sprint: request first problem from server
-        nextProblem({ sessionId: sessionIdRef.current });
+        nextProblem({ sessionId });
       }
     }
-  }, [sprintStarted, problem, problemStats.length, isDiagnostic]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sprintStarted, problem, problemStats.length, isDiagnostic, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 3d. Receive server-delivered problem from NextProblemResult subscription (normal sprint only)
   useEffect(() => {
@@ -334,6 +334,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     setFeedback(fb);
     setInput('');
 
+    // Normal sprint: pre-fetch next problem immediately so server RTT overlaps with feedback display
+    if (!isDiagnostic && sessionIdRef.current !== null) {
+      nextProblem({ sessionId: sessionIdRef.current });
+    }
+
     // Show feedback briefly, then next problem
     setTimeout(() => {
       setFeedback(null);
@@ -348,12 +353,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
           issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
         }
         if (!('ontouchstart' in window)) inputRef.current?.focus();
-      } else {
-        // Normal sprint: ask server for next problem (setProblem happens via subscription effect)
-        if (sessionIdRef.current !== null) {
-          nextProblem({ sessionId: sessionIdRef.current });
-        }
       }
+      // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, !fb.isCorrect ? 1000 : 600);
   };
 
