@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-05-PLAN.md — Phase 4 CSS migration fully verified; all phases complete
-last_updated: "2026-03-15T00:01:43.594Z"
+stopped_at: Completed 05-01-PLAN.md — RestoreResult + ClassRecoveryResult tables deployed to maincloud; test stubs written
+last_updated: "2026-03-15T08:26:01.721Z"
 last_activity: 2026-03-15 — Completed 04-04 (ClassroomPage.tsx migration, CSS-03 done); Phase 4 complete
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 21
+  completed_plans: 18
   percent: 100
 ---
 
@@ -66,6 +66,7 @@ Progress: [██████████] 100% (4 of 4 phases complete)
 | Phase 04-css-design-system-migration P03 | 11min | 2 tasks | 9 files |
 | Phase 04-css-design-system-migration P04 | 15min | 1 tasks | 2 files |
 | Phase 04-css-design-system-migration P05 | 5min | 2 tasks | 0 files |
+| Phase 05-account-recovery-and-classroom-code-management P01 | 3min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,9 @@ Recent decisions affecting current work:
 - [Phase 04-css-design-system-migration]: ClassroomPage member row keeps two runtime style={} props (border-bottom, opacity) — both conditionally computed from array index and m.hidden boolean; .text-md added for 16px h2 section overrides
 - [Phase 04-css-design-system-migration]: Phase 4 CSS Design System Migration fully complete — CSS-01 through CSS-03 all done; entire codebase migrated from inline styles to utility classes
 - [Phase 04-css-design-system-migration]: Phase 4 approved as complete by human smoke test — all 9 pages confirmed visually consistent on desktop and mobile; runtime-computed styles (mastery colors, timer, progress bar) confirmed working; CSS-04 satisfied
+- [Phase 05-account-recovery-and-classroom-code-management]: SECURITY DECISION — get_class_recovery_codes exposes student recovery codes to the classroom teacher. Authorization guard: ctx.sender() must equal classroom.teacher AND the student must be a member of that specific classroom. Known residual risk: a student tricked into joining a malicious classroom exposes their recovery key to that classroom's "teacher" — this is a social engineering vector, not a passive data leak. Accepted trade-off: classroom context requires teacher authority over student credentials; threat model is kids on shared devices, not adversarial actors. Students should only join classrooms from trusted teachers (UI should reinforce this).
+- [Phase 05-account-recovery-and-classroom-code-management]: restore_account skips get_player() — anonymous callers have no player row; code normalised to uppercase with 12-char length guard for defence in depth
+- [Phase 05-account-recovery-and-classroom-code-management]: ClassRecoveryResult uses member_identity as primary key; delete-all-for-teacher then insert is atomic batch replacement pattern
 
 ### Pending Todos
 
@@ -121,6 +125,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T00:01:43.591Z
-Stopped at: Completed 04-05-PLAN.md — Phase 4 CSS migration fully verified; all phases complete
+Last session: 2026-03-15T08:26:01.719Z
+Stopped at: Completed 05-01-PLAN.md — RestoreResult + ClassRecoveryResult tables deployed to maincloud; test stubs written
 Resume file: None
