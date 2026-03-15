@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-04-PLAN.md — classroom.rs + gdpr.rs extracted, lib.rs finalized, deployed to maincloud
-last_updated: "2026-03-15T20:20:26.892Z"
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-03-15T21:32:24.349Z"
 last_activity: 2026-03-15 — Completed 07-04 (classroom.rs + gdpr.rs extraction, live deploy verified)
 progress:
   total_phases: 8
   completed_phases: 7
-  total_plans: 29
-  completed_plans: 29
+  total_plans: 31
+  completed_plans: 30
   percent: 97
 ---
 
@@ -78,6 +78,7 @@ Progress: [█████████░] 97% (29 of 29 plans complete in phase
 | Phase 07-split-server-lib-rs-into-modules P02 | 8min | 2 tasks | 3 files |
 | Phase 07-split-server-lib-rs-into-modules P03 | 3min | 2 tasks | 2 files |
 | Phase 07-split-server-lib-rs-into-modules P04 | ~15min | 2 tasks | 3 files |
+| Phase 08-tokenized-fetch-for-sensitive-one-shot-results P01 | 5min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -147,6 +148,9 @@ Recent decisions affecting current work:
 - [Phase 07-split-server-lib-rs-into-modules]: finalize_class_sprint_sessions kept private in classroom.rs (not pub(crate)) — internal implementation detail of end_class_sprint and auto_end_class_sprint only
 - [Phase 07-split-server-lib-rs-into-modules]: lib.rs final state: schema tables + mod declarations + lifecycle reducers + migrate_* reducers + pub(crate) helpers/constants; all extracted reducers removed; line count reduced from ~1850 to ~700-900
 - [Phase 07-split-server-lib-rs-into-modules]: Phase 7 fully complete — six-file server module split deployed and verified live on maincloud (MOD-04 satisfied)
+- [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: Identity-guard fallback: identity ? tables.x.where(r => r.field.eq(identity)) : tables.x — pre-identity connections get unscoped subscription but rows are always identity-owned anyway
+- [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: myRecoveryKey simplified from .find(identity filter) to [0] — subscription is server-scoped so array contains at most one row
+- [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: classroomId filter preserved in ClassroomPage after removing teacherIdentity filter — teacher may have codes for multiple classrooms in subscription
 
 ### Roadmap Evolution
 
@@ -165,6 +169,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:30:00.000Z
-Stopped at: Completed 07-04-PLAN.md — classroom.rs + gdpr.rs extracted, lib.rs finalized, deployed to maincloud
+Last session: 2026-03-15T21:32:24.346Z
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
