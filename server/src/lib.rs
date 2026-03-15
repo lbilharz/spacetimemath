@@ -1,12 +1,18 @@
 use spacetimedb::{table, reducer, Table, ReducerContext, Identity, Timestamp, ScheduleAt};
 
+mod sprint;
+mod classroom;
+mod auth;
+mod security;
+mod gdpr;
+
 // ============================================================
 // CONSTANTS
 // ============================================================
 
-const MAX_ANSWERS_PER_SESSION: usize = 80;
-const MIN_RESPONSE_MS: u32 = 200;
-const MAX_RESPONSE_MS: u32 = 120_000;
+pub(crate) const MAX_ANSWERS_PER_SESSION: usize = 80;
+pub(crate) const MIN_RESPONSE_MS: u32 = 200;
+pub(crate) const MAX_RESPONSE_MS: u32 = 120_000;
 
 // ============================================================
 // TABLES
@@ -452,7 +458,7 @@ fn seed_tier1_problem_stats(ctx: &ReducerContext) {
     }
 }
 
-fn bootstrap_weight(a: u8, b: u8, category: u8) -> f32 {
+pub(crate) fn bootstrap_weight(a: u8, b: u8, category: u8) -> f32 {
     if category == 0 { return 0.2; }
     let hard: &[(u8, u8, f32)] = &[
         (8, 7, 2.0), (7, 8, 2.0),
@@ -840,12 +846,12 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
 }
 
 /// Maximum learning tier index (inclusive). Tiers 0–7 = 8 distinct tiers.
-const MAX_TIER: u8 = 7;
+pub(crate) const MAX_TIER: u8 = 7;
 
 /// Returns the learning tier for a factor value.
 /// Returns None for excluded factors (×0 and extended: ×11, ×12, ×15, ×20, ×25).
 /// Tier ladder: ×1/×2/×10 (0) → ×3 (1) → ×5 (2) → ×4 (3) → ×6 (4) → ×7 (5) → ×8 (6) → ×9 (7).
-fn factor_tier(x: u8) -> Option<u8> {
+pub(crate) fn factor_tier(x: u8) -> Option<u8> {
     match x {
         0 => None,
         1 | 2 | 10 => Some(0), // starter: ×1, ×2, ×10
@@ -866,7 +872,7 @@ fn factor_tier(x: u8) -> Option<u8> {
 /// This means both 2×7 and 7×2 are tier-0 pairs (symmetric, as expected).
 /// Old design used max(); changed to min() so pools are [unlocked_factors] × [1–10].
 /// Returns None for excluded pairs (those involving ×0).
-fn pair_learning_tier(a: u8, b: u8) -> Option<u8> {
+pub(crate) fn pair_learning_tier(a: u8, b: u8) -> Option<u8> {
     match (factor_tier(a), factor_tier(b)) {
         (Some(ta), Some(tb)) => Some(ta.min(tb)),
         _ => None,
@@ -926,7 +932,7 @@ fn credit_session_to_player(ctx: &ReducerContext, identity: Identity, session_id
     }
 }
 
-fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_id: u64) {
+pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_id: u64) {
     let player = match ctx.db.players().identity().find(sender) {
         Some(p) => p,
         None => return,
@@ -1024,8 +1030,8 @@ pub struct TransferCodeResult {
     pub code: String,
 }
 
-const TRANSFER_CODE_TTL_MICROS: i64 = 10 * 60 * 1_000_000; // 10 minutes
-const TRANSFER_CODE_CLEANUP_INTERVAL_MICROS: i64 = 5 * 60 * 1_000_000; // check every 5 min
+pub(crate) const TRANSFER_CODE_TTL_MICROS: i64 = 10 * 60 * 1_000_000; // 10 minutes
+pub(crate) const TRANSFER_CODE_CLEANUP_INTERVAL_MICROS: i64 = 5 * 60 * 1_000_000; // check every 5 min
 
 /// Scheduled recurring table — SpacetimeDB fires `expire_transfer_codes` at each scheduled_at (SEC-09).
 #[table(accessor = transfer_code_cleanup_schedule, scheduled(expire_transfer_codes))]
@@ -1375,7 +1381,7 @@ pub fn regenerate_recovery_key(ctx: &ReducerContext, token: String) -> Result<()
 }
 
 /// FNV-1a of (sender bytes ++ timestamp micros) → 6 unambiguous uppercase chars
-fn make_code(ctx: &ReducerContext) -> String {
+pub(crate) fn make_code(ctx: &ReducerContext) -> String {
     const CHARS: &[u8] = b"23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 32, no 0/O/1/I/L
     let ts = ctx.timestamp.to_micros_since_unix_epoch() as u64;
     let mut h: u64 = 14695981039346656037;
@@ -1389,7 +1395,7 @@ fn make_code(ctx: &ReducerContext) -> String {
 }
 
 /// Same algorithm with a distinct seed → 12 chars for recovery keys
-fn make_recovery_code(ctx: &ReducerContext) -> String {
+pub(crate) fn make_recovery_code(ctx: &ReducerContext) -> String {
     const CHARS: &[u8] = b"23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     let ts = ctx.timestamp.to_micros_since_unix_epoch() as u64;
     let mut h: u64 = 14695981039346656037u64 ^ 0xA5A5A5A5_5A5A5A5A; // distinct seed
@@ -1404,13 +1410,13 @@ fn make_recovery_code(ctx: &ReducerContext) -> String {
     (0..12).map(|i| CHARS[((h >> (i * 5)) & 31) as usize] as char).collect()
 }
 
-fn get_player(ctx: &ReducerContext) -> Result<Player, String> {
+pub(crate) fn get_player(ctx: &ReducerContext) -> Result<Player, String> {
     ctx.db.players().identity().find(ctx.sender())
         .ok_or_else(|| "Not registered - call register() first".into())
 }
 
 /// FNV-1a helper for Fisher-Yates per-draw entropy in build_sequence.
-fn fnv_index(sender: &Identity, ts: i64, session_id: u64, i: u64) -> u64 {
+pub(crate) fn fnv_index(sender: &Identity, ts: i64, session_id: u64, i: u64) -> u64 {
     let mut h: u64 = 14695981039346656037;
     for b in sender.to_byte_array() {
         h ^= b as u64;
@@ -1426,7 +1432,7 @@ fn fnv_index(sender: &Identity, ts: i64, session_id: u64, i: u64) -> u64 {
 /// Uses Fisher-Yates shuffle (FNV-1a hash chain) then a single pass to fix commutative-pair
 /// adjacency (e.g. 4×6 immediately followed by 6×4).
 /// Returns a comma-separated string of problem_keys (a*100+b as u16).
-fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8) -> String {
+pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8) -> String {
     // 1. Collect eligible pool: all ordered pairs (a, b) within player's tier
     //    problem_key = a * 100 + b; exclude pairs where a == 0 || b == 0
     let mut pool: Vec<u16> = ctx.db.problem_stats().iter()
