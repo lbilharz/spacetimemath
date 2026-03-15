@@ -89,6 +89,32 @@ pub struct IssuedProblemResult {
     pub token: String,
 }
 
+/// SEQ-01: Server-side sprint problem sequence (private — never pushed to client).
+/// Keyed by session_id; one row per active session.
+/// The sequence field is a comma-separated list of problem_keys (a*100+b as u16 values).
+/// Deleted when the session is finalized (finalize_session) or the player is erased (delete_player).
+#[table(accessor = sprint_sequences)]
+pub struct SprintSequence {
+    #[primary_key]
+    pub session_id: u64,
+    pub player_identity: Identity,
+    pub sequence: String,   // comma-separated problem_keys: "102,201,310,..."
+    pub index: u32,         // pointer to the next problem to serve
+}
+
+/// SEQ-02: Public result table for server-driven problem delivery.
+/// One row per player — upserted by next_problem reducer.
+/// Made public because SpacetimeDB 2.0.3 requires public for row-push to subscribers.
+#[table(accessor = next_problem_results, public)]
+pub struct NextProblemResult {
+    #[primary_key]
+    pub owner: Identity,
+    pub session_id: u64,
+    pub a: u8,
+    pub b: u8,
+    pub token: String,
+}
+
 /// Per ordered-pair community stats + Derived Score
 /// problem_key = a * 100 + b  (tracks 4x6 and 6x4 separately)
 #[table(accessor = problem_stats, public)]
@@ -575,6 +601,80 @@ pub fn issue_problem(
         None => {
             ctx.db.issued_problem_results().insert(IssuedProblemResult {
                 owner: ctx.sender(),
+                token,
+            });
+        }
+    }
+    Ok(())
+}
+
+/// SEQ-01/SEQ-02: Server-driven problem delivery for normal sprints.
+/// Reads the next problem from the player's SprintSequence, issues a token via
+/// the existing IssuedProblem / IssuedProblemResult pattern (SEC-10), and writes
+/// the (a, b, token) to NextProblemResult for the client to subscribe to.
+/// Diagnostic sprints remain client-driven (issue_problem still handles those).
+#[reducer]
+pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String> {
+    let session = ctx.db.sessions().id().find(session_id)
+        .ok_or("Session not found")?;
+    if session.player_identity != ctx.sender() {
+        return Err("Not your session".into());
+    }
+    if session.is_complete {
+        return Err("Session already complete".into());
+    }
+
+    let mut seq = ctx.db.sprint_sequences().session_id().find(session_id)
+        .ok_or("No sequence for this session")?;
+
+    let keys: Vec<u16> = if seq.sequence.is_empty() {
+        vec![]
+    } else {
+        seq.sequence.split(',')
+            .filter_map(|s| s.parse::<u16>().ok())
+            .collect()
+    };
+
+    let idx = seq.index as usize;
+    if idx >= keys.len() {
+        return Err("Sequence exhausted".into());
+    }
+
+    let key = keys[idx];
+    let a = (key / 100) as u8;
+    let b = (key % 100) as u8;
+
+    // Advance index
+    seq.index += 1;
+    ctx.db.sprint_sequences().session_id().update(seq);
+
+    // Issue token (reuse SEC-10 IssuedProblem pattern)
+    let token = make_code(ctx);
+    ctx.db.issued_problems().insert(IssuedProblem {
+        id: 0,
+        session_id,
+        a,
+        b,
+        token: token.clone(),
+    });
+
+    // Upsert NextProblemResult for the client subscription
+    match ctx.db.next_problem_results().owner().find(ctx.sender()) {
+        Some(_) => {
+            ctx.db.next_problem_results().owner().update(NextProblemResult {
+                owner: ctx.sender(),
+                session_id,
+                a,
+                b,
+                token,
+            });
+        }
+        None => {
+            ctx.db.next_problem_results().insert(NextProblemResult {
+                owner: ctx.sender(),
+                session_id,
+                a,
+                b,
                 token,
             });
         }
@@ -1297,6 +1397,74 @@ fn make_recovery_code(ctx: &ReducerContext) -> String {
 fn get_player(ctx: &ReducerContext) -> Result<Player, String> {
     ctx.db.players().identity().find(ctx.sender())
         .ok_or_else(|| "Not registered - call register() first".into())
+}
+
+/// FNV-1a helper for Fisher-Yates per-draw entropy in build_sequence.
+fn fnv_index(sender: &Identity, ts: i64, session_id: u64, i: u64) -> u64 {
+    let mut h: u64 = 14695981039346656037;
+    for b in sender.to_byte_array() {
+        h ^= b as u64;
+        h = h.wrapping_mul(1099511628211);
+    }
+    h ^= ts as u64;      h = h.wrapping_mul(1099511628211);
+    h ^= session_id;     h = h.wrapping_mul(1099511628211);
+    h ^= i;              h = h.wrapping_mul(1099511628211);
+    h
+}
+
+/// SEQ-01: Build a shuffled problem sequence for a session based on the player's learning tier.
+/// Uses Fisher-Yates shuffle (FNV-1a hash chain) then a single pass to fix commutative-pair
+/// adjacency (e.g. 4×6 immediately followed by 6×4).
+/// Returns a comma-separated string of problem_keys (a*100+b as u16).
+fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8) -> String {
+    // 1. Collect eligible pool: all ordered pairs (a, b) within player's tier
+    //    problem_key = a * 100 + b; exclude pairs where a == 0 || b == 0
+    let mut pool: Vec<u16> = ctx.db.problem_stats().iter()
+        .filter(|s| {
+            if s.a == 0 || s.b == 0 { return false; }
+            pair_learning_tier(s.a, s.b).map(|t| t <= player_tier).unwrap_or(false)
+        })
+        .map(|s| s.problem_key)
+        .collect();
+
+    // 2. Fisher-Yates shuffle using FNV hash chain
+    let n = pool.len();
+    let ts = ctx.timestamp.to_micros_since_unix_epoch();
+    for i in (1..n).rev() {
+        let h = fnv_index(&ctx.sender(), ts, session_id, i as u64);
+        let j = (h % (i as u64 + 1)) as usize;
+        pool.swap(i, j);
+    }
+
+    // 3. Post-shuffle: fix commutative-pair adjacency (one pass)
+    //    For each position i where pool[i] and pool[i+1] are commutative pairs
+    //    (a*100+b and b*100+a), swap pool[i+1] with pool[i+2] (if exists).
+    //    Accept that the very last pair may remain adjacent — edge case, not worth a second pass.
+    let m = pool.len();
+    let mut i = 0usize;
+    while i + 1 < m {
+        let key_a = pool[i];
+        let key_b = pool[i + 1];
+        let a1 = (key_a / 100) as u8;
+        let b1 = (key_a % 100) as u8;
+        let commutative_of_a = b1 as u16 * 100 + a1 as u16; // = b*100 + a as u16
+        if key_b == commutative_of_a {
+            // Swap i+1 with i+2 if it exists, otherwise leave as-is (end-of-sequence edge case)
+            if i + 2 < m {
+                pool.swap(i + 1, i + 2);
+            }
+            // Skip i+1 (now fixed) to avoid infinite loop on still-adjacent pair
+            i += 2;
+        } else {
+            i += 1;
+        }
+    }
+
+    // 4. Serialise as comma-separated string
+    pool.iter()
+        .map(|k| k.to_string())
+        .collect::<Vec<_>>()
+        .join(",")
 }
 
 // ============================================================
