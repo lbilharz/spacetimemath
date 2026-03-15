@@ -146,6 +146,17 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
     window.location.reload();
   };
 
+  const deletePlayer = useSTDBReducer(reducers.deletePlayer);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    await deletePlayer();
+    localStorage.removeItem('spacetimemath_credentials');
+    window.location.reload();
+  };
+
   const fmtCountdown = (s: number) =>
     `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
@@ -328,6 +339,38 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         <button className="btn btn-danger w-full" onClick={handleLogout}>
           {t('account.logout')}
         </button>
+
+        <div style={{ borderTop: '1px solid rgba(232,57,29,0.25)', margin: '16px 0 4px' }} />
+
+        {confirmDelete ? (
+          <div className="col gap-8">
+            <p className="text-sm text-muted">{t('account.deleteDesc')}</p>
+            <div className="row gap-8">
+              <button
+                className="btn btn-secondary btn-sm flex-1"
+                onClick={() => setConfirmDelete(false)}
+                disabled={deleting}
+              >
+                {t('account.deleteCancel')}
+              </button>
+              <button
+                className="btn btn-danger btn-sm flex-1"
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+              >
+                {deleting ? '…' : t('account.deleteConfirm')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="btn btn-secondary btn-sm w-full"
+            style={{ color: 'var(--red)', borderColor: 'rgba(232,57,29,0.4)' }}
+            onClick={() => setConfirmDelete(true)}
+          >
+            {t('account.deleteAccount')}
+          </button>
+        )}
       </div>
 
       {/* Legal */}
