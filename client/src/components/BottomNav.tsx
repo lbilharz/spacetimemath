@@ -34,7 +34,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              padding: '8px 4px',
+              padding: '5px 4px',
               color: isActive ? 'var(--accent)' : 'var(--muted)',
               transition: 'color 0.15s',
               WebkitTapHighlightColor: 'transparent',
