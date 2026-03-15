@@ -121,30 +121,39 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
         </div>
       )}
 
-      {/* Sprint CTA */}
-      <div className="row-between gap-8" style={{ flexWrap: 'wrap' }}>
-        <div>
-          {myPlayer && (
-            <p className="text-muted text-base">
-              {t('lobby.bestScore')} <b className="text-warn">{myPlayer.bestScore.toFixed(1)}</b>
-              {' · '}{t('lobby.sessions', { count: myPlayer.totalSessions })}
-              {' · '}
-              <a
-                href="/progress#tier-status"
-                className="text-accent fw-semibold"
-                style={{ textDecoration: 'none' }}
-              >
-                {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
-                {' '}Tier {myPlayer.learningTier ?? 0}
-              </a>
-            </p>
-          )}
-        </div>
+      {/* Welcome + Sprint CTA */}
+      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {myPlayer && (
+          <>
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
+                {t('lobby.hello', { name: myPlayer.username })} 👋
+              </h2>
+              <div className="row gap-12" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
+                <a
+                  href="/progress#tier-status"
+                  className="fw-semibold"
+                  style={{ textDecoration: 'none', color: 'var(--accent)', fontSize: 14 }}
+                >
+                  {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
+                  {' '}Tier {myPlayer.learningTier ?? 0}
+                </a>
+                <span className="text-muted" style={{ fontSize: 13 }}>·</span>
+                <span className="text-muted" style={{ fontSize: 14 }}>
+                  {t('lobby.bestScore')} <b className="text-warn">{myPlayer.bestScore.toFixed(1)}</b>
+                </span>
+                <span className="text-muted" style={{ fontSize: 13 }}>·</span>
+                <span className="text-muted" style={{ fontSize: 14 }}>
+                  {t('lobby.sessions', { count: myPlayer.totalSessions })}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
         <button
-          className="btn btn-primary btn-lg"
+          className="btn btn-primary btn-lg w-full"
           onClick={handleStart}
           disabled={starting}
-          style={{ minWidth: 160 }}
         >
           {starting ? t('lobby.starting') : t('lobby.startSprint')}
         </button>
