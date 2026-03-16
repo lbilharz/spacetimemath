@@ -13,8 +13,8 @@
 
 ### Extended Tables
 
-- [ ] **EXT-01**: Master-tier player can toggle "extended tables" (×11–×20) on/off from their account
-- [ ] **EXT-02**: When extended mode is on, server selects problems with one factor 11–20 (other factor 2–10)
+- [x] **EXT-01**: Master-tier player can toggle "extended tables" (×11–×20) on/off from their account
+- [x] **EXT-02**: When extended mode is on, server selects problems with one factor 11–20 (other factor 2–10)
 - [ ] **EXT-03**: Extended problems are scored using the standard tier multiplier system
 
 ## v2 Requirements (deferred)
@@ -49,8 +49,8 @@
 |-------------|-------|--------|
 | VIZ-01 | Phase 9 | Complete |
 | VIZ-02 | Phase 9 | Complete |
-| EXT-01 | Phase 10 | Pending |
-| EXT-02 | Phase 10 | Pending |
+| EXT-01 | Phase 10 | Complete |
+| EXT-02 | Phase 10 | Complete |
 | EXT-03 | Phase 10 | Pending |
 
 **Coverage:**

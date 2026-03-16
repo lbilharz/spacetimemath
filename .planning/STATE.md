@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Fixed Grid + Extended Tables
 status: planning
-stopped_at: Completed 09-fixed-grid-visualization 09-01-PLAN.md
-last_updated: "2026-03-16T06:54:00.253Z"
+stopped_at: Completed 10-extended-tables-opt-in 10-01-PLAN.md
+last_updated: "2026-03-16T10:30:11.119Z"
 last_activity: 2026-03-16 — v1.1 roadmap created (2 phases, 5 requirements, phases 9–10)
 progress:
   total_phases: 2
   completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  total_plans: 3
+  completed_plans: 2
   percent: 0
 ---
 
@@ -81,6 +81,7 @@ Progress: [----------] 0% (0/2 phases complete)
 | Phase 08-tokenized-fetch-for-sensitive-one-shot-results P01 | 5min | 2 tasks | 3 files |
 | Phase 08-tokenized-fetch-for-sensitive-one-shot-results P02 | 10min | 2 tasks | 5 files |
 | Phase 09-fixed-grid-visualization P01 | 15 | 2 tasks | 1 files |
+| Phase 10-extended-tables-opt-in P01 | 9min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -156,6 +157,8 @@ Recent decisions affecting current work:
 - [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: myRecoveryKey simplified from .find(identity filter) to [0] — subscription is server-scoped so array contains at most one row
 - [Phase 08-tokenized-fetch-for-sensitive-one-shot-results]: classroomId filter preserved in ClassroomPage after removing teacherIdentity filter — teacher may have codes for multiple classrooms in subscription
 - [Phase 09-fixed-grid-visualization]: DotArray always iterates INDICES (0-9) for both loops; clampToGrid clamp on a/b; block gap structure with BLOCK_SIZE=5; faded prop on outer container
+- [Phase 10-extended-tables-opt-in]: Class sprints pass extended_mode=false to build_sequence — class context never uses extended mode regardless of player setting
+- [Phase 10-extended-tables-opt-in]: Integration test failures on deploy are expected — SpacetimeDB 2.0.3 schema change disconnects all clients; unit tests all pass
 
 ### Roadmap Evolution
 
@@ -176,6 +179,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T06:54:00.250Z
-Stopped at: Completed 09-fixed-grid-visualization 09-01-PLAN.md
+Last session: 2026-03-16T10:30:11.116Z
+Stopped at: Completed 10-extended-tables-opt-in 10-01-PLAN.md
 Resume file: None
