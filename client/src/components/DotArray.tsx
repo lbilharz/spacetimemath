@@ -37,7 +37,7 @@ export default function DotArray({ a, b, faded = false }: Props) {
     <div
       className="mb-3"
       style={{
-        opacity: faded ? 1 : 1,
+        opacity: faded ? 1 : 0.9,
         transition: 'opacity 1s',
         display: 'inline-block',
       }}
