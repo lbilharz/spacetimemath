@@ -5,13 +5,34 @@ interface Props {
   faded?: boolean;
 }
 
+/** Total grid dimension: always 10 rows × 10 columns */
+const GRID_SIZE = 10;
+/** Cells per block (for block-gap grouping) */
+const BLOCK_SIZE = 5;
+/** Dot size in px */
+const CELL_SIZE = 12;
+/** Gap between dots within a block */
+const CELL_GAP = 3;
+/** Gap between the two 5-cell blocks */
+const BLOCK_GAP = 8;
+
+/** Pre-generated row/column indices 0–9 */
+const INDICES = Array.from({ length: GRID_SIZE }, (_, i) => i);
+
+/** Clamp a and b to [1, GRID_SIZE] so invalid props never break the layout */
+const clampToGrid = (n: number) => Math.max(1, Math.min(GRID_SIZE, n));
+
 /**
  * Visual dot-array for a multiplication pair.
- * Arranged as `a` rows × `b` columns.
- * Columns beyond the 5th are rendered at 35% opacity to show grouping.
- * The whole component fades to 20% opacity once `faded` is true.
+ * Always renders a fixed 10×10 grid — no layout shift between problems.
+ * The top-left a×b rectangle is highlighted (accent color, full opacity);
+ * remaining cells are dimmed (neutral color, 35% opacity).
+ * The whole component fades to 20% opacity when `faded` is true.
  */
 export default function DotArray({ a, b, faded = false }: Props) {
+  const rows = clampToGrid(a);
+  const cols = clampToGrid(b);
+
   return (
     <div
       className="mb-3"
@@ -21,17 +42,45 @@ export default function DotArray({ a, b, faded = false }: Props) {
         display: 'inline-block',
       }}
     >
-      {Array.from({ length: a }, (_, row) => (
-        <div key={row} className="row mb-1" style={{ gap: 3 }}>
-          {Array.from({ length: b }, (_, col) => (
-            <div key={col} style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: 'var(--accent)',
-              opacity: col >= 5 ? 0.35 : 1,
-            }} />
-          ))}
+      {INDICES.map((row) => (
+        <div
+          key={row}
+          style={{
+            display: 'flex',
+            gap: BLOCK_GAP,
+            marginBottom: row === BLOCK_SIZE - 1 ? BLOCK_GAP : CELL_GAP,
+          }}
+        >
+          {/* First block: columns 0–4 */}
+          <div style={{ display: 'flex', gap: CELL_GAP }}>
+            {INDICES.slice(0, BLOCK_SIZE).map((col) => (
+              <div
+                key={col}
+                style={{
+                  width: CELL_SIZE,
+                  height: CELL_SIZE,
+                  borderRadius: 2,
+                  background: row < rows && col < cols ? 'var(--accent)' : 'var(--card2)',
+                  opacity: row < rows && col < cols ? 1 : 0.35,
+                }}
+              />
+            ))}
+          </div>
+          {/* Second block: columns 5–9 */}
+          <div style={{ display: 'flex', gap: CELL_GAP }}>
+            {INDICES.slice(BLOCK_SIZE).map((col) => (
+              <div
+                key={col}
+                style={{
+                  width: CELL_SIZE,
+                  height: CELL_SIZE,
+                  borderRadius: 2,
+                  background: row < rows && col < cols ? 'var(--accent)' : 'var(--card2)',
+                  opacity: row < rows && col < cols ? 1 : 0.35,
+                }}
+              />
+            ))}
+          </div>
         </div>
       ))}
     </div>
