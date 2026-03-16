@@ -12,20 +12,29 @@ import TierLadder from '../components/TierLadder.js';
 interface Props {
   myIdentityHex: string;
   playerLearningTier?: number;
+  extendedMode?: boolean;
 }
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
 
-export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: Props) {
+export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false }: Props) {
   const { t } = useTranslation();
   const [sessions]     = useTable(tables.sessions);
   const [answers]      = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const setLearningTier = useSTDBReducer(reducers.setLearningTier);
+  const setLearningTier   = useSTDBReducer(reducers.setLearningTier);
+  const setExtendedMode   = useSTDBReducer(reducers.setExtendedMode);
 
-  const [adjusting, setAdjusting]     = useState(false);
-  const [pendingTier, setPendingTier] = useState(playerLearningTier);
-  const [saving, setSaving]           = useState(false);
+  const [adjusting, setAdjusting]         = useState(false);
+  const [pendingTier, setPendingTier]     = useState(playerLearningTier);
+  const [saving, setSaving]               = useState(false);
+  const [extendedSaving, setExtendedSaving] = useState(false);
+
+  const handleToggleExtended = async (enabled: boolean) => {
+    setExtendedSaving(true);
+    await setExtendedMode({ enabled });
+    setExtendedSaving(false);
+  };
 
   const myAnswers = (answers as unknown as Answer[]).filter(
     a => a.playerIdentity.toHexString() === myIdentityHex
@@ -130,6 +139,18 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0 }: 
         <p className="text-sm text-muted mb-4">
           {t('lobby.masteryDesc')}
         </p>
+        {isMaxTier && (
+          <div className="row-between mb-4" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
+            <span className="fw-semibold text-sm">{t('extendedTables.toggle')}</span>
+            <button
+              className={`btn btn-sm ${extendedMode ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => handleToggleExtended(!extendedMode)}
+              disabled={extendedSaving}
+            >
+              {extendedMode ? t('extendedTables.on') : t('extendedTables.off')}
+            </button>
+          </div>
+        )}
         <MasteryGrid
           answers={myAnswers}
           problemStats={problemStats as unknown as ProblemStat[]}

@@ -5,7 +5,6 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { RecoveryCodeResult, TransferCodeResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
-import { canSeeExtendedToggle } from '../utils/extendedMode.js';
 
 type Player = {
   identity: { toHexString(): string };
@@ -151,15 +150,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const handleLogout = () => {
     localStorage.removeItem('spacetimemath_credentials');
     window.location.reload();
-  };
-
-  const setExtendedModeReducer = useSTDBReducer(reducers.setExtendedMode);
-  const [extendedSaving, setExtendedSaving] = useState(false);
-
-  const handleToggleExtended = async (enabled: boolean) => {
-    setExtendedSaving(true);
-    await setExtendedModeReducer({ enabled });
-    setExtendedSaving(false);
   };
 
   const deletePlayer = useSTDBReducer(reducers.deletePlayer);
@@ -345,24 +335,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
           </button>
         )}
       </div>
-
-      {/* Extended tables toggle (Master-tier only) */}
-      {canSeeExtendedToggle(myPlayer.learningTier) && (
-        <div className="card">
-          <h2 className="mb-1 text-16">{t('extendedTables.title')}</h2>
-          <p className="text-sm text-muted mb-3">{t('extendedTables.desc')}</p>
-          <div className="row-between">
-            <span className="fw-semibold">{t('extendedTables.toggle')}</span>
-            <button
-              className={`btn ${myPlayer.extendedMode ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => handleToggleExtended(!myPlayer.extendedMode)}
-              disabled={extendedSaving}
-            >
-              {myPlayer.extendedMode ? t('extendedTables.on') : t('extendedTables.off')}
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Danger zone */}
       <div className="card" style={{ borderColor: 'rgba(232,57,29,0.4)' }}>

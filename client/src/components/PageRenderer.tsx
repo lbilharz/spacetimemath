@@ -87,6 +87,7 @@ export default function PageRenderer({
         <ProgressPage
           myIdentityHex={myIdentityHex}
           playerLearningTier={myPlayer?.learningTier ?? 0}
+          extendedMode={myPlayer?.extendedMode ?? false}
         />
       )}
       {page === 'classroom' && (
