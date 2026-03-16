@@ -171,9 +171,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2. Detect new session for this player
+  // Use the NEWEST incomplete session (highest id) so a leftover abandoned session
+  // with an exhausted sequence never blocks a freshly created one.
   useEffect(() => {
     if (sessionId !== null) return;
-    const mySession = sessions.find(s => {
+    const matched = sessions.filter(s => {
       const sess = s as Session;
       if (sess.playerIdentity.toHexString() !== myIdentityHex || sess.isComplete) return false;
       // For class sprints, only accept the session created for this specific sprint
@@ -181,6 +183,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       // Solo sprint: accept any incomplete session (classSprintId === 0n)
       return !sess.classSprintId || sess.classSprintId === 0n;
     });
+    // Pick the newest (highest auto-inc id) to avoid picking up an abandoned sprint
+    const mySession = matched.reduce<typeof matched[0] | undefined>((best, s) =>
+      !best || (s as Session).id > (best as Session).id ? s : best
+    , undefined);
     if (mySession) {
       setSessionId((mySession as Session).id);
       sessionIdRef.current = (mySession as Session).id;
@@ -213,21 +219,18 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }
   }, [preCountdown]);
 
-  // 3c. Select first problem when sprint starts + stats are ready
+  // 3c. Select first problem when sprint starts + stats are ready (diagnostic only)
+  // Normal sprints: first problem was pre-fetched in 3a during countdown; 3d delivers it.
+  // Calling nextProblem here for normal sprints would cause a double-call that skips
+  // problem #1 in the sequence (the pre-fetch result gets overwritten immediately).
   useEffect(() => {
-    if (sprintStarted && !problem) {
-      if (isDiagnostic && eligibleStats.length > 0) {
-        // Diagnostic: client selects as before
-        const p = selectDiagnosticProblem(0, undefined);
-        setProblem(p);
-        lastKeyRef.current = p.a * 100 + p.b;
-        problemStartRef.current = Date.now();
-        if (sessionIdRef.current !== null) {
-          issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
-        }
-      } else if (!isDiagnostic && sessionId !== null) {
-        // Normal sprint: request first problem from server
-        nextProblem({ sessionId });
+    if (sprintStarted && !problem && isDiagnostic && eligibleStats.length > 0) {
+      const p = selectDiagnosticProblem(0, undefined);
+      setProblem(p);
+      lastKeyRef.current = p.a * 100 + p.b;
+      problemStartRef.current = Date.now();
+      if (sessionIdRef.current !== null) {
+        issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
       }
     }
   }, [sprintStarted, problem, problemStats.length, isDiagnostic, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -490,8 +493,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         {/* Dot array for tier-0 pairs (untouched or struggling) */}
         {(() => {
           const mastery = getMasteryLocal(myAnswers, problem.a, problem.b);
-          if (learningTierOf(problem.a, problem.b) !== 0) return null;
-          if (mastery === 'mastered' || mastery === 'learning') return null;
           return (
             <div className="row-center mb-2">
               <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
