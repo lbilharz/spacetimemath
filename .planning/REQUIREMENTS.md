@@ -8,8 +8,8 @@
 
 ### Visualization
 
-- [ ] **VIZ-01**: Player sees a fixed-size 10×10 dot grid for every problem (same dimensions regardless of factors)
-- [ ] **VIZ-02**: Grid highlights exactly the top-left `a×b` rectangle for the current multiplication
+- [x] **VIZ-01**: Player sees a fixed-size 10×10 dot grid for every problem (same dimensions regardless of factors)
+- [x] **VIZ-02**: Grid highlights exactly the top-left `a×b` rectangle for the current multiplication
 
 ### Extended Tables
 
@@ -47,8 +47,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VIZ-01 | Phase 9 | Pending |
-| VIZ-02 | Phase 9 | Pending |
+| VIZ-01 | Phase 9 | Complete |
+| VIZ-02 | Phase 9 | Complete |
 | EXT-01 | Phase 10 | Pending |
 | EXT-02 | Phase 10 | Pending |
 | EXT-03 | Phase 10 | Pending |

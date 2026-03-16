@@ -19,7 +19,7 @@
 
 ### Phases
 
-- [ ] **Phase 9: Fixed Grid Visualization** - Update DotArray to always render a 10×10 grid with highlighted rectangle
+- [x] **Phase 9: Fixed Grid Visualization** - Update DotArray to always render a 10×10 grid with highlighted rectangle (completed 2026-03-16)
 - [ ] **Phase 10: Extended Tables Opt-In** - Server flag + client toggle for Master-tier ×11–×20 problems
 
 ## Phase Details
@@ -59,5 +59,5 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-8. v1.0 phases | v1.0 | 31/31 | Complete | 2026-03-15 |
-| 9. Fixed Grid Visualization | v1.1 | 0/1 | Not started | - |
+| 9. Fixed Grid Visualization | 1/1 | Complete   | 2026-03-16 | - |
 | 10. Extended Tables Opt-In | v1.1 | 0/2 | Not started | - |
