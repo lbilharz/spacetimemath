@@ -31,7 +31,7 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
             class_sprint_id: 0,
         }) {
             // SEQ: generate and store problem sequence for this session
-            let seq_str = build_sequence(ctx, inserted.id, player.learning_tier);
+            let seq_str = build_sequence(ctx, inserted.id, player.learning_tier, player.extended_mode);
             ctx.db.sprint_sequences().insert(SprintSequence {
                 session_id: inserted.id,
                 player_identity: ctx.sender(),
@@ -62,10 +62,21 @@ pub fn issue_problem(
     if session.is_complete {
         return Err("Session already complete".into());
     }
-    let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
     let player = get_player(ctx)?;
-    if pair_tier > player.learning_tier {
-        return Err("Problem pair above player's current tier".into());
+    let is_extended_pair = matches!(a.max(b), 11 | 12 | 15 | 20 | 25);
+    if is_extended_pair {
+        if !player.extended_mode {
+            return Err("Extended mode not enabled".into());
+        }
+        let key = (a as u16) * 100 + (b as u16);
+        if ctx.db.problem_stats().problem_key().find(key).is_none() {
+            return Err("Unknown extended pair".into());
+        }
+    } else {
+        let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
+        if pair_tier > player.learning_tier {
+            return Err("Problem pair above player's current tier".into());
+        }
     }
     let token = make_code(ctx);
     ctx.db.issued_problems().insert(IssuedProblem {
@@ -202,11 +213,22 @@ pub fn submit_answer(
         return Err("Session answer limit reached".into());
     }
 
-    // SEC-06: (a, b) pair must be within player's learning tier
-    let pair_tier = pair_learning_tier(a, b)
-        .ok_or_else(|| "Invalid problem pair".to_string())?;
-    if pair_tier > player.learning_tier {
-        return Err("Problem pair above player's current tier".into());
+    // SEC-06: (a, b) pair must be within player's learning tier (or extended pool if enabled)
+    let is_extended_pair = matches!(a.max(b), 11 | 12 | 15 | 20 | 25);
+    if is_extended_pair {
+        if !player.extended_mode {
+            return Err("Extended mode not enabled".into());
+        }
+        let key = (a as u16) * 100 + (b as u16);
+        if ctx.db.problem_stats().problem_key().find(key).is_none() {
+            return Err("Unknown extended pair".into());
+        }
+    } else {
+        let pair_tier = pair_learning_tier(a, b)
+            .ok_or_else(|| "Invalid problem pair".to_string())?;
+        if pair_tier > player.learning_tier {
+            return Err("Problem pair above player's current tier".into());
+        }
     }
 
     // SEC-10: verify server-issued problem token

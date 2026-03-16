@@ -38,6 +38,8 @@ pub struct Player {
     pub learning_tier: u8,
     #[default(false)]
     pub recovery_emailed: bool,
+    #[default(false)]
+    pub extended_mode: bool,
 }
 
 #[table(accessor = sessions, public)]
@@ -231,6 +233,18 @@ pub fn identity_disconnected(ctx: &ReducerContext) {
     }
     // ACCT-03: Clean up any restore result row for disconnecting anonymous identity
     ctx.db.restore_results().caller().delete(ctx.sender());
+}
+
+/// EXT-01: Toggle extended-mode practice (curated 2-digit pairs: ×11,×12,×15,×20,×25).
+/// Requires learning_tier >= 7 (Master tier) to enable.
+#[reducer]
+pub fn set_extended_mode(ctx: &ReducerContext, enabled: bool) -> Result<(), String> {
+    let player = get_player(ctx)?;
+    if player.learning_tier < 7 {
+        return Err("Extended mode requires Master tier (learning_tier 7)".into());
+    }
+    ctx.db.players().identity().update(Player { extended_mode: enabled, ..player });
+    Ok(())
 }
 
 /// One-time migration: seed extended-table problem_stats rows if missing.
@@ -743,12 +757,16 @@ pub(crate) fn fnv_index(sender: &Identity, ts: i64, session_id: u64, i: u64) -> 
 /// Uses Fisher-Yates shuffle (FNV-1a hash chain) then a single pass to fix commutative-pair
 /// adjacency (e.g. 4×6 immediately followed by 6×4).
 /// Returns a comma-separated string of problem_keys (a*100+b as u16).
-pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8) -> String {
+pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8, extended_mode: bool) -> String {
     // 1. Collect eligible pool: all ordered pairs (a, b) within player's tier
     //    problem_key = a * 100 + b; exclude pairs where a == 0 || b == 0
+    //    If extended_mode is true, also include category=2 (curated 2-digit) pairs.
     let mut pool: Vec<u16> = ctx.db.problem_stats().iter()
         .filter(|s| {
             if s.a == 0 || s.b == 0 { return false; }
+            if extended_mode && s.category == 2 {
+                return true;
+            }
             pair_learning_tier(s.a, s.b).map(|t| t <= player_tier).unwrap_or(false)
         })
         .map(|s| s.problem_key)
