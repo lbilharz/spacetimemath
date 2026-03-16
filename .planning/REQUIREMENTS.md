@@ -1,134 +1,65 @@
 # Requirements: 1UP — Math Sprint
 
-**Defined:** 2026-03-14
+**Defined:** 2026-03-16
+**Milestone:** v1.1 — Fixed Grid + Extended Tables
 **Core Value:** Students practice multiplication facts in a fair, safe, adaptive environment — and the score they see reflects genuine mastery.
 
-## v1 Requirements
+## v1.1 Requirements
 
-Requirements for the safe-for-public-launch milestone. All map to roadmap phases.
+### Visualization
+
+- [ ] **VIZ-01**: Player sees a fixed-size 10×10 dot grid for every problem (same dimensions regardless of factors)
+- [ ] **VIZ-02**: Grid highlights exactly the top-left `a×b` rectangle for the current multiplication
+
+### Extended Tables
+
+- [ ] **EXT-01**: Master-tier player can toggle "extended tables" (×11–×20) on/off from their account
+- [ ] **EXT-02**: When extended mode is on, server selects problems with one factor 11–20 (other factor 2–10)
+- [ ] **EXT-03**: Extended problems are scored using the standard tier multiplier system
+
+## v2 Requirements (deferred)
+
+### Account
+
+- **ACCT-01**: Player can delete their own account via self-service UI
+- **ACCT-02**: Player can view a data transparency page showing what is stored about them
 
 ### Security
 
-- [x] **SEC-01**: `recovery_keys` table is private — not readable by other clients
-- [x] **SEC-02**: `transfer_codes` table is private — not readable by other clients
-- [x] **SEC-03**: AccountPage retrieves recovery/transfer codes via reducer call, not table subscription
-- [x] **SEC-04**: `submit_answer` rejects submissions exceeding a per-session answer cap
-- [x] **SEC-05**: `submit_answer` rejects `response_ms` below 200ms (bot/replay prevention)
-- [x] **SEC-06**: `submit_answer` validates `(a, b)` pair is within the player's unlocked tier
-- [x] **SEC-07**: `use_transfer_code` verifies the calling identity owns the code being consumed
-- [x] **SEC-08**: `register` and `set_username` reject usernames containing null bytes, control characters, or Unicode homoglyphs
-- [x] **SEC-09**: Transfer codes expire automatically via scheduled reducer (TTL-based cleanup)
-- [x] **SEC-10**: Server-issued problem token closes remaining score-injection vectors
+- **SEC-11**: App uses targeted table subscriptions instead of subscribeToAllTables()
 
-### GDPR Compliance
+### Legal
 
-- [x] **GDPR-01**: `delete_player` reducer exists with full cascade (removes player, sessions, answers, stat contributions)
-
-### Scoring & Tier System
-
-- [x] **SCORE-01**: Class sprint sessions are credited to the overall leaderboard (BestScore upsert runs on class sprint finalization)
-- [x] **SCORE-02**: Class sprint sessions trigger tier unlock check (same logic as solo sprints)
-- [x] **SCORE-03**: Tier structure redesigned to multiplier-column model:
-  - Tier 1 (starter): all pairs where one factor ∈ {1, 2, 10}
-  - Tier 2: adds ×3
-  - Tier 3: adds ×5
-  - Tier 4: adds ×4
-  - Tier 5: adds ×6
-  - Tier 6: adds ×7
-  - Tier 7: adds ×8
-  - Tier 8: adds ×9 (all 1–10 × 1–10 complete)
-
-### CSS Design System
-
-- [x] **CSS-01**: `index.css` extended with utility classes covering all recurring inline style patterns (text color, font size, spacing, flex layout)
-- [x] **CSS-02**: All inline `style={}` props in `client/src/components/` replaced with CSS classes
-- [x] **CSS-03**: All inline `style={}` props in `client/src/pages/` replaced with CSS classes
-- [x] **CSS-04**: All pages use consistent layout, spacing, typography, and color — no visual outliers
-
-### UX & Bug Fixes
-
-- [x] **UX-01**: Account page no longer shows classroom list
-- [x] **UX-02**: ClassroomPage hides the join/login code from student role (visible to teacher only)
-- [x] **UX-03**: ClassroomPage renders correctly on mobile (no layout breakage)
-- [x] **UX-04**: Redundant "view class results" variant removed from ClassroomPage
-- [x] **UX-05**: Recovery code is not regenerated on routine navigation or reconnection
-
-## v2 Requirements
-
-Deferred to a future milestone. Tracked but not in current roadmap.
-
-### Account Recovery
-
-- **ACCT-03**: Account restore via recovery key works end-to-end — a new anonymous connection can enter a recovery code and reclaim the original account session token via a server-side reducer (no client-side table lookup of private `recovery_keys`)
-- **ACCT-04**: Teachers can re-download the recovery code sheet for their class at any time from ClassroomPage — not just at classroom creation
-
-### Legal Documents
-
-- **LEGAL-01**: German Datenschutzerklärung (privacy policy, GDPR Art. 13)
-- **LEGAL-02**: Impressum page (German legal requirement)
-- **LEGAL-03**: DPA template document for schools
-- **LEGAL-04**: Plain-language data notice on RegisterPage
-
-### Account Management
-
-- **ACCT-01**: Self-service account deletion UI in AccountPage
-- **ACCT-02**: Data transparency page (what is stored, how to delete)
-
-### Advanced Security
-
-- **SEC-11**: Replace `subscribeToAllTables()` with targeted table subscriptions
-- **SEC-12**: Difficulty weight poisoning prevention (rate-limit ProblemStat updates)
+- **LEGAL-01**: German Datenschutzerklärung page published
+- **LEGAL-02**: German Impressum page published
+- **LEGAL-03**: DPA template available for school partnerships
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Arithmetic expansion (addition, subtraction, etc.) | Next milestone after safe launch |
-| New game mechanics | Scope freeze until launch-ready |
-| App Store / Play Store release | Web-first launch first |
-| COPPA compliance | US-only regulation; not applicable |
-| Tailwind / CSS Modules | No new build dependencies needed; plain CSS classes sufficient |
-| OAuth or email-based login | SpacetimeDB Identity sufficient; adding email increases PII surface |
-| Difficulty weight tuning (community stats) | Tier restructure addresses root cause; community stats still useful post-launch |
+| Arithmetic expansion (add/subtract/divide) | After stable public launch |
+| New game mechanics | Scope freeze until well-established in schools |
+| App Store / Play Store release | Web-first |
+| OAuth or email-based login | SpacetimeDB Identity sufficient |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+_Populated during roadmap creation._
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ACCT-03 | Phase 5 | Planned |
-| ACCT-04 | Phase 5 | Planned |
-| SEC-01 | Phase 1 | Complete |
-| SEC-02 | Phase 1 | Complete |
-| SEC-03 | Phase 1 | Complete |
-| SEC-04 | Phase 1 | Complete |
-| SEC-05 | Phase 1 | Complete |
-| SEC-06 | Phase 1 | Complete |
-| SEC-07 | Phase 1 | Complete |
-| SEC-08 | Phase 1 | Complete |
-| SEC-09 | Phase 1 | Complete |
-| SEC-10 | Phase 1 | Complete |
-| GDPR-01 | Phase 2 | Complete |
-| SCORE-01 | Phase 2 | Complete |
-| SCORE-02 | Phase 2 | Complete |
-| SCORE-03 | Phase 2 | Complete |
-| CSS-01 | Phase 4 | Complete |
-| CSS-02 | Phase 4 | Complete |
-| CSS-03 | Phase 4 | Complete |
-| CSS-04 | Phase 4 | Complete |
-| UX-01 | Phase 3 | Complete |
-| UX-02 | Phase 3 | Complete |
-| UX-03 | Phase 3 | Complete |
-| UX-04 | Phase 3 | Complete |
-| UX-05 | Phase 3 | Complete |
+| VIZ-01 | Phase 9 | Pending |
+| VIZ-02 | Phase 9 | Pending |
+| EXT-01 | Phase 10 | Pending |
+| EXT-02 | Phase 10 | Pending |
+| EXT-03 | Phase 10 | Pending |
 
 **Coverage:**
-- v1 requirements: 23 total
-- v2 requirements promoted to v1: ACCT-03, ACCT-04
-- Mapped to phases: 25 (complete)
+- v1.1 requirements: 5 total
+- Mapped to phases: 5
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-03-14*
-*Last updated: 2026-03-14 after roadmap creation*
+*Requirements defined: 2026-03-16*
+*Last updated: 2026-03-16 after initial definition*

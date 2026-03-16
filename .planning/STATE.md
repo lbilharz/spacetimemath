@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: (planning)
-status: between_milestones
+milestone_name: Fixed Grid + Extended Tables
+status: planning
 stopped_at: null
-last_updated: "2026-03-16T07:00:00.000Z"
-last_activity: 2026-03-16 — v1.0 milestone archived. Ready for /gsd:new-milestone
+last_updated: "2026-03-16T08:00:00.000Z"
+last_activity: 2026-03-16 — v1.1 milestone started. Requirements defined. Ready for roadmap.
 progress:
   total_phases: 0
   completed_phases: 0
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** Students practice multiplication facts in a fair, safe, adaptive environment — and the score they see reflects genuine mastery.
-**Current focus:** Planning v1.1 — run `/gsd:new-milestone` to begin
+**Current focus:** v1.1 — Phase 9 (VIZ) + Phase 10 (EXT)
 
 ## Current Position
 
 Milestone v1.0 complete and archived (8 phases, 31 plans).
-Status: Between milestones — ready to plan v1.1
+Status: Requirements defined — ready to create roadmap
 
-Last activity: 2026-03-16 — v1.0 milestone archive ceremony complete
+Last activity: 2026-03-16 — v1.1 milestone started (Fixed Grid + Extended Tables, 5 requirements)
 
-Progress: n/a — v1.1 not yet defined
+Progress: n/a — roadmap not yet created
 
 ## Performance Metrics
 
