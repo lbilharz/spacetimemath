@@ -32,10 +32,10 @@
   1. For any problem a×b, the dot grid always renders with exactly 10 columns and 10 rows (never larger or smaller)
   2. The top-left a×b rectangle of dots is visually highlighted, with the remaining dots in a neutral/background state
   3. The grid dimensions do not shift or resize as the player advances through different problems
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 09-01: Update DotArray.tsx to render fixed 10×10 grid with a×b rectangle highlight
+- [ ] 09-01-PLAN.md — Rewrite DotArray.tsx to fixed 10×10 grid with a×b rectangle highlight
 
 ### Phase 10: Extended Tables Opt-In
 **Goal**: Master-tier players can toggle two-digit multiplication on, and the server delivers ×11–×20 problems when the flag is active
