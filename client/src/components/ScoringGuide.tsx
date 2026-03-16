@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type ProblemStat = { a: number; b: number; difficultyWeight: number; attemptCount: number };
@@ -11,7 +11,7 @@ interface Props {
 const COLS     = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const ROWS     = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const EXT_ROWS = [11, 12, 15, 20, 25];
-const EXT_COLS = [2, 3, 4, 5, 6, 7, 8, 9];
+const EXT_COLS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const CELL     = 34;
 
 /** Same bonus applied in end_session on the server. */
@@ -45,28 +45,33 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
       ? `${a}×${b}=${a * b}  ${effective.toFixed(2)} pts  (base ${base.toFixed(2)} + ${bonus.toFixed(1)} bonus)${isCalibrated ? '  ✓ calibrated' : ''}`
       : `${a}×${b}=${a * b}  ${effective.toFixed(2)} pts${isCalibrated ? '  ✓ calibrated' : ''}`;
     return (
-      <td
+      <div
+        className="mastery-cell"
         title={title}
         style={{
-          width: CELL, height: CELL, textAlign: 'center',
-          background: weightBg(effective), color: '#fff',
-          borderRadius: 4, fontWeight: 700, cursor: 'default',
-          fontSize: 11, lineHeight: `${CELL}px`,
-          outline: isCalibrated ? '1.5px solid rgba(255,255,255,0.35)' : 'none',
+          background: weightBg(effective),
+          color: '#fff',
+          fontWeight: 700,
+          fontSize: 11,
+          border: isCalibrated ? '1.5px solid rgba(255,255,255,0.45)' : '1px solid rgba(0,0,0,0.12)',
+          cursor: 'default',
         }}
       >
         {effective.toFixed(1)}
-      </td>
+      </div>
     );
   }
 
-  const HeaderTh = ({ n }: { n: number }) => (
-    <th className="tbl-th fw-bold text-xs" style={{ width: CELL, paddingBottom: 4 }}>{n}</th>
+  const HeaderDiv = ({ n }: { n: number }) => (
+    <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">{n}</div>
   );
 
-  const RowTh = ({ n }: { n: number }) => (
-    <td className="tbl-td--right fw-bold text-muted text-xs" style={{ paddingRight: 6, whiteSpace: 'nowrap' }}>{n}</td>
+  const RowDiv = ({ n }: { n: number }) => (
+    <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted"
+      style={{ justifyContent: 'flex-end', paddingRight: 4 }}>{n}</div>
   );
+
+  const GRID_TPL = `28px repeat(${COLS.length}, ${CELL}px)`;
 
   return (
     <div id="scoring-guide" className="card">
@@ -122,23 +127,17 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
           </div>
 
           {/* 10 × 10 grid */}
-          <div className="scroll-x">
-            <table style={{ borderCollapse: 'separate', borderSpacing: 2, fontSize: 11 }}>
-              <thead>
-                <tr>
-                  <th className="text-muted tbl-td--right text-xs" style={{ width: 20, paddingRight: 6 }}>×</th>
-                  {COLS.map(b => <HeaderTh key={b} n={b} />)}
-                </tr>
-              </thead>
-              <tbody>
-                {ROWS.map(a => (
-                  <tr key={a}>
-                    <RowTh n={a} />
-                    {COLS.map(b => <Cell key={b} a={a} b={b} />)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ overflowX: 'auto' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: GRID_TPL, gap: 3 }}>
+              <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>
+              {COLS.map(b => <HeaderDiv key={b} n={b} />)}
+              {ROWS.map(a => (
+                <Fragment key={a}>
+                  <RowDiv n={a} />
+                  {COLS.map(b => <Cell key={b} a={a} b={b} />)}
+                </Fragment>
+              ))}
+            </div>
           </div>
 
           {/* Extended table (tier 3) */}
@@ -147,23 +146,17 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
               <div className="text-sm fw-bold text-accent">
                 {t('unlock.tier1GridTitle')}
               </div>
-              <div className="scroll-x">
-                <table style={{ borderCollapse: 'separate', borderSpacing: 2, fontSize: 11 }}>
-                  <thead>
-                    <tr>
-                      <th className="text-muted tbl-td--right text-xs" style={{ width: 28, paddingRight: 6 }}>×</th>
-                      {EXT_COLS.map(b => <HeaderTh key={b} n={b} />)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {EXT_ROWS.map(a => (
-                      <tr key={a}>
-                        <RowTh n={a} />
-                        {EXT_COLS.map(b => <Cell key={b} a={a} b={b} />)}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div style={{ overflowX: 'auto' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: GRID_TPL, gap: 3 }}>
+                  <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>
+                  {EXT_COLS.map(b => <HeaderDiv key={b} n={b} />)}
+                  {EXT_ROWS.map(a => (
+                    <Fragment key={a}>
+                      <RowDiv n={a} />
+                      {EXT_COLS.map(b => <Cell key={b} a={a} b={b} />)}
+                    </Fragment>
+                  ))}
+                </div>
               </div>
             </>
           )}

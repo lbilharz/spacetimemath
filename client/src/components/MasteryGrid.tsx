@@ -55,7 +55,7 @@ const MASTERY_BG: Record<Mastery, string> = {
 };
 
 const TIER1_A = [11, 12, 15, 20, 25];
-const TIER1_B = [2, 3, 4, 5, 6, 7, 8, 9];
+const TIER1_B = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell, playerLearningTier }: Props) {
   const { t } = useTranslation();
@@ -134,12 +134,14 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   return (
     <div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '28px repeat(10, 1fr)',
-        gap: 3,
-      }}>
-        {cells}
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '28px repeat(10, 34px)',
+          gap: 3,
+        }}>
+          {cells}
+        </div>
       </div>
 
       {/* Rechenweg panel */}
@@ -278,12 +280,14 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
             <div className="text-xs text-accent fw-bold mb-2">
               🔓 {t('unlock.tier1GridTitle')}
             </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '28px repeat(8, 1fr)',
-              gap: 3,
-            }}>
-              {t1cells}
+            <div style={{ overflowX: 'auto' }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '28px repeat(10, 34px)',
+                gap: 3,
+              }}>
+                {t1cells}
+              </div>
             </div>
           </div>
         );

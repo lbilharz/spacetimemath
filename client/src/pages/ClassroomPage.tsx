@@ -61,6 +61,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [endingClassSprint, setEndingClassSprint] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
+  const [showJoinCode, setShowJoinCode] = useState(false);
 
   // Teacher QR card modal
   const [qrStudent, setQrStudent] = useState<{ username: string; code: string } | null>(null);
@@ -523,39 +524,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         </div>
       )}
 
-      {/* Join code + QR — teacher only (UX-02) */}
-      {isTeacher && (
-        <div className="card">
-          <h2 className="mb-3 text-md">{t('classroom.joinCode')}</h2>
-          <div className="row align-start gap-24 row-wrap">
-            <div>
-              <button
-                onClick={handleCopyCodeText}
-                title={t('classroom.copyCodeHint')}
-                className="join-code-btn"
-              >
-                {myClassroom.code}
-              </button>
-              <p className="text-xs text-muted mb-10">
-                {codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}
-              </p>
-              <button className="btn btn-secondary text-sm" onClick={handleCopyLink}>
-                {codeCopied ? t('common.copied') : t('classroom.copyLink')}
-              </button>
-              <p className="text-sm text-muted mt-2 max-w-220">
-                {t('classroom.joinHint')}
-              </p>
-            </div>
-            <div className="qr-white-box">
-              <QRCodeSVG
-                value={`${window.location.origin}/?join=${myClassroom.code}`}
-                size={120}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Members + Leaderboard */}
       <div className="classroom-two-col">
         {/* Members */}
@@ -563,6 +531,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
           <div className="row-between row-wrap gap-8 mb-3">
             <h2 className="text-md">{t('classroom.membersHeading')}</h2>
             <div className="row gap-8">
+              {isTeacher && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setShowJoinCode(v => !v)}
+                >
+                  🔗 {t('classroom.joinCode')} {showJoinCode ? '▲' : '▼'}
+                </button>
+              )}
               {isTeacher && (
                 <button
                   className="btn btn-secondary btn-sm"
@@ -582,6 +558,39 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               </button>
             </div>
           </div>
+
+          {/* Inline join code — revealed on toggle */}
+          {isTeacher && showJoinCode && (
+            <div className="mb-3" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
+              <div className="row align-start gap-20 row-wrap">
+                <div>
+                  <button
+                    onClick={handleCopyCodeText}
+                    title={t('classroom.copyCodeHint')}
+                    className="join-code-btn"
+                  >
+                    {myClassroom.code}
+                  </button>
+                  <p className="text-xs text-muted mb-10">
+                    {codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}
+                  </p>
+                  <button className="btn btn-secondary text-sm" onClick={handleCopyLink}>
+                    {codeCopied ? t('common.copied') : t('classroom.copyLink')}
+                  </button>
+                  <p className="text-sm text-muted mt-2 max-w-220">
+                    {t('classroom.joinHint')}
+                  </p>
+                </div>
+                <div className="qr-white-box">
+                  <QRCodeSVG
+                    value={`${window.location.origin}/?join=${myClassroom.code}`}
+                    size={110}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {amHidden && (
             <p className="text-xs text-muted mb-10 italic">
               {t('classroom.hiddenHint')}
