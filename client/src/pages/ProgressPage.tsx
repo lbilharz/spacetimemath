@@ -132,6 +132,103 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
         ) : (
           <TierLadder currentTier={playerLearningTier} />
         )}
+
+        {isMaxTier && (
+          <div
+            style={{
+              borderTop: '1px solid var(--border)',
+              paddingTop: 12,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              flexWrap: 'wrap',
+            }}
+          >
+            <label
+              htmlFor="extended-toggle"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                cursor: extendedSaving ? 'not-allowed' : 'pointer',
+                opacity: extendedSaving ? 0.6 : 1,
+                flex: 1,
+                minWidth: 0,
+                flexWrap: 'wrap',
+              }}
+            >
+              <span className="fw-semibold text-sm" style={{ whiteSpace: 'nowrap' }}>
+                {t('extendedTables.toggle')}
+              </span>
+              <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                {[11, 12, 15, 20, 25].map(n => (
+                  <span
+                    key={n}
+                    className="text-xs"
+                    style={{
+                      background: 'var(--card2)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text)',
+                      borderRadius: 12,
+                      padding: '2px 8px',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    ×{n}
+                  </span>
+                ))}
+              </span>
+            </label>
+
+            {/* Pill switch */}
+            <label
+              htmlFor="extended-toggle"
+              style={{
+                position: 'relative',
+                display: 'inline-block',
+                width: 44,
+                height: 24,
+                flexShrink: 0,
+                cursor: extendedSaving ? 'not-allowed' : 'pointer',
+                opacity: extendedSaving ? 0.6 : 1,
+              }}
+            >
+              <input
+                id="extended-toggle"
+                type="checkbox"
+                checked={extendedMode}
+                disabled={extendedSaving}
+                onChange={e => handleToggleExtended(e.target.checked)}
+                style={{ opacity: 0, width: 0, height: 0, position: 'absolute' }}
+              />
+              {/* Track */}
+              <span
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: 24,
+                  background: extendedMode ? 'var(--accent)' : 'var(--card2)',
+                  border: `1px solid ${extendedMode ? 'var(--accent)' : 'var(--border)'}`,
+                  transition: 'background 0.2s, border-color 0.2s',
+                }}
+              />
+              {/* Thumb */}
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 3,
+                  left: extendedMode ? 23 : 3,
+                  width: 18,
+                  height: 18,
+                  borderRadius: '50%',
+                  background: extendedMode ? '#fff' : 'var(--muted)',
+                  transition: 'left 0.2s, background 0.2s',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                }}
+              />
+            </label>
+          </div>
+        )}
       </div>
 
       <div id="mastery" className="card">
@@ -139,18 +236,6 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
         <p className="text-sm text-muted mb-4">
           {t('lobby.masteryDesc')}
         </p>
-        {isMaxTier && (
-          <div className="row-between mb-4" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
-            <span className="fw-semibold text-sm">{t('extendedTables.toggle')}</span>
-            <button
-              className={`btn btn-sm ${extendedMode ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => handleToggleExtended(!extendedMode)}
-              disabled={extendedSaving}
-            >
-              {extendedMode ? t('extendedTables.on') : t('extendedTables.off')}
-            </button>
-          </div>
-        )}
         <MasteryGrid
           answers={myAnswers}
           problemStats={problemStats as unknown as ProblemStat[]}
