@@ -46,11 +46,11 @@ Plans:
   2. When the toggle is turned on, subsequent problems include one factor in the range 11–20
   3. When the toggle is turned off, problems return to the standard 1–10 range
   4. Extended problems display a score using the same tier multiplier system as standard problems
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: Add `extended_mode` field to Player table and `set_extended_mode` reducer; deploy with `make deploy`
-- [ ] 10-02: Branch `next_problem` server logic on `extended_mode` flag; client toggle in AccountPage/ProgressPage
+- [ ] 10-01-PLAN.md — Server schema (extended_mode field + set_extended_mode reducer), build_sequence branching, SEC-06 guard updates, make deploy
+- [ ] 10-02-PLAN.md — Client toggle in AccountPage (tier-gated), i18n EN+DE, human smoke test
 
 ---
 
