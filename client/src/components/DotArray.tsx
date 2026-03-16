@@ -37,7 +37,7 @@ export default function DotArray({ a, b, faded = false }: Props) {
     <div
       className="mb-3"
       style={{
-        opacity: faded ? 0.2 : 1,
+        opacity: faded ? 1 : 1,
         transition: 'opacity 1s',
         display: 'inline-block',
       }}
@@ -60,8 +60,9 @@ export default function DotArray({ a, b, faded = false }: Props) {
                   width: CELL_SIZE,
                   height: CELL_SIZE,
                   borderRadius: 2,
-                  background: row < rows && col < cols ? 'var(--accent)' : 'var(--card2)',
-                  opacity: row < rows && col < cols ? 1 : 0.35,
+                  backgroundColor: row < rows && col < cols ? 'var(--accent)' : "transparent",
+                  border: row < rows && col < cols ? 'none' : "1px solid var(--accent)",
+                  opacity: 1,
                 }}
               />
             ))}
@@ -75,8 +76,9 @@ export default function DotArray({ a, b, faded = false }: Props) {
                   width: CELL_SIZE,
                   height: CELL_SIZE,
                   borderRadius: 2,
-                  background: row < rows && col < cols ? 'var(--accent)' : 'var(--card2)',
-                  opacity: row < rows && col < cols ? 1 : 0.35,
+                  backgroundColor: row < rows && col < cols ? 'var(--accent)' : "transparent",
+                  border: row < rows && col < cols ? 'none' : "1px solid var(--accent)",
+                  opacity: 1,
                 }}
               />
             ))}
