@@ -20,4 +20,5 @@ export default __t.row({
   onboardingDone: __t.bool().name("onboarding_done"),
   learningTier: __t.u8().name("learning_tier"),
   recoveryEmailed: __t.bool().name("recovery_emailed"),
+  extendedMode: __t.bool().name("extended_mode"),
 });
