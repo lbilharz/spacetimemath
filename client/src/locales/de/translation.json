@@ -239,6 +239,13 @@
     "empty": "Noch keine Klassen",
     "emptyHint": "Tritt einer bestehenden Klasse bei oder erstelle eine eigene."
   },
+  "extendedTables": {
+    "title": "Erweiterte Tabellen",
+    "desc": "Übe ×11–×25-Multiplikation — verfügbar für Spieler auf Master-Niveau.",
+    "toggle": "Erweiterter Modus",
+    "on": "Ein",
+    "off": "Aus"
+  },
   "scoring": {
     "title": "Punktesystem",
     "howTitle": "Punkte pro richtige Antwort = Schwierigkeitsgewicht",

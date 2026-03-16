@@ -239,6 +239,13 @@
     "empty": "No classes yet",
     "emptyHint": "Join an existing class or create your own."
   },
+  "extendedTables": {
+    "title": "Extended Tables",
+    "desc": "Practice ×11–×25 multiplication — available to Master-level players.",
+    "toggle": "Extended mode",
+    "on": "On",
+    "off": "Off"
+  },
   "scoring": {
     "title": "Scoring Guide",
     "howTitle": "Points per correct answer = difficulty weight",
