@@ -1,157 +1,63 @@
 # Roadmap: 1UP — Math Sprint
 
-## Overview
+## Milestones
 
-This milestone hardens the app for safe public school rollout. A working app used by a small group becomes a trustworthy, secure, GDPR-baseline-compliant product. Security vulnerabilities are closed first (live data exposure and score manipulation vectors), then server-side scoring bugs and the right-to-erasure reducer are fixed, then client-side UX bugs are addressed, and finally inline styles are replaced with the design system. Every phase delivers a verifiable, observable improvement to the app's safety or quality.
+- ✅ **v1.0 Safe for School Rollout** - Phases 1-8 (shipped 2026-03-15)
+- 🚧 **v1.1 Fixed Grid + Extended Tables** - Phases 9-10 (in progress)
 
-## Phases
+---
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+## v1.0 — Safe for School Rollout ✅ SHIPPED 2026-03-15
 
-Decimal phases appear between their surrounding integers in numeric order.
+8 phases · 31 plans · SEC/GDPR/CSS/UX/ACCT/SEQ/MOD/SCOPE complete → [full archive](.planning/milestones/v1.0-ROADMAP.md)
 
-- [x] **Phase 1: Security Hardening** - Close live auth-token exposure and score-manipulation vectors server-side (completed 2026-03-14)
-- [ ] **Phase 2: Scoring Integrity and GDPR Baseline** - Fix leaderboard bugs, redesign tier structure, and add right-to-erasure reducer
-- [x] **Phase 3: UX and Client Bug Fixes** - Fix classroom page issues, recovery code instability, and account page clutter (completed 2026-03-14)
-- [x] **Phase 4: CSS Design System Migration** - Replace all inline styles with design system classes for maintainability (completed 2026-03-15)
-- [x] **Phase 5: Account Recovery and Classroom Code Management** - Fix broken account restore flow and enable teachers to re-download student recovery codes at any time (completed 2026-03-15)
+---
+
+## v1.1 — Fixed Grid + Extended Tables 🚧
+
+**Milestone Goal:** Fix the DotArray visualization to always render at fixed size, and re-introduce two-digit multiplication as an opt-in feature for top-tier players.
+
+### Phases
+
+- [ ] **Phase 9: Fixed Grid Visualization** - Update DotArray to always render a 10×10 grid with highlighted rectangle
+- [ ] **Phase 10: Extended Tables Opt-In** - Server flag + client toggle for Master-tier ×11–×20 problems
 
 ## Phase Details
 
-### Phase 1: Security Hardening
-**Goal**: No user can read another user's auth credentials, scores cannot be trivially inflated, and all reducer inputs are validated against ownership and ranges
-**Depends on**: Nothing (first phase)
-**Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07, SEC-08, SEC-09, SEC-10
+### Phase 9: Fixed Grid Visualization
+**Goal**: Players see a consistent 10×10 dot grid for every problem, with the current multiplication highlighted as a rectangle
+**Depends on**: Phase 8 (v1.0 complete)
+**Requirements**: VIZ-01, VIZ-02
 **Success Criteria** (what must be TRUE):
-  1. A logged-in player cannot read any other player's recovery key or transfer code by subscribing to those tables
-  2. The AccountPage successfully displays a player's own recovery code after the table-to-reducer migration
-  3. Submitting answers faster than 200ms, exceeding 80 answers in a session, or with an out-of-tier problem pair is rejected by the server
-  4. Registering or updating a username containing null bytes, control characters, or Unicode homoglyphs is rejected by the server
-  5. Transfer codes expire automatically and cannot be reused after their TTL; a server-issued problem token prevents answer submission for unissued problems
-**Plans**: 5 plans
+  1. For any problem a×b, the dot grid always renders with exactly 10 columns and 10 rows (never larger or smaller)
+  2. The top-left a×b rectangle of dots is visually highlighted, with the remaining dots in a neutral/background state
+  3. The grid dimensions do not shift or resize as the player advances through different problems
+**Plans**: TBD
 
 Plans:
-- [ ] 01-01-PLAN.md — Wave 0 test scaffold: security.test.ts + helpers.ts update
-- [ ] 01-02-PLAN.md — Client-first SEC-03: AccountPage reducer-based access for recovery/transfer codes
-- [ ] 01-03-PLAN.md — Server hardening: private tables (SEC-01, SEC-02), use_transfer_code fix (SEC-07), username validation (SEC-08), scheduled TTL (SEC-09)
-- [ ] 01-04-PLAN.md — submit_answer hardening: answer cap (SEC-04), response_ms bounds (SEC-05), tier validation (SEC-06)
-- [ ] 01-05-PLAN.md — Server-issued problem token: IssuedProblem tables, issue_problem reducer, SprintPage integration (SEC-10)
+- [ ] 09-01: Update DotArray.tsx to render fixed 10×10 grid with a×b rectangle highlight
 
-### Phase 2: Scoring Integrity and GDPR Baseline
-**Goal**: Class sprint participation counts toward the leaderboard, the tier structure matches player expectations, and any player can request full deletion of their account data
-**Depends on**: Phase 1
-**Requirements**: SCORE-01, SCORE-02, SCORE-03, GDPR-01
+### Phase 10: Extended Tables Opt-In
+**Goal**: Master-tier players can toggle two-digit multiplication on, and the server delivers ×11–×20 problems when the flag is active
+**Depends on**: Phase 9
+**Requirements**: EXT-01, EXT-02, EXT-03
 **Success Criteria** (what must be TRUE):
-  1. A student who only participates in class sprints sees their best score on the leaderboard after the sprint finalizes
-  2. Class sprint completion triggers tier unlock evaluation — a student can unlock a new tier from a class sprint session
-  3. The tier progression (×1/×2/×10 → ×3 → ×5 → ×4 → ×6 → ×7 → ×8 → ×9) is reflected in problem selection and unlock gates
-  4. Calling the delete_player reducer removes all data linked to the calling identity (player, sessions, answers, scores, online presence, keys, classroom memberships)
-**Plans**: 4 plans
+  1. A Master-tier player sees an "extended tables" toggle in their account settings; players below Master tier do not see it
+  2. When the toggle is turned on, subsequent problems include one factor in the range 11–20
+  3. When the toggle is turned off, problems return to the standard 1–10 range
+  4. Extended problems display a score using the same tier multiplier system as standard problems
+**Plans**: TBD
 
 Plans:
-- [ ] 02-01-PLAN.md — Wave 1: Test scaffolds for SCORE-01, SCORE-02, SCORE-03, GDPR-01 (scoring.test.ts, gdpr.test.ts, learningTier.test.ts)
-- [ ] 02-02-PLAN.md — Wave 2: Class sprint score credit — credit_session_to_player helper + finalize_class_sprint_sessions fix (SCORE-01, SCORE-02)
-- [ ] 02-03-PLAN.md — Wave 2: Tier structure redesign — 8-tier factor_tier + migrate_recompute_tiers_v2 + learningTier.ts update (SCORE-03)
-- [ ] 02-04-PLAN.md — Wave 2: delete_player cascade reducer (GDPR-01)
+- [ ] 10-01: Add `extended_mode` field to Player table and `set_extended_mode` reducer; deploy with `make deploy`
+- [ ] 10-02: Branch `next_problem` server logic on `extended_mode` flag; client toggle in AccountPage/ProgressPage
 
-### Phase 3: UX and Client Bug Fixes
-**Goal**: The classroom page works correctly on mobile and shows teachers the join code but not students; the account page is uncluttered; recovery codes remain stable across sessions
-**Depends on**: Phase 1
-**Requirements**: UX-01, UX-02, UX-03, UX-04, UX-05
-**Success Criteria** (what must be TRUE):
-  1. The account page does not show a classroom list
-  2. A student viewing the ClassroomPage cannot see the join/login code; a teacher can see it
-  3. The ClassroomPage renders without layout breakage on a mobile viewport
-  4. There is exactly one "view class results" path in ClassroomPage — the redundant variant is gone
-  5. Navigating away from and back to the account page (or reconnecting) does not generate a new recovery code
-**Plans**: 3 plans
-
-Plans:
-- [ ] 03-01-PLAN.md — Wave 1: AccountPage cleanup — remove classroom section (UX-01), move recovery code fetch to App.tsx (UX-05)
-- [ ] 03-02-PLAN.md — Wave 1: ClassroomPage fixes — hide join code from students (UX-02), mobile layout (UX-03), active-sprint-only live feed (UX-04)
-- [ ] 03-03-PLAN.md — Wave 2: Human verification checkpoint for all five UX fixes
-
-### Phase 4: CSS Design System Migration
-**Goal**: Every static visual style is expressed as a named CSS class; no inline style props remain except for runtime-computed values
-**Depends on**: Nothing (independent; best done after Phase 1-3 files are stable)
-**Requirements**: CSS-01, CSS-02, CSS-03, CSS-04
-**Success Criteria** (what must be TRUE):
-  1. index.css contains a utility class layer covering all recurring patterns (text color, font size, spacing, flex layout) used across the codebase
-  2. Zero inline style={} props remain in client/src/components/ for static token values
-  3. Zero inline style={} props remain in client/src/pages/ for static token values
-  4. All pages are visually consistent — no outlier page differs in layout, spacing, typography, or color treatment
-**Plans**: 5 plans
-
-Plans:
-- [ ] 04-01-PLAN.md — Wave 1: Utility class layer in index.css (CSS-01)
-- [ ] 04-02-PLAN.md — Wave 2: Migrate all 9 components (CSS-02)
-- [ ] 04-03-PLAN.md — Wave 2: Migrate 8 pages — all except ClassroomPage (CSS-03)
-- [ ] 04-04-PLAN.md — Wave 3: Migrate ClassroomPage — largest file, 88 occurrences (CSS-03)
-- [ ] 04-05-PLAN.md — Wave 4: Human visual verification — all 9 pages desktop + mobile (CSS-04)
-
-### Phase 5: Account Recovery and Classroom Code Management
-**Goal**: Teachers can re-download the student recovery code sheet from ClassroomPage at any time, and any student who has a recovery code can successfully restore their account session on a new device or shared device
-**Depends on**: Phase 1 (private table architecture)
-**Requirements**: ACCT-03, ACCT-04
-**Success Criteria** (what must be TRUE):
-  1. A new anonymous connection entering a valid recovery code on RegisterPage is redirected to the original account (session token returned via server-side reducer, no private table lookup client-side)
-  2. A teacher on ClassroomPage can click "Download codes" at any time and receive a printable/saveable sheet of all student names and their recovery codes
-**Plans**: 4 plans
-
-Plans:
-- [ ] 05-01-PLAN.md — Wave 1: Server tables + reducers (RestoreResult, restore_account, ClassRecoveryResult, get_class_recovery_codes) + integration test stubs (ACCT-03, ACCT-04)
-- [ ] 05-02-PLAN.md — Wave 2: Client bindings + RegisterPage restore flow (ACCT-03)
-- [ ] 05-03-PLAN.md — Wave 2: Client bindings + ClassroomPage Download codes button (ACCT-04)
-- [ ] 05-04-PLAN.md — Wave 3: Automated checks + human smoke test (ACCT-03, ACCT-04)
+---
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Security Hardening | 5/5 | Complete   | 2026-03-14 |
-| 2. Scoring Integrity and GDPR Baseline | 3/4 | In Progress|  |
-| 3. UX and Client Bug Fixes | 3/3 | Complete   | 2026-03-14 |
-| 4. CSS Design System Migration | 5/5 | Complete   | 2026-03-15 |
-| 5. Account Recovery and Classroom Code Management | 4/4 | Complete   | 2026-03-15 |
-
-### Phase 6: Server-side sprint problem sequencing
-
-**Goal:** The server generates and owns the full problem sequence for each normal sprint — the client never receives future problems, closing the client-side foreknowledge cheating vector
-**Requirements**: SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06
-**Depends on:** Phase 5
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 06-01-PLAN.md — Wave 1: Test scaffolds — sprint_sequencing.test.ts (SEQ-01 to SEQ-05 stubs) + gdpr.test.ts SEQ-06 stub
-- [ ] 06-02-PLAN.md — Wave 2: Server — SprintSequence + NextProblemResult tables, build_sequence fn, next_problem reducer, cascade updates, make generate
-- [ ] 06-03-PLAN.md — Wave 3: Client — SprintPage server-driven flow + implement SEQ-01 to SEQ-06 integration tests
-- [ ] 06-04-PLAN.md — Wave 4: Deploy to maincloud + human smoke test (DevTools inspection)
-
-### Phase 7: Split server lib.rs into modules
-
-**Goal:** Split the 1850-line server/src/lib.rs monolith into six focused files with no behaviour changes — zero API changes, zero schema changes, identical TS bindings
-**Requirements**: MOD-01, MOD-02, MOD-03, MOD-04
-**Depends on:** Phase 6
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 07-01-PLAN.md — Wave 1: Promote helpers/constants to pub(crate), add mod declarations, create empty stub files (MOD-01)
-- [ ] 07-02-PLAN.md — Wave 2: Extract auth.rs + security.rs, verify WASM + bindings + client tests (MOD-01, MOD-02, MOD-03)
-- [ ] 07-03-PLAN.md — Wave 3: Extract sprint.rs with pub(crate) helpers for classroom.rs (MOD-01, MOD-03)
-- [ ] 07-04-PLAN.md — Wave 4: Extract classroom.rs + gdpr.rs, final lib.rs cleanup, deploy smoke test (MOD-01, MOD-02, MOD-03, MOD-04)
-
-### Phase 8: tokenized fetch for sensitive one-shot results
-
-**Goal:** Server-enforced subscription scoping and consume-after-read for the three sensitive result tables — other connected clients receive zero rows; the restore_results row is deleted immediately after the restore token is written to localStorage
-**Requirements**: SCOPE-01, SCOPE-02, SCOPE-03, CONSUME-01
-**Depends on:** Phase 7
-**Plans:** 2/2 plans complete
-
-Plans:
-- [ ] 08-01-PLAN.md — Wave 1: Client subscription scoping — scope all three useTable() calls to caller's identity (AccountPage, RegisterPage, ClassroomPage)
-- [ ] 08-02-PLAN.md — Wave 2: Server consume_restore_result reducer + client consume call in RegisterPage + make deploy
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1-8. v1.0 phases | v1.0 | 31/31 | Complete | 2026-03-15 |
+| 9. Fixed Grid Visualization | v1.1 | 0/1 | Not started | - |
+| 10. Extended Tables Opt-In | v1.1 | 0/2 | Not started | - |

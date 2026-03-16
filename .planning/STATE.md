@@ -5,11 +5,11 @@ milestone_name: Fixed Grid + Extended Tables
 status: planning
 stopped_at: null
 last_updated: "2026-03-16T08:00:00.000Z"
-last_activity: 2026-03-16 — v1.1 milestone started. Requirements defined. Ready for roadmap.
+last_activity: 2026-03-16 — v1.1 roadmap created. Phase 9 (VIZ) and Phase 10 (EXT) defined. Ready for plan-phase 9.
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
   percent: 0
 ---
@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-15)
+See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Students practice multiplication facts in a fair, safe, adaptive environment — and the score they see reflects genuine mastery.
-**Current focus:** v1.1 — Phase 9 (VIZ) + Phase 10 (EXT)
+**Current focus:** v1.1 — Phase 9 (Fixed Grid Visualization)
 
 ## Current Position
 
 Milestone v1.0 complete and archived (8 phases, 31 plans).
-Status: Requirements defined — ready to create roadmap
+Status: Roadmap created — ready to plan Phase 9
 
-Last activity: 2026-03-16 — v1.1 milestone started (Fixed Grid + Extended Tables, 5 requirements)
+Last activity: 2026-03-16 — v1.1 roadmap created (2 phases, 5 requirements, phases 9–10)
 
-Progress: n/a — roadmap not yet created
+Progress: [----------] 0% (0/2 phases complete)
 
 ## Performance Metrics
 
@@ -160,6 +160,8 @@ Recent decisions affecting current work:
 - Phase 6 added: Server-side sprint problem sequencing
 - Phase 7 added: Split server lib.rs into modules
 - Phase 8 added: Tokenized fetch for sensitive one-shot results
+- Phase 9 added (v1.1): Fixed grid visualization
+- Phase 10 added (v1.1): Extended tables opt-in
 
 ### Pending Todos
 
@@ -172,6 +174,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T21:32:24.346Z
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-03-16T08:00:00.000Z
+Stopped at: v1.1 roadmap created
 Resume file: None

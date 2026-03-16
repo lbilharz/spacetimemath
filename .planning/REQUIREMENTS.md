@@ -45,8 +45,6 @@
 
 ## Traceability
 
-_Populated during roadmap creation._
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | VIZ-01 | Phase 9 | Pending |
@@ -62,4 +60,4 @@ _Populated during roadmap creation._
 
 ---
 *Requirements defined: 2026-03-16*
-*Last updated: 2026-03-16 after initial definition*
+*Last updated: 2026-03-16 — traceability confirmed after roadmap creation*
