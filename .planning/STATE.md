@@ -5,7 +5,7 @@ milestone_name: Fixed Grid + Extended Tables
 status: planning
 stopped_at: Completed 10-extended-tables-opt-in 10-01-PLAN.md
 last_updated: "2026-03-16T10:30:11.119Z"
-last_activity: 2026-03-16 — v1.1 roadmap created (2 phases, 5 requirements, phases 9–10)
+last_activity: 2026-03-16 - Completed quick task 260316-ily: Extended mode toggle in Adjust Level section with switch and number preview
 progress:
   total_phases: 2
   completed_phases: 1
@@ -167,6 +167,12 @@ Recent decisions affecting current work:
 - Phase 8 added: Tokenized fetch for sensitive one-shot results
 - Phase 9 added (v1.1): Fixed grid visualization
 - Phase 10 added (v1.1): Extended tables opt-in
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260316-ily | Extended mode toggle in Adjust Level section with switch and number preview | 2026-03-16 | 988e876 | [260316-ily-extended-mode-toggle-in-adjust-level-sec](./quick/260316-ily-extended-mode-toggle-in-adjust-level-sec/) |
 
 ### Pending Todos
 
