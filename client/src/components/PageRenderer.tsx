@@ -15,9 +15,10 @@ type Player = {
   username: string;
   bestScore: number;
   totalSessions: number;
-  learningTier?: number;
+  learningTier: number;
   recoveryEmailed?: boolean;
   onboardingDone?: boolean;
+  extendedMode: boolean;
 };
 
 interface Props {
