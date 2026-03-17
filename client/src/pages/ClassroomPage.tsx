@@ -293,7 +293,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       const MARGIN = 8, COLS = 3, ROWS = 3, GAP = 5;
       const CARD_W = (PAGE_W - 2 * MARGIN - (COLS - 1) * GAP) / COLS; // ~58.3mm
       const CARD_H = (PAGE_H - 2 * MARGIN - (ROWS - 1) * GAP) / ROWS; // ~89.7mm
-      // Logo grid colours: row-major, matches favicon.svg (no navy wrapper — raw squares on white)
+      const HEADER_H = 12;
+      const SMALL_PT = 7;   // class name, code, URL all share this size
+      const NAME_PT  = 11;  // username — matches visual weight of "1UP" wordmark
+      // Logo grid colours: row-major, matches favicon.svg
       const LOGO_CELLS: [number, number, number][] = [
         [93, 210, 60], [93, 210, 60], [251, 186, 0],
         [93, 210, 60], [251, 186, 0], [79, 167, 255],
@@ -315,66 +318,63 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         pdf.setLineWidth(0.3);
         pdf.roundedRect(x, y, CARD_W, CARD_H, 3, 3, 'FD');
 
-        // ── Brand strip (white bg, logo + wordmark left-aligned) ──────────────
-        const BRAND_H = 10;
-        // Coloured grid squares — no background wrapper
-        const LOGO_X = x + 3, LOGO_Y = y + 2.5;
-        const CELL = 1.9, CELL_GAP = 0.35;
+        // ── Navy header bar ───────────────────────────────────────────────────
+        pdf.setFillColor(44, 62, 80);
+        pdf.roundedRect(x, y, CARD_W, HEADER_H, 3, 3, 'F');
+        // Cover bottom rounded corners so header meets body flush
+        pdf.rect(x, y + HEADER_H / 2, CARD_W, HEADER_H / 2, 'F');
+
+        // Logo: coloured grid squares on navy
+        const LOGO_X = x + 3, LOGO_Y = y + 2.2;
+        const CELL = 2.0, CELL_GAP = 0.38;
         LOGO_CELLS.forEach(([r2, g, b], ci) => {
           pdf.setFillColor(r2, g, b);
           pdf.roundedRect(
             LOGO_X + (ci % 3) * (CELL + CELL_GAP),
             LOGO_Y + Math.floor(ci / 3) * (CELL + CELL_GAP),
-            CELL, CELL, 0.25, 0.25, 'F',
+            CELL, CELL, 0.3, 0.3, 'F',
           );
         });
-        // "noggin" wordmark in navy
-        pdf.setTextColor(44, 62, 80);
-        pdf.setFontSize(9);
+        // "1UP" wordmark in white, same visual weight as NAME_PT
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(NAME_PT);
         pdf.setFont('helvetica', 'bold');
-        pdf.text('noggin', x + 11, y + BRAND_H - 2.2);
+        pdf.text('1UP', x + 11.5, y + HEADER_H - 3.2);
 
-        // Thin separator under brand strip
-        pdf.setDrawColor(240, 240, 240);
-        pdf.setLineWidth(0.2);
-        pdf.line(x + 2, y + BRAND_H, x + CARD_W - 2, y + BRAND_H);
+        // ── Body ──────────────────────────────────────────────────────────────
+        let cursor = y + HEADER_H + 6;
 
-        // ── Student name ──────────────────────────────────────────────────────
+        // Username — same pt as wordmark
         pdf.setTextColor(44, 62, 80);
-        pdf.setFontSize(15);
+        pdf.setFontSize(NAME_PT);
         pdf.setFont('helvetica', 'bold');
-        pdf.text(r.username, x + CARD_W / 2, y + BRAND_H + 9, { align: 'center', maxWidth: CARD_W - 4 });
+        pdf.text(r.username, x + CARD_W / 2, cursor, { align: 'center', maxWidth: CARD_W - 4 });
+        cursor += 5;
 
-        // Class name
+        // Class name — small
         pdf.setTextColor(160, 160, 160);
-        pdf.setFontSize(7);
+        pdf.setFontSize(SMALL_PT);
         pdf.setFont('helvetica', 'normal');
-        pdf.text(myClassroom!.name, x + CARD_W / 2, y + BRAND_H + 14, { align: 'center', maxWidth: CARD_W - 4 });
+        pdf.text(myClassroom!.name, x + CARD_W / 2, cursor, { align: 'center', maxWidth: CARD_W - 4 });
+        cursor += 6;
 
-        // ── QR code with yellow rounded border ────────────────────────────────
+        // QR code — no border, clean
         const QR_SIZE = 40;
-        const QR_BORDER = 2.5;
         const QR_X = x + (CARD_W - QR_SIZE) / 2;
-        const QR_Y = y + BRAND_H + 17;
-        // Yellow filled background behind QR (acts as border)
-        pdf.setFillColor(251, 186, 0);
-        pdf.roundedRect(QR_X - QR_BORDER, QR_Y - QR_BORDER, QR_SIZE + QR_BORDER * 2, QR_SIZE + QR_BORDER * 2, 2, 2, 'F');
-        // White inset so QR sits cleanly
-        pdf.setFillColor(255, 255, 255);
-        pdf.rect(QR_X, QR_Y, QR_SIZE, QR_SIZE, 'F');
-        pdf.addImage(qrDataUrls[i], 'PNG', QR_X, QR_Y, QR_SIZE, QR_SIZE);
+        pdf.addImage(qrDataUrls[i], 'PNG', QR_X, cursor, QR_SIZE, QR_SIZE);
+        cursor += QR_SIZE + 4;
 
-        // ── Recovery code ─────────────────────────────────────────────────────
+        // Recovery code — small, same size as class name
         pdf.setTextColor(120, 120, 120);
-        pdf.setFontSize(7);
+        pdf.setFontSize(SMALL_PT);
         pdf.setFont('courier', 'normal');
-        pdf.text(r.code, x + CARD_W / 2, QR_Y + QR_SIZE + QR_BORDER + 5, { align: 'center' });
+        pdf.text(r.code, x + CARD_W / 2, cursor, { align: 'center' });
+        cursor += 4;
 
-        // ── Footer URL ────────────────────────────────────────────────────────
-        pdf.setTextColor(200, 200, 200);
-        pdf.setFontSize(6);
+        // URL — same small size
+        pdf.setTextColor(190, 190, 190);
         pdf.setFont('helvetica', 'normal');
-        pdf.text(globalThis.location.origin.split('//')[1], x + CARD_W / 2, y + CARD_H - 2.5, { align: 'center' });
+        pdf.text(globalThis.location.origin.split('//')[1], x + CARD_W / 2, cursor, { align: 'center' });
       });
 
       pdf.save(`${myClassroom.name}-login-cards.pdf`);
