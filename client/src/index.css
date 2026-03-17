@@ -569,18 +569,3 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
   background: var(--accent);
   color: var(--text);
 }
-
-/* ── Print: login card sheet ──────────────────────────────────────────────── */
-@media print {
-  body * { visibility: hidden; }
-  .print-cards-overlay,
-  .print-cards-overlay * { visibility: visible; }
-  .print-cards-overlay {
-    display: block !important;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: auto;
-    background: #fff;
-  }
-  @page { size: A4; margin: 12mm; }
-}

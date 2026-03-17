@@ -51,7 +51,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
-  const [printCards, setPrintCards] = useState<ClassRecoveryResult[] | null>(null);
   const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
   const [isDiagnostic, setIsDiagnostic] = useState(false);
@@ -140,15 +139,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Trigger window.print() once inline cards are rendered
-  useEffect(() => {
-    if (!printCards) return;
-    const cleanup = () => setPrintCards(null);
-    window.addEventListener('afterprint', cleanup, { once: true });
-    const id = setTimeout(() => window.print(), 100);
-    return () => { clearTimeout(id); window.removeEventListener('afterprint', cleanup); };
-  }, [printCards]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── End of class sprint state ───────────────────────────────────────────────
 
@@ -263,6 +253,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     if (printing || !myClassroom) return;
     setPrinting(true);
     setPrintError(null);
+    // Open print window synchronously (before any await) so popup blocker
+    // treats it as a direct user gesture.
+    const win = window.open('', '_blank');
+    if (!win) { setPrintError(t('classroom.printPopupBlocked')); setPrinting(false); return; }
     try {
       const prevCount = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
       await getClassRecoveryCodes({ classroomId });
@@ -281,11 +275,32 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         if (resultRows.length > 0) break;
         await new Promise(res => setTimeout(res, POLL));
       }
-      if (resultRows.length === 0) {
-        setPrintError(t('classroom.printNoKeys'));
-        return;
-      }
-      setPrintCards(resultRows);
+      if (resultRows.length === 0) { setPrintError(t('classroom.printNoKeys')); win.close(); return; }
+      const cards = resultRows.map(r => `
+        <div class="card">
+          <div class="name">${r.username}</div>
+          <div class="class">${myClassroom.name}</div>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(restoreUrl(r.code))}" width="160" height="160" />
+          <div class="code">${r.code}</div>
+          <div class="hint">Scan or type to log in on any device</div>
+        </div>`).join('');
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>${myClassroom.name} – Login Cards</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; background: #fff; color: #000; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px; }
+  .card { border: 1.5px solid #ccc; border-radius: 10px; padding: 16px 12px; text-align: center; break-inside: avoid; }
+  .name { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+  .class { font-size: 12px; color: #888; margin-bottom: 12px; }
+  img { display: block; margin: 0 auto 10px; }
+  .code { font-family: monospace; font-size: 14px; letter-spacing: 2px; color: #444; margin-bottom: 4px; }
+  .hint { font-size: 11px; color: #aaa; }
+  @media print { @page { size: A4; margin: 12mm; } }
+</style></head><body>
+<div class="grid">${cards}</div>
+<script>window.onload = () => window.print();</script>
+</body></html>`);
+      win.document.close();
     } finally {
       setPrinting(false);
     }
@@ -321,25 +336,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             <button className="btn btn-secondary w-full" onClick={() => setQrStudent(null)}>
               {t('common.cancel')}
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Print overlay — invisible on screen, visible only during window.print() */}
-      {printCards && (
-        <div className="print-cards-overlay" style={{ display: 'none' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, padding: 16 }}>
-            {printCards.map(r => (
-              <div key={r.memberIdentity.toHexString()} style={{ border: '1.5px solid #ccc', borderRadius: 10, padding: '16px 12px', textAlign: 'center', breakInside: 'avoid' }}>
-                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 2 }}>{r.username}</div>
-                <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>{myClassroom.name}</div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-                  <QRCodeSVG value={restoreUrl(r.code)} size={160} />
-                </div>
-                <div style={{ fontFamily: 'monospace', fontSize: 14, letterSpacing: 2, color: '#444', marginBottom: 4 }}>{r.code}</div>
-                <div style={{ fontSize: 11, color: '#aaa' }}>{t('classroom.studentLoginHint')}</div>
-              </div>
-            ))}
           </div>
         </div>
       )}
