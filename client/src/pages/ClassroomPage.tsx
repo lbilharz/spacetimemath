@@ -34,7 +34,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
   const leaveClassroom        = useSTDBReducer(reducers.leaveClassroom);
-  const startSession          = useSTDBReducer(reducers.startSession);
   const toggleVisibility      = useSTDBReducer(reducers.toggleClassroomVisibility);
   const startClassSprint      = useSTDBReducer(reducers.startClassSprint);
   const endClassSprint        = useSTDBReducer(reducers.endClassSprint);
@@ -226,10 +225,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     setTogglingVis(false);
   };
 
-  const handleStart = async () => {
+  const handleStart = () => {
     setStarting(true);
-    await startSession();
-    onStartSprint(0n);
+    onStartSprint(0n); // SprintPage owns session creation on mount
   };
 
   const handleLeave = async () => {

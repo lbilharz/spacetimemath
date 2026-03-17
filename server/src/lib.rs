@@ -435,6 +435,28 @@ pub fn migrate_reset_weights(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// Migration: close all incomplete solo sessions that have no SprintSequence.
+/// These are restored-incident sessions (is_complete=false in CSV) that were never
+/// properly started and would confuse SprintPage into calling next_problem on them.
+/// Idempotent — safe to call multiple times.
+#[reducer]
+pub fn migrate_close_orphan_sessions(ctx: &ReducerContext) -> Result<(), String> {
+    let seq_ids: std::collections::HashSet<u64> = ctx.db.sprint_sequences()
+        .iter()
+        .map(|s| s.session_id)
+        .collect();
+    let orphans: Vec<_> = ctx.db.sessions()
+        .iter()
+        .filter(|s| !s.is_complete && s.class_sprint_id == 0 && !seq_ids.contains(&s.id))
+        .collect();
+    let count = orphans.len();
+    for s in orphans {
+        ctx.db.sessions().id().update(Session { is_complete: true, ..s });
+    }
+    spacetimedb::log::info!("migrate_close_orphan_sessions: closed {} orphan sessions", count);
+    Ok(())
+}
+
 /// DATA RESTORE: Re-insert a session row with its original ID and timestamp.
 /// Called as the player (ctx.sender() == player_identity). Skips if row already exists.
 #[reducer]

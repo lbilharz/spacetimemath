@@ -243,6 +243,19 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }
   }, [sessions, myIdentityHex, sessionId, classSprintId]);
 
+  // 2b. Safety: if the detected session gets closed before the sprint starts
+  // (e.g. start_session's orphan cleanup ran after we detected an old session),
+  // reset so effect 2 can re-detect the freshly created session.
+  useEffect(() => {
+    if (sessionId === null || sprintStarted || classSprintId !== undefined) return;
+    const sess = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId));
+    if (sess?.isComplete) {
+      setSessionId(null);
+      sessionIdRef.current = null;
+      setPreCountdown(null);
+    }
+  }, [sessions, sessionId, sprintStarted, classSprintId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // 3a. When session is detected, kick off the pre-countdown
   // Normal sprint: pre-fetch first problem immediately so it arrives before countdown ends
   useEffect(() => {

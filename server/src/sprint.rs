@@ -263,16 +263,19 @@ pub fn submit_answer(
     let correct_answer = (a as u32) * (b as u32);
     let is_correct = user_answer == correct_answer;
 
-    ctx.db.answers().insert(Answer {
-        id: 0,
-        player_identity: sender,
-        session_id,
-        a, b,
-        user_answer,
-        is_correct,
-        response_ms,
-        answered_at: ctx.timestamp,
-    });
+    // try_insert retry loop: auto_inc counter may be out of sync with restored rows.
+    for _ in 0..200 {
+        if ctx.db.answers().try_insert(Answer {
+            id: 0,
+            player_identity: sender,
+            session_id,
+            a, b,
+            user_answer,
+            is_correct,
+            response_ms,
+            answered_at: ctx.timestamp,
+        }).is_ok() { break; }
+    }
 
     // Update Derived Score for this ordered pair
     let key = (a as u16) * 100 + (b as u16);

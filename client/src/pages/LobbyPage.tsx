@@ -33,7 +33,6 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   const [onlinePlayers]     = useTable(tables.online_players);
   const [sessions]          = useTable(tables.sessions);
   const [problemStats]      = useTable(tables.problem_stats);
-  const startSession        = useSTDBReducer(reducers.startSession);
   const joinClassroom       = useSTDBReducer(reducers.joinClassroom);
 
   // Build the live players list: self first (pinned), then others sorted by username
@@ -99,10 +98,9 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     }
   }, [pendingJoinCode, classrooms]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleStart = async () => {
+  const handleStart = () => {
     setStarting(true);
-    await startSession();
-    onStartSprint(0n);
+    onStartSprint(0n); // SprintPage owns session creation on mount
   };
 
   return (
