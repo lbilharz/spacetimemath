@@ -294,8 +294,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       const CARD_W = (PAGE_W - 2 * MARGIN - (COLS - 1) * GAP) / COLS; // ~58.3mm
       const CARD_H = (PAGE_H - 2 * MARGIN - (ROWS - 1) * GAP) / ROWS; // ~89.7mm
       const HEADER_H = 12;
-      const SMALL_PT = 7;   // class name, code, URL all share this size
-      const NAME_PT  = 11;  // username — matches visual weight of "1UP" wordmark
+      const SMALL_PT = 11;   // class name, code, URL all share this size
+      const CODE_FONT_SIZE = 15;   // class name, code, URL all share this size
+      const NAME_PT  = 22;  // "1UP" wordmark
+      const NAME_USER  = 16;  // username — matches visual weight of "1UP" wordmark
       // Logo grid colours: row-major, matches favicon.svg
       const LOGO_CELLS: [number, number, number][] = [
         [93, 210, 60], [93, 210, 60], [251, 186, 0],
@@ -342,14 +344,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         pdf.text('1UP', x + 11.5, y + HEADER_H - 3.2);
 
         // ── Body ──────────────────────────────────────────────────────────────
-        let cursor = y + HEADER_H + 6;
+        let cursor = y + HEADER_H + 8;
 
         // Username — same pt as wordmark
         pdf.setTextColor(44, 62, 80);
-        pdf.setFontSize(NAME_PT);
+        pdf.setFontSize(NAME_USER);
         pdf.setFont('helvetica', 'bold');
         pdf.text(r.username, x + CARD_W / 2, cursor, { align: 'center', maxWidth: CARD_W - 4 });
-        cursor += 5;
+        cursor += 7;
 
         // Class name — small
         pdf.setTextColor(160, 160, 160);
@@ -362,18 +364,19 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         const QR_SIZE = 40;
         const QR_X = x + (CARD_W - QR_SIZE) / 2;
         pdf.addImage(qrDataUrls[i], 'PNG', QR_X, cursor, QR_SIZE, QR_SIZE);
-        cursor += QR_SIZE + 4;
+        cursor += QR_SIZE + 6;
 
         // Recovery code — small, same size as class name
         pdf.setTextColor(120, 120, 120);
-        pdf.setFontSize(SMALL_PT);
+        pdf.setFontSize(CODE_FONT_SIZE);
         pdf.setFont('courier', 'normal');
         pdf.text(r.code, x + CARD_W / 2, cursor, { align: 'center' });
-        cursor += 4;
+        cursor += 7;
 
         // URL — same small size
         pdf.setTextColor(190, 190, 190);
         pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(SMALL_PT);
         pdf.text(globalThis.location.origin.split('//')[1], x + CARD_W / 2, cursor, { align: 'center' });
       });
 
