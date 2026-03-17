@@ -15,8 +15,20 @@ WASM_BIN   := server/target/wasm32-unknown-unknown/release/spacetimemath.wasm
 setup:
 	git config core.hooksPath hooks
 
-# Build WASM then publish to maincloud non-interactively
-publish:
+# Safety check: block any accidental --delete-data in MAKEFLAGS or CLI overrides.
+# If you genuinely need to wipe production data, use: make wipe-and-publish CONFIRM_WIPE=yes
+check-no-delete-data:
+	@if echo "$(MAKEFLAGS) $(EXTRA)" | grep -q -- '--delete-data'; then \
+		echo ""; \
+		echo "ERROR: --delete-data detected. This wipes ALL production data."; \
+		echo "Use: make wipe-and-publish CONFIRM_WIPE=yes"; \
+		echo ""; \
+		exit 1; \
+	fi
+
+# Build WASM then publish to maincloud non-interactively.
+# NEVER passes --delete-data. Use wipe-and-publish only if you need to reset data.
+publish: check-no-delete-data
 	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
 	$(SPACETIME) publish spacetimemath --server maincloud --bin-path $(WASM_BIN) -y
 
@@ -24,6 +36,21 @@ publish:
 publish-test:
 	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
 	$(SPACETIME) publish spacetimemath-test --server maincloud --bin-path $(WASM_BIN) -y
+
+# DANGER: wipes ALL production data before publishing.
+# Requires explicit confirmation: make wipe-and-publish CONFIRM_WIPE=yes
+# Export CSVs from the SpacetimeDB web console BEFORE running this.
+wipe-and-publish:
+	@if [ "$(CONFIRM_WIPE)" != "yes" ]; then \
+		echo ""; \
+		echo "ERROR: This target wipes ALL production data. This cannot be undone."; \
+		echo "       Export CSVs from SpacetimeDB web console first."; \
+		echo "       Then run: make wipe-and-publish CONFIRM_WIPE=yes"; \
+		echo ""; \
+		exit 1; \
+	fi
+	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
+	$(SPACETIME) publish spacetimemath --server maincloud --bin-path $(WASM_BIN) -y --delete-data
 
 # Regenerate TypeScript module bindings from the server source,
 # then re-add private table registrations that codegen skips.
@@ -40,4 +67,4 @@ call:
 deploy: publish generate
 	cd client && npm run test:integration
 
-.PHONY: setup publish publish-test generate call deploy test
+.PHONY: setup publish publish-test generate call deploy test check-no-delete-data wipe-and-publish

@@ -225,3 +225,50 @@ fn finalize_class_sprint_sessions(ctx: &ReducerContext, class_sprint_id: u64) {
         credit_session_to_player(ctx, player_identity, session_id);
     }
 }
+
+// ============================================================
+// DATA RESTORE
+// ============================================================
+
+/// DATA RESTORE: Re-insert a Classroom row with its original ID and code.
+/// The caller (ctx.sender()) becomes the teacher. Skips if ID already exists.
+/// Call order: teacher calls restore_classroom first, then each member calls
+/// restore_classroom_member with the same classroom_id.
+#[reducer]
+pub fn restore_classroom(
+    ctx: &ReducerContext,
+    id: u64,
+    code: String,
+    name: String,
+) -> Result<(), String> {
+    if ctx.db.classrooms().id().find(id).is_some() { return Ok(()); }
+    ctx.db.classrooms().insert(Classroom {
+        id,
+        code: code.trim().to_uppercase(),
+        name: name.trim().to_string(),
+        teacher: ctx.sender(),
+    });
+    Ok(())
+}
+
+/// DATA RESTORE: Re-insert a ClassroomMember row for the calling player.
+/// The caller (ctx.sender()) is the player being registered as a member.
+/// Skips if this player is already a member of the classroom.
+#[reducer]
+pub fn restore_classroom_member(
+    ctx: &ReducerContext,
+    classroom_id: u64,
+    hidden: bool,
+) -> Result<(), String> {
+    let already_member = ctx.db.classroom_members()
+        .iter()
+        .any(|m| m.classroom_id == classroom_id && m.player_identity == ctx.sender());
+    if already_member { return Ok(()); }
+    ctx.db.classroom_members().insert(ClassroomMember {
+        id: 0,
+        classroom_id,
+        player_identity: ctx.sender(),
+        hidden,
+    });
+    Ok(())
+}
