@@ -1,7 +1,7 @@
 use spacetimedb::{reducer, ReducerContext, Table};
 use crate::{sessions, answers, issued_problems, sprint_sequences, best_scores,
-            unlock_logs, recovery_keys, recovery_code_results, transfer_codes,
-            transfer_code_results, issued_problem_results, classroom_members,
+            unlock_logs, recovery_keys, recovery_code_results,
+            issued_problem_results, classroom_members,
             classrooms, online_players, players};
 
 /// GDPR-01: Erase all data for the calling player.
@@ -51,20 +51,13 @@ pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
         .collect();
     for id in ul { ctx.db.unlock_logs().id().delete(id); }
 
-    // 7. Delete recovery / transfer credentials
+    // 7. Delete recovery credentials
     let rk: Vec<String> = ctx.db.recovery_keys().iter()
         .filter(|k| k.owner == sender)
         .map(|k| k.code.clone())
         .collect();
     for code in rk { ctx.db.recovery_keys().code().delete(code); }
     ctx.db.recovery_code_results().owner().delete(sender);
-
-    let tc: Vec<String> = ctx.db.transfer_codes().iter()
-        .filter(|c| c.owner == sender)
-        .map(|c| c.code.clone())
-        .collect();
-    for code in tc { ctx.db.transfer_codes().code().delete(code); }
-    ctx.db.transfer_code_results().owner().delete(sender);
 
     // 8. Delete issued_problem_results
     ctx.db.issued_problem_results().owner().delete(sender);

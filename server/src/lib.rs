@@ -7,7 +7,6 @@ mod security;
 mod gdpr;
 
 // Re-export scheduled reducers so the `scheduled(...)` macro in #[table] attributes can find them.
-pub use security::expire_transfer_codes;
 pub use classroom::auto_end_class_sprint;
 
 // ============================================================
@@ -192,12 +191,6 @@ pub struct OnlinePlayer {
 pub fn init(ctx: &ReducerContext) {
     seed_problem_stats(ctx);
     seed_extended_problem_stats(ctx);
-    // Start recurring transfer code cleanup (SEC-09)
-    let first_cleanup = ctx.timestamp.to_micros_since_unix_epoch() + TRANSFER_CODE_CLEANUP_INTERVAL_MICROS;
-    ctx.db.transfer_code_cleanup_schedule().insert(TransferCodeCleanupSchedule {
-        scheduled_id: 0,
-        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(first_cleanup)),
-    });
 }
 
 #[reducer(client_connected)]
@@ -632,36 +625,6 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
 // ============================================================
 // ACCOUNT MANAGEMENT
 // ============================================================
-
-#[table(accessor = transfer_codes)]
-pub struct TransferCode {
-    #[primary_key]
-    pub code: String,
-    pub owner: Identity,
-    pub token: String,
-    pub created_at: Timestamp,
-}
-
-/// Public result table — rows are short-lived and owner-keyed (SEC-03).
-/// Populated by create_transfer_code; deleted by use_transfer_code.
-#[table(accessor = transfer_code_results, public)]
-pub struct TransferCodeResult {
-    #[primary_key]
-    pub owner: Identity,
-    pub code: String,
-}
-
-pub(crate) const TRANSFER_CODE_TTL_MICROS: i64 = 10 * 60 * 1_000_000; // 10 minutes
-pub(crate) const TRANSFER_CODE_CLEANUP_INTERVAL_MICROS: i64 = 5 * 60 * 1_000_000; // check every 5 min
-
-/// Scheduled recurring table — SpacetimeDB fires `expire_transfer_codes` at each scheduled_at (SEC-09).
-#[table(accessor = transfer_code_cleanup_schedule, scheduled(expire_transfer_codes))]
-pub struct TransferCodeCleanupSchedule {
-    #[primary_key]
-    #[auto_inc]
-    pub scheduled_id: u64,
-    pub scheduled_at: ScheduleAt,
-}
 
 // ============================================================
 // RECOVERY KEYS  (permanent, multi-use, 12 chars)

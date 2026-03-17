@@ -1,89 +1,13 @@
-use spacetimedb::{reducer, ReducerContext, Table, Identity, Timestamp, ScheduleAt};
+use spacetimedb::{reducer, ReducerContext, Table, Identity};
 use crate::{
-    RecoveryKey, TransferCode, TransferCodeCleanupSchedule, TransferCodeResult,
+    RecoveryKey,
     RecoveryCodeResult, RestoreResult, ClassRecoveryResult,
-    get_player, make_code, make_recovery_code,
-    TRANSFER_CODE_TTL_MICROS, TRANSFER_CODE_CLEANUP_INTERVAL_MICROS,
+    get_player, make_recovery_code,
 };
 use crate::{
-    transfer_codes, transfer_code_results, transfer_code_cleanup_schedule,
     recovery_keys, recovery_code_results, restore_results, class_recovery_results,
     classrooms, classroom_members, players,
 };
-
-/// Store a transfer code → token mapping so another device can claim this account.
-/// The caller passes their own SpaceTimeDB auth token; the server holds it briefly.
-#[reducer]
-pub fn create_transfer_code(ctx: &ReducerContext, token: String) -> Result<(), String> {
-    let _player = get_player(ctx)?;
-    // Remove any previous codes for this owner
-    let old: Vec<_> = ctx.db.transfer_codes()
-        .iter()
-        .filter(|c| c.owner == ctx.sender())
-        .collect();
-    for c in old { ctx.db.transfer_codes().code().delete(c.code); }
-
-    let code = make_code(ctx);
-    ctx.db.transfer_codes().insert(TransferCode {
-        code: code.clone(),
-        owner: ctx.sender(),
-        token,
-        created_at: ctx.timestamp,
-    });
-
-    // Write to private result table so the client can read back its own code (SEC-03).
-    match ctx.db.transfer_code_results().owner().find(ctx.sender()) {
-        Some(_) => {
-            ctx.db.transfer_code_results().owner().update(TransferCodeResult {
-                owner: ctx.sender(),
-                code: code.clone(),
-            });
-        }
-        None => {
-            ctx.db.transfer_code_results().insert(TransferCodeResult {
-                owner: ctx.sender(),
-                code,
-            });
-        }
-    }
-    Ok(())
-}
-
-/// Called by the new device after it has read and stored the token — deletes the row.
-#[reducer]
-pub fn use_transfer_code(ctx: &ReducerContext, code: String) -> Result<(), String> {
-    let record = ctx.db.transfer_codes().code().find(code.clone())
-        .ok_or("Transfer code not found or already used")?;
-    // Delete the result entry for the owner so the UI clears
-    ctx.db.transfer_code_results().owner().delete(record.owner);
-    ctx.db.transfer_codes().code().delete(code);
-    Ok(())
-}
-
-/// Scheduled reducer: deletes transfer codes older than TRANSFER_CODE_TTL_MICROS (10 min)
-/// and re-schedules itself for the next run (recurring pattern, SEC-09).
-#[reducer]
-pub fn expire_transfer_codes(ctx: &ReducerContext, _arg: TransferCodeCleanupSchedule)
-    -> Result<(), String>
-{
-    let cutoff = ctx.timestamp.to_micros_since_unix_epoch() - TRANSFER_CODE_TTL_MICROS;
-    let expired: Vec<_> = ctx.db.transfer_codes()
-        .iter()
-        .filter(|c| c.created_at.to_micros_since_unix_epoch() < cutoff)
-        .map(|c| (c.code.clone(), c.owner))
-        .collect();
-    for (code, owner) in expired {
-        ctx.db.transfer_codes().code().delete(code);
-        ctx.db.transfer_code_results().owner().delete(owner);
-    }
-    // Re-schedule for next run (recurring pattern)
-    let next_at = ctx.timestamp.to_micros_since_unix_epoch() + TRANSFER_CODE_CLEANUP_INTERVAL_MICROS;
-    ctx.db.transfer_code_cleanup_schedule().insert(TransferCodeCleanupSchedule {
-        scheduled_id: 0,
-        scheduled_at: ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(next_at)),
-    });
-    Ok(())
-}
 
 /// Ensure the caller has a permanent recovery key — no-op if one already exists.
 /// Safe to call on every app load; will never overwrite an existing key.
