@@ -415,7 +415,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }, !fb.isCorrect ? 1000 : 600);
   }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
       nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
-      issueProblem]);
+      issueProblem, input, SPRINT_DURATION]);
 
   // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
   useEffect(() => {
