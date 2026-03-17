@@ -14,7 +14,7 @@ type Session = {
 };
 type Answer = {
   id: bigint; playerIdentity: { toHexString(): string }; sessionId: bigint;
-  a: number; b: number; isCorrect: boolean; responseMs: number;
+  a: number; b: number; userAnswer: number; isCorrect: boolean; responseMs: number;
 };
 
 interface Props {
@@ -221,6 +221,53 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
             playerLearningTier={playerLearningTier}
             focusCell={gridFocus}
           />
+        </div>
+      )}
+
+      {/* Problems this sprint */}
+      {sessionAnswers.length > 0 && (
+        <div className="card w-full">
+          <h2 className="mb-3">{t('results.problemsTitle')}</h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
+            gap: 4,
+          }}>
+            {[...sessionAnswers]
+              .sort((a, b) => {
+                if (a.isCorrect !== b.isCorrect) return a.isCorrect ? 1 : -1;
+                return a.a !== b.a ? a.a - b.a : a.b - b.b;
+              })
+              .map((ans) => {
+                const correct = ans.a * ans.b;
+                const ms = ans.responseMs;
+                const msLabel = ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
+                return (
+                  <div
+                    key={String(ans.id)}
+                    className="row gap-4 text-sm"
+                    style={{
+                      padding: '4px 7px',
+                      borderRadius: 5,
+                      background: ans.isCorrect ? 'rgba(93,210,60,0.10)' : 'rgba(232,57,29,0.10)',
+                      border: ans.isCorrect ? '1px solid rgba(93,210,60,0.3)' : '1px solid rgba(232,57,29,0.3)',
+                    }}
+                  >
+                    <span className="fw-bold" style={{ minWidth: 40 }}>{ans.a}×{ans.b}</span>
+                    <span className="text-muted">=</span>
+                    <span className="fw-bold" style={{ color: ans.isCorrect ? 'var(--accent)' : 'var(--wrong)' }}>
+                      {ans.userAnswer}
+                    </span>
+                    {!ans.isCorrect && (
+                      <span className="text-xs text-muted">→{correct}</span>
+                    )}
+                    <span className="text-muted" style={{ marginLeft: 'auto', fontSize: 10, flexShrink: 0 }}>
+                      {msLabel}
+                    </span>
+                  </div>
+                );
+              })}
+          </div>
         </div>
       )}
 

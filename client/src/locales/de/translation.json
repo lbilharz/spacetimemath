@@ -111,7 +111,8 @@
     "nextSprint": "▶ Nächster Sprint",
     "backToLobby": "Zurück zur Lobby",
     "scoringExplained": "Wie wird gewertet?",
-    "viewProgress": "Fortschritt ansehen"
+    "viewProgress": "Fortschritt ansehen",
+    "problemsTitle": "Aufgaben in diesem Sprint"
   },
   "classroom": {
     "notFound": "Klasse nicht gefunden",

@@ -111,7 +111,8 @@
     "nextSprint": "▶ Next Sprint",
     "backToLobby": "Back to Lobby",
     "scoringExplained": "How is this scored?",
-    "viewProgress": "View your progress"
+    "viewProgress": "View your progress",
+    "problemsTitle": "Problems this sprint"
   },
   "classroom": {
     "notFound": "Classroom not found",
