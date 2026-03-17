@@ -465,27 +465,6 @@ fn seed_problem_stats(ctx: &ReducerContext) {
     }
 }
 
-fn seed_tier1_problem_stats(ctx: &ReducerContext) {
-    // Curated 2-digit × 1-digit pairs. Both orderings seeded (e.g. 11×7 and 7×11).
-    let pairs: &[(u8, u8, f32)] = &[
-        (11,2,0.6),(11,3,0.6),(11,4,0.6),(11,5,0.6),(11,6,0.6),(11,7,0.6),(11,8,0.6),(11,9,0.6),
-        (12,2,1.0),(12,3,1.0),(12,4,1.0),(12,5,1.0),(12,6,1.0),(12,7,1.0),(12,8,1.0),(12,9,1.0),
-        (15,2,1.2),(15,3,1.2),(15,4,1.2),(15,5,1.2),(15,6,1.2),(15,7,1.2),(15,8,1.2),(15,9,1.2),
-        (20,2,0.8),(20,3,0.8),(20,4,0.8),(20,5,0.8),(20,6,0.8),(20,7,0.8),(20,8,0.8),(20,9,0.8),
-        (25,2,1.4),(25,3,1.4),(25,4,1.4),(25,5,1.4),(25,6,1.4),(25,7,1.4),(25,8,1.4),(25,9,1.4),
-    ];
-    for &(a, b, weight) in pairs {
-        for &(ra, rb) in &[(a, b), (b, a)] {
-            let key = (ra as u16) * 100 + (rb as u16);
-            ctx.db.problem_stats().insert(ProblemStat {
-                problem_key: key,
-                a: ra, b: rb, category: 2,
-                attempt_count: 0, correct_count: 0, avg_response_ms: 0,
-                difficulty_weight: weight,
-            });
-        }
-    }
-}
 
 fn seed_extended_problem_stats(ctx: &ReducerContext) {
     // Seeds all 10 extended tables (×11 through ×20) at uniform weight 1.5, both orderings.
