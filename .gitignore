@@ -6,6 +6,7 @@
 *.pptx
 *.jpg
 *.png
+*.csv
 create_pitchdeck.js
 # Root-level package.json is for the pitchdeck script, not the project
 /package.json

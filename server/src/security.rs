@@ -141,6 +141,23 @@ pub fn get_class_recovery_codes(ctx: &ReducerContext, classroom_id: u64) -> Resu
     Ok(())
 }
 
+/// DATA RESTORE: Insert a specific recovery key (code + token) for the caller.
+/// Removes any existing key first so the original code is exactly restored.
+#[reducer]
+pub fn restore_recovery_key(ctx: &ReducerContext, code: String, token: String) -> Result<(), String> {
+    let old: Vec<_> = ctx.db.recovery_keys()
+        .iter()
+        .filter(|k| k.owner == ctx.sender())
+        .collect();
+    for k in old { ctx.db.recovery_keys().code().delete(k.code); }
+    ctx.db.recovery_keys().insert(RecoveryKey {
+        code,
+        owner: ctx.sender(),
+        token,
+    });
+    Ok(())
+}
+
 /// Explicitly replace the caller's recovery key with a new one.
 /// Only called when the user clicks "Regenerate" in the Account page.
 #[reducer]

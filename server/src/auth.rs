@@ -99,6 +99,42 @@ pub fn set_learning_tier(ctx: &ReducerContext, tier: u8) -> Result<(), String> {
     Ok(())
 }
 
+/// DATA RESTORE: Re-insert a player row with full historical stats from CSV backup.
+/// No username validation — we're restoring known-good data.
+/// Safe to call multiple times; upserts rather than failing on duplicates.
+#[reducer]
+pub fn restore_player_full(
+    ctx: &ReducerContext,
+    username: String,
+    best_score: f32,
+    total_sessions: u32,
+    total_correct: u32,
+    total_answered: u32,
+    learning_tier: u8,
+) -> Result<(), String> {
+    let player = Player {
+        identity: ctx.sender(),
+        username: username.clone(),
+        best_score,
+        total_sessions,
+        total_correct,
+        total_answered,
+        onboarding_done: true,
+        learning_tier,
+        recovery_emailed: false,
+        extended_mode: false,
+        extended_level: 0,
+    };
+    match ctx.db.players().identity().find(ctx.sender()) {
+        Some(_) => { ctx.db.players().identity().update(player); }
+        None => { ctx.db.players().insert(player); }
+    }
+    if let Some(op) = ctx.db.online_players().identity().find(ctx.sender()) {
+        ctx.db.online_players().identity().update(OnlinePlayer { username, ..op });
+    }
+    Ok(())
+}
+
 /// Mark that the player has emailed themselves their recovery key.
 /// Persisted server-side so the nag banner stays gone across all devices.
 #[reducer]

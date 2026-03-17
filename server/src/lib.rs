@@ -435,6 +435,91 @@ pub fn migrate_reset_weights(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// DATA RESTORE: Re-insert a session row with its original ID and timestamp.
+/// Called as the player (ctx.sender() == player_identity). Skips if row already exists.
+#[reducer]
+pub fn restore_session(
+    ctx: &ReducerContext,
+    id: u64,
+    username: String,
+    weighted_score: f32,
+    raw_score: u32,
+    accuracy_pct: u8,
+    total_answered: u32,
+    is_complete: bool,
+    started_at_micros: i64,
+) -> Result<(), String> {
+    // Skip if already restored (idempotent)
+    if ctx.db.sessions().id().find(id).is_some() { return Ok(()); }
+    ctx.db.sessions().insert(Session {
+        id,
+        player_identity: ctx.sender(),
+        username,
+        weighted_score,
+        raw_score,
+        accuracy_pct,
+        total_answered,
+        is_complete,
+        started_at: Timestamp::from_micros_since_unix_epoch(started_at_micros),
+        class_sprint_id: 0,
+    });
+    Ok(())
+}
+
+/// DATA RESTORE: Re-insert an answer row with its original ID and session_id.
+/// Called as the player (ctx.sender() == player_identity). Skips if row already exists.
+#[reducer]
+pub fn restore_answer(
+    ctx: &ReducerContext,
+    id: u64,
+    session_id: u64,
+    a: u8,
+    b: u8,
+    user_answer: u32,
+    is_correct: bool,
+    response_ms: u32,
+    answered_at_micros: i64,
+) -> Result<(), String> {
+    if ctx.db.answers().id().find(id).is_some() { return Ok(()); }
+    ctx.db.answers().insert(Answer {
+        id,
+        player_identity: ctx.sender(),
+        session_id,
+        a,
+        b,
+        user_answer,
+        is_correct,
+        response_ms,
+        answered_at: Timestamp::from_micros_since_unix_epoch(answered_at_micros),
+    });
+    Ok(())
+}
+
+/// DATA RESTORE: Upsert a best_score row from the player's historical stats.
+#[reducer]
+pub fn restore_best_score(
+    ctx: &ReducerContext,
+    username: String,
+    best_weighted_score: f32,
+    best_accuracy_pct: u8,
+    best_total_answered: u32,
+    learning_tier: u8,
+) -> Result<(), String> {
+    let row = BestScore {
+        player_identity: ctx.sender(),
+        username,
+        best_weighted_score,
+        best_accuracy_pct,
+        best_total_answered,
+        learning_tier,
+    };
+    match ctx.db.best_scores().player_identity().find(ctx.sender()) {
+        Some(_) => { ctx.db.best_scores().player_identity().update(row); }
+        None    => { ctx.db.best_scores().insert(row); }
+    }
+    Ok(())
+}
+
 fn seed_problem_stats(ctx: &ReducerContext) {
     for a in 0u8..=10 {
         for b in 0u8..=10 {
