@@ -187,8 +187,15 @@ export default function AccountPage({ myPlayer }: Props) {
         </p>
         {myRecoveryKey ? (
           <div>
-            <div className="code-box" style={{ fontSize: 22, letterSpacing: 5, padding: '12px 16px' }}>
-              {keyRevealed ? myRecoveryKey.code : '••••••••••••'}
+            <div className="code-box" style={{ fontSize: 22, letterSpacing: 5, padding: '12px 44px 12px 16px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <span style={{ flex: 1 }}>{keyRevealed ? myRecoveryKey.code : '••••••••••••'}</span>
+              <button
+                onClick={() => setKeyRevealed(r => !r)}
+                aria-label={keyRevealed ? t('account.hide') : t('account.reveal')}
+                style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, opacity: keyRevealed ? 1 : 0.5, padding: 4 }}
+              >
+                👁️
+              </button>
             </div>
             <div className="row-center gap-8">
               {keyRevealed && (
@@ -196,9 +203,6 @@ export default function AccountPage({ myPlayer }: Props) {
                   {keyCopied ? t('common.copied') : t('common.copy')}
                 </button>
               )}
-              <button className="btn btn-secondary text-sm" onClick={() => setKeyRevealed(r => !r)}>
-                {keyRevealed ? t('account.hide') : t('account.reveal')}
-              </button>
               <button className="btn btn-secondary text-sm" onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
                 {t('account.regenerate')}
               </button>
