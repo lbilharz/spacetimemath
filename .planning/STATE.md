@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Fixed Grid + Extended Tables
 status: planning
-stopped_at: "Ready for next task"
-last_updated: "2026-03-17T06:20:00.000Z"
-last_activity: 2026-03-17 — Completed quick tasks 260317-9lo and 260317-9uc
+stopped_at: "Completed quick-260317-acs-PLAN.md"
+last_updated: "2026-03-17T07:30:00.000Z"
+last_activity: 2026-03-17 — Completed quick task 260317-acs (session restore splash skip)
 progress:
   total_phases: 2
   completed_phases: 1
@@ -178,6 +178,7 @@ Recent decisions affecting current work:
 | 260317-8vn | Sequential x11-x20 unlock gated by 80% mastery, weighted sprint pool, +N tier badge | 2026-03-17 | b876fe8 | [260317-8vn-extended-mode-progression-sequential-x11](./quick/260317-8vn-extended-mode-progression-sequential-x11/) |
 | 260317-9lo | Move ScoringGuide to lobby below leaderboard + problems-solved grid in sprint results | 2026-03-17 | a46997c | [260317-9lo-move-scoring-guide-to-lobby-add-problems](./quick/260317-9lo-move-scoring-guide-to-lobby-add-problems/) |
 | 260317-9uc | Unified My Level card replacing two tier cards, inline pencil-icon edit affordance | 2026-03-17 | 09f2639 | [260317-9uc-rename-adjust-level-to-my-level-merge-to](./quick/260317-9uc-rename-adjust-level-to-my-level-merge-to/) |
+| 260317-acs | Skip 2.5s splash timer for returning users with saved credentials — wait only for WebSocket connect | 2026-03-17 | f50c7ef | [260317-acs-session-restore-always-shows-the-splash-](./quick/260317-acs-session-restore-always-shows-the-splash-/) |
 
 ### Pending Todos
 
@@ -190,6 +191,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T07:09:30.000Z
-Stopped at: Completed quick-260317-9uc-PLAN.md
+Last session: 2026-03-17T07:30:00.000Z
+Stopped at: Completed quick-260317-acs-PLAN.md
 Resume file: None
