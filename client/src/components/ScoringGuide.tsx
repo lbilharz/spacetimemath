@@ -84,7 +84,7 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
           WebkitTapHighlightColor: 'transparent',
         }}
       >
-        <span className="fw-bold" style={{ fontSize: 15 }}>📊 {t('scoring.title')}</span>
+        <h2>📊 {t('scoring.title')}</h2>
         <span className="text-xs text-muted">{open ? '▲' : '▼'}</span>
       </button>
 
