@@ -60,67 +60,48 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
           border: `1px solid ${isMaxTier ? 'var(--accent)' : 'var(--border)'}`,
         }}
       >
-        {/* Header row: summary info + edit affordance */}
-        <div
-          className="row-between"
-          onClick={!adjusting ? () => { setPendingTier(playerLearningTier); setAdjusting(true); } : undefined}
-          style={{ cursor: !adjusting ? 'pointer' : 'default' }}
-        >
-          {/* Left: emoji + tier name + badges */}
-          <div className="row gap-8" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
-            <span className="text-28 lh-1">
-              {TIER_EMOJI[Math.min(playerLearningTier, 7)]}
-            </span>
-            <div className="col" style={{ gap: 2 }}>
-              <div
-                className="row-wrap fw-bold gap-8"
-                style={{ fontSize: 15, color: isMaxTier ? 'var(--accent)' : 'var(--text)' }}
-              >
-                <span>{t(`tiers.tier${playerLearningTier}Name` as ParseKeys)}</span>
-                {extendedMode && extendedLevel > 0 && (
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>
-                    +{extendedLevel}
-                  </span>
-                )}
-                <span className="text-xs fw-bold text-muted" style={{
-                  background: 'var(--card2)', padding: '2px 8px',
-                  borderRadius: 6, border: '1px solid var(--border)',
-                }}>
-                  {t('tiers.statusLevel', { tier: playerLearningTier })}
+        {/* Header row: summary info */}
+        <div className="row gap-8" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
+          <span className="text-28 lh-1">
+            {TIER_EMOJI[Math.min(playerLearningTier, 7)]}
+          </span>
+          <div className="col" style={{ gap: 2 }}>
+            <div
+              className="row-wrap fw-bold gap-8"
+              style={{ fontSize: 15, color: isMaxTier ? 'var(--accent)' : 'var(--text)' }}
+            >
+              <span>{t(`tiers.tier${playerLearningTier}Name` as ParseKeys)}</span>
+              {extendedMode && extendedLevel > 0 && (
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>
+                  +{extendedLevel}
                 </span>
-              </div>
-              <div className="text-sm text-muted">
-                {isMaxTier
-                  ? t('tiers.allUnlocked')
-                  : t(`tiers.nextUnlock${playerLearningTier}` as ParseKeys)}
-              </div>
+              )}
+              <span className="text-xs fw-bold text-muted" style={{
+                background: 'var(--card2)', padding: '2px 8px',
+                borderRadius: 6, border: '1px solid var(--border)',
+              }}>
+                {t('tiers.statusLevel', { tier: playerLearningTier })}
+              </span>
+            </div>
+            <div className="text-sm text-muted">
+              {isMaxTier
+                ? t('tiers.allUnlocked')
+                : t(`tiers.nextUnlock${playerLearningTier}` as ParseKeys)}
             </div>
           </div>
-
-          {/* Right: pencil icon when not editing */}
-          {!adjusting && (
-            <button
-              onClick={e => { e.stopPropagation(); setPendingTier(playerLearningTier); setAdjusting(true); }}
-              className="btn btn-secondary btn-sm"
-              aria-label={t('tierPicker.adjustTitle')}
-              style={{ flexShrink: 0 }}
-            >
-              ✏️
-            </button>
-          )}
         </div>
 
         {/* Tier ladder — always visible */}
         {adjusting ? (
           <>
-            <p className="text-sm text-muted">
-              {t('tierPicker.adjustBody')}
-            </p>
             <TierLadder
               currentTier={playerLearningTier}
               selectedTier={pendingTier}
               onSelect={setPendingTier}
             />
+            <p className="text-sm text-muted">
+              {t('tierPicker.adjustBody')}
+            </p>
             <div className="row gap-8">
               <button
                 onClick={() => setAdjusting(false)}
@@ -139,7 +120,15 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
             </div>
           </>
         ) : (
-          <TierLadder currentTier={playerLearningTier} />
+          <>
+            <TierLadder currentTier={playerLearningTier} />
+            <button
+              onClick={() => { setPendingTier(playerLearningTier); setAdjusting(true); }}
+              className="btn btn-secondary btn-sm"
+            >
+              ✏️ {t('tierPicker.changeLevel')}
+            </button>
+          </>
         )}
 
         {/* Extended-mode toggle — only when isMaxTier */}

@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Fixed Grid + Extended Tables
 status: planning
-stopped_at: "Checkpoint: 260317-9lo Task 3 awaiting human-verify"
-last_updated: "2026-03-17T05:59:20.231Z"
-last_activity: 2026-03-16 — v1.1 roadmap created (2 phases, 5 requirements, phases 9–10)
+stopped_at: "Ready for next task"
+last_updated: "2026-03-17T06:20:00.000Z"
+last_activity: 2026-03-17 — Completed quick tasks 260317-9lo and 260317-9uc
 progress:
   total_phases: 2
   completed_phases: 1
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 Milestone v1.0 complete and archived (8 phases, 31 plans).
 Status: Roadmap created — ready to plan Phase 9
 
-Last activity: 2026-03-16 — v1.1 roadmap created (2 phases, 5 requirements, phases 9–10)
+Last activity: 2026-03-17 — Completed quick tasks 260317-9lo and 260317-9uc
 
 Progress: [----------] 0% (0/2 phases complete)
 
@@ -176,6 +176,7 @@ Recent decisions affecting current work:
 | 260317-7tf | Memoize SprintPage derived values + React.memo Numpad + DotArray for snappier sprint UI | 2026-03-17 | ae6d835 | [260317-7tf-measure-and-improve-sprint-snappiness-fi](./quick/260317-7tf-measure-and-improve-sprint-snappiness-fi/) |
 | 260317-8e1 | Hide DotArray for extended problems + inline x11-x20 rows in MasteryGrid with gap row | 2026-03-17 | 9bae453 | [260317-8e1-extended-mode-ux-fixes-hide-dotarray-for](./quick/260317-8e1-extended-mode-ux-fixes-hide-dotarray-for/) |
 | 260317-8vn | Sequential x11-x20 unlock gated by 80% mastery, weighted sprint pool, +N tier badge | 2026-03-17 | b876fe8 | [260317-8vn-extended-mode-progression-sequential-x11](./quick/260317-8vn-extended-mode-progression-sequential-x11/) |
+| 260317-9lo | Move ScoringGuide to lobby below leaderboard + problems-solved grid in sprint results | 2026-03-17 | a46997c | [260317-9lo-move-scoring-guide-to-lobby-add-problems](./quick/260317-9lo-move-scoring-guide-to-lobby-add-problems/) |
 | 260317-9uc | Unified My Level card replacing two tier cards, inline pencil-icon edit affordance | 2026-03-17 | 09f2639 | [260317-9uc-rename-adjust-level-to-my-level-merge-to](./quick/260317-9uc-rename-adjust-level-to-my-level-merge-to/) |
 
 ### Pending Todos
