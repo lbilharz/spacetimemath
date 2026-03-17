@@ -150,6 +150,8 @@
     "closeHint": "Closing the class removes all members from the session.",
     "downloadCodes": "Download codes",
     "printCards": "Print login cards",
+    "printPopupBlocked": "Popup blocked — allow popups for this site and try again.",
+    "printNoKeys": "No login cards available — some students may not have recovery keys yet.",
     "showLoginCard": "Show login QR card",
     "studentLoginHint": "Scan to log in on any device — no password needed."
   },

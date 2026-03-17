@@ -53,6 +53,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [codeCopied, setCodeCopied] = useState(false);
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [printing, setPrinting] = useState(false);
+  const [printError, setPrintError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
   const [isDiagnostic, setIsDiagnostic] = useState(false);
@@ -261,24 +262,44 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const handlePrintAll = async () => {
     if (printing || !myClassroom) return;
     setPrinting(true);
+    setPrintError(null);
     // Open the print window NOW, while still in the synchronous click handler.
     // The content is written below once we have the data.
     const win = window.open('', '_blank');
+    if (!win) {
+      setPrintError(t('classroom.printPopupBlocked'));
+      setPrinting(false);
+      return;
+    }
     try {
+      // Snapshot how many stale rows exist before triggering the reducer,
+      // so we can detect when old rows have been cleared before polling for new ones.
+      const prevCount = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
       await getClassRecoveryCodes({ classroomId });
       // Poll the ref until rows arrive (subscription push, typically <200 ms)
       const POLL = 50, TIMEOUT = 5_000;
-      const deadline = Date.now() + TIMEOUT;
       let resultRows: ClassRecoveryResult[] = [];
+      // Phase 1: wait for stale rows to clear (or skip if ref was already empty)
+      if (prevCount > 0) {
+        const clearDeadline = Date.now() + 2_000;
+        while (Date.now() < clearDeadline) {
+          const cur = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
+          if (cur === 0) break;
+          await new Promise(res => setTimeout(res, POLL));
+        }
+      }
+      // Phase 2: wait for new rows to arrive
+      const deadline = Date.now() + TIMEOUT;
       while (Date.now() < deadline) {
-        resultRows = classRecoveryResultsRef.current.filter(
-          r => r.classroomId === classroomId
-        );
+        resultRows = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId);
         if (resultRows.length > 0) break;
         await new Promise(res => setTimeout(res, POLL));
       }
-      if (!win) return;
-      if (resultRows.length === 0) { win.close(); return; }
+      if (resultRows.length === 0) {
+        setPrintError(t('classroom.printNoKeys'));
+        win.close();
+        return;
+      }
       const classroomName = myClassroom.name;
       const cards = resultRows.map(r => `
         <div class="card">
@@ -556,6 +577,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               </button>
             </div>
           </div>
+          {isTeacher && printError && (
+            <p className="text-xs text-error mt-1">{printError}</p>
+          )}
 
           {/* Inline join code — revealed on toggle */}
           {isTeacher && showJoinCode && (

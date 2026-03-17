@@ -150,6 +150,8 @@
     "closeHint": "Das Schließen der Klasse entfernt alle Mitglieder aus der Sitzung.",
     "downloadCodes": "Codes herunterladen",
     "printCards": "Login-Karten drucken",
+    "printPopupBlocked": "Popup blockiert – erlauben Sie Popups für diese Seite und versuchen Sie es erneut.",
+    "printNoKeys": "Keine Login-Karten verfügbar – einige Schüler haben möglicherweise noch keine Wiederherstellungsschlüssel.",
     "showLoginCard": "Login-QR-Karte zeigen",
     "studentLoginHint": "Scannen zum Einloggen auf jedem Gerät — kein Passwort nötig."
   },
