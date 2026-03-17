@@ -27,9 +27,17 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const myMemberships = myIdentityHex
     ? (classroomMembers as unknown as ClassroomMember[]).filter(m => m.playerIdentity.toHexString() === myIdentityHex)
     : [];
-  const myClassrooms = myMemberships
-    .map(m => (classrooms as unknown as Classroom[]).find(c => c.id === m.classroomId))
-    .filter((c): c is Classroom => c !== undefined);
+  const memberClassroomIds = new Set(myMemberships.map(m => m.classroomId));
+  // Also include classrooms the user owns — teacher row may be missing after a data restore.
+  const ownedClassrooms = myIdentityHex
+    ? (classrooms as unknown as Classroom[]).filter(c => c.teacher?.toHexString() === myIdentityHex && !memberClassroomIds.has(c.id))
+    : [];
+  const myClassrooms = [
+    ...myMemberships
+      .map(m => (classrooms as unknown as Classroom[]).find(c => c.id === m.classroomId))
+      .filter((c): c is Classroom => c !== undefined),
+    ...ownedClassrooms,
+  ];
 
   const openPanel = (p: Panel) => {
     setPanel(p); setClassError(''); setClassName(''); setJoinCode('');

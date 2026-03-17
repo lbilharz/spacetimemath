@@ -84,6 +84,8 @@ export default function App() {
   const inClassroom = classroomId !== null && myIdentityHex
     ? (classroomMembers as unknown as ClassroomMember[]).some(
         m => m.playerIdentity.toHexString() === myIdentityHex && m.classroomId === classroomId
+      ) || (classrooms as unknown as Classroom[]).some(
+        c => c.id === classroomId && c.teacher?.toHexString() === myIdentityHex
       )
     : false;
 
