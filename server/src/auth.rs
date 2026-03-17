@@ -39,6 +39,7 @@ pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
             learning_tier: 0,
             recovery_emailed: false,
             extended_mode: false,
+            extended_level: 0,
         });
     }
     // Keep online_players in sync (user may have connected before registering)

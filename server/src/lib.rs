@@ -40,6 +40,8 @@ pub struct Player {
     pub recovery_emailed: bool,
     #[default(false)]
     pub extended_mode: bool,
+    #[default(0)]
+    pub extended_level: u8,
 }
 
 #[table(accessor = sessions, public)]
@@ -189,7 +191,7 @@ pub struct OnlinePlayer {
 #[reducer(init)]
 pub fn init(ctx: &ReducerContext) {
     seed_problem_stats(ctx);
-    seed_tier1_problem_stats(ctx);
+    seed_extended_problem_stats(ctx);
     // Start recurring transfer code cleanup (SEC-09)
     let first_cleanup = ctx.timestamp.to_micros_since_unix_epoch() + TRANSFER_CODE_CLEANUP_INTERVAL_MICROS;
     ctx.db.transfer_code_cleanup_schedule().insert(TransferCodeCleanupSchedule {
@@ -278,6 +280,15 @@ pub fn migrate_seed_extended_pairs(ctx: &ReducerContext) -> Result<(), String> {
             }
         }
     }
+    Ok(())
+}
+
+/// Migration: seed extended problem stats for ×11–×20 at uniform weight 1.5.
+/// Idempotent — safe to call multiple times. Useful to populate extended stats on the
+/// live DB without a full reinit.
+#[reducer]
+pub fn migrate_seed_extended_stats(ctx: &ReducerContext) -> Result<(), String> {
+    seed_extended_problem_stats(ctx);
     Ok(())
 }
 
@@ -472,6 +483,26 @@ fn seed_tier1_problem_stats(ctx: &ReducerContext) {
                 attempt_count: 0, correct_count: 0, avg_response_ms: 0,
                 difficulty_weight: weight,
             });
+        }
+    }
+}
+
+fn seed_extended_problem_stats(ctx: &ReducerContext) {
+    // Seeds all 10 extended tables (×11 through ×20) at uniform weight 1.5, both orderings.
+    // Pairs: a ∈ 11..=20, b ∈ 1..=10. Idempotent — skips existing rows.
+    for a in 11u8..=20 {
+        for b in 1u8..=10 {
+            for &(ra, rb) in &[(a, b), (b, a)] {
+                let key = (ra as u16) * 100 + (rb as u16);
+                if ctx.db.problem_stats().problem_key().find(key).is_none() {
+                    ctx.db.problem_stats().insert(ProblemStat {
+                        problem_key: key,
+                        a: ra, b: rb, category: 2,
+                        attempt_count: 0, correct_count: 0, avg_response_ms: 0,
+                        difficulty_weight: 1.5,
+                    });
+                }
+            }
         }
     }
 }
@@ -757,22 +788,30 @@ pub(crate) fn fnv_index(sender: &Identity, ts: i64, session_id: u64, i: u64) -> 
 /// Uses Fisher-Yates shuffle (FNV-1a hash chain) then a single pass to fix commutative-pair
 /// adjacency (e.g. 4×6 immediately followed by 6×4).
 /// Returns a comma-separated string of problem_keys (a*100+b as u16).
-pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8, extended_mode: bool) -> String {
+pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier: u8, extended_mode: bool, extended_level: u8) -> String {
     // 1. Collect eligible pool: all ordered pairs (a, b) within player's tier
     //    problem_key = a * 100 + b; exclude pairs where a == 0 || b == 0
-    //    If extended_mode is true, also include category=2 (curated 2-digit) pairs.
-    let mut pool: Vec<u16> = ctx.db.problem_stats().iter()
+    //    If extended_mode is true, also include category=2 (curated 2-digit) pairs
+    //    gated by extended_level: only pairs where max(a,b) <= 11 + extended_level.
+    let eligible: Vec<ProblemStat> = ctx.db.problem_stats().iter()
         .filter(|s| {
             if s.a == 0 || s.b == 0 { return false; }
             if extended_mode && s.category == 2 {
-                return true;
+                return s.a.max(s.b) <= 11 + extended_level;
             }
             pair_learning_tier(s.a, s.b).map(|t| t <= player_tier).unwrap_or(false)
         })
-        .map(|s| s.problem_key)
         .collect();
 
-    // 2. Fisher-Yates shuffle using FNV hash chain
+    // 2. Expand into weighted pool: hard problems (high difficulty_weight) get more copies
+    let mut pool: Vec<u16> = eligible.into_iter()
+        .flat_map(|s| {
+            let copies = ((s.difficulty_weight * 3.0).round() as usize).max(1);
+            std::iter::repeat(s.problem_key).take(copies)
+        })
+        .collect();
+
+    // 3. Fisher-Yates shuffle using FNV hash chain
     let n = pool.len();
     let ts = ctx.timestamp.to_micros_since_unix_epoch();
     for i in (1..n).rev() {
@@ -781,7 +820,11 @@ pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier:
         pool.swap(i, j);
     }
 
-    // 3. Post-shuffle: fix commutative-pair adjacency (one pass)
+    // 4. Dedup keeping first occurrence (weighted dupes removed, hard problems still appear earlier)
+    let mut seen = std::collections::HashSet::new();
+    let mut pool: Vec<u16> = pool.into_iter().filter(|k| seen.insert(*k)).collect();
+
+    // 5. Post-shuffle: fix commutative-pair adjacency (one pass)
     //    For each position i where pool[i] and pool[i+1] are commutative pairs
     //    (a*100+b and b*100+a), swap pool[i+1] with pool[i+2] (if exists).
     //    Accept that the very last pair may remain adjacent — edge case, not worth a second pass.

@@ -153,7 +153,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
                 }) {
                     // SEQ: generate and store problem sequence for this student session
                     // Class sprints don't use extended mode (player.extended_mode ignored for class context)
-                    let seq_str = build_sequence(ctx, inserted_sess.id, player.learning_tier, false);
+                    let seq_str = build_sequence(ctx, inserted_sess.id, player.learning_tier, false, 0);
                     ctx.db.sprint_sequences().insert(SprintSequence {
                         session_id: inserted_sess.id,
                         player_identity: member.player_identity,

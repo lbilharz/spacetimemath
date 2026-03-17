@@ -31,7 +31,7 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
             class_sprint_id: 0,
         }) {
             // SEQ: generate and store problem sequence for this session
-            let seq_str = build_sequence(ctx, inserted.id, player.learning_tier, player.extended_mode);
+            let seq_str = build_sequence(ctx, inserted.id, player.learning_tier, player.extended_mode, player.extended_level);
             ctx.db.sprint_sequences().insert(SprintSequence {
                 session_id: inserted.id,
                 player_identity: ctx.sender(),
@@ -63,10 +63,13 @@ pub fn issue_problem(
         return Err("Session already complete".into());
     }
     let player = get_player(ctx)?;
-    let is_extended_pair = matches!(a.max(b), 11 | 12 | 15 | 20 | 25);
+    let is_extended_pair = a.max(b) >= 11 && a.max(b) <= 20;
     if is_extended_pair {
         if !player.extended_mode {
             return Err("Extended mode not enabled".into());
+        }
+        if a.max(b) > 11 + player.extended_level {
+            return Err("Extended pair not yet unlocked".into());
         }
         let key = (a as u16) * 100 + (b as u16);
         if ctx.db.problem_stats().problem_key().find(key).is_none() {
@@ -214,10 +217,13 @@ pub fn submit_answer(
     }
 
     // SEC-06: (a, b) pair must be within player's learning tier (or extended pool if enabled)
-    let is_extended_pair = matches!(a.max(b), 11 | 12 | 15 | 20 | 25);
+    let is_extended_pair = a.max(b) >= 11 && a.max(b) <= 20;
     if is_extended_pair {
         if !player.extended_mode {
             return Err("Extended mode not enabled".into());
+        }
+        if a.max(b) > 11 + player.extended_level {
+            return Err("Extended pair not yet unlocked".into());
         }
         let key = (a as u16) * 100 + (b as u16);
         if ctx.db.problem_stats().problem_key().find(key).is_none() {
@@ -335,7 +341,23 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
 
     finalize_session(ctx, session);
     credit_session_to_player(ctx, sender, session_id);
+    check_extended_level(ctx, sender);
     Ok(())
+}
+
+fn check_extended_level(ctx: &ReducerContext, identity: Identity) {
+    let player = match ctx.db.players().identity().find(identity) { Some(p) => p, None => return };
+    if !player.extended_mode || player.extended_level >= 9 { return; }
+    let current_table = 11u8 + player.extended_level;
+    let all_answers: Vec<_> = ctx.db.answers().iter()
+        .filter(|a| a.player_identity == identity && a.a.max(a.b) == current_table)
+        .collect();
+    let last10: Vec<_> = all_answers.iter().rev().take(10).collect();
+    if last10.len() < 5 { return; }
+    let correct = last10.iter().filter(|a| a.is_correct).count();
+    if correct * 10 >= last10.len() * 8 {
+        ctx.db.players().identity().update(Player { extended_level: player.extended_level + 1, ..player });
+    }
 }
 
 pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity, session_id: u64) {
