@@ -29,16 +29,6 @@ function getMastery(answers: Answer[], a: number, b: number): Mastery {
   return 'struggling';
 }
 
-/** For extended pairs: combine answers from both orderings (e.g. 3×12 and 12×3). */
-function getMasteryEither(answers: Answer[], a: number, b: number): Mastery {
-  const pair = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
-  if (pair.length === 0) return 'untouched';
-  const recent = pair.slice(-10);
-  const acc = recent.filter(x => x.isCorrect).length / recent.length;
-  if (acc >= 0.8) return 'mastered';
-  if (acc >= 0.5) return 'learning';
-  return 'struggling';
-}
 
 const MASTERY_COLORS: Record<Mastery, string> = {
   mastered:   '#5DD23C',
@@ -54,8 +44,7 @@ const MASTERY_BG: Record<Mastery, string> = {
   untouched:  'var(--card2)',
 };
 
-const TIER1_A = [11, 12, 15, 20, 25];
-const TIER1_B = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const EXTENDED_A = [11,12,13,14,15,16,17,18,19,20];
 
 export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell, playerLearningTier }: Props) {
   const { t } = useTranslation();
@@ -127,6 +116,67 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
           )}
         </button>
       );
+    }
+  }
+
+  // Gap row + extended rows (×11–×20) when tier1 is unlocked
+  if (tier1Unlocked) {
+    // Gap row: 11 cells spanning all columns, acts as visual divider
+    for (let i = 0; i < 11; i++) {
+      cells.push(
+        <div
+          key={`gap${i}`}
+          style={{ height: 8, background: 'rgba(255,255,255,0.05)' }}
+        />
+      );
+    }
+
+    for (const a of EXTENDED_A) {
+      // Row label
+      cells.push(
+        <div key={`ext-ha${a}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
+          {a}
+        </div>
+      );
+      for (let b = 1; b <= 10; b++) {
+        const mastery = getMastery(answers, a, b);
+        const key = a * 100 + b;
+        const isHighlighted = sessionKeys.has(key);
+        const isSelected = selected?.a === a && selected?.b === b;
+        const stat = problemStats.find(s => s.problemKey === key);
+        const w = stat?.difficultyWeight ?? 0;
+        const answer = a * b;
+        cells.push(
+          <button
+            key={`ext-${a}-${b}`}
+            className="mastery-cell"
+            title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
+            onClick={() => setSelected(isSelected ? null : { a, b })}
+            style={{
+              background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
+              border: isSelected
+                ? `2px solid ${MASTERY_COLORS[mastery]}`
+                : isHighlighted
+                ? '2px solid var(--accent)'
+                : `1px solid ${MASTERY_COLORS[mastery]}44`,
+              color: MASTERY_COLORS[mastery],
+              fontWeight: 600,
+              fontSize: 11,
+              position: 'relative',
+              cursor: 'pointer',
+            }}
+          >
+            {answer}
+            {w >= 1.5 && (
+              <span style={{
+                position: 'absolute', top: 2, right: 3,
+                width: 4, height: 4, borderRadius: '50%',
+                background: 'var(--wrong)', display: 'block',
+              }} />
+            )}
+          </button>
+        );
+      }
     }
   }
 
@@ -217,81 +267,6 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
           })()}
         </div>
       )}
-
-      {/* Tier-1 extended grid (unlocked) */}
-      {tier1Unlocked && (() => {
-        const t1cells: React.ReactNode[] = [];
-        t1cells.push(<div key="t1h0" className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>);
-        for (const b of TIER1_B) {
-          t1cells.push(
-            <div key={`t1hb${b}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
-              {b}
-            </div>
-          );
-        }
-        for (const a of TIER1_A) {
-          t1cells.push(
-            <div key={`t1ha${a}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
-              {a}
-            </div>
-          );
-          for (const b of TIER1_B) {
-            const mastery = getMasteryEither(answers, a, b);
-            const key = a * 100 + b;
-            const isHighlighted = sessionKeys.has(key) || sessionKeys.has(b * 100 + a);
-            const isSelected = selected?.a === a && selected?.b === b;
-            const stat = problemStats.find(s => s.problemKey === key);
-            const w = stat?.difficultyWeight ?? 0;
-            const answer = a * b;
-            t1cells.push(
-              <button
-                key={`t1-${a}-${b}`}
-                className="mastery-cell"
-                title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
-                onClick={() => setSelected(isSelected ? null : { a, b })}
-                style={{
-                  background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
-                  border: isSelected
-                    ? `2px solid ${MASTERY_COLORS[mastery]}`
-                    : isHighlighted
-                    ? '2px solid var(--accent)'
-                    : `1px solid ${MASTERY_COLORS[mastery]}44`,
-                  color: MASTERY_COLORS[mastery],
-                  fontWeight: 600,
-                  fontSize: 10,
-                  position: 'relative',
-                  cursor: 'pointer',
-                }}
-              >
-                {answer}
-                {w >= 1.5 && (
-                  <span style={{
-                    position: 'absolute', top: 2, right: 3,
-                    width: 4, height: 4, borderRadius: '50%',
-                    background: 'var(--wrong)', display: 'block',
-                  }} />
-                )}
-              </button>
-            );
-          }
-        }
-        return (
-          <div className="mt-5">
-            <div className="text-xs text-accent fw-bold mb-2">
-              🔓 {t('unlock.tier1GridTitle')}
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '28px repeat(10, 34px)',
-                gap: 3,
-              }}>
-                {t1cells}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
 
       {/* Legend */}
       <div className="row-wrap gap-16 mt-3">
