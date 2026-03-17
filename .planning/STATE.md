@@ -5,7 +5,7 @@ milestone_name: Fixed Grid + Extended Tables
 status: planning
 stopped_at: Completed 10-extended-tables-opt-in 10-01-PLAN.md
 last_updated: "2026-03-16T10:30:11.119Z"
-last_activity: 2026-03-17 - Completed quick task 260317-8e1: Extended mode UX fixes — hide DotArray for extended problems + inline x11-x20 in MasteryGrid
+last_activity: 2026-03-17 - Completed quick task 260317-8vn: Sequential x11-x20 extended mode progression with weighted pool and +N tier badge
 progress:
   total_phases: 2
   completed_phases: 1
@@ -175,6 +175,7 @@ Recent decisions affecting current work:
 | 260316-ily | Extended mode toggle in Adjust Level section with switch and number preview | 2026-03-16 | 988e876 | [260316-ily-extended-mode-toggle-in-adjust-level-sec](./quick/260316-ily-extended-mode-toggle-in-adjust-level-sec/) |
 | 260317-7tf | Memoize SprintPage derived values + React.memo Numpad + DotArray for snappier sprint UI | 2026-03-17 | ae6d835 | [260317-7tf-measure-and-improve-sprint-snappiness-fi](./quick/260317-7tf-measure-and-improve-sprint-snappiness-fi/) |
 | 260317-8e1 | Hide DotArray for extended problems + inline x11-x20 rows in MasteryGrid with gap row | 2026-03-17 | 9bae453 | [260317-8e1-extended-mode-ux-fixes-hide-dotarray-for](./quick/260317-8e1-extended-mode-ux-fixes-hide-dotarray-for/) |
+| 260317-8vn | Sequential x11-x20 unlock gated by 80% mastery, weighted sprint pool, +N tier badge | 2026-03-17 | b876fe8 | [260317-8vn-extended-mode-progression-sequential-x11](./quick/260317-8vn-extended-mode-progression-sequential-x11/) |
 
 ### Pending Todos
 
