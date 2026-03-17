@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { RecoveryCodeResult, TransferCodeResult } from '../module_bindings/types.js';
+import type { RecoveryCodeResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 
@@ -22,18 +22,15 @@ interface Props {
   onBack: () => void;
 }
 
-export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
+export default function AccountPage({ myPlayer }: Props) {
   const { t, i18n } = useTranslation();
   const { identity } = useSpacetimeDB();
-  const [transferCodeResults] = useTable(tables.transfer_code_results);
   const [recoveryCodeResults] = useTable(
     identity
       ? tables.recovery_code_results.where(r => r.owner.eq(identity))
       : tables.recovery_code_results
   );
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
-  const createTransferCode = useSTDBReducer(reducers.createTransferCode);
-  const cleanupCode = useSTDBReducer(reducers.useTransferCode);
   const _createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
   const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
@@ -47,6 +44,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const myRecoveryKey = (recoveryCodeResults as unknown as RecoveryCodeResult[])[0];
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
+  const [keyRevealed, setKeyRevealed] = useState(false);
 
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
@@ -88,41 +86,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
     }
   };
 
-  // Transfer code
-  const [generating, setGenerating] = useState(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [codeShownAt, setCodeShownAt] = useState<number | null>(null);
-  const [transferCopied, setTransferCopied] = useState(false);
-
-  const CODE_TTL = 10 * 60; // 600 seconds — matches server TTL set in Plan 03 (SEC-03)
-
-  // Transfer code — read from private result table populated by createTransferCode reducer (SEC-03)
-  const myCode = (transferCodeResults as unknown as TransferCodeResult[]).find(
-    c => c.owner.toHexString() === myIdentityHex
-  );
-
-  useEffect(() => {
-    if (myCode && codeShownAt === null) {
-      setCodeShownAt(Date.now());
-    } else if (!myCode) {
-      setCodeShownAt(null);
-      setCountdown(null);
-    }
-  }, [myCode?.code]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (codeShownAt === null) return;
-    const tick = () => {
-      const elapsed = Math.round((Date.now() - codeShownAt) / 1000);
-      const left = Math.max(0, CODE_TTL - elapsed);
-      setCountdown(left);
-      if (left === 0 && myCode) cleanupCode({ code: myCode.code });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [codeShownAt]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleRename = async () => {
     const name = newName.trim();
     if (!name || name === myPlayer.username) return;
@@ -131,20 +94,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
     setNameSaving(false);
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2000);
-  };
-
-  const handleGenerateCode = async () => {
-    if (!capturedToken) return;
-    setGenerating(true);
-    await createTransferCode({ token: capturedToken });
-    setGenerating(false);
-  };
-
-  const handleCopyTransfer = () => {
-    if (!myCode) return;
-    navigator.clipboard.writeText(myCode.code);
-    setTransferCopied(true);
-    setTimeout(() => setTransferCopied(false), 2000);
   };
 
   const handleLogout = () => {
@@ -162,9 +111,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
     localStorage.removeItem('spacetimemath_credentials');
     window.location.reload();
   };
-
-  const fmtCountdown = (s: number) =>
-    `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const initials = myPlayer.username.slice(0, 2).toUpperCase();
 
@@ -234,41 +180,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
           {t('account.recoveryDesc')}
         </p>
 
-        {/* Transfer code */}
-        <h3 className="mb-1">{t('account.transferCode')}</h3>
-        <p className="text-sm text-muted mb-3">
-          {t('account.transferDesc')}
-        </p>
-        {myCode ? (
-          <div className="mb-5">
-            <div className="code-box" style={{ fontSize: 34, letterSpacing: 8, padding: '14px 20px' }}>
-              {myCode.code}
-            </div>
-            <div className="row-center gap-8">
-              <button className="btn btn-primary text-sm" onClick={handleCopyTransfer}>
-                {transferCopied ? t('common.copied') : t('common.copy')}
-              </button>
-              <button className="btn btn-secondary text-sm" onClick={handleGenerateCode} disabled={generating}>
-                {t('account.newCode')}
-              </button>
-            </div>
-            <p className="text-muted text-center mt-2 text-12">
-              {countdown !== null && countdown > 0 ? t('account.transferExpires', { time: fmtCountdown(countdown) }) : t('account.transferExpired')}
-            </p>
-          </div>
-        ) : (
-          <button
-            className="btn btn-primary w-full mb-5"
-            onClick={handleGenerateCode}
-            disabled={generating || !capturedToken}
-          >
-            {generating ? t('common.generating') : t('account.generateCode')}
-          </button>
-        )}
-
-        {/* Divider */}
-        <div style={{ borderTop: '1px solid var(--border)', margin: '4px 0 20px' }} />
-
         {/* Recovery key */}
         <h3 className="mb-1">{t('account.recoveryKey')}</h3>
         <p className="text-sm text-muted mb-3">
@@ -277,52 +188,50 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         {myRecoveryKey ? (
           <div>
             <div className="code-box" style={{ fontSize: 22, letterSpacing: 5, padding: '12px 16px' }}>
-              {myRecoveryKey.code}
+              {keyRevealed ? myRecoveryKey.code : '••••••••••••'}
             </div>
             <div className="row-center gap-8">
-              <button className="btn btn-primary text-sm" onClick={handleCopyKey}>
-                {keyCopied ? t('common.copied') : t('common.copy')}
+              {keyRevealed && (
+                <button className="btn btn-primary text-sm" onClick={handleCopyKey}>
+                  {keyCopied ? t('common.copied') : t('common.copy')}
+                </button>
+              )}
+              <button className="btn btn-secondary text-sm" onClick={() => setKeyRevealed(r => !r)}>
+                {keyRevealed ? t('account.hide') : t('account.reveal')}
               </button>
               <button className="btn btn-secondary text-sm" onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
                 {t('account.regenerate')}
               </button>
             </div>
-            {/* Email recovery key */}
+            {/* Email recovery key — always visible */}
             <div className="divider-top">
-              {emailSent || myPlayer.recoveryEmailed ? (
-                <p className="text-sm text-correct text-center">
-                  ✓ {t('account.emailKeySent')}
-                </p>
-              ) : (
-                <>
-                  <p className="text-sm text-muted mb-2">
-                    {t('account.emailKeyDesc')}
-                  </p>
-                  <div className="row gap-8">
-                    <input
-                      type="email"
-                      value={emailInput}
-                      onChange={e => setEmailInput(e.target.value)}
-                      placeholder={t('account.emailKeyPlaceholder')}
-                      className="flex-1"
-                      style={{
-                        padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)',
-                        background: 'var(--card2)', color: 'var(--text)', fontSize: 14,
-                      }}
-                      onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
-                    />
-                    <button
-                      className="btn btn-primary text-sm"
-                      style={{ whiteSpace: 'nowrap' }}
-                      onClick={handleEmailKey}
-                      disabled={emailSending || !emailInput.trim()}
-                    >
-                      {emailSending ? '…' : t('account.emailKeySend')}
-                    </button>
-                  </div>
-                  {emailError && <p className="text-error text-12 mt-1">{emailError}</p>}
-                </>
-              )}
+              <p className="text-sm text-muted mb-2">
+                {t('account.emailKeyDesc')}
+              </p>
+              <div className="row gap-8">
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={e => setEmailInput(e.target.value)}
+                  placeholder={t('account.emailKeyPlaceholder')}
+                  className="flex-1"
+                  style={{
+                    padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)',
+                    background: 'var(--card2)', color: 'var(--text)', fontSize: 14,
+                  }}
+                  onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
+                />
+                <button
+                  className="btn btn-primary text-sm"
+                  style={{ whiteSpace: 'nowrap' }}
+                  onClick={handleEmailKey}
+                  disabled={emailSending || !emailInput.trim()}
+                >
+                  {emailSending ? '…' : t('account.emailKeySend')}
+                </button>
+              </div>
+              {emailSent && <p className="text-sm text-correct mt-1">✓ {t('account.emailKeySent')}</p>}
+              {emailError && <p className="text-error text-12 mt-1">{emailError}</p>}
             </div>
           </div>
         ) : (
