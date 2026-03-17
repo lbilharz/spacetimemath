@@ -6,6 +6,7 @@
 #   make generate        – regenerate TypeScript bindings from server source
 #   make call REDUCER=x  – call a reducer on maincloud
 #   make deploy          – publish + generate + run integration tests
+#   make backup          – export all durable tables to recovery/backups/ (run before risky publishes)
 
 SPACETIME  := /Users/lbi/.local/bin/spacetime
 CARGO      := /Users/lbi/.cargo/bin/cargo
@@ -39,7 +40,7 @@ publish-test:
 
 # DANGER: wipes ALL production data before publishing.
 # Requires explicit confirmation: make wipe-and-publish CONFIRM_WIPE=yes
-# Export CSVs from the SpacetimeDB web console BEFORE running this.
+# 		       Run: make backup  (then check recovery/backups/ before continuing)
 wipe-and-publish:
 	@if [ "$(CONFIRM_WIPE)" != "yes" ]; then \
 		echo ""; \
@@ -51,6 +52,11 @@ wipe-and-publish:
 	fi
 	cd server && $(CARGO) build --target wasm32-unknown-unknown --release
 	$(SPACETIME) publish spacetimemath --server maincloud --bin-path $(WASM_BIN) -y --delete-data
+
+# Export all durable tables to a timestamped backup in recovery/backups/.
+# Run this before any risky schema-breaking publish.
+backup:
+	bash recovery/backup.sh
 
 # Regenerate TypeScript module bindings from the server source,
 # then re-add private table registrations that codegen skips.
@@ -67,4 +73,4 @@ call:
 deploy: publish generate
 	cd client && npm run test:integration
 
-.PHONY: setup publish publish-test generate call deploy test check-no-delete-data wipe-and-publish
+.PHONY: setup publish publish-test generate call deploy test check-no-delete-data wipe-and-publish backup
