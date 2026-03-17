@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { jsPDF } from 'jspdf';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
@@ -248,16 +249,13 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const restoreUrl = (code: string) => `${window.location.origin}/?restore=${code}`;
 
-  /** Fetch recovery codes and trigger browser print dialog via inline overlay — no popup needed. */
+  /** Fetch recovery codes and generate a PDF for direct download — no popup, no print dialog. */
   const handlePrintAll = async () => {
     if (printing || !myClassroom) return;
     setPrinting(true);
     setPrintError(null);
-    // Open print window synchronously (before any await) so popup blocker
-    // treats it as a direct user gesture.
-    const win = window.open('', '_blank');
-    if (!win) { setPrintError(t('classroom.printPopupBlocked')); setPrinting(false); return; }
     try {
+      // 1. Fetch recovery codes from server
       const prevCount = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
       await getClassRecoveryCodes({ classroomId });
       const POLL = 50, TIMEOUT = 5_000;
@@ -275,60 +273,106 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
         if (resultRows.length > 0) break;
         await new Promise(res => setTimeout(res, POLL));
       }
-      if (resultRows.length === 0) { setPrintError(t('classroom.printNoKeys')); win.close(); return; }
-      const cards = resultRows.map(r => `
-        <div class="card">
-          <div class="card-header">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28" style="flex-shrink:0">
-              <rect width="100" height="100" rx="14" fill="#2C3E50"/>
-              <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
-              <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
-              <rect x="68" y="6"  width="26" height="26" rx="5" fill="#FBBA00"/>
-              <rect x="6"  y="37" width="26" height="26" rx="5" fill="#5DD23C"/>
-              <rect x="37" y="37" width="26" height="26" rx="5" fill="#FBBA00"/>
-              <rect x="68" y="37" width="26" height="26" rx="5" fill="#4FA7FF"/>
-              <rect x="6"  y="68" width="26" height="26" rx="5" fill="#4FA7FF"/>
-              <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
-              <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
-            </svg>
-            <span class="wordmark">noggin</span>
-          </div>
-          <div class="card-body">
-            <div class="name">${r.username}</div>
-            <div class="classname">${myClassroom.name}</div>
-            <div class="qr-wrap">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(restoreUrl(r.code))}" width="140" height="140" />
-            </div>
-            <div class="footer">{${window.location.origin.split('//')[1]}}</div>
-          </div>
-        </div>`).join('');
-      win.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<title>${myClassroom.name} – Login Cards</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing: border-box; }
-  body { font-family: 'DM Sans', system-ui, sans-serif; margin: 0; background: #fff; color: #000; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px; }
-  .card { border-radius: 10px; overflow: hidden; break-inside: avoid; page-break-inside: avoid; border: 1.5px solid #e0e0e0; }
-  .card-header { background: #2C3E50; display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
-  .wordmark { color: #fff; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-  .card-body { text-align: center; padding: 10px 10px 8px; }
-  .name { font-size: 20px; font-weight: 800; margin-bottom: 2px; color: #2C3E50; }
-  .classname { font-size: 11px; color: #888; margin-bottom: 10px; font-weight: 500; }
-  .qr-wrap { display: inline-block; padding: 5px; border: 3px solid #FBBA00; border-radius: 8px; margin-bottom: 8px; }
-  .qr-wrap img { display: block; }
-  .footer { font-size: 10px; color: #aaa; font-weight: 500; }
-  @media print {
-    @page { size: A4; margin: 0; }
-    .grid { padding: 8mm; gap: 6mm; }
-  }
-</style></head><body>
-<div class="grid">${cards}</div>
-<script>window.onload = () => window.print();</script>
-</body></html>`);
-      win.document.close();
+      if (resultRows.length === 0) { setPrintError(t('classroom.printNoKeys')); return; }
+
+      // 2. Fetch all QR images in parallel as data URLs
+      const qrDataUrls = await Promise.all(resultRows.map(async r => {
+        const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(restoreUrl(r.code))}`;
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return new Promise<string>(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      }));
+
+      // 3. Build PDF — A4, 3×3 grid, 9 cards per page
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const PAGE_W = 210, PAGE_H = 297;
+      const MARGIN = 8, COLS = 3, ROWS = 3, GAP = 5;
+      const CARD_W = (PAGE_W - 2 * MARGIN - (COLS - 1) * GAP) / COLS; // ~58.3mm
+      const CARD_H = (PAGE_H - 2 * MARGIN - (ROWS - 1) * GAP) / ROWS; // ~89.7mm
+      const HEADER_H = 11;
+      // Logo grid colours: row-major, matches favicon.svg
+      const LOGO_CELLS: [number, number, number][] = [
+        [93, 210, 60], [93, 210, 60], [251, 186, 0],
+        [93, 210, 60], [251, 186, 0], [79, 167, 255],
+        [79, 167, 255], [232, 57, 29], [220, 220, 220],
+      ];
+
+      resultRows.forEach((r, i) => {
+        const pageIdx = Math.floor(i / (COLS * ROWS));
+        const posIdx  = i % (COLS * ROWS);
+        if (posIdx === 0 && pageIdx > 0) pdf.addPage();
+        const col = posIdx % COLS;
+        const row = Math.floor(posIdx / COLS);
+        const x = MARGIN + col * (CARD_W + GAP);
+        const y = MARGIN + row * (CARD_H + GAP);
+
+        // Card border
+        pdf.setDrawColor(220, 220, 220);
+        pdf.setLineWidth(0.3);
+        pdf.roundedRect(x, y, CARD_W, CARD_H, 2.5, 2.5, 'S');
+
+        // Navy header (clip top corners only by drawing filled rect + cover-strip)
+        pdf.setFillColor(44, 62, 80);
+        pdf.roundedRect(x, y, CARD_W, HEADER_H, 2.5, 2.5, 'F');
+        pdf.rect(x, y + HEADER_H / 2, CARD_W, HEADER_H / 2, 'F');
+
+        // Logo: 3×3 coloured squares
+        const LOGO_X = x + 2.5, LOGO_Y = y + 2;
+        const CELL = 2.1, CELL_GAP = 0.4;
+        LOGO_CELLS.forEach(([r2, g, b], ci) => {
+          pdf.setFillColor(r2, g, b);
+          pdf.roundedRect(
+            LOGO_X + (ci % 3) * (CELL + CELL_GAP),
+            LOGO_Y + Math.floor(ci / 3) * (CELL + CELL_GAP),
+            CELL, CELL, 0.3, 0.3, 'F',
+          );
+        });
+
+        // "noggin" wordmark
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('noggin', x + 11.5, y + HEADER_H - 3.5);
+
+        // Student name
+        pdf.setTextColor(44, 62, 80);
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(r.username, x + CARD_W / 2, y + HEADER_H + 9, { align: 'center', maxWidth: CARD_W - 4 });
+
+        // Class name
+        pdf.setTextColor(136, 136, 136);
+        pdf.setFontSize(7);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(myClassroom!.name, x + CARD_W / 2, y + HEADER_H + 14, { align: 'center', maxWidth: CARD_W - 4 });
+
+        // QR image with yellow border
+        const QR_SIZE = 36;
+        const QR_X = x + (CARD_W - QR_SIZE) / 2;
+        const QR_Y = y + HEADER_H + 17;
+        pdf.setDrawColor(251, 186, 0);
+        pdf.setLineWidth(0.8);
+        pdf.roundedRect(QR_X - 2, QR_Y - 2, QR_SIZE + 4, QR_SIZE + 4, 1.5, 1.5, 'S');
+        pdf.addImage(qrDataUrls[i], 'PNG', QR_X, QR_Y, QR_SIZE, QR_SIZE);
+
+        // Recovery code (small, monospace-style)
+        pdf.setTextColor(100, 100, 100);
+        pdf.setFontSize(7);
+        pdf.setFont('courier', 'normal');
+        pdf.text(r.code, x + CARD_W / 2, QR_Y + QR_SIZE + 6, { align: 'center' });
+
+        // Footer URL
+        pdf.setTextColor(180, 180, 180);
+        pdf.setFontSize(6);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(globalThis.location.origin.split('//')[1], x + CARD_W / 2, y + CARD_H - 2.5, { align: 'center' });
+      });
+
+      pdf.save(`${myClassroom.name}-login-cards.pdf`);
     } finally {
       setPrinting(false);
     }
