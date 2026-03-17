@@ -278,24 +278,52 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       if (resultRows.length === 0) { setPrintError(t('classroom.printNoKeys')); win.close(); return; }
       const cards = resultRows.map(r => `
         <div class="card">
-          <div class="name">${r.username}</div>
-          <div class="class">${myClassroom.name}</div>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(restoreUrl(r.code))}" width="160" height="160" />
-          <div class="code">${r.code}</div>
-          <div class="hint">Scan or type to log in on any device</div>
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28" style="flex-shrink:0">
+              <rect width="100" height="100" rx="14" fill="#2C3E50"/>
+              <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
+              <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
+              <rect x="68" y="6"  width="26" height="26" rx="5" fill="#FBBA00"/>
+              <rect x="6"  y="37" width="26" height="26" rx="5" fill="#5DD23C"/>
+              <rect x="37" y="37" width="26" height="26" rx="5" fill="#FBBA00"/>
+              <rect x="68" y="37" width="26" height="26" rx="5" fill="#4FA7FF"/>
+              <rect x="6"  y="68" width="26" height="26" rx="5" fill="#4FA7FF"/>
+              <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
+              <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
+            </svg>
+            <span class="wordmark">1UP</span>
+          </div>
+          <div class="card-body">
+            <div class="name">${r.username}</div>
+            <div class="classname">${myClassroom.name}</div>
+            <div class="qr-wrap">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(restoreUrl(r.code))}" width="140" height="140" />
+            </div>
+            <div class="footer">{${window.location.origin.split('//')[1]}}</div>
+          </div>
         </div>`).join('');
       win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>${myClassroom.name} – Login Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 <style>
-  body { font-family: system-ui, sans-serif; margin: 0; background: #fff; color: #000; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px; }
-  .card { border: 1.5px solid #ccc; border-radius: 10px; padding: 16px 12px; text-align: center; break-inside: avoid; }
-  .name { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
-  .class { font-size: 12px; color: #888; margin-bottom: 12px; }
-  img { display: block; margin: 0 auto 10px; }
-  .code { font-family: monospace; font-size: 14px; letter-spacing: 2px; color: #444; margin-bottom: 4px; }
-  .hint { font-size: 11px; color: #aaa; }
-  @media print { @page { size: A4; margin: 12mm; } }
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; margin: 0; background: #fff; color: #000; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px; }
+  .card { border-radius: 10px; overflow: hidden; break-inside: avoid; page-break-inside: avoid; border: 1.5px solid #e0e0e0; }
+  .card-header { background: #2C3E50; display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
+  .wordmark { color: #fff; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .card-body { text-align: center; padding: 10px 10px 8px; }
+  .name { font-size: 20px; font-weight: 800; margin-bottom: 2px; color: #2C3E50; }
+  .classname { font-size: 11px; color: #888; margin-bottom: 10px; font-weight: 500; }
+  .qr-wrap { display: inline-block; padding: 5px; border: 3px solid #FBBA00; border-radius: 8px; margin-bottom: 8px; }
+  .qr-wrap img { display: block; }
+  .footer { font-size: 10px; color: #aaa; font-weight: 500; }
+  @media print {
+    @page { size: A4; margin: 0; }
+    .grid { padding: 8mm; gap: 6mm; }
+  }
 </style></head><body>
 <div class="grid">${cards}</div>
 <script>window.onload = () => window.print();</script>
