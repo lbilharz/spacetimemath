@@ -576,6 +576,7 @@ h3 { font-size: 16px; font-weight: 600; color: var(--muted); }
   .print-cards-overlay,
   .print-cards-overlay * { visibility: visible; }
   .print-cards-overlay {
+    display: block !important;
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: auto;

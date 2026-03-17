@@ -144,11 +144,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   // Trigger window.print() once inline cards are rendered
   useEffect(() => {
     if (!printCards) return;
-    const id = setTimeout(() => {
-      window.print();
-      setPrintCards(null);
-    }, 100);
-    return () => clearTimeout(id);
+    const cleanup = () => setPrintCards(null);
+    window.addEventListener('afterprint', cleanup, { once: true });
+    const id = setTimeout(() => window.print(), 100);
+    return () => { clearTimeout(id); window.removeEventListener('afterprint', cleanup); };
   }, [printCards]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── End of class sprint state ───────────────────────────────────────────────
