@@ -293,6 +293,7 @@
     "cardTitle": "Pick Your Starting Level",
     "cardBody": "Choose where you want to begin — you can always adjust later.",
     "adjustTitle": "Adjust Level",
+    "myLevel": "My Level",
     "adjustBody": "Practice easier tables or jump ahead.",
     "setLevel": "Set Level",
     "tier0Desc": "Just starting out",
