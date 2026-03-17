@@ -75,7 +75,7 @@ const sessions = sessionsRaw
     raw_score:      parseInt(r.raw_score),
     accuracy_pct:   parseInt(r.accuracy_pct),
     total_answered: parseInt(r.total_answered),
-    is_complete:    r.is_complete === 'TRUE',
+    is_complete:    true,  // always mark restored sessions complete — they are historical data
     started_at:     parseTimestamp(r.started_at),
   }));
 

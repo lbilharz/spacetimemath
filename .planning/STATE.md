@@ -181,6 +181,7 @@ Recent decisions affecting current work:
 | 260317-acs | Skip 2.5s splash timer for returning users with saved credentials — wait only for WebSocket connect | 2026-03-17 | f50c7ef | [260317-acs-session-restore-always-shows-the-splash-](./quick/260317-acs-session-restore-always-shows-the-splash-/) |
 | 260317-au1 | Remove transfer code UI, add masked recovery key reveal, always-visible email form | 2026-03-17 | 63bc790 | [260317-au1-simplify-account-security-remove-transfe](./quick/260317-au1-simplify-account-security-remove-transfe/) |
 | 260317-b5d | Remove transfer-code tables and reducers from server, redeploy with schema change | 2026-03-17 | 576c7a8 | [260317-b5d-remove-transfer-code-tables-and-reducers](./quick/260317-b5d-remove-transfer-code-tables-and-reducers/) |
+| 260317-fto | Fix sprint start: close orphaned sessions before creating new one; restore-history always marks is_complete=true | 2026-03-17 | — | — |
 
 ### Pending Todos
 

@@ -17,6 +17,19 @@ use crate::{
 #[reducer]
 pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
+
+    // Close any orphaned incomplete solo sessions for this player.
+    // These arise from abandoned sprints or from the restore-incident (sessions
+    // restored as is_complete=false with no SprintSequence).  Marking them complete
+    // ensures SprintPage always picks the freshly-created session.
+    let orphans: Vec<_> = ctx.db.sessions()
+        .iter()
+        .filter(|s| s.player_identity == ctx.sender() && !s.is_complete && s.class_sprint_id == 0)
+        .collect();
+    for s in orphans {
+        ctx.db.sessions().id().update(Session { is_complete: true, ..s });
+    }
+
     for _ in 0..200 {
         if let Ok(inserted) = ctx.db.sessions().try_insert(Session {
             id: 0,
