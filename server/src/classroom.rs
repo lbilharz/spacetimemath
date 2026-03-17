@@ -230,10 +230,9 @@ fn finalize_class_sprint_sessions(ctx: &ReducerContext, class_sprint_id: u64) {
 // DATA RESTORE
 // ============================================================
 
-/// DATA RESTORE: Re-insert a Classroom row with its original ID and code.
-/// The caller (ctx.sender()) becomes the teacher. Skips if ID already exists.
-/// Call order: teacher calls restore_classroom first, then each member calls
-/// restore_classroom_member with the same classroom_id.
+/// DATA RESTORE: Re-insert a Classroom row with its original ID and code,
+/// and add the calling teacher as a member (mirroring create_classroom behaviour).
+/// The caller (ctx.sender()) becomes the teacher. Idempotent — skips if ID already exists.
 #[reducer]
 pub fn restore_classroom(
     ctx: &ReducerContext,
@@ -248,6 +247,18 @@ pub fn restore_classroom(
         name: name.trim().to_string(),
         teacher: ctx.sender(),
     });
+    // Add teacher as member, same as create_classroom does
+    let already_member = ctx.db.classroom_members()
+        .iter()
+        .any(|m| m.classroom_id == id && m.player_identity == ctx.sender());
+    if !already_member {
+        ctx.db.classroom_members().insert(ClassroomMember {
+            id: 0,
+            classroom_id: id,
+            player_identity: ctx.sender(),
+            hidden: false,
+        });
+    }
     Ok(())
 }
 
