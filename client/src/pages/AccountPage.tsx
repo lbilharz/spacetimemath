@@ -35,6 +35,7 @@ export default function AccountPage({ myPlayer }: Props) {
   const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
   const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
   // Username rename
+  const [nameEditing, setNameEditing] = useState(false);
   const [newName, setNewName] = useState(myPlayer.username);
   const [nameSaving, setNameSaving] = useState(false);
   const [nameSaved, setNameSaved] = useState(false);
@@ -88,11 +89,12 @@ export default function AccountPage({ myPlayer }: Props) {
 
   const handleRename = async () => {
     const name = newName.trim();
-    if (!name || name === myPlayer.username) return;
+    if (!name || name === myPlayer.username) { setNameEditing(false); return; }
     setNameSaving(true);
     await setUsernameReducer({ newUsername: name });
     setNameSaving(false);
     setNameSaved(true);
+    setNameEditing(false);
     setTimeout(() => setNameSaved(false), 2000);
   };
 
@@ -127,9 +129,37 @@ export default function AccountPage({ myPlayer }: Props) {
         }}>
           {initials}
         </div>
-        <div className="flex-1">
-          <div className="fw-bold text-20">{myPlayer.username}</div>
-          <div className="text-sm text-muted mt-1">
+        <div className="flex-1 col gap-4">
+          {nameEditing ? (
+            <div className="row gap-8">
+              <input
+                className="field flex-1"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                maxLength={24}
+                autoFocus
+                onKeyDown={e => { if (e.key === 'Enter') handleRename(); if (e.key === 'Escape') { setNewName(myPlayer.username); setNameEditing(false); } }}
+              />
+              <button className="btn btn-primary btn-sm" onClick={handleRename} disabled={nameSaving || !newName.trim()}>
+                {nameSaving ? '…' : nameSaved ? t('common.saved') : t('common.save')}
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => { setNewName(myPlayer.username); setNameEditing(false); }}>
+                {t('onboarding.back')}
+              </button>
+            </div>
+          ) : (
+            <div className="row gap-8" style={{ alignItems: 'center' }}>
+              <span className="fw-bold text-20">{myPlayer.username}</span>
+              <button
+                onClick={() => { setNewName(myPlayer.username); setNameEditing(true); }}
+                aria-label={t('account.displayName')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, opacity: 0.5, padding: 2, lineHeight: 1 }}
+              >
+                ✏️
+              </button>
+            </div>
+          )}
+          <div className="text-sm text-muted">
             {t('account.sessions', { count: myPlayer.totalSessions })}
             {' · '}{t('account.best')} <span className="text-warn fw-semibold">{myPlayer.bestScore.toFixed(1)}</span>
           </div>
@@ -150,27 +180,6 @@ export default function AccountPage({ myPlayer }: Props) {
         >
           {i18n.language.startsWith('de') ? 'English' : 'Deutsch'}
         </button>
-      </div>
-
-      {/* Display name */}
-      <div className="card">
-        <h2 className="mb-4 text-16">{t('account.displayName')}</h2>
-        <div className="row gap-10">
-          <input
-            className="field flex-1"
-            value={newName}
-            onChange={e => setNewName(e.target.value)}
-            maxLength={24}
-            onKeyDown={e => e.key === 'Enter' && handleRename()}
-          />
-          <button
-            className="btn btn-primary"
-            onClick={handleRename}
-            disabled={nameSaving || !newName.trim() || newName.trim() === myPlayer.username}
-          >
-            {nameSaved ? t('common.saved') : nameSaving ? t('common.saving') : t('common.save')}
-          </button>
-        </div>
       </div>
 
       {/* Account recovery */}
