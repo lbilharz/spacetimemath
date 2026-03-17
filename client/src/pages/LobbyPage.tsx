@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Session } from '../module_bindings/types.js';
+import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, ProblemStat, Session } from '../module_bindings/types.js';
 import Leaderboard from '../components/Leaderboard.js';
+import ScoringGuide from '../components/ScoringGuide.js';
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
@@ -31,6 +32,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   const [classroomMembers]  = useTable(tables.classroom_members);
   const [onlinePlayers]     = useTable(tables.online_players);
   const [sessions]          = useTable(tables.sessions);
+  const [problemStats]      = useTable(tables.problem_stats);
   const startSession        = useSTDBReducer(reducers.startSession);
   const joinClassroom       = useSTDBReducer(reducers.joinClassroom);
 
@@ -235,6 +237,12 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
         bestScores={bestScores as unknown as BestScore[]}
         myIdentityHex={myIdentityHex}
         myLearningTier={myPlayer?.learningTier ?? 0}
+      />
+
+      {/* Scoring Guide */}
+      <ScoringGuide
+        problemStats={problemStats as unknown as ProblemStat[]}
+        playerLearningTier={myPlayer?.learningTier ?? 0}
       />
     </div>
   );

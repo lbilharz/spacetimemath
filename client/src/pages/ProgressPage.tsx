@@ -6,7 +6,6 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { Answer, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import SprintHistory from '../components/SprintHistory.js';
-import ScoringGuide from '../components/ScoringGuide.js';
 import TierLadder from '../components/TierLadder.js';
 
 interface Props {
@@ -249,11 +248,6 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
           playerLearningTier={playerLearningTier}
         />
       </div>
-
-      <ScoringGuide
-        problemStats={problemStats as unknown as ProblemStat[]}
-        playerLearningTier={playerLearningTier}
-      />
 
       <div id="history">
         <SprintHistory
