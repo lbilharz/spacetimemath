@@ -27,12 +27,18 @@ See: .planning/PROJECT.md (updated 2026-03-17 after v1.1 milestone)
 Milestone v1.1 complete and archived (2 phases, 2 plans).
 Status: Ready for `/gsd:new-milestone` to start v1.2
 
-Last activity: 2026-03-17 — v1.1 milestone archived
+Last activity: 2026-03-17 — Completed quick task 260317-t6z: bugfix: teacher class recovery code PDF download broken
 
 Progress: [██████████] 100% (2/2 phases complete)
+
+## Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260317-t6z | bugfix: teacher class recovery code PDF download broken | 2026-03-17 | 9e0e94a | [260317-t6z-bugfix-teacher-class-recovery-code-pdf-d](./quick/260317-t6z-bugfix-teacher-class-recovery-code-pdf-d/) |
 
 ## Session Continuity
 
 Last session: 2026-03-17
-Stopped at: v1.1 milestone complete
+Stopped at: Completed quick-260317-t6z (bugfix: teacher print login cards PDF)
 Resume file: None
