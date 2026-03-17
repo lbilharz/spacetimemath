@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Fixed Grid + Extended Tables
 status: planning
-stopped_at: "Completed quick-260317-b5d-PLAN.md"
-last_updated: "2026-03-17T08:20:00.000Z"
-last_activity: 2026-03-17 — Completed quick task 260317-b5d (remove transfer-code tables and reducers, redeploy)
+stopped_at: "Completed quick-260317-sin-PLAN.md"
+last_updated: "2026-03-17T20:43:00.000Z"
+last_activity: 2026-03-17 — Completed quick task 260317-sin (automated backup script for SpacetimeDB maincloud)
 progress:
   total_phases: 2
   completed_phases: 1
@@ -182,6 +182,7 @@ Recent decisions affecting current work:
 | 260317-au1 | Remove transfer code UI, add masked recovery key reveal, always-visible email form | 2026-03-17 | 63bc790 | [260317-au1-simplify-account-security-remove-transfe](./quick/260317-au1-simplify-account-security-remove-transfe/) |
 | 260317-b5d | Remove transfer-code tables and reducers from server, redeploy with schema change | 2026-03-17 | 576c7a8 | [260317-b5d-remove-transfer-code-tables-and-reducers](./quick/260317-b5d-remove-transfer-code-tables-and-reducers/) |
 | 260317-fto | Fix sprint start: close orphaned sessions before creating new one; restore-history always marks is_complete=true | 2026-03-17 | — | — |
+| 260317-sin | Automated backup script exporting 8 durable SpacetimeDB tables to timestamped local files via make backup | 2026-03-17 | f222ead | [260317-sin-backup-strategy-for-spacetimedb-mainclou](./quick/260317-sin-backup-strategy-for-spacetimedb-mainclou/) |
 
 ### Pending Todos
 
