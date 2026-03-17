@@ -5,7 +5,7 @@ milestone_name: Fixed Grid + Extended Tables
 status: planning
 stopped_at: Completed 10-extended-tables-opt-in 10-01-PLAN.md
 last_updated: "2026-03-16T10:30:11.119Z"
-last_activity: 2026-03-17 - Completed quick task 260317-7tf: Sprint snappiness — React.memo Numpad + useMemo/useCallback in SprintPage + DotArray
+last_activity: 2026-03-17 - Completed quick task 260317-8e1: Extended mode UX fixes — hide DotArray for extended problems + inline x11-x20 in MasteryGrid
 progress:
   total_phases: 2
   completed_phases: 1
@@ -174,6 +174,7 @@ Recent decisions affecting current work:
 |---|-------------|------|--------|-----------|
 | 260316-ily | Extended mode toggle in Adjust Level section with switch and number preview | 2026-03-16 | 988e876 | [260316-ily-extended-mode-toggle-in-adjust-level-sec](./quick/260316-ily-extended-mode-toggle-in-adjust-level-sec/) |
 | 260317-7tf | Memoize SprintPage derived values + React.memo Numpad + DotArray for snappier sprint UI | 2026-03-17 | ae6d835 | [260317-7tf-measure-and-improve-sprint-snappiness-fi](./quick/260317-7tf-measure-and-improve-sprint-snappiness-fi/) |
+| 260317-8e1 | Hide DotArray for extended problems + inline x11-x20 rows in MasteryGrid with gap row | 2026-03-17 | 9bae453 | [260317-8e1-extended-mode-ux-fixes-hide-dotarray-for](./quick/260317-8e1-extended-mode-ux-fixes-hide-dotarray-for/) |
 
 ### Pending Todos
 
@@ -186,6 +187,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T05:43:00Z
-Stopped at: Completed quick task 260317-7tf-PLAN.md
+Last session: 2026-03-17T06:07:00Z
+Stopped at: Completed quick task 260317-8e1-PLAN.md
 Resume file: None
