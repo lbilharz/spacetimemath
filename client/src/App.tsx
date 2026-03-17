@@ -15,6 +15,12 @@ import type { Page } from './navigation.js';
 
 export type { Page };
 
+const CREDS_KEY = 'spacetimemath_credentials';
+function hasSavedCredentials(): boolean {
+  try { return !!localStorage.getItem(CREDS_KEY); } catch { return false; }
+}
+const isSessionRestore = hasSavedCredentials();
+
 export default function App() {
   const { t } = useTranslation();
   const { identity, isActive, connectionError } = useSpacetimeDB();
@@ -49,7 +55,10 @@ export default function App() {
   }, []);
 
   // Hold the splash for at least 2.5 s on first load (not on WS reconnect).
-  const [splashDone, setSplashDone] = useState(false);
+  // For returning users with saved credentials, skip the timer — the second
+  // guard (!isActive && !effectivePlayer) still keeps the splash until the
+  // WebSocket is up and player data is loaded.
+  const [splashDone, setSplashDone] = useState(isSessionRestore);
   useEffect(() => {
     const id = setTimeout(() => setSplashDone(true), 2500);
     return () => clearTimeout(id);
