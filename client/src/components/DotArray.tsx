@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface Props {
   a: number;
   b: number;
@@ -29,7 +31,7 @@ const clampToGrid = (n: number) => Math.max(1, Math.min(GRID_SIZE, n));
  * remaining cells are dimmed (neutral color, 35% opacity).
  * The whole component fades to 20% opacity when `faded` is true.
  */
-export default function DotArray({ a, b, faded = false }: Props) {
+function DotArray({ a, b, faded = false }: Props) {
   const rows = clampToGrid(a);
   const cols = clampToGrid(b);
 
@@ -88,3 +90,5 @@ export default function DotArray({ a, b, faded = false }: Props) {
     </div>
   );
 }
+
+export default React.memo(DotArray);
