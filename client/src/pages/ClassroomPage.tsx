@@ -291,7 +291,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
               <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
               <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
             </svg>
-            <span class="wordmark">1UP</span>
+            <span class="wordmark">noggin</span>
           </div>
           <div class="card-body">
             <div class="name">${r.username}</div>
@@ -302,7 +302,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             <div class="footer">{${window.location.origin.split('//')[1]}}</div>
           </div>
         </div>`).join('');
-      win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+      win.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <title>${myClassroom.name} – Login Cards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
