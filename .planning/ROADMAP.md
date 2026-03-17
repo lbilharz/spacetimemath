@@ -2,55 +2,29 @@
 
 ## Milestones
 
-- ✅ **v1.0 Safe for School Rollout** - Phases 1-8 (shipped 2026-03-15)
-- 🚧 **v1.1 Fixed Grid + Extended Tables** - Phases 9-10 (in progress)
+- ✅ **v1.0 Safe for School Rollout** — Phases 1–8 (shipped 2026-03-15)
+- ✅ **v1.1 Fixed Grid + Extended Tables** — Phases 9–10 (shipped 2026-03-17)
 
 ---
 
-## v1.0 — Safe for School Rollout ✅ SHIPPED 2026-03-15
+## Phases
 
-8 phases · 31 plans · SEC/GDPR/CSS/UX/ACCT/SEQ/MOD/SCOPE complete → [full archive](.planning/milestones/v1.0-ROADMAP.md)
+<details>
+<summary>✅ v1.0 Safe for School Rollout (Phases 1–8) — SHIPPED 2026-03-15</summary>
 
----
+8 phases · 31 plans · SEC/GDPR/CSS/UX/ACCT/SEQ/MOD/SCOPE complete → [full archive](milestones/v1.0-ROADMAP.md)
 
-## v1.1 — Fixed Grid + Extended Tables 🚧
+</details>
 
-**Milestone Goal:** Fix the DotArray visualization to always render at fixed size, and re-introduce two-digit multiplication as an opt-in feature for top-tier players.
+<details>
+<summary>✅ v1.1 Fixed Grid + Extended Tables (Phases 9–10) — SHIPPED 2026-03-17</summary>
 
-### Phases
+- [x] Phase 9: Fixed Grid Visualization (1/1 plans) — completed 2026-03-16
+- [x] Phase 10: Extended Tables Opt-In (1/1 plans) — completed 2026-03-17
 
-- [x] **Phase 9: Fixed Grid Visualization** - Update DotArray to always render a 10×10 grid with highlighted rectangle (completed 2026-03-16)
-- [ ] **Phase 10: Extended Tables Opt-In** - Server flag + client toggle for Master-tier ×11–×20 problems
+[full archive](milestones/v1.1-ROADMAP.md)
 
-## Phase Details
-
-### Phase 9: Fixed Grid Visualization
-**Goal**: Players see a consistent 10×10 dot grid for every problem, with the current multiplication highlighted as a rectangle
-**Depends on**: Phase 8 (v1.0 complete)
-**Requirements**: VIZ-01, VIZ-02
-**Success Criteria** (what must be TRUE):
-  1. For any problem a×b, the dot grid always renders with exactly 10 columns and 10 rows (never larger or smaller)
-  2. The top-left a×b rectangle of dots is visually highlighted, with the remaining dots in a neutral/background state
-  3. The grid dimensions do not shift or resize as the player advances through different problems
-**Plans**: 1 plan
-
-Plans:
-- [ ] 09-01-PLAN.md — Rewrite DotArray.tsx to fixed 10×10 grid with a×b rectangle highlight
-
-### Phase 10: Extended Tables Opt-In
-**Goal**: Master-tier players can toggle two-digit multiplication on, and the server delivers ×11–×20 problems when the flag is active
-**Depends on**: Phase 9
-**Requirements**: EXT-01, EXT-02, EXT-03
-**Success Criteria** (what must be TRUE):
-  1. A Master-tier player sees an "extended tables" toggle in their account settings; players below Master tier do not see it
-  2. When the toggle is turned on, subsequent problems include one factor in the range 11–20
-  3. When the toggle is turned off, problems return to the standard 1–10 range
-  4. Extended problems display a score using the same tier multiplier system as standard problems
-**Plans**: 2 plans
-
-Plans:
-- [ ] 10-01-PLAN.md — Server schema (extended_mode field + set_extended_mode reducer), build_sequence branching, SEC-06 guard updates, make deploy
-- [ ] 10-02-PLAN.md — Client toggle in AccountPage (tier-gated), i18n EN+DE, human smoke test
+</details>
 
 ---
 
@@ -58,6 +32,6 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 1-8. v1.0 phases | v1.0 | 31/31 | Complete | 2026-03-15 |
-| 9. Fixed Grid Visualization | 1/1 | Complete   | 2026-03-16 | - |
-| 10. Extended Tables Opt-In | 1/2 | In Progress|  | - |
+| 1–8. v1.0 phases | v1.0 | 31/31 | Complete | 2026-03-15 |
+| 9. Fixed Grid Visualization | v1.1 | 1/1 | Complete | 2026-03-16 |
+| 10. Extended Tables Opt-In | v1.1 | 1/1 | Complete | 2026-03-17 |
