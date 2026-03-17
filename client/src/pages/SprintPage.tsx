@@ -555,10 +555,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
           {difficultyTag.label}
         </span>
 
-        {/* Dot array for tier-0 pairs (untouched or struggling) */}
-        <div className="row-center mb-2">
-          <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
-        </div>
+        {/* Dot array — only for base-10 problems (beginner scaffold) */}
+        {problem.a <= 10 && problem.b <= 10 && (
+          <div className="row-center mb-2">
+            <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
+          </div>
+        )}
 
         {/* Equation */}
         <div style={{
