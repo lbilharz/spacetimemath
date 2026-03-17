@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-17 after v1.1 milestone)
 Milestone v1.1 complete and archived (2 phases, 2 plans).
 Status: Ready for `/gsd:new-milestone` to start v1.2
 
-Last activity: 2026-03-17 — Completed quick task 260317-t6z: bugfix: teacher class recovery code PDF download broken
+Last activity: 2026-03-18 — Completed quick task 260317-war: style login cards (branded PDF with navy header, 1UP logo, clean layout)
 
 Progress: [██████████] 100% (2/2 phases complete)
 
@@ -36,9 +36,11 @@ Progress: [██████████] 100% (2/2 phases complete)
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260317-t6z | bugfix: teacher class recovery code PDF download broken | 2026-03-17 | 9e0e94a | [260317-t6z-bugfix-teacher-class-recovery-code-pdf-d](./quick/260317-t6z-bugfix-teacher-class-recovery-code-pdf-d/) |
+| 260317-fto | bugfix: sprint start + scoring broken (auto_inc desync after restore) | 2026-03-17 | 77aea4c | [260317-fto-users-can-t-start-a-sprint-bug-fix](./quick/260317-fto-users-can-t-start-a-sprint-bug-fix/) |
+| 260317-war | style login cards — branded PDF (navy header, 1UP logo, QR, clean layout) | 2026-03-18 | 5d557aa | [260317-war-style-login-cards](./quick/260317-war-style-login-cards/) |
 
 ## Session Continuity
 
-Last session: 2026-03-17
-Stopped at: Completed quick-260317-t6z (bugfix: teacher print login cards PDF)
+Last session: 2026-03-18
+Stopped at: Completed quick-260317-war (style login cards PDF)
 Resume file: None
