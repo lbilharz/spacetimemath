@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
+import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
@@ -37,13 +37,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const toggleVisibility      = useSTDBReducer(reducers.toggleClassroomVisibility);
   const startClassSprint      = useSTDBReducer(reducers.startClassSprint);
   const endClassSprint        = useSTDBReducer(reducers.endClassSprint);
-  const { identity } = useSpacetimeDB();
   const getClassRecoveryCodes = useSTDBReducer(reducers.getClassRecoveryCodes);
-  const [classRecoveryResults] = useTable(
-    identity
-      ? tables.class_recovery_results.where(r => r.teacherIdentity.eq(identity))
-      : tables.class_recovery_results
-  );
+  // Subscription not filtered server-side — rows are teacher-scoped at insert time.
+  // Client filters by classroomId in the polling loop below.
+  const [classRecoveryResults] = useTable(tables.class_recovery_results);
   // Ref so async polling in handleDownloadCodes always reads the latest rows
   const classRecoveryResultsRef = useRef<ClassRecoveryResult[]>([]);
   useEffect(() => {
@@ -54,6 +51,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
+  const [printCards, setPrintCards] = useState<ClassRecoveryResult[] | null>(null);
   const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
   const [isDiagnostic, setIsDiagnostic] = useState(false);
@@ -142,6 +140,16 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [activeSprint?.id, isTeacher]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Trigger window.print() once inline cards are rendered
+  useEffect(() => {
+    if (!printCards) return;
+    const id = setTimeout(() => {
+      window.print();
+      setPrintCards(null);
+    }, 100);
+    return () => clearTimeout(id);
+  }, [printCards]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── End of class sprint state ───────────────────────────────────────────────
 
@@ -251,44 +259,23 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
 
   const restoreUrl = (code: string) => `${window.location.origin}/?restore=${code}`;
 
-  /**
-   * Fetch fresh recovery codes from the server and open the printable card sheet.
-   *
-   * window.open() must be called synchronously (before the first await) so the
-   * browser treats it as a direct response to the user's click — otherwise the
-   * popup would be blocked or open as empty about:blank.
-   * Content is written to the already-open window once rows arrive via subscription.
-   */
+  /** Fetch recovery codes and trigger browser print dialog via inline overlay — no popup needed. */
   const handlePrintAll = async () => {
     if (printing || !myClassroom) return;
     setPrinting(true);
     setPrintError(null);
-    // Open the print window NOW, while still in the synchronous click handler.
-    // The content is written below once we have the data.
-    const win = window.open('', '_blank');
-    if (!win) {
-      setPrintError(t('classroom.printPopupBlocked'));
-      setPrinting(false);
-      return;
-    }
     try {
-      // Snapshot how many stale rows exist before triggering the reducer,
-      // so we can detect when old rows have been cleared before polling for new ones.
       const prevCount = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
       await getClassRecoveryCodes({ classroomId });
-      // Poll the ref until rows arrive (subscription push, typically <200 ms)
       const POLL = 50, TIMEOUT = 5_000;
       let resultRows: ClassRecoveryResult[] = [];
-      // Phase 1: wait for stale rows to clear (or skip if ref was already empty)
       if (prevCount > 0) {
         const clearDeadline = Date.now() + 2_000;
         while (Date.now() < clearDeadline) {
-          const cur = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
-          if (cur === 0) break;
+          if (classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length === 0) break;
           await new Promise(res => setTimeout(res, POLL));
         }
       }
-      // Phase 2: wait for new rows to arrive
       const deadline = Date.now() + TIMEOUT;
       while (Date.now() < deadline) {
         resultRows = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId);
@@ -297,42 +284,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
       }
       if (resultRows.length === 0) {
         setPrintError(t('classroom.printNoKeys'));
-        win.close();
         return;
       }
-      const classroomName = myClassroom.name;
-      const cards = resultRows.map(r => `
-        <div class="card">
-          <div class="name">${r.username}</div>
-          <div class="class">${classroomName}</div>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(restoreUrl(r.code))}" width="160" height="160" />
-          <div class="code">${r.code}</div>
-          <div class="hint">Scan or type to log in on any device</div>
-        </div>
-      `).join('');
-      win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${classroomName} – Login Cards</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 0; background: #fff; color: #000; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px; }
-    .card { border: 1.5px solid #ccc; border-radius: 10px; padding: 16px 12px; text-align: center; break-inside: avoid; }
-    .name { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
-    .class { font-size: 12px; color: #888; margin-bottom: 12px; }
-    img { display: block; margin: 0 auto 10px; }
-    .code { font-family: monospace; font-size: 14px; letter-spacing: 2px; color: #444; margin-bottom: 4px; }
-    .hint { font-size: 11px; color: #aaa; }
-    @media print { @page { size: A4; margin: 12mm; } }
-  </style>
-</head>
-<body>
-  <div class="grid">${cards}</div>
-  <script>window.onload = () => window.print();</script>
-</body>
-</html>`);
-      win.document.close();
+      setPrintCards(resultRows);
     } finally {
       setPrinting(false);
     }
@@ -368,6 +322,25 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
             <button className="btn btn-secondary w-full" onClick={() => setQrStudent(null)}>
               {t('common.cancel')}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Print overlay — invisible on screen, visible only during window.print() */}
+      {printCards && (
+        <div className="print-cards-overlay" style={{ display: 'none' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, padding: 16 }}>
+            {printCards.map(r => (
+              <div key={r.memberIdentity.toHexString()} style={{ border: '1.5px solid #ccc', borderRadius: 10, padding: '16px 12px', textAlign: 'center', breakInside: 'avoid' }}>
+                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 2 }}>{r.username}</div>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>{myClassroom.name}</div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+                  <QRCodeSVG value={restoreUrl(r.code)} size={160} />
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: 14, letterSpacing: 2, color: '#444', marginBottom: 4 }}>{r.code}</div>
+                <div style={{ fontSize: 11, color: '#aaa' }}>{t('classroom.studentLoginHint')}</div>
+              </div>
+            ))}
           </div>
         </div>
       )}
