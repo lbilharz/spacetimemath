@@ -19,6 +19,7 @@ type Player = {
   recoveryEmailed?: boolean;
   onboardingDone?: boolean;
   extendedMode: boolean;
+  extendedLevel: number;
 };
 
 interface Props {
@@ -88,6 +89,7 @@ export default function PageRenderer({
           myIdentityHex={myIdentityHex}
           playerLearningTier={myPlayer?.learningTier ?? 0}
           extendedMode={myPlayer?.extendedMode ?? false}
+          extendedLevel={myPlayer?.extendedLevel ?? 0}
         />
       )}
       {page === 'classroom' && (

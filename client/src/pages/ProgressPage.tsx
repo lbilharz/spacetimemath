@@ -13,11 +13,12 @@ interface Props {
   myIdentityHex: string;
   playerLearningTier?: number;
   extendedMode?: boolean;
+  extendedLevel?: number;
 }
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
 
-export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false }: Props) {
+export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false, extendedLevel = 0 }: Props) {
   const { t } = useTranslation();
   const [sessions]     = useTable(tables.sessions);
   const [answers]      = useTable(tables.answers);
@@ -73,6 +74,11 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
             }}
           >
             {t(`tiers.tier${playerLearningTier}Name` as ParseKeys)}
+            {extendedMode && extendedLevel > 0 && (
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>
+                +{extendedLevel}
+              </span>
+            )}
             <span className="text-xs fw-bold text-muted" style={{
               background: 'var(--card2)', padding: '2px 8px',
               borderRadius: 6, border: '1px solid var(--border)',
@@ -161,7 +167,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
                 {t('extendedTables.toggle')}
               </span>
               <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                {[11, 12, 15, 20, 25].map(n => (
+                {[11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(n => (
                   <span
                     key={n}
                     className="text-xs"
