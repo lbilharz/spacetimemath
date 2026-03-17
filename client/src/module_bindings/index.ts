@@ -53,6 +53,7 @@ import MigrateRecomputeTiersV2Reducer from "./migrate_recompute_tiers_v_2_reduce
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
+import MigrateSeedExtendedStatsReducer from "./migrate_seed_extended_stats_reducer";
 import NextProblemReducer from "./next_problem_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
@@ -319,6 +320,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
   __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),
   __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
+  __reducerSchema("migrate_seed_extended_stats", MigrateSeedExtendedStatsReducer),
   __reducerSchema("next_problem", NextProblemReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),

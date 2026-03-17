@@ -118,6 +118,7 @@ export const Player = __t.object("Player", {
   learningTier: __t.u8(),
   recoveryEmailed: __t.bool(),
   extendedMode: __t.bool(),
+  extendedLevel: __t.u8(),
 });
 export type Player = __Infer<typeof Player>;
 

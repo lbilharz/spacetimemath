@@ -21,4 +21,5 @@ export default __t.row({
   learningTier: __t.u8().name("learning_tier"),
   recoveryEmailed: __t.bool().name("recovery_emailed"),
   extendedMode: __t.bool().name("extended_mode"),
+  extendedLevel: __t.u8().name("extended_level"),
 });
