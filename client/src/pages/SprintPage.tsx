@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, FormEvent } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
@@ -93,6 +93,52 @@ type Feedback = { isCorrect: boolean; points: number; correct: number } | null;
 
 const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
 
+// ── Memoized Numpad sub-component ─────────────────────────────────────────────
+interface NumpadProps {
+  disabled: boolean;     // timeLeft === 0 || !!feedback
+  onKey: (key: number | '←' | 'OK') => void;
+}
+const NUMPAD_KEYS = [1,2,3,4,5,6,7,8,9,'←' as const,0,'OK' as const];
+
+const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
+  return (
+    <div className="w-full" style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: 8,
+      maxWidth: 360,
+    }}>
+      {NUMPAD_KEYS.map((key) => {
+        const isOk = key === 'OK';
+        const isBack = key === '←';
+        return (
+          <button
+            key={key}
+            type="button"
+            disabled={disabled}
+            onClick={() => onKey(key)}
+            style={{
+              padding: '14px 8px',
+              fontSize: 22,
+              fontWeight: isOk ? 700 : 500,
+              background: isOk ? 'var(--accent)' : 'var(--card2)',
+              color: isOk ? '#0a0a1a' : isBack ? 'var(--muted)' : 'var(--text)',
+              border: '1px solid var(--border)',
+              borderRadius: 8,
+              cursor: 'pointer',
+              opacity: disabled ? 0.4 : 1,
+              transition: 'opacity 0.15s, background 0.15s',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            {key}
+          </button>
+        );
+      })}
+    </div>
+  );
+});
+
 export default function SprintPage({ myIdentityHex, classSprintId, onFinished }: Props) {
   const { t } = useTranslation();
   const [sessions] = useTable(tables.sessions);
@@ -111,8 +157,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     p => p.identity.toHexString() === myIdentityHex
   )?.learningTier ?? 0;
 
-  const eligibleStats = (problemStats as ProblemStat[]).filter(s =>
-    learningTierOf(s.a, s.b) <= playerLearningTier
+  const eligibleStats = useMemo(
+    () => (problemStats as ProblemStat[]).filter(s => learningTierOf(s.a, s.b) <= playerLearningTier),
+    [problemStats, playerLearningTier]
   );
 
   const startSession = useSTDBReducer(reducers.startSession);
@@ -127,7 +174,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const [nextProblemResults] = useTable(tables.next_problem_results);
 
   // My answers (all-time — used for mastery-based problem selection)
-  const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[];
+  const myAnswers = useMemo(
+    () => allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[],
+    [allAnswers, myIdentityHex]
+  );
 
   // Sprint state
   const [sessionId, setSessionId] = useState<bigint | null>(null);
@@ -295,7 +345,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     onFinished(sid);
   }, [ending, endSession, onFinished]);
 
-  const doSubmit = async () => {
+  const doSubmit = useCallback(async () => {
     if (!problem || sessionId === null || feedback !== null) return;
     const userAnswer = parseInt(input, 10);
     if (isNaN(userAnswer) || input.trim() === '') return;
@@ -363,7 +413,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       }
       // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, !fb.isCorrect ? 1000 : 600);
-  };
+  }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
+      nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
+      issueProblem]);
 
   // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
   useEffect(() => {
@@ -385,6 +437,28 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     e.preventDefault();
     await doSubmit();
   };
+
+  const handleNumpadKey = useCallback((key: number | '←' | 'OK') => {
+    if (key === '←') { hapticTap(); setInput(i => i.slice(0, -1)); }
+    else if (key === 'OK') { hapticOk(); doSubmit(); }
+    else { hapticTap(); setInput(i => i.length < 3 ? i + String(key) : i); }
+  }, [doSubmit]);
+
+  // --- Derived values (memoized, placed unconditionally before early returns) ---
+  const currentStat = useMemo(
+    () => (problemStats as ProblemStat[]).find(s => s.problemKey === (problem?.a ?? 0) * 100 + (problem?.b ?? 0)),
+    [problemStats, problem]
+  );
+  const difficultyTag = useMemo(() => {
+    const w = currentStat?.difficultyWeight ?? 1;
+    return w >= 1.5 ? { label: t('sprint.tagHard'), cls: 'tag-red' }
+         : w >= 1.0 ? { label: t('sprint.tagMedium'), cls: 'tag-warn' }
+         :             { label: t('sprint.tagEasy'), cls: 'tag-green' };
+  }, [currentStat, t]);
+  const mastery = useMemo(
+    () => problem ? getMasteryLocal(myAnswers, problem.a, problem.b) : 'untouched' as Mastery,
+    [myAnswers, problem]
+  );
 
   // --- Render ---
   const timerColor = timeLeft <= 10 ? 'var(--wrong)' : timeLeft <= 20 ? 'var(--warn)' : 'var(--accent)';
@@ -477,28 +551,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         }}
       >
         {/* Difficulty hint */}
-        {(() => {
-          const s = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
-          const w = s?.difficultyWeight ?? 1;
-          const tag = w >= 1.5 ? { label: t('sprint.tagHard'), cls: 'tag-red' }
-                    : w >= 1.0 ? { label: t('sprint.tagMedium'), cls: 'tag-warn' }
-                    : { label: t('sprint.tagEasy'), cls: 'tag-green' };
-          return (
-            <span className={`tag ${tag.cls}`} style={{ position: 'absolute', top: 16, right: 16 }}>
-              {tag.label}
-            </span>
-          );
-        })()}
+        <span className={`tag ${difficultyTag.cls}`} style={{ position: 'absolute', top: 16, right: 16 }}>
+          {difficultyTag.label}
+        </span>
 
         {/* Dot array for tier-0 pairs (untouched or struggling) */}
-        {(() => {
-          const mastery = getMasteryLocal(myAnswers, problem.a, problem.b);
-          return (
-            <div className="row-center mb-2">
-              <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
-            </div>
-          );
-        })()}
+        <div className="row-center mb-2">
+          <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
+        </div>
 
         {/* Equation */}
         <div style={{
@@ -564,51 +624,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       </div>
 
       {/* Numpad */}
-      <div className="w-full" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 8,
-        maxWidth: 360,
-      }}>
-        {([1,2,3,4,5,6,7,8,9,'←',0,'OK'] as const).map((key) => {
-          const isOk = key === 'OK';
-          const isBack = key === '←';
-          return (
-            <button
-              key={key}
-              type="button"
-              disabled={timeLeft === 0 || !!feedback}
-              onClick={() => {
-                if (isBack) {
-                  hapticTap();
-                  setInput(i => i.slice(0, -1));
-                } else if (isOk) {
-                  hapticOk();
-                  doSubmit();
-                } else {
-                  hapticTap();
-                  setInput(i => i.length < 3 ? i + String(key) : i);
-                }
-              }}
-              style={{
-                padding: '14px 8px',
-                fontSize: 22,
-                fontWeight: isOk ? 700 : 500,
-                background: isOk ? 'var(--accent)' : 'var(--card2)',
-                color: isOk ? '#0a0a1a' : isBack ? 'var(--muted)' : 'var(--text)',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                cursor: 'pointer',
-                opacity: timeLeft === 0 || !!feedback ? 0.4 : 1,
-                transition: 'opacity 0.15s, background 0.15s',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >
-              {key}
-            </button>
-          );
-        })}
-      </div>
+      <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
 
       {/* End sprint button */}
       <button
