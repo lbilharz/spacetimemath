@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Fixed Grid + Extended Tables
 status: planning
-stopped_at: "Completed quick-260317-acs-PLAN.md"
-last_updated: "2026-03-17T07:30:00.000Z"
-last_activity: 2026-03-17 — Completed quick task 260317-acs (session restore splash skip)
+stopped_at: "Completed quick-260317-au1-PLAN.md"
+last_updated: "2026-03-17T07:53:00.000Z"
+last_activity: 2026-03-17 — Completed quick task 260317-au1 (simplify account security, remove transfer code)
 progress:
   total_phases: 2
   completed_phases: 1
@@ -179,6 +179,7 @@ Recent decisions affecting current work:
 | 260317-9lo | Move ScoringGuide to lobby below leaderboard + problems-solved grid in sprint results | 2026-03-17 | a46997c | [260317-9lo-move-scoring-guide-to-lobby-add-problems](./quick/260317-9lo-move-scoring-guide-to-lobby-add-problems/) |
 | 260317-9uc | Unified My Level card replacing two tier cards, inline pencil-icon edit affordance | 2026-03-17 | 09f2639 | [260317-9uc-rename-adjust-level-to-my-level-merge-to](./quick/260317-9uc-rename-adjust-level-to-my-level-merge-to/) |
 | 260317-acs | Skip 2.5s splash timer for returning users with saved credentials — wait only for WebSocket connect | 2026-03-17 | f50c7ef | [260317-acs-session-restore-always-shows-the-splash-](./quick/260317-acs-session-restore-always-shows-the-splash-/) |
+| 260317-au1 | Remove transfer code UI, add masked recovery key reveal, always-visible email form | 2026-03-17 | 63bc790 | [260317-au1-simplify-account-security-remove-transfe](./quick/260317-au1-simplify-account-security-remove-transfe/) |
 
 ### Pending Todos
 
