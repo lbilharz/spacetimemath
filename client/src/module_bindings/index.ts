@@ -38,7 +38,6 @@ import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "./consume_restore_result_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
 import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
-import CreateTransferCodeReducer from "./create_transfer_code_reducer";
 import DeletePlayerReducer from "./delete_player_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
@@ -65,7 +64,6 @@ import StartClassSprintReducer from "./start_class_sprint_reducer";
 import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
-import UseTransferCodeReducer from "./use_transfer_code_reducer";
 
 // Import all procedure arg schemas
 
@@ -84,7 +82,6 @@ import ProblemStatsRow from "./problem_stats_table";
 import RecoveryCodeResultsRow from "./recovery_code_results_table";
 import RestoreResultsRow from "./restore_results_table";
 import SessionsRow from "./sessions_table";
-import TransferCodeResultsRow from "./transfer_code_results_table";
 import UnlockLogsRow from "./unlock_logs_table";
 
 /** Type-only namespace exports for generated type groups. */
@@ -275,17 +272,6 @@ const tablesSchema = __schema({
       { name: 'sessions_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, SessionsRow),
-  transfer_code_results: __table({
-    name: 'transfer_code_results',
-    indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
-    ],
-    constraints: [
-      { name: 'transfer_code_results_owner_key', constraint: 'unique', columns: ['owner'] },
-    ],
-  }, TransferCodeResultsRow),
   unlock_logs: __table({
     name: 'unlock_logs',
     indexes: [
@@ -305,7 +291,6 @@ const reducersSchema = __reducers(
   __reducerSchema("consume_restore_result", ConsumeRestoreResultReducer),
   __reducerSchema("create_classroom", CreateClassroomReducer),
   __reducerSchema("create_recovery_key", CreateRecoveryKeyReducer),
-  __reducerSchema("create_transfer_code", CreateTransferCodeReducer),
   __reducerSchema("delete_player", DeletePlayerReducer),
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
@@ -332,7 +317,6 @@ const reducersSchema = __reducers(
   __reducerSchema("start_session", StartSessionReducer),
   __reducerSchema("submit_answer", SubmitAnswerReducer),
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
-  __reducerSchema("use_transfer_code", UseTransferCodeReducer),
 );
 
 /** The schema information for all procedures in this module. This is defined the same way as the procedures would have been defined in the server. */

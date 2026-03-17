@@ -175,26 +175,6 @@ export const SprintSequence = __t.object("SprintSequence", {
 });
 export type SprintSequence = __Infer<typeof SprintSequence>;
 
-export const TransferCode = __t.object("TransferCode", {
-  code: __t.string(),
-  owner: __t.identity(),
-  token: __t.string(),
-  createdAt: __t.timestamp(),
-});
-export type TransferCode = __Infer<typeof TransferCode>;
-
-export const TransferCodeCleanupSchedule = __t.object("TransferCodeCleanupSchedule", {
-  scheduledId: __t.u64(),
-  scheduledAt: __t.scheduleAt(),
-});
-export type TransferCodeCleanupSchedule = __Infer<typeof TransferCodeCleanupSchedule>;
-
-export const TransferCodeResult = __t.object("TransferCodeResult", {
-  owner: __t.identity(),
-  code: __t.string(),
-});
-export type TransferCodeResult = __Infer<typeof TransferCodeResult>;
-
 export const UnlockLog = __t.object("UnlockLog", {
   id: __t.u64(),
   playerIdentity: __t.identity(),

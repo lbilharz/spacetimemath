@@ -10,7 +10,6 @@ import CompleteOnboardingReducer from "../complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "../consume_restore_result_reducer";
 import CreateClassroomReducer from "../create_classroom_reducer";
 import CreateRecoveryKeyReducer from "../create_recovery_key_reducer";
-import CreateTransferCodeReducer from "../create_transfer_code_reducer";
 import DeletePlayerReducer from "../delete_player_reducer";
 import EndClassSprintReducer from "../end_class_sprint_reducer";
 import EndSessionReducer from "../end_session_reducer";
@@ -37,13 +36,11 @@ import StartClassSprintReducer from "../start_class_sprint_reducer";
 import StartSessionReducer from "../start_session_reducer";
 import SubmitAnswerReducer from "../submit_answer_reducer";
 import ToggleClassroomVisibilityReducer from "../toggle_classroom_visibility_reducer";
-import UseTransferCodeReducer from "../use_transfer_code_reducer";
 
 export type CompleteOnboardingParams = __Infer<typeof CompleteOnboardingReducer>;
 export type ConsumeRestoreResultParams = __Infer<typeof ConsumeRestoreResultReducer>;
 export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;
 export type CreateRecoveryKeyParams = __Infer<typeof CreateRecoveryKeyReducer>;
-export type CreateTransferCodeParams = __Infer<typeof CreateTransferCodeReducer>;
 export type DeletePlayerParams = __Infer<typeof DeletePlayerReducer>;
 export type EndClassSprintParams = __Infer<typeof EndClassSprintReducer>;
 export type EndSessionParams = __Infer<typeof EndSessionReducer>;
@@ -70,5 +67,4 @@ export type StartClassSprintParams = __Infer<typeof StartClassSprintReducer>;
 export type StartSessionParams = __Infer<typeof StartSessionReducer>;
 export type SubmitAnswerParams = __Infer<typeof SubmitAnswerReducer>;
 export type ToggleClassroomVisibilityParams = __Infer<typeof ToggleClassroomVisibilityReducer>;
-export type UseTransferCodeParams = __Infer<typeof UseTransferCodeReducer>;
 
