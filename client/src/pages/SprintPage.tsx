@@ -51,7 +51,6 @@ const DIAGNOSTIC_PHASES: (number[] | null)[] = [
   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],       // Phase 2  16–24s
   null,                                    // Phase 3  24–32s (one two-digit factor)
 ];
-const DIAGNOSTIC_PHASE_LABELS = ['1, 2, 5, 10', '+ 3, 4', '+ 6–9', '11–20 ×'];
 
 function selectDiagnosticProblem(elapsed: number, lastKey: number | undefined): { a: number; b: number } {
   const phase = Math.min(Math.floor(elapsed / DIAGNOSTIC_PHASE_SECS), 3);
@@ -124,7 +123,7 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
               background: isOk ? 'var(--accent)' : 'var(--card2)',
               color: isOk ? '#0a0a1a' : isBack ? 'var(--muted)' : 'var(--text)',
               border: '1px solid var(--border)',
-              borderRadius: 8,
+              borderRadius: 12,
               cursor: 'pointer',
               opacity: disabled ? 0.4 : 1,
               transition: 'opacity 0.15s, background 0.15s',
@@ -475,7 +474,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   // --- Render ---
   const timerColor = timeLeft <= 10 ? 'var(--wrong)' : timeLeft <= 20 ? 'var(--warn)' : 'var(--accent)';
-  const timerPct = (timeLeft / SPRINT_DURATION) * 100;
 
   // Phase: still waiting for session to be created
   if (sessionId === null) {
@@ -519,79 +517,102 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     );
   }
 
+  // Ring timer constants
+  const TOP_H = 52;
+  const RING_R = 15;
+  const RING_C = 2 * Math.PI * RING_R;
+  const ringOffset = RING_C * (1 - timeLeft / SPRINT_DURATION);
+
+
   return (
-    <div className="page" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '80vh', gap: 24 }}>
+    <>
+      {/* ── Fixed top bar ─────────────────────────────────────────── */}
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        background: '#2C3E50',
+        height: TOP_H,
+        display: 'flex', alignItems: 'center',
+        padding: '0 16px', gap: 10,
+      }}>
+        <button
+          onClick={handleEnd} disabled={ending}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'rgba(255,255,255,0.75)', fontSize: 18, lineHeight: 1,
+            padding: '6px 8px', borderRadius: 8,
+            WebkitTapHighlightColor: 'transparent',
+          }}
+          aria-label={t('sprint.endSprint')}
+        >✕</button>
 
-      {/* Timer bar */}
-      <div className="w-full" style={{ maxWidth: 520 }}>
-        <div className="row-between" style={{ marginBottom: 6 }}>
-          <span className="text-sm text-muted">
-            {isDiagnostic
-              ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b>{' · '}{DIAGNOSTIC_PHASE_LABELS[Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3)]}</>
-              : t('sprint.stats', { correct, answered })
-            }
-          </span>
-          <span className="text-sm text-muted">
-            {t('sprint.score')} <b className="text-warn">{score.toFixed(1)}</b>
-          </span>
-        </div>
+        {/* Circular ring timer — one full rotation per 60 s */}
+        <svg width={40} height={40} style={{ flexShrink: 0, display: 'block' }}>
+          <circle cx={20} cy={20} r={RING_R}
+            fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={3.5} />
+          <circle cx={20} cy={20} r={RING_R}
+            fill="none"
+            stroke={timerColor}
+            strokeWidth={3.5}
+            strokeLinecap="round"
+            strokeDasharray={RING_C}
+            strokeDashoffset={ringOffset}
+            transform="rotate(-90 20 20)"
+            style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
+          />
+          <text x={20} y={24.5} textAnchor="middle"
+            fill="white" fontSize={11} fontWeight="bold"
+            style={{ fontVariantNumeric: 'tabular-nums' }}>
+            {timeLeft}
+          </text>
+        </svg>
+
+        {/* Stats */}
         <div style={{
-          height: 6, borderRadius: 3, background: 'var(--card2)',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${timerPct}%`,
-            background: timerColor,
-            transition: 'width 1s linear, background 0.3s',
-            borderRadius: 3,
-          }} />
-        </div>
-      </div>
-
-
-      {/* Problem card */}
-      <div
-        className="card w-full text-center"
-        style={{
-          maxWidth: 520,
-          padding: '40px 32px',
-          position: 'relative',
-          border: feedback
-            ? `2px solid ${feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)'}`
-            : '1px solid var(--border)',
-          transition: 'border-color 0.2s',
-        }}
-      >
-        {/* Difficulty hint */}
-        <span className={`tag ${difficultyTag.cls}`} style={{ position: 'absolute', top: 16, right: 16 }}>
-          {difficultyTag.label}
-        </span>
-
-        {/* Dot array — only for base-10 problems (beginner scaffold) */}
-        {problem.a <= 10 && problem.b <= 10 && (
-          <div className="row-center mb-2">
-            <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
-          </div>
-        )}
-
-        {/* Equation */}
-        <div style={{
-          fontSize: 64,
-          fontWeight: 800,
-          letterSpacing: -2,
-          marginBottom: 32,
+          marginLeft: 'auto',
+          color: 'rgba(255,255,255,0.9)',
+          fontSize: 14, fontWeight: 600,
           fontVariantNumeric: 'tabular-nums',
         }}>
-          {problem.a} × {problem.b} = ?
+          {isDiagnostic
+            ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b></>
+            : <>✓&nbsp;{correct}/{answered}&nbsp;·&nbsp;{score.toFixed(1)}</>
+          }
+        </div>
+      </header>
+
+      {/* ── Middle content — centered between bars ─────────────────── */}
+      <main style={{
+        position: 'fixed',
+        top: TOP_H, left: 0, right: 0, bottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: '32px 24px 268px',
+        gap: 28,
+        overflowY: 'auto',
+      }}>
+        {/* Row: dot grid (left) + difficulty tag (right) */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          width: '100%', maxWidth: 380,
+        }}>
+          {problem.a <= 10 && problem.b <= 10
+            ? <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} cellSize={8} />
+            : <div />
+          }
+          <span className={`tag ${difficultyTag.cls}`} style={{ flexShrink: 0, marginTop: 2 }}>
+            {difficultyTag.label}
+          </span>
         </div>
 
-        {/* Feedback overlay */}
+        {/* Equation or feedback */}
         {feedback ? (
-          <div className="mb-2">
+          <div style={{ textAlign: 'center' }}>
             <div style={{
-              fontSize: 32,
-              fontWeight: 700,
+              fontSize: 32, fontWeight: 700,
               color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
             }}>
               {feedback.isCorrect
@@ -599,13 +620,20 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                 : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
             </div>
             {!feedback.isCorrect && (
-              <div className="text-sm text-muted mt-2 tabular-nums">
-                {getRechenweg(problem.a, problem.b).hint}
-              </div>
+              <div className="text-sm text-muted mt-2">{getRechenweg(problem.a, problem.b).hint}</div>
             )}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="row-center gap-12">
+          <form onSubmit={handleSubmit} style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            flexWrap: 'wrap', justifyContent: 'center',
+          }}>
+            <span style={{
+              fontSize: 48, fontWeight: 800, letterSpacing: -1,
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {problem.a}&nbsp;×&nbsp;{problem.b}&nbsp;=
+            </span>
             <input
               ref={inputRef}
               className="field"
@@ -616,11 +644,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
               onChange={e => !isTouchDevice && setInput(e.target.value)}
               placeholder="?"
               style={{
-                width: 140,
-                textAlign: 'center',
-                fontSize: 28,
-                fontWeight: 700,
-                padding: '10px 16px',
+                width: 96, textAlign: 'center',
+                fontSize: 32, fontWeight: 700,
+                padding: '8px 12px', borderRadius: 12,
                 caretColor: isTouchDevice ? 'transparent' : undefined,
               }}
               autoFocus={!isTouchDevice}
@@ -629,26 +655,25 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
             <button
               className="btn btn-primary"
               type="submit"
-              style={{ fontSize: 20, padding: '10px 20px' }}
+              style={{ fontSize: 22, padding: '10px 18px', borderRadius: 12 }}
               disabled={timeLeft === 0 || !input.trim()}
-            >
-              ↵
-            </button>
+            >↵</button>
           </form>
         )}
-      </div>
+      </main>
 
-      {/* Numpad */}
-      <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
-
-      {/* End sprint button */}
-      <button
-        className="btn btn-secondary text-base"
-        onClick={handleEnd}
-        disabled={ending}
-      >
-        {ending ? t('sprint.ending') : t('sprint.endSprint')}
-      </button>
-    </div>
+      {/* ── Fixed bottom numpad ────────────────────────────────────── */}
+      <footer style={{
+        position: 'fixed',
+        bottom: 0, left: 0, right: 0, zIndex: 100,
+        background: 'var(--card)',
+        borderTop: '1px solid var(--border)',
+        padding: '10px 16px',
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
+        display: 'flex', justifyContent: 'center',
+      }}>
+        <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
+      </footer>
+    </>
   );
 }
