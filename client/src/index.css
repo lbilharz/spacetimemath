@@ -19,7 +19,7 @@
 }
 
 html, body, #root {
-  height: 100dvh; /* dvh adjusts as Safari URL bar / toolbar shows and hides */
+  min-height: 100dvh; /* min not fixed — lets document grow so Safari chrome auto-hides on scroll */
   font-family: 'DM Sans Variable', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
   background: var(--bg);
   color: var(--text);
@@ -34,15 +34,14 @@ html.is-native, html.is-native body, html.is-native #root {
 body {
   /* push content below status bar / Dynamic Island on iOS */
   padding-top: env(safe-area-inset-top);
-  overflow: hidden; /* no body scroll — content-area scrolls internally */
+  overflow: auto; /* document scrolls — triggers Safari chrome auto-hide on scroll */
 }
 
-/* App shell: rigid viewport column so BottomNav never needs position:fixed */
+/* App shell: flex column, grows with content so document scroll triggers Safari chrome hide */
 #root {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
 }
 
 /* ─── Desktop top navigation bar ─────────────────────────── */
@@ -59,14 +58,17 @@ body {
 }
 
 /* ─── Bottom tab bar ─────────────────────────────────────── */
-/* Natural flex item — no position:fixed needed (avoids iOS jitter) */
 .bottomnav {
-  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   background: var(--card);
   border-top: 1px solid var(--border);
   display: none;          /* hidden on desktop */
   align-items: stretch;
-  padding-bottom: max(calc(env(safe-area-inset-bottom) / 2), 2px);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Thin back-navigation strip (classroom, results) */
@@ -80,11 +82,9 @@ body {
   flex-shrink: 0;
 }
 
-/* Page content wrapper — scrolls internally */
+/* Page content wrapper — document scrolls (no inner overflow) */
 .content-area {
   flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -92,9 +92,9 @@ body {
   padding: 28px 16px 48px;
 }
 
-/* Bottom nav is outside the scroll area, no extra padding needed */
+/* Extra bottom padding to clear the fixed bottom nav (~45px buttons + safe area) */
 .content-area.has-bottom-nav {
-  padding-bottom: 24px;
+  padding-bottom: calc(53px + env(safe-area-inset-bottom) + 8px);
 }
 
 /* ─── Mobile (portrait / narrow) overrides ───────────────── */
