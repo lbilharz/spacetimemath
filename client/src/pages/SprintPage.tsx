@@ -519,123 +519,151 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     );
   }
 
+  // Circular countdown ring
+  const RING_R = 30;
+  const RING_CIRC = 2 * Math.PI * RING_R;
+  const ringOffset = RING_CIRC * (1 - timerPct);
+
   return (
-    <div className="page" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '80vh', gap: 24 }}>
+    <div className="page" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '80vh', gap: 16 }}>
 
-      {/* Timer bar */}
-      <div className="w-full" style={{ maxWidth: 520 }}>
-        <div className="row-between" style={{ marginBottom: 6 }}>
-          <span className="text-sm text-muted">
-            {isDiagnostic
-              ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b>{' · '}{DIAGNOSTIC_PHASE_LABELS[Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3)]}</>
-              : t('sprint.stats', { correct, answered })
-            }
-          </span>
-          <span className="text-sm text-muted">
-            {t('sprint.score')} <b className="text-warn">{score.toFixed(1)}</b>
-          </span>
-        </div>
-        <div style={{
-          height: 6, borderRadius: 3, background: 'var(--card2)',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${timerPct}%`,
-            background: timerColor,
-            transition: 'width 1s linear, background 0.3s',
-            borderRadius: 3,
-          }} />
-        </div>
+      {/* Stats row — replaces linear timer bar */}
+      <div className="w-full row-between" style={{ maxWidth: 520 }}>
+        <span className="text-sm text-muted">
+          {isDiagnostic
+            ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b>{' · '}{DIAGNOSTIC_PHASE_LABELS[Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3)]}</>
+            : t('sprint.stats', { correct, answered })
+          }
+        </span>
+        <span className="text-sm text-muted">
+          {t('sprint.score')} <b className="text-warn">{score.toFixed(1)}</b>
+        </span>
       </div>
-
 
       {/* Problem card */}
       <div
-        className="card w-full text-center"
+        className="card w-full"
         style={{
           maxWidth: 520,
-          padding: '40px 32px',
-          position: 'relative',
+          padding: '20px 24px',
           border: feedback
             ? `2px solid ${feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)'}`
             : '1px solid var(--border)',
           transition: 'border-color 0.2s',
         }}
       >
-        {/* Difficulty hint */}
-        <span className={`tag ${difficultyTag.cls}`} style={{ position: 'absolute', top: 16, right: 16 }}>
-          {difficultyTag.label}
-        </span>
+        {/* Top row: dot grid + circular timer */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
+          {/* Dot array — only for base-10 problems */}
+          {problem.a <= 10 && problem.b <= 10 ? (
+            <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} cellSize={8} />
+          ) : (
+            <div />
+          )}
 
-        {/* Dot array — only for base-10 problems (beginner scaffold) */}
-        {problem.a <= 10 && problem.b <= 10 && (
-          <div className="row-center mb-2">
-            <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} />
+          {/* Circular countdown + difficulty tag */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <svg width={74} height={74} viewBox="0 0 74 74">
+              {/* Navy background */}
+              <rect width={74} height={74} rx={14} fill="#2C3E50" />
+              {/* Track ring */}
+              <circle
+                cx={37} cy={37} r={RING_R}
+                fill="none"
+                stroke="rgba(255,255,255,0.12)"
+                strokeWidth={5}
+              />
+              {/* Progress ring — depletes clockwise */}
+              <circle
+                cx={37} cy={37} r={RING_R}
+                fill="none"
+                stroke={timerColor}
+                strokeWidth={5}
+                strokeLinecap="round"
+                strokeDasharray={RING_CIRC}
+                strokeDashoffset={ringOffset}
+                transform="rotate(-90 37 37)"
+                style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
+              />
+              {/* Seconds */}
+              <text
+                x={37} y={42}
+                textAnchor="middle"
+                fill="white"
+                fontSize={22}
+                fontWeight={800}
+                fontFamily="inherit"
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+              >
+                {timeLeft}
+              </text>
+            </svg>
+            <span className={`tag ${difficultyTag.cls}`}>{difficultyTag.label}</span>
           </div>
-        )}
-
-        {/* Equation */}
-        <div style={{
-          fontSize: 64,
-          fontWeight: 800,
-          letterSpacing: -2,
-          marginBottom: 32,
-          fontVariantNumeric: 'tabular-nums',
-        }}>
-          {problem.a} × {problem.b} = ?
         </div>
 
-        {/* Feedback overlay */}
-        {feedback ? (
-          <div className="mb-2">
-            <div style={{
-              fontSize: 32,
-              fontWeight: 700,
-              color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
-            }}>
-              {feedback.isCorrect
-                ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
-                : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
-            </div>
-            {!feedback.isCorrect && (
-              <div className="text-sm text-muted mt-2 tabular-nums">
-                {getRechenweg(problem.a, problem.b).hint}
-              </div>
-            )}
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="row-center gap-12">
-            <input
-              ref={inputRef}
-              className="field"
-              type="number"
-              inputMode={isTouchDevice ? 'none' : 'numeric'}
-              readOnly={isTouchDevice}
-              value={input}
-              onChange={e => !isTouchDevice && setInput(e.target.value)}
-              placeholder="?"
-              style={{
-                width: 140,
-                textAlign: 'center',
-                fontSize: 28,
+        {/* Equation + answer inline */}
+        <div style={{ textAlign: 'center' }}>
+          {feedback ? (
+            <div style={{ padding: '8px 0' }}>
+              <div style={{
+                fontSize: 32,
                 fontWeight: 700,
-                padding: '10px 16px',
-                caretColor: isTouchDevice ? 'transparent' : undefined,
-              }}
-              autoFocus={!isTouchDevice}
-              disabled={timeLeft === 0}
-            />
-            <button
-              className="btn btn-primary"
-              type="submit"
-              style={{ fontSize: 20, padding: '10px 20px' }}
-              disabled={timeLeft === 0 || !input.trim()}
-            >
-              ↵
-            </button>
-          </form>
-        )}
+                color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
+              }}>
+                {feedback.isCorrect
+                  ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
+                  : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
+              </div>
+              {!feedback.isCorrect && (
+                <div className="text-sm text-muted mt-2 tabular-nums">
+                  {getRechenweg(problem.a, problem.b).hint}
+                </div>
+              )}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+              <span style={{
+                fontSize: 52,
+                fontWeight: 800,
+                letterSpacing: -1,
+                fontVariantNumeric: 'tabular-nums',
+                lineHeight: 1.1,
+              }}>
+                {problem.a} × {problem.b} =
+              </span>
+              <input
+                ref={inputRef}
+                className="field"
+                type="number"
+                inputMode={isTouchDevice ? 'none' : 'numeric'}
+                readOnly={isTouchDevice}
+                value={input}
+                onChange={e => !isTouchDevice && setInput(e.target.value)}
+                placeholder="?"
+                style={{
+                  width: 90,
+                  textAlign: 'center',
+                  fontSize: 36,
+                  fontWeight: 700,
+                  padding: '8px 10px',
+                  caretColor: isTouchDevice ? 'transparent' : undefined,
+                  flexShrink: 0,
+                }}
+                autoFocus={!isTouchDevice}
+                disabled={timeLeft === 0}
+              />
+              <button
+                className="btn btn-primary"
+                type="submit"
+                style={{ fontSize: 20, padding: '10px 16px', flexShrink: 0 }}
+                disabled={timeLeft === 0 || !input.trim()}
+              >
+                ↵
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       {/* Numpad */}
