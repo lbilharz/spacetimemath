@@ -587,8 +587,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        padding: '32px 24px 268px',
+        justifyContent: 'center',
+        padding: '16px 24px 268px',
         gap: 28,
         overflowY: 'auto',
       }}>
