@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-17 after v1.1 milestone)
 Milestone v1.1 complete and archived (2 phases, 2 plans).
 Status: Ready for `/gsd:new-milestone` to start v1.2
 
-Last activity: 2026-03-18 — Completed quick task 260318-ss6: updated iOS bundle ID to net.bilharz.oneup in both Debug and Release configurations
+Last activity: 2026-03-18 — Completed quick task 260318-v10: centered sprint screen content vertically using flexbox center + 268px bottom padding
 
 Progress: [██████████] 100% (2/2 phases complete)
 
@@ -40,9 +40,10 @@ Progress: [██████████] 100% (2/2 phases complete)
 | 260317-war | style login cards — branded PDF (navy header, 1UP logo, QR, clean layout) | 2026-03-18 | 5d557aa | [260317-war-style-login-cards](./quick/260317-war-style-login-cards/) |
 | 260318-ovz | iOS App Store prep: fix bundle ID + display name, sync web assets (Tasks 2-3 await human) | 2026-03-18 | 6835c41 | [260318-ovz-publish-in-ios-store](./quick/260318-ovz-publish-in-ios-store/) |
 | 260318-ss6 | change iOS bundle ID to net.bilharz.oneup in Xcode project (Debug + Release) | 2026-03-18 | cc2e555 | [260318-ss6-change-ios-bundle-id-to-net-bilharz-oneu](./quick/260318-ss6-change-ios-bundle-id-to-net-bilharz-oneu/) |
+| 260318-v10 | center sprint screen content vertically between header and numpad on tall devices | 2026-03-18 | 8e7e710 | [260318-v10-center-sprint-screen-content-vertically-](./quick/260318-v10-center-sprint-screen-content-vertically-/) |
 
 ## Session Continuity
 
 Last session: 2026-03-18
-Stopped at: Completed quick-260318-ss6 (bundle ID updated to net.bilharz.oneup)
+Stopped at: Completed quick-260318-v10 (sprint screen content centered vertically)
 Resume file: None
