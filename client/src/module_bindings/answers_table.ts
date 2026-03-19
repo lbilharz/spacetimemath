@@ -19,6 +19,6 @@ export default __t.row({
   userAnswer: __t.u32().name("user_answer"),
   isCorrect: __t.bool().name("is_correct"),
   responseMs: __t.u32().name("response_ms"),
-  attempts: __t.u8(),
   answeredAt: __t.timestamp().name("answered_at"),
+  attempts: __t.u8(),
 });

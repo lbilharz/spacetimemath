@@ -75,9 +75,9 @@ pub struct Answer {
     pub user_answer: u32,
     pub is_correct: bool,
     pub response_ms: u32,
+    pub answered_at: Timestamp,
     #[default(1)]
     pub attempts: u8,
-    pub answered_at: Timestamp,
 }
 
 /// SEC-10: Server-issued problem token table.
