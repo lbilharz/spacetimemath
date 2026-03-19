@@ -376,8 +376,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       setInput('');
       setTimeout(() => {
         setFeedback(null);
-        // Reset response timer so next attempt measures fresh
-        problemStartRef.current = Date.now();
         if (!('ontouchstart' in window)) inputRef.current?.focus();
       }, 800);
       return;
