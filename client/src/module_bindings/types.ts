@@ -19,6 +19,7 @@ export const Answer = __t.object("Answer", {
   userAnswer: __t.u32(),
   isCorrect: __t.bool(),
   responseMs: __t.u32(),
+  attempts: __t.u8(),
   answeredAt: __t.timestamp(),
 });
 export type Answer = __Infer<typeof Answer>;

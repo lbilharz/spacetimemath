@@ -10,15 +10,13 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
-export default __t.row({
-  id: __t.u64().primaryKey(),
-  playerIdentity: __t.identity().name("player_identity"),
-  sessionId: __t.u64().name("session_id"),
+export default {
+  id: __t.u64(),
+  sessionId: __t.u64(),
   a: __t.u8(),
   b: __t.u8(),
-  userAnswer: __t.u32().name("user_answer"),
-  isCorrect: __t.bool().name("is_correct"),
-  responseMs: __t.u32().name("response_ms"),
-  attempts: __t.u8(),
-  answeredAt: __t.timestamp().name("answered_at"),
-});
+  userAnswer: __t.u32(),
+  isCorrect: __t.bool(),
+  responseMs: __t.u32(),
+  answeredAtMicros: __t.i64(),
+};

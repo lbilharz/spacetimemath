@@ -202,6 +202,7 @@ pub fn submit_answer(
     b: u8,
     user_answer: u32,
     response_ms: u32,
+    attempts: u8,
     problem_token: String,
 ) -> Result<(), String> {
     let sender = ctx.sender();
@@ -211,6 +212,11 @@ pub fn submit_answer(
         .ok_or("Session not found")?;
     if session.player_identity != sender { return Err("Not your session".into()); }
     if session.is_complete { return Err("Session already complete".into()); }
+
+    // Validate attempts
+    if attempts < 1 {
+        return Err("Attempts must be at least 1".into());
+    }
 
     // SEC-05: response_ms bounds
     if response_ms < MIN_RESPONSE_MS {
@@ -273,6 +279,7 @@ pub fn submit_answer(
             user_answer,
             is_correct,
             response_ms,
+            attempts,
             answered_at: ctx.timestamp,
         }).is_ok() { break; }
     }

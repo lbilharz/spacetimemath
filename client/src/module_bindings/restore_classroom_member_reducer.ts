@@ -11,11 +11,6 @@ import {
 } from "spacetimedb";
 
 export default {
-  sessionId: __t.u64(),
-  a: __t.u8(),
-  b: __t.u8(),
-  userAnswer: __t.u32(),
-  responseMs: __t.u32(),
-  attempts: __t.u8(),
-  problemToken: __t.string(),
+  classroomId: __t.u64(),
+  hidden: __t.bool(),
 };

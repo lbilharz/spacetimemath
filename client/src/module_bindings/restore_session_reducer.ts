@@ -11,11 +11,12 @@ import {
 } from "spacetimedb";
 
 export default {
-  sessionId: __t.u64(),
-  a: __t.u8(),
-  b: __t.u8(),
-  userAnswer: __t.u32(),
-  responseMs: __t.u32(),
-  attempts: __t.u8(),
-  problemToken: __t.string(),
+  id: __t.u64(),
+  username: __t.string(),
+  weightedScore: __t.f32(),
+  rawScore: __t.u32(),
+  accuracyPct: __t.u8(),
+  totalAnswered: __t.u32(),
+  isComplete: __t.bool(),
+  startedAtMicros: __t.i64(),
 };

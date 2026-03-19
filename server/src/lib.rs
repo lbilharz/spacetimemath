@@ -75,6 +75,8 @@ pub struct Answer {
     pub user_answer: u32,
     pub is_correct: bool,
     pub response_ms: u32,
+    #[default(1)]
+    pub attempts: u8,
     pub answered_at: Timestamp,
 }
 
@@ -512,6 +514,7 @@ pub fn restore_answer(
         user_answer,
         is_correct,
         response_ms,
+        attempts: 1, // legacy restore data: treat as first-attempt correct
         answered_at: Timestamp::from_micros_since_unix_epoch(answered_at_micros),
     });
     Ok(())

@@ -47,6 +47,7 @@ import IssueProblemReducer from "./issue_problem_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
+import MigrateCloseOrphanSessionsReducer from "./migrate_close_orphan_sessions_reducer";
 import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
 import MigrateRecomputeTiersV2Reducer from "./migrate_recompute_tiers_v_2_reducer";
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
@@ -57,6 +58,13 @@ import NextProblemReducer from "./next_problem_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
 import RestoreAccountReducer from "./restore_account_reducer";
+import RestoreAnswerReducer from "./restore_answer_reducer";
+import RestoreBestScoreReducer from "./restore_best_score_reducer";
+import RestoreClassroomReducer from "./restore_classroom_reducer";
+import RestoreClassroomMemberReducer from "./restore_classroom_member_reducer";
+import RestorePlayerFullReducer from "./restore_player_full_reducer";
+import RestoreRecoveryKeyReducer from "./restore_recovery_key_reducer";
+import RestoreSessionReducer from "./restore_session_reducer";
 import SetExtendedModeReducer from "./set_extended_mode_reducer";
 import SetLearningTierReducer from "./set_learning_tier_reducer";
 import SetUsernameReducer from "./set_username_reducer";
@@ -300,6 +308,7 @@ const reducersSchema = __reducers(
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
+  __reducerSchema("migrate_close_orphan_sessions", MigrateCloseOrphanSessionsReducer),
   __reducerSchema("migrate_recompute_tiers", MigrateRecomputeTiersReducer),
   __reducerSchema("migrate_recompute_tiers_v_2", MigrateRecomputeTiersV2Reducer),
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
@@ -310,6 +319,13 @@ const reducersSchema = __reducers(
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("restore_account", RestoreAccountReducer),
+  __reducerSchema("restore_answer", RestoreAnswerReducer),
+  __reducerSchema("restore_best_score", RestoreBestScoreReducer),
+  __reducerSchema("restore_classroom", RestoreClassroomReducer),
+  __reducerSchema("restore_classroom_member", RestoreClassroomMemberReducer),
+  __reducerSchema("restore_player_full", RestorePlayerFullReducer),
+  __reducerSchema("restore_recovery_key", RestoreRecoveryKeyReducer),
+  __reducerSchema("restore_session", RestoreSessionReducer),
   __reducerSchema("set_extended_mode", SetExtendedModeReducer),
   __reducerSchema("set_learning_tier", SetLearningTierReducer),
   __reducerSchema("set_username", SetUsernameReducer),
