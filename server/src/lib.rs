@@ -685,12 +685,24 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
         let sprint_tier: Vec<_> = sprint_answers.iter()
             .filter(|a| pair_learning_tier(a.a, a.b) == Some(check_tier))
             .collect();
+        // Brilliant sprint fast-track: ≥85% accuracy AND avg response < 3000ms → instant unlock
+        if !sprint_tier.is_empty() {
+            let sprint_correct = sprint_tier.iter().filter(|a| a.is_correct).count();
+            let sprint_acc = sprint_correct as f32 / sprint_tier.len() as f32;
+            let sprint_avg_ms = sprint_tier.iter().map(|a| a.response_ms as u64).sum::<u64>()
+                / sprint_tier.len() as u64;
+            if sprint_acc >= 0.85 && sprint_avg_ms < 3000 {
+                new_tier = target_tier;
+                continue;
+            }
+        }
+
         let speed_bonus = !sprint_tier.is_empty()
             && sprint_tier.iter().filter(|a| a.response_ms < 2000).count() as f32
                / sprint_tier.len() as f32 >= 0.8;
-        let threshold = if speed_bonus { 0.5_f32 } else { 0.8_f32 };
+        let threshold = if speed_bonus { 0.5_f32 } else { 0.6_f32 };
 
-        // Count mastered pairs (last-10 accuracy ≥80%)
+        // Count mastered pairs (last-3 accuracy ≥80%)
         let mut mastered = 0u32;
         for (a, b) in &tier_pairs {
             let mut pair: Vec<_> = my_answers.iter()
@@ -698,7 +710,7 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
                 .collect();
             if pair.is_empty() { continue; }
             pair.sort_by_key(|ans| ans.id);
-            let recent: Vec<_> = pair.iter().rev().take(10).collect();
+            let recent: Vec<_> = pair.iter().rev().take(3).collect();
             let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
                 / recent.len() as f32;
             if acc >= 0.8 { mastered += 1; }
