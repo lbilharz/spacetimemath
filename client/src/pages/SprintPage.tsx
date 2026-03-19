@@ -193,10 +193,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   const lastKeyRef = useRef<number | undefined>(undefined);
   const problemStartRef = useRef(Date.now());
+  const attemptCountRef = useRef(1);
   const sessionIdRef = useRef<bigint | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   // SEC-10: queue an answer if the token hasn't arrived yet, retry when it does
-  const pendingAnswerRef = useRef<{ sessionId: bigint; a: number; b: number; userAnswer: number; responseMs: number } | null>(null);
+  const pendingAnswerRef = useRef<{ sessionId: bigint; a: number; b: number; userAnswer: number; responseMs: number; attempts: number } | null>(null);
 
   // 0. Sync timeLeft with SPRINT_DURATION (solo) or server startedAt (class sprint)
   useEffect(() => {
@@ -291,6 +292,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       setProblem(p);
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
+      attemptCountRef.current = 1;
       if (sessionIdRef.current !== null) {
         issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
       }
@@ -308,6 +310,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
     setProblem({ a: row.a, b: row.b });
     problemStartRef.current = Date.now();
+    attemptCountRef.current = 1;
     if (!('ontouchstart' in window)) inputRef.current?.focus();
   }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex]);
 
@@ -372,6 +375,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (!isCorrect) {
       // Wrong answer: show "try again" feedback, keep same problem, NO server submission
       hapticBad();
+      attemptCountRef.current += 1;
       setFeedback({ isCorrect: false, points: 0, correct: correct_answer });
       setInput('');
       setTimeout(() => {
@@ -391,12 +395,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         );
     if (!tokenRow) {
       // Token not yet available — queue and retry when it arrives (useEffect below)
-      pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs };
+      pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts: attemptCountRef.current };
       return;
     }
 
     // Correct answer: submit to SpaceTimeDB (fire-and-forget to keep UX fast)
-    submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, problemToken: tokenRow.token });
+    submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts: attemptCountRef.current, problemToken: tokenRow.token });
 
     // Update local score display
     setAnswered(n => n + 1);
@@ -423,6 +427,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         setProblem(next);
         lastKeyRef.current = next.a * 100 + next.b;
         problemStartRef.current = Date.now();
+        attemptCountRef.current = 1;
         if (sessionIdRef.current !== null) {
           issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
         }
