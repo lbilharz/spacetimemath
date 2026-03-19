@@ -318,9 +318,18 @@ pub fn migrate_recompute_tiers(ctx: &ReducerContext) -> Result<(), String> {
                 if pair.is_empty() { continue; }
                 pair.sort_by_key(|ans| ans.id);
                 let recent: Vec<_> = pair.iter().rev().take(10).collect();
-                let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
-                    / recent.len() as f32;
-                if acc >= 0.8 { mastered += 1; }
+                let weighted_acc: f32 = recent.iter().map(|ans| {
+                    if !ans.is_correct {
+                        0.0
+                    } else {
+                        match ans.attempts {
+                            0 | 1 => 1.0, // 0 = legacy data (default), treat as 1st attempt
+                            2 => 0.6,
+                            _ => 0.3,     // 3+ attempts
+                        }
+                    }
+                }).sum::<f32>() / recent.len() as f32;
+                if weighted_acc >= 0.8 { mastered += 1; }
             }
             if mastered as f32 / total >= 0.8 {
                 earned_tier = target_tier;
@@ -705,7 +714,8 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
                / sprint_tier.len() as f32 >= 0.8;
         let threshold = if speed_bonus { 0.5_f32 } else { 0.6_f32 };
 
-        // Count mastered pairs (last-3 accuracy ≥80%)
+        // Count mastered pairs using attempts-weighted accuracy (last-3)
+        // 1st-attempt correct = 1.0, 2nd-attempt = 0.6, 3+ attempts = 0.3, wrong = 0.0
         let mut mastered = 0u32;
         for (a, b) in &tier_pairs {
             let mut pair: Vec<_> = my_answers.iter()
@@ -714,9 +724,18 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
             if pair.is_empty() { continue; }
             pair.sort_by_key(|ans| ans.id);
             let recent: Vec<_> = pair.iter().rev().take(3).collect();
-            let acc = recent.iter().filter(|ans| ans.is_correct).count() as f32
-                / recent.len() as f32;
-            if acc >= 0.8 { mastered += 1; }
+            let weighted_acc: f32 = recent.iter().map(|ans| {
+                if !ans.is_correct {
+                    0.0
+                } else {
+                    match ans.attempts {
+                        0 | 1 => 1.0, // 0 = legacy data (default), treat as 1st attempt
+                        2 => 0.6,
+                        _ => 0.3,     // 3+ attempts
+                    }
+                }
+            }).sum::<f32>() / recent.len() as f32;
+            if weighted_acc >= 0.8 { mastered += 1; }
         }
 
         if mastered as f32 / total >= threshold {
