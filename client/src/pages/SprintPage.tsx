@@ -369,6 +369,20 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     const stat = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
     const pts = isCorrect ? (stat?.difficultyWeight ?? 1.0) : 0;
 
+    if (!isCorrect) {
+      // Wrong answer: show "try again" feedback, keep same problem, NO server submission
+      hapticBad();
+      setFeedback({ isCorrect: false, points: 0, correct: correct_answer });
+      setInput('');
+      setTimeout(() => {
+        setFeedback(null);
+        // Reset response timer so next attempt measures fresh
+        problemStartRef.current = Date.now();
+        if (!('ontouchstart' in window)) inputRef.current?.focus();
+      }, 800);
+      return;
+    }
+
     // SEC-10: Get the current token for this player (source differs by sprint type)
     const tokenRow = isDiagnostic
       ? (issuedProblemResults as unknown as IssuedProblemResult[]).find(
@@ -383,23 +397,16 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       return;
     }
 
-    // Submit to SpaceTimeDB (fire-and-forget to keep UX fast)
+    // Correct answer: submit to SpaceTimeDB (fire-and-forget to keep UX fast)
     submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, problemToken: tokenRow.token });
-
-    // Wrong answer: -2s penalty (solo only — class sprint timer is server-time derived)
-    if (!isCorrect && classSprintId === undefined) {
-      setTimeLeft(t => Math.max(0, t - 2));
-    }
 
     // Update local score display
     setAnswered(n => n + 1);
-    if (isCorrect) {
-      setCorrect(n => n + 1);
-      setScore(s => +(s + pts).toFixed(2));
-    }
+    setCorrect(n => n + 1);
+    setScore(s => +(s + pts).toFixed(2));
 
-    const fb = { isCorrect, points: pts, correct: correct_answer };
-    if (isCorrect) hapticGood(); else hapticBad();
+    const fb = { isCorrect: true, points: pts, correct: correct_answer };
+    hapticGood();
     setFeedback(fb);
     setInput('');
 
@@ -424,7 +431,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         if (!('ontouchstart' in window)) inputRef.current?.focus();
       }
       // Normal sprint: problem already set via subscription effect (pre-fetched above)
-    }, !fb.isCorrect ? 1000 : 600);
+    }, 600);
   }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
       nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
       issueProblem, input, SPRINT_DURATION]);
@@ -617,7 +624,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
             }}>
               {feedback.isCorrect
                 ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
-                : t('sprint.feedbackWrong', { a: problem.a, b: problem.b, correct: feedback.correct })}
+                : t('sprint.feedbackTryAgain')}
             </div>
             {!feedback.isCorrect && (
               <div className="text-sm text-muted mt-2">{getRechenweg(problem.a, problem.b).hint}</div>

@@ -93,6 +93,7 @@
     "tagEasy": "✓ Leicht",
     "feedbackCorrect": "✓ +{{points}} Pkt.",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
+    "feedbackTryAgain": "Nochmal!",
     "ending": "Wird beendet…",
     "endSprint": "Sprint beenden",
     "phase": "Phase"
