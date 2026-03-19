@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-17 after v1.1 milestone)
 Milestone v1.1 complete and archived (2 phases, 2 plans).
 Status: Ready for `/gsd:new-milestone` to start v1.2
 
-Last activity: 2026-03-18 — Completed quick task 260318-v10: centered sprint screen content vertically using flexbox center + 268px bottom padding
+Last activity: 2026-03-19 — Completed quick task 260319-21o: tuned tier advancement with last-3 lookback, 60% pairs threshold, and brilliant-sprint fast-track
 
 Progress: [██████████] 100% (2/2 phases complete)
 
@@ -41,9 +41,10 @@ Progress: [██████████] 100% (2/2 phases complete)
 | 260318-ovz | iOS App Store prep: fix bundle ID + display name, sync web assets (Tasks 2-3 await human) | 2026-03-18 | 6835c41 | [260318-ovz-publish-in-ios-store](./quick/260318-ovz-publish-in-ios-store/) |
 | 260318-ss6 | change iOS bundle ID to net.bilharz.oneup in Xcode project (Debug + Release) | 2026-03-18 | cc2e555 | [260318-ss6-change-ios-bundle-id-to-net-bilharz-oneu](./quick/260318-ss6-change-ios-bundle-id-to-net-bilharz-oneu/) |
 | 260318-v10 | center sprint screen content vertically between header and numpad on tall devices | 2026-03-18 | 8e7e710 | [260318-v10-center-sprint-screen-content-vertically-](./quick/260318-v10-center-sprint-screen-content-vertically-/) |
+| 260319-21o | tune tier advancement: last-3 window, 60% pairs threshold, brilliant-sprint fast-track | 2026-03-19 | 9183c8f | [260319-21o-tune-tier-advancement-last-3-window-60-p](./quick/260319-21o-tune-tier-advancement-last-3-window-60-p/) |
 
 ## Session Continuity
 
-Last session: 2026-03-18
-Stopped at: Completed quick-260318-v10 (sprint screen content centered vertically)
+Last session: 2026-03-19
+Stopped at: Completed quick-260319-21o (tier advancement tuning: last-3 window, 60% threshold, brilliant-sprint fast-track)
 Resume file: None
