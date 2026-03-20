@@ -22,7 +22,7 @@
 
 ## Overview
 
-Better 1UP is a high-speed, adaptive multiplication trainer. It features a completely redesigned, premium "Concept 3 Grid" UI that offers tactile feedback, progressive web app (PWA) mobile support, and seamless multiplayer synchronization.
+Better 1UP is a high-speed, adaptive multiplication trainer. It features a UI that offers tactile feedback, progressive web app (PWA) mobile support, and seamless multiplayer synchronization.
 
 ### What's New
 - **Internationalization (i18n):** Fully translated into English, German, Turkish, and Arabic.
