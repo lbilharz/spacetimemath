@@ -10,6 +10,8 @@ import { QRCodeSVG } from 'qrcode.react';
 interface Props {
   myIdentityHex: string;
   classroomId: bigint;
+  onStartSprint: (id: bigint) => void;
+  onStartClassSprint: (csId: bigint) => void;
   onLeave: () => void;
 }
 

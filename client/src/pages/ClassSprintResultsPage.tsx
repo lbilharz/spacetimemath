@@ -7,6 +7,7 @@ import MasteryGrid from '../components/MasteryGrid.js';
 interface Props {
   classSprintId: bigint;
   myIdentityHex: string;
+  onBack: () => void;
 }
 
 const ResultsIcon = ({ className }: { className?: string }) => (

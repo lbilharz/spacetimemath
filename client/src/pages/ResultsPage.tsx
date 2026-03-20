@@ -14,6 +14,7 @@ interface Props {
   extendedMode?: boolean;
   newlyUnlockedTier?: number;
   onNextSprint?: () => void;
+  onBack: () => void;
 }
 
 function TierUnlockCelebration({ tier, onContinue }: { tier: number, onContinue: () => void }) {

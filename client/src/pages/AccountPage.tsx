@@ -20,6 +20,7 @@ type Player = {
 interface Props {
   myPlayer: Player;
   myIdentityHex: string;
+  onBack: () => void;
 }
 
 const AccountIcon = ({ className }: { className?: string }) => (
