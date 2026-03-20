@@ -5,6 +5,7 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, ProblemStat, Session } from '../module_bindings/types.js';
 import Leaderboard from '../components/Leaderboard.js';
 import ScoringGuide from '../components/ScoringGuide.js';
+import PageContainer from '../components/PageContainer.js';
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
@@ -104,7 +105,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[100px] sm:pb-[140px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <PageContainer className="pb-[100px] sm:pb-[140px]">
       {/* Recovery key nag for teachers with students */}
       {showNag && (
         <div className="flex flex-wrap items-center gap-3 rounded-xl border-[1.5px] border-amber-400 bg-amber-400/10 p-3 md:p-4">
@@ -224,6 +225,6 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
         problemStats={problemStats as unknown as ProblemStat[]}
         playerLearningTier={myPlayer?.learningTier ?? 0}
       />
-    </div>
+    </PageContainer>
   );
 }

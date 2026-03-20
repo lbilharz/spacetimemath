@@ -6,6 +6,7 @@ import type { RecoveryCodeResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
+import PageContainer from '../components/PageContainer.js';
 
 type Player = {
   identity: { toHexString(): string };
@@ -131,7 +132,7 @@ export default function AccountPage({ myPlayer }: Props) {
 
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[100px] sm:pb-[140px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <PageContainer className="pb-[100px] sm:pb-[140px]">
       <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-3">
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
           <AccountIcon className="drop-shadow-sm scale-110" />
@@ -354,6 +355,6 @@ export default function AccountPage({ myPlayer }: Props) {
           </a>
         ))}
       </div>
-    </div>
+    </PageContainer>
   );
 }

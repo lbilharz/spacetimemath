@@ -3,6 +3,7 @@ import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
 import type { Answer, ClassSprint, Classroom, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
+import PageContainer from '../components/PageContainer.js';
 
 interface Props {
   classSprintId: bigint;
@@ -71,7 +72,7 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
   const medals = ['🥇', '🥈', '🥉'];
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[100px] sm:pb-[140px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <PageContainer className="pb-[100px] sm:pb-[140px]">
       
       {/* Header */}
       <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-4 flex items-center gap-3">
@@ -147,6 +148,6 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
           <MasteryGrid answers={sprintAnswers} problemStats={problemStats as unknown as ProblemStat[]} />
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

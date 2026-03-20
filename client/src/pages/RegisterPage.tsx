@@ -7,6 +7,7 @@ import { reducers, tables } from '../module_bindings/index.js';
 import { capturedToken } from '../auth.js';
 import SplashGrid from '../components/SplashGrid.js';
 import LanguagePicker from '../components/LanguagePicker.js';
+import PageContainer from '../components/PageContainer.js';
 
 interface Props {
   onRegistered: () => void;
@@ -123,7 +124,7 @@ export default function RegisterPage({ onRegistered }: Props) {
   }, [autoRestoreCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="relative flex min-h-[100vh] flex-col items-center justify-center overflow-hidden bg-slate-50 p-6 pb-20 dark:bg-slate-950">
+    <PageContainer maxWidth="none" className="relative min-h-[100vh] items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950">
       {/* Decorative Background Elements */}
       <div className="absolute -top-24 -start-24 h-96 w-96 rounded-full bg-brand-yellow/10 blur-[100px] dark:bg-brand-yellow/5" />
       <div className="absolute top-1/2 -end-24 h-96 w-96 -translate-y-1/2 rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-500/5" />
@@ -277,6 +278,6 @@ export default function RegisterPage({ onRegistered }: Props) {
       <p className="mt-12 max-w-xs text-center text-sm font-medium leading-relaxed text-slate-400 dark:text-slate-500 animate-in fade-in duration-1000 delay-500">
         {t('register.footer')}
       </p>
-    </div>
+    </PageContainer>
   );
 }

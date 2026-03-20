@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Classroom, ClassroomMember } from '../module_bindings/types.js';
+import PageContainer from '../components/PageContainer.js';
 
 interface Props {
   myIdentityHex: string | undefined;
@@ -135,7 +136,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[100px] sm:pb-[140px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <PageContainer className="pb-[100px] sm:pb-[140px]">
       <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-3">
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
           <ClassesIcon className="drop-shadow-sm scale-110" />
@@ -265,6 +266,6 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
         </div>
       )}
 
-    </div>
+    </PageContainer>
   );
 }

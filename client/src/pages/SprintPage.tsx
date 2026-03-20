@@ -109,25 +109,29 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
     }}>
       {NUMPAD_KEYS.map((key) => {
         const isOk = key === 'OK';
-        const isBack = key === '←';
         return (
           <button
             key={key}
             type="button"
             disabled={disabled}
             onClick={() => onKey(key)}
+            className="pressable"
             style={{
               padding: '14px 8px',
               fontSize: 22,
-              fontWeight: isOk ? 700 : 500,
-              background: isOk ? 'var(--accent)' : 'var(--card2)',
-              color: isOk ? '#0a0a1a' : isBack ? 'var(--muted)' : 'var(--text)',
-              border: '1px solid var(--border)',
+              fontWeight: 600,
+              background: isOk ? 'var(--color-brand-yellow)' : '#f1f5f9',
+              color: 'var(--color-brand-text)',
+              border: 'none',
               borderRadius: 12,
               cursor: 'pointer',
               opacity: disabled ? 0.4 : 1,
-              transition: 'opacity 0.15s, background 0.15s',
               WebkitTapHighlightColor: 'transparent',
+              boxShadow: '0 2px 0 rgba(0,0,0,0.05)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
             }}
           >
             {key}
@@ -254,7 +258,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       sessionIdRef.current = null;
       setPreCountdown(null);
     }
-  }, [sessions, sessionId, sprintStarted, classSprintId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sessions, sessionId, sprintStarted, classSprintId]);
 
   // 3a. When session is detected, kick off the pre-countdown
   // Normal sprint: pre-fetch first problem immediately so it arrives before countdown ends
@@ -436,7 +440,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }, 600);
   }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
       nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
-      issueProblem, input, SPRINT_DURATION]);
+      issueProblem, input, SPRINT_DURATION, attempts]);
 
   // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
   useEffect(() => {
@@ -527,11 +531,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   }
 
   // Ring timer constants
-  const TOP_H = 52;
-  const RING_R = 15;
+  const RING_R = 18;
   const RING_C = 2 * Math.PI * RING_R;
   const ringOffset = RING_C * (1 - timeLeft / SPRINT_DURATION);
-
 
   return (
     <>
@@ -539,66 +541,66 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
         background: '#2C3E50',
-        height: TOP_H,
-        display: 'flex', alignItems: 'center',
-        padding: '0 16px', gap: 10,
+        paddingTop: 'calc(8px + env(safe-area-inset-top))',
+        paddingBottom: 12,
+        paddingLeft: 16,
+        paddingRight: 16,
+        display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <button
           onClick={handleEnd} disabled={ending}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.75)', fontSize: 18, lineHeight: 1,
-            padding: '6px 8px', borderRadius: 8,
+            color: 'rgba(255,255,255,0.7)', fontSize: 24, lineHeight: 1,
+            padding: '4px', borderRadius: 8,
             WebkitTapHighlightColor: 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
           aria-label={t('sprint.endSprint')}
         >✕</button>
 
+        <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+          <div style={{ color: 'white', fontWeight: 800, fontSize: 16, lineHeight: 1.2, letterSpacing: '-0.5px' }}>1UP</div>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.2, fontWeight: 500 }}>
+            {isDiagnostic 
+              ? `${t('sprint.phase')} ${Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4`
+              : `✓ ${correct}/${answered} · ${score.toFixed(1)} pts`
+            }
+          </div>
+        </div>
+
         {/* Circular ring timer — one full rotation per 60 s */}
-        <svg width={40} height={40} style={{ flexShrink: 0, display: 'block' }}>
-          <circle cx={20} cy={20} r={RING_R}
-            fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={3.5} />
-          <circle cx={20} cy={20} r={RING_R}
+        <svg width={44} height={44} style={{ flexShrink: 0, display: 'block' }}>
+          <circle cx={22} cy={22} r={RING_R}
+            fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={4} />
+          <circle cx={22} cy={22} r={RING_R}
             fill="none"
-            stroke={timerColor}
-            strokeWidth={3.5}
+            stroke={timerColor === 'var(--accent)' ? '#FBBA00' : timerColor}
+            strokeWidth={4}
             strokeLinecap="round"
             strokeDasharray={RING_C}
             strokeDashoffset={ringOffset}
-            transform="rotate(-90 20 20)"
+            transform="rotate(-90 22 22)"
             style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
           />
-          <text x={20} y={24.5} textAnchor="middle"
-            fill="white" fontSize={11} fontWeight="bold"
-            style={{ fontVariantNumeric: 'tabular-nums' }}>
+          <text x={22} y={26.5} textAnchor="middle"
+            fill="white" fontSize={13} fontWeight="800"
+            style={{ fontVariantNumeric: 'tabular-nums', fontFamily: "'DM Sans', sans-serif" }}>
             {timeLeft}
           </text>
         </svg>
-
-        {/* Stats */}
-        <div style={{
-          marginLeft: 'auto',
-          color: 'rgba(255,255,255,0.9)',
-          fontSize: 14, fontWeight: 600,
-          fontVariantNumeric: 'tabular-nums',
-        }}>
-          {isDiagnostic
-            ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b></>
-            : <>✓&nbsp;{correct}/{answered}&nbsp;·&nbsp;{score.toFixed(1)}</>
-          }
-        </div>
       </header>
 
-      {/* ── Middle content — centered between bars ─────────────────── */}
+      {/* ── Middle content — Flowing from top down ─────────────────── */}
       <main style={{
         position: 'fixed',
-        top: TOP_H, left: 0, right: 0, bottom: 0,
+        top: 'calc(64px + env(safe-area-inset-top))', left: 0, right: 0, bottom: 0,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px 24px 268px',
-        gap: 28,
+        justifyContent: 'flex-start',
+        padding: '32px 24px calc(268px + env(safe-area-inset-bottom))',
+        gap: 24,
         overflowY: 'auto',
       }}>
         {/* Row: dot grid (left) + difficulty tag (right) */}
@@ -619,55 +621,71 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
         {/* Equation or feedback */}
         {feedback ? (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
             <div style={{
-              fontSize: 32, fontWeight: 700,
-              color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
+              fontSize: 32, fontWeight: 800,
+              color: feedback.isCorrect ? '#5DD23C' : '#E8391D',
             }}>
               {feedback.isCorrect
                 ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
                 : t('sprint.feedbackTryAgain')}
             </div>
             {!feedback.isCorrect && (
-              <div className="text-sm text-muted mt-2">{getRechenweg(problem.a, problem.b).hint}</div>
+              <div className="mt-4 px-4 py-2 bg-slate-100 rounded-lg text-sm text-slate-600 font-semibold max-w-[280px]">
+                {getRechenweg(problem.a, problem.b).hint}
+              </div>
             )}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            flexWrap: 'wrap', justifyContent: 'center',
-          }}>
-            <span style={{
-              fontSize: 48, fontWeight: 800, letterSpacing: -1,
-              fontVariantNumeric: 'tabular-nums',
+          <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 8, fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
+              <div style={{ fontSize: 64, fontWeight: 900, color: '#2C3E50', lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
+                {problem.a}&nbsp;×&nbsp;{problem.b}
+              </div>
+            </div>
+            
+            <form onSubmit={handleSubmit} style={{
+              display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'
             }}>
-              {problem.a}&nbsp;×&nbsp;{problem.b}&nbsp;=
-            </span>
-            <input
-              ref={inputRef}
-              className="field"
-              type="number"
-              inputMode={isTouchDevice ? 'none' : 'numeric'}
-              readOnly={isTouchDevice}
-              value={input}
-              onChange={e => !isTouchDevice && setInput(e.target.value)}
-              placeholder="?"
-              style={{
-                width: 96, textAlign: 'center',
-                fontSize: 32, fontWeight: 700,
-                padding: '8px 12px', borderRadius: 12,
-                caretColor: isTouchDevice ? 'transparent' : undefined,
-              }}
-              autoFocus={!isTouchDevice}
-              disabled={timeLeft === 0}
-            />
-            <button
-              className="btn btn-primary"
-              type="submit"
-              style={{ fontSize: 22, padding: '10px 18px', borderRadius: 12 }}
-              disabled={timeLeft === 0 || !input.trim()}
-            >↵</button>
-          </form>
+              <input
+                ref={inputRef}
+                className="field"
+                type="number"
+                inputMode={isTouchDevice ? 'none' : 'numeric'}
+                readOnly={isTouchDevice}
+                value={input}
+                onChange={e => !isTouchDevice && setInput(e.target.value)}
+                placeholder="?"
+                style={{
+                  flex: 1, maxWidth: 160, textAlign: 'center',
+                  fontSize: 32, fontWeight: 800,
+                  padding: '14px 16px', borderRadius: 16,
+                  caretColor: isTouchDevice ? 'transparent' : undefined,
+                  background: '#f1f5f9',
+                  border: 'none',
+                  color: 'var(--color-brand-text)',
+                  outline: 'none',
+                }}
+                autoFocus={!isTouchDevice}
+                disabled={timeLeft === 0}
+              />
+              <button
+                className="btn pressable"
+                type="submit"
+                style={{
+                  fontSize: 24, padding: '0 24px', height: 66, borderRadius: 16,
+                  background: 'var(--color-brand-yellow)',
+                  color: 'var(--color-brand-text)',
+                  border: 'none',
+                  boxShadow: '0 2px 0 rgba(0,0,0,0.05)',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                }}
+                disabled={timeLeft === 0 || !input.trim()}
+              >↵</button>
+            </form>
+          </div>
         )}
       </main>
 

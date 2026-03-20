@@ -6,6 +6,7 @@ import { tables } from '../module_bindings';
 import type { ProblemStat } from '../module_bindings/types.js';
 import { getRechenweg } from '../utils/rechenwege.js';
 import MasteryGrid, { getSessionMastery } from '../components/MasteryGrid.js';
+import PageContainer from '../components/PageContainer.js';
 
 interface Props {
   sessionId: bigint;
@@ -75,8 +76,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-8 px-4 flex flex-col items-center text-slate-900 dark:text-white transition-colors">
-      <div className="w-full max-w-3xl flex flex-col gap-6">
+    <PageContainer maxWidth="max-w-3xl" className="min-h-screen">
         
         {/* Header */}
         <div className="text-center pt-6 pb-2 relative">
@@ -240,8 +240,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
           </div>
         )}
 
-      </div>
-    </div>
+    </PageContainer>
   );
 }
 

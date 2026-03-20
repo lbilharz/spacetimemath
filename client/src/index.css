@@ -31,4 +31,32 @@
     display: flex;
     flex-direction: column;
   }
+
+  /* Hide number input spin buttons */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
+
+.pressable {
+  transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out !important;
+}
+/* Ensure :active works on touch devices. (Sometimes requires touchstart listener on body, but usually works if button) */
+@media (hover: hover) {
+  .pressable:active {
+    transform: translateY(2px);
+    box-shadow: none !important;
+  }
+}
+@media (hover: none) {
+  .pressable:active {
+    transform: translateY(2px);
+    box-shadow: none !important;
+  }
+}
+

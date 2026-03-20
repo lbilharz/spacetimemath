@@ -6,6 +6,7 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import { QRCodeSVG } from 'qrcode.react';
+import PageContainer from '../components/PageContainer.js';
 
 interface Props {
   myIdentityHex: string;
@@ -451,7 +452,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   // 1) Config & Onboarding View (Teacher Only)
   if (showSettings && isTeacher) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[140px] sm:pb-[160px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <PageContainer maxWidth="max-w-2xl" className="pb-[140px] sm:pb-[160px]">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
             Einstellungen
@@ -576,14 +577,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
             </div>
           </div>
         )}
-      </div>
+      </PageContainer>
     );
   }
 
   // 2) Live Class Sprint View (Teacher Only)
   if (activeSprint) {
     return (
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6 pb-[140px] sm:pb-[160px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <PageContainer maxWidth="max-w-5xl" className="pb-[140px] sm:pb-[160px]">
         
         {/* Live Header & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[24px] border border-brand-yellow/30 bg-white dark:bg-slate-800 shadow-sm p-6 relative overflow-hidden">
@@ -681,13 +682,13 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   // 3) Idle Classroom View
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 md:p-6 pb-[140px] sm:pb-[160px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <PageContainer maxWidth="max-w-3xl" className="pb-[140px] sm:pb-[160px]">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -846,6 +847,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
           </div>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
