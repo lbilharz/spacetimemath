@@ -340,8 +340,8 @@ export default function AccountPage({ myPlayer }: Props) {
 
       <div className="mt-4 flex flex-wrap items-center justify-center gap-6 pb-2">
         {[
-          { key: 'account.imprint',  href: 'https://spacetimemath.vercel.app/impressum' },
-          { key: 'account.privacy',  href: 'https://spacetimemath.vercel.app/datenschutz' },
+          { key: 'account.imprint',  href: 'https://better1up.vercel.app/impressum' },
+          { key: 'account.privacy',  href: 'https://better1up.vercel.app/datenschutz' },
         ].map(({ key, href }) => (
           <a
             key={key}
