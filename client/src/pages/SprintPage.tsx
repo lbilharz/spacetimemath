@@ -115,13 +115,12 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
             type="button"
             disabled={disabled}
             onClick={() => onKey(key)}
-            className="pressable"
+            className={`pressable ${isOk ? 'text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'}`}
             style={{
               padding: '14px 8px',
               fontSize: 22,
               fontWeight: 600,
-              background: isOk ? 'var(--color-brand-yellow)' : '#f1f5f9',
-              color: 'var(--color-brand-text)',
+              background: isOk ? 'var(--color-brand-yellow)' : undefined,
               border: 'none',
               borderRadius: 12,
               cursor: 'pointer',
@@ -538,9 +537,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   return (
     <>
       {/* ── Fixed top bar ─────────────────────────────────────────── */}
-      <header style={{
+      <header className="bg-[#2C3E50] dark:bg-slate-950 border-b border-transparent dark:border-slate-800" style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        background: '#2C3E50',
         paddingTop: 'calc(8px + env(safe-area-inset-top))',
         paddingBottom: 12,
         paddingLeft: 16,
@@ -640,7 +638,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
           <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
               <div style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 8, fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
-              <div style={{ fontSize: 64, fontWeight: 900, color: '#2C3E50', lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
+              <div className="text-[#2C3E50] dark:text-white" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
                 {problem.a}&nbsp;×&nbsp;{problem.b}
               </div>
             </div>
@@ -650,7 +648,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
             }}>
               <input
                 ref={inputRef}
-                className="field"
+                className="field bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
                 type="number"
                 inputMode={isTouchDevice ? 'none' : 'numeric'}
                 readOnly={isTouchDevice}
@@ -662,9 +660,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                   fontSize: 32, fontWeight: 800,
                   padding: '14px 16px', borderRadius: 16,
                   caretColor: isTouchDevice ? 'transparent' : undefined,
-                  background: '#f1f5f9',
                   border: 'none',
-                  color: 'var(--color-brand-text)',
                   outline: 'none',
                 }}
                 autoFocus={!isTouchDevice}
@@ -676,7 +672,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                 style={{
                   fontSize: 24, padding: '0 24px', height: 66, borderRadius: 16,
                   background: 'var(--color-brand-yellow)',
-                  color: 'var(--color-brand-text)',
+                  color: '#1e293b',
                   border: 'none',
                   boxShadow: '0 2px 0 rgba(0,0,0,0.05)',
                   cursor: 'pointer',
