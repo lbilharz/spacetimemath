@@ -10,8 +10,6 @@ import { QRCodeSVG } from 'qrcode.react';
 interface Props {
   myIdentityHex: string;
   classroomId: bigint;
-  onStartSprint: (sessionId: bigint) => void;
-  onStartClassSprint: (classSprintId: bigint) => void;
   onLeave: () => void;
 }
 
@@ -23,7 +21,7 @@ interface ClassRecoveryResult {
   code: string;
 }
 
-export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprint, onStartClassSprint, onLeave }: Props) {
+export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: Props) {
   const { t } = useTranslation();
   const [classrooms]        = useTable(tables.classrooms);
   const [classroomMembers]  = useTable(tables.classroom_members);
@@ -52,14 +50,13 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
-  const [starting, setStarting] = useState(false);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
-  const [isDiagnostic, setIsDiagnostic] = useState(false);
+  const [showStartModal, setShowStartModal] = useState(false);
   const [sprintError, setSprintError] = useState<string | null>(null);
   const [endingClassSprint, setEndingClassSprint] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [togglingVis, setTogglingVis] = useState(false);
-  const [showJoinCode, setShowJoinCode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Teacher QR card modal
   const [qrStudent, setQrStudent] = useState<{ username: string; code: string } | null>(null);
@@ -83,8 +80,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     .sort((a, b) => Number(b.id - a.id));
   const latestSprint = roomSprints[0] ?? null;
   const activeSprint = latestSprint?.isActive ? latestSprint : null;
-  const endedSprint  = latestSprint && !latestSprint.isActive ? latestSprint : null;
-
   // Sessions + answers belonging to the active/ended sprint (for live ticker + mini LB)
   const latestSprintIdStr = latestSprint ? String(latestSprint.id) : null;
   const sprintSessions = latestSprint
@@ -151,11 +146,12 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     );
   }
 
-  const handleStartClassSprint = async () => {
+  const handleStartClassSprint = async (diagnostic: boolean) => {
+    setShowStartModal(false);
     setStartingClassSprint(true);
     setSprintError(null);
     try {
-      await startClassSprint({ classroomId, isDiagnostic });
+      await startClassSprint({ classroomId, isDiagnostic: diagnostic });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setSprintError(msg);
@@ -222,11 +218,6 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
     setTogglingVis(true);
     await toggleVisibility({ classroomId });
     setTogglingVis(false);
-  };
-
-  const handleStart = () => {
-    setStarting(true);
-    onStartSprint(0n); // SprintPage owns session creation on mount
   };
 
   const handleLeave = async () => {
@@ -389,393 +380,470 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onStartSprin
   const medals = ['🥇', '🥈', '🥉'];
 
 
-  return (
-    <div className="page" style={isTeacher ? { maxWidth: 1100 } : undefined}>
+  const SettingsIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+      <rect x="6" y="14" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
+      <rect x="58" y="6" width="26" height="26" rx="8" fill="#4FA7FF" />
+      <rect x="6" y="45" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
+      <rect x="26" y="37" width="26" height="26" rx="8" fill="#5DD23C" />
+      <rect x="6" y="76" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
+      <rect x="42" y="68" width="26" height="26" rx="8" fill="#E8391D" />
+    </svg>
+  );
 
-      {/* Student QR login card modal */}
-      {qrStudent && (
-        <div
-          onClick={() => setQrStudent(null)}
-          className="modal-backdrop"
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            className="modal-card modal-card--narrow"
+  const PlayIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+      <rect x="22" y="16" width="20" height="68" rx="6" fill="#4FA7FF" />
+      <rect x="46" y="28" width="20" height="44" rx="6" fill="#FBBA00" />
+      <rect x="70" y="40" width="20" height="20" rx="6" fill="#5DD23C" />
+    </svg>
+  );
+
+  const StopIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+      <rect x="28" y="28" width="44" height="44" rx="10" fill="#E8391D" />
+    </svg>
+  );
+
+  const BackIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+      <rect x="58" y="16" width="20" height="20" rx="6" fill="#4FA7FF" />
+      <rect x="42" y="40" width="20" height="20" rx="6" fill="#FBBA00" />
+      <rect x="26" y="64" width="20" height="20" rx="6" fill="#E8391D" />
+      <rect x="42" y="64" width="36" height="20" rx="6" fill="#E8391D" opacity="0.5" />
+    </svg>
+  );
+
+  const TargetIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+      <rect x="16" y="16" width="20" height="20" rx="6" fill="#4FA7FF" />
+      <rect x="64" y="16" width="20" height="20" rx="6" fill="#4FA7FF" />
+      <rect x="16" y="64" width="20" height="20" rx="6" fill="#4FA7FF" />
+      <rect x="64" y="64" width="20" height="20" rx="6" fill="#4FA7FF" />
+      <rect x="40" y="40" width="20" height="20" rx="6" fill="#E8391D" />
+    </svg>
+  );
+
+  const LightningIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+      <rect x="16" y="58" width="20" height="26" rx="6" fill="#4FA7FF" />
+      <rect x="40" y="38" width="20" height="46" rx="6" fill="#FBBA00" />
+      <rect x="64" y="18" width="20" height="66" rx="6" fill="#5DD23C" />
+    </svg>
+  );
+
+  const KeyIcon = ({ className }: { className?: string }) => (
+    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+      <circle cx="35" cy="50" r="18" fill="none" stroke="currentColor" strokeWidth="12" />
+      <rect x="52" y="44" width="40" height="12" rx="4" fill="currentColor" />
+      <rect x="75" y="56" width="12" height="16" rx="4" fill="currentColor" />
+    </svg>
+  );
+
+  // 1) Config & Onboarding View (Teacher Only)
+  if (showSettings && isTeacher) {
+    return (
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[140px] sm:pb-[160px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            Einstellungen
+          </h1>
+          <button
+            onClick={() => setShowSettings(false)}
+            className="flex items-center gap-2 rounded-2xl bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700 transition-transform active:scale-95 hover:-translate-y-0.5"
           >
-            <div className="fw-extrabold mb-1 text-lg">{qrStudent.username}</div>
-            <div className="text-sm text-muted mb-4">{myClassroom.name}</div>
-            <div className="qr-white-box--lg mb-3">
-              <QRCodeSVG value={restoreUrl(qrStudent.code)} size={180} />
+            <BackIcon className="h-5 w-5" />
+            {t('common.back')}
+          </button>
+        </div>
+
+        {/* Access Codes & QR */}
+        <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+          <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">Zugang & Einladung</h2>
+          <div className="flex flex-col sm:flex-row gap-8 items-start">
+            <div className="flex-1 space-y-4">
+              <div>
+                <div className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-1.5">{t('common.code')}</div>
+                <button
+                  onClick={handleCopyCodeText}
+                  className="w-full text-left rounded-xl bg-slate-50 dark:bg-slate-900/50 px-4 py-3 font-mono text-2xl font-bold tracking-[0.2em] text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 hover:border-brand-yellow/50 transition-colors"
+                >
+                  {myClassroom.code}
+                </button>
+                <div className="text-xs text-slate-400 mt-1.5">{codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}</div>
+              </div>
+              <button
+                onClick={handleCopyLink}
+                className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-transform active:scale-95"
+              >
+                {codeCopied ? t('common.copied') : t('classroom.copyLink')}
+              </button>
             </div>
-            <div className="text-sm text-muted mb-2 mono letter-spacing-3">
-              {qrStudent.code}
+            <div className="shrink-0 flex flex-col items-center gap-2">
+              <div className="rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white p-3 shadow-sm">
+                <QRCodeSVG
+                  value={`${window.location.origin}/?join=${myClassroom.code}`}
+                  size={120}
+                  level="H"
+                />
+              </div>
+              <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Scan to Join</span>
             </div>
-            <div className="text-xs text-muted mb-20">
-              {t('classroom.studentLoginHint')}
+          </div>
+        </div>
+
+        {/* Member Management */}
+        <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('classroom.membersHeading')}</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={handleToggleVisibility}
+                disabled={togglingVis}
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+              >
+                {amHidden ? t('classroom.showStats') : t('classroom.hideStats')}
+              </button>
+              <button
+                onClick={handlePrintAll}
+                disabled={members.length === 0 || printing}
+                className="rounded-xl bg-brand-yellow px-4 py-2 text-sm font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50"
+              >
+                {printing ? 'Generiere...' : 'Print PDFs'}
+              </button>
             </div>
-            <button className="btn btn-secondary w-full" onClick={() => setQrStudent(null)}>
+          </div>
+          
+          {printError && <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg">{printError}</div>}
+
+          {memberRows.length === 0 ? (
+            <p className="text-slate-500">{t('classroom.noMembers')}</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {memberRows.map((m) => (
+                <div key={m.id} className={`flex items-center justify-between rounded-xl p-3 border ${m.hidden ? 'opacity-50 border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50' : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'}`}>
+                  <div className="font-semibold text-slate-900 dark:text-white">
+                    {m.username} {m.hidden && <span className="ml-2 text-xs font-normal text-slate-500">(Versteckt)</span>}
+                  </div>
+                  {m.recoveryCode && (
+                    <button
+                      onClick={() => setQrStudent({ username: m.username, code: m.recoveryCode! })}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      <KeyIcon className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Danger Zone */}
+        <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-6">
+          <button
+            onClick={handleLeave}
+            disabled={leaving}
+            className="w-full rounded-2xl bg-red-50 dark:bg-red-500/10 px-4 py-3.5 text-sm font-bold text-red-600 dark:text-red-400 transition-transform active:scale-95 hover:bg-red-100 dark:hover:bg-red-500/20"
+          >
+            {leaving ? t('classroom.leaving') : t('classroom.closeClass')}
+          </button>
+        </div>
+
+        {/* Modal for Student QR code */}
+        {qrStudent && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={() => setQrStudent(null)}>
+            <div className="w-full max-w-sm rounded-[24px] bg-white p-8 text-center shadow-xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{qrStudent.username}</h3>
+              <p className="mb-6 text-sm text-slate-500">{myClassroom.name}</p>
+              <div className="mx-auto flex aspect-square w-48 items-center justify-center rounded-2xl border-4 border-slate-100 bg-white p-4">
+                <QRCodeSVG value={restoreUrl(qrStudent.code)} size={160} level="H" />
+              </div>
+              <div className="mt-4 font-mono text-lg font-bold tracking-[0.2em] text-slate-700 dark:text-slate-300">
+                {qrStudent.code}
+              </div>
+              <button onClick={() => setQrStudent(null)} className="mt-8 w-full rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-3.5 font-bold text-slate-700 dark:text-slate-300 active:scale-95 transition-transform">
+                {t('common.cancel')}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 2) Live Class Sprint View (Teacher Only)
+  if (activeSprint) {
+    return (
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6 pb-[140px] sm:pb-[160px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+        
+        {/* Live Header & Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[24px] border border-brand-yellow/30 bg-white dark:bg-slate-800 shadow-sm p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-brand-yellow/5" />
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between w-full gap-6">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-500 dark:bg-red-500/20 animate-pulse">
+                <span className="h-4 w-4 rounded-full bg-red-500" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-black text-slate-900 dark:text-white line-clamp-1">{myClassroom.name}</h1>
+                <p className="text-sm font-bold text-red-500 tracking-wide uppercase">{t('classSprint.live')}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="flex-1 text-center sm:text-right">
+                <div className="text-4xl font-black tabular-nums tracking-tight text-slate-900 dark:text-white">
+                  {sprintTimeLeft !== null ? `${sprintTimeLeft}s` : '...'}
+                </div>
+              </div>
+              <button
+                onClick={handleEndClassSprint}
+                disabled={endingClassSprint}
+                className="flex items-center gap-2 rounded-2xl bg-red-500 px-6 py-3.5 font-bold text-white transition-transform active:scale-95 shadow-md shadow-red-500/20 disabled:opacity-50"
+              >
+                <StopIcon className="h-5 w-5" />
+                {t('classSprint.end')}
+              </button>
+            </div>
+          </div>
+          
+          {/* Progress Bar (absolute to bottom of container) */}
+          {sprintTimeLeft !== null && (
+            <div className="absolute bottom-0 left-0 h-1.5 bg-slate-100 dark:bg-slate-900 w-full">
+              <div 
+                className="h-full transition-all duration-1000 ease-linear"
+                style={{ 
+                  width: `${(sprintTimeLeft / 60) * 100}%`,
+                  backgroundColor: sprintTimeLeft <= 10 ? '#ef4444' : sprintTimeLeft <= 20 ? '#f59e0b' : '#3b82f6'
+                }} 
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Live Content Split */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+              <h3 className="mb-4 text-sm font-bold tracking-widest text-slate-400 uppercase">{t('classSprint.grid')}</h3>
+              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as unknown as ProblemStat[]} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+              <h3 className="mb-4 text-sm font-bold tracking-widest text-slate-400 uppercase">{t('classSprint.liveScores')}</h3>
+              {liveLB.length === 0 ? (
+                <p className="text-sm text-slate-400">{t('classSprint.noScoresYet')}</p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {liveLB.map((r, i) => (
+                    <div key={r.username} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 dark:border-slate-700/50 dark:bg-slate-800/50 p-3">
+                      <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${i === 0 ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-700'}`}>
+                        {i + 1}
+                      </div>
+                      <span className="flex-1 text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{r.username}</span>
+                      <span className="text-xs font-medium text-slate-400">{r.correct}✓</span>
+                      <span className="text-sm font-black tabular-nums text-brand-yellow drop-shadow-sm">{r.score.toFixed(1)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 max-h-64 overflow-y-auto">
+              <h3 className="mb-4 text-sm font-bold tracking-widest text-slate-400 uppercase">{t('classSprint.liveAnswers')}</h3>
+              {recentAnswers.length === 0 ? (
+                <p className="text-sm text-slate-400">{t('classSprint.waitingForAnswers')}</p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {recentAnswers.map(a => {
+                    const p = (players as unknown as Player[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
+                    return (
+                      <div key={String(a.id)} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${a.isCorrect ? 'bg-green-50 text-green-700 dark:bg-green-900/10 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/10 dark:text-red-400'}`}>
+                        <span className="text-xs">{a.isCorrect ? '🟢' : '🔴'}</span>
+                        <span className="flex-1 line-clamp-1 truncate">{p?.username ?? '?'}</span>
+                        <span className="font-mono tracking-wider opacity-80">{a.a}×{a.b}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3) Idle Classroom View
+  return (
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 md:p-6 pb-[140px] sm:pb-[160px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white line-clamp-1">{myClassroom.name}</h1>
+          <div className="mt-1 text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+            {isTeacher ? t('classroom.youAreTeaching') : t('classroom.youAreStudent')} <span className="mx-2 opacity-50">•</span> {t('classroom.members', { count: members.length })}
+          </div>
+        </div>
+        
+        {isTeacher && (
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setShowSettings(true)}
+              className="group flex h-[48px] w-[48px] items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all focus:outline-none"
+            >
+              <SettingsIcon className="text-slate-500 dark:text-slate-400 transition-transform group-hover:rotate-[15deg]" />
+            </button>
+            <button
+              onClick={() => setShowStartModal(true)}
+              disabled={startingClassSprint}
+              className="flex items-center gap-2 rounded-2xl bg-brand-yellow px-6 py-3 font-bold text-slate-900 h-[48px] shadow-sm shadow-brand-yellow/20 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 disabled:hover:scale-100"
+            >
+              <PlayIcon className="h-5 w-5 -ml-1" />
+              {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {sprintError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">
+          {sprintError}
+        </div>
+      )}
+
+      {/* Primary Content Map */}
+      {isTeacher && members.length === 0 ? (
+        // Empty State: Always show login code
+        <div className="flex flex-col items-center justify-center rounded-[32px] border border-slate-200 bg-white p-8 sm:p-12 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 text-center mt-4">
+          <div className="mb-6 rounded-3xl border-4 border-slate-50 dark:border-slate-700/50 bg-white p-6 shadow-inner">
+            <QRCodeSVG value={`${window.location.origin}/?join=${myClassroom.code}`} size={180} level="H" />
+          </div>
+          <h2 className="mb-2 text-2xl font-black text-slate-900 dark:text-white">Raum bereit!</h2>
+          <p className="mb-6 text-sm text-slate-500 max-w-sm">
+            Zeige diesen Code, damit deine Schueler_innen beitreten können.
+          </p>
+          <div className="font-mono text-4xl font-bold tracking-[0.25em] text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900 px-8 py-4 rounded-2xl">
+            {myClassroom.code}
+          </div>
+        </div>
+      ) : (
+        // Filled State: Leaderboard and Mastery
+        <div className="flex flex-col gap-6 mt-2">
+          
+          <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+            <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">{t('classroom.leaderboard')}</h2>
+            {leaderRows.length === 0 ? (
+              <p className="text-slate-500">{t('classroom.leaderboardEmpty')}</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {leaderRows.map((m, i) => {
+                  const isMe = m.id === myIdentityHex;
+                  return (
+                    <div key={m.id} className={`flex items-center gap-4 rounded-2xl p-4 transition-colors ${isMe ? 'bg-amber-50 dark:bg-amber-500/10 border border-brand-yellow/30' : 'bg-slate-50 dark:bg-slate-900/50 border border-transparent'}`}>
+                      <div className={`flex w-8 justify-center font-black ${i < 3 ? 'text-brand-yellow text-xl drop-shadow-sm' : 'text-slate-400'}`}>
+                        {i < 3 ? medals[i] : i + 1}
+                      </div>
+                      <div className={`flex-1 font-bold ${isMe ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {m.username}
+                        {isMe && <span className="ml-2 rounded-md bg-brand-yellow/20 px-2 py-0.5 text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('common.you')}</span>}
+                      </div>
+                      <div className="font-black tabular-nums tracking-tight text-brand-yellow text-lg">
+                        {m.best!.toFixed(1)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <p className="mt-6 text-center text-xs text-slate-400">
+              {t('classroom.liveCaption')}
+            </p>
+          </div>
+
+          {classAnswers.length > 0 && (
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">{t('classroom.classMastery')}</h2>
+              <p className="mb-6 text-sm text-slate-500">
+                {t('classroom.classMasteryDesc', { count: visibleMembers.length })}
+              </p>
+              <MasteryGrid answers={classAnswers} problemStats={problemStats as unknown as ProblemStat[]} />
+            </div>
+          )}
+
+          {!isTeacher && (
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={handleLeave}
+                disabled={leaving}
+                className="text-sm font-bold text-red-500 hover:text-red-600 hover:underline transition-colors"
+              >
+                {leaving ? t('classroom.leaving') : t('classroom.leaveClass')}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Start Sprint Modal */}
+      {showStartModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={() => setShowStartModal(false)}>
+          <div className="w-full max-w-lg rounded-[32px] bg-white p-6 sm:p-8 shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+            <h3 className="mb-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">{t('classSprint.modalTitle')}</h3>
+            <p className="mb-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t('classSprint.modalDesc')}
+            </p>
+            
+            <div className="flex flex-col gap-4">
+              <button 
+                onClick={() => handleStartClassSprint(true)}
+                className="group flex flex-col items-start gap-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 transition-transform group-hover:scale-110">
+                    <TargetIcon className="w-5 h-5" />
+                  </div>
+                  <span className="text-lg font-bold text-slate-700 dark:text-slate-300">{t('classSprint.diagnosticTitle')}</span>
+                </div>
+                <span className="text-sm text-slate-500 leading-snug">
+                  {t('classSprint.diagnosticDesc')}
+                </span>
+              </button>
+
+              <button 
+                onClick={() => handleStartClassSprint(false)}
+                className="group flex flex-col items-start gap-3 rounded-2xl border-2 border-brand-yellow/50 bg-amber-50 dark:bg-amber-500/10 p-5 text-left transition-all hover:bg-amber-100 dark:hover:bg-amber-500/20 hover:border-brand-yellow shadow-sm active:scale-[0.98]"
+              >
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-yellow text-slate-900 shadow-sm transition-transform group-hover:scale-110">
+                      <LightningIcon className="w-5 h-5" />
+                    </div>
+                    <span className="text-lg font-black text-amber-900 dark:text-brand-yellow">{t('classSprint.trainingTitle')}</span>
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-amber-800/80 dark:text-amber-200/60 leading-snug">
+                  {t('classSprint.trainingDesc')}
+                </span>
+              </button>
+            </div>
+
+            <button onClick={() => setShowStartModal(false)} className="mt-6 w-full rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-3.5 font-bold text-slate-600 dark:text-slate-400 active:scale-95 transition-transform">
               {t('common.cancel')}
             </button>
           </div>
         </div>
       )}
-
-      {/* Header */}
-      <div className="row-between row-wrap gap-8 align-start">
-        <div>
-          <h1>
-            {activeSprint ? <span className="text-error mr-2">🔴</span> : '📚 '}
-            {myClassroom.name}
-          </h1>
-          <p className="text-muted text-base mt-2">
-            {isTeacher ? t('classroom.youAreTeaching') : t('classroom.youAreStudent')} · {t('classroom.members', { count: members.length })}
-          </p>
-          {activeSprint && isTeacher && (
-            <p className="text-error text-sm fw-bold mt-2">
-              {t('classSprint.live')}
-            </p>
-          )}
-        </div>
-
-        {/* Right-side controls */}
-        <div className="col gap-8 align-end">
-          {isTeacher ? (
-            /* Teacher: class sprint controls only */
-            <>
-              {!activeSprint && (
-                <div className="col align-end gap-8">
-                  <label className="text-sm text-muted row gap-6 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isDiagnostic}
-                      onChange={e => setIsDiagnostic(e.target.checked)}
-                      style={{ accentColor: 'var(--accent)', width: 15, height: 15 }}
-                    />
-                    {t('classSprint.diagnostic')}
-                  </label>
-                  <button
-                    className="btn btn-primary btn-lg"
-                    onClick={handleStartClassSprint}
-                    disabled={startingClassSprint}
-                  >
-                    {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
-                  </button>
-                  {sprintError && (
-                    <p className="text-xs text-error text-right sprint-error">
-                      ⚠ {sprintError}
-                    </p>
-                  )}
-                </div>
-              )}
-              {activeSprint && (
-                <button
-                  className="btn btn-primary btn-lg btn-danger-outline"
-                  onClick={handleEndClassSprint}
-                  disabled={endingClassSprint}
-                >
-                  {t('classSprint.end')}
-                </button>
-              )}
-              {endedSprint && !activeSprint && (
-                <button
-                  className="btn btn-secondary text-sm"
-                  onClick={() => onStartClassSprint(endedSprint.id)}
-                >
-                  {t('classSprint.viewResults')}
-                </button>
-              )}
-            </>
-          ) : (
-            /* Student: solo sprint */
-            <button
-              className="btn btn-primary btn-lg btn-sprint"
-              onClick={handleStart}
-              disabled={starting}
-            >
-              {starting ? t('classroom.starting') : t('classroom.startSprint')}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Live feed — shown only during an active class sprint (teacher only) */}
-      {isTeacher && activeSprint && (
-        <div className="card classroom-live-card">
-
-          {/* Timer bar — only while sprint is active */}
-          {activeSprint && sprintTimeLeft !== null && (
-            <div className="mb-4">
-              <div className="row-between mb-1">
-                <span className="text-xs text-muted label-caps">
-                  {latestSprint?.isDiagnostic ? t('classSprint.diagnostic').replace(/\s*\(.*\)/, '') : t('classSprint.live')}
-                </span>
-                <span className={`text-sm fw-bold tabular-nums ${sprintTimeLeft <= 10 ? 'text-error' : sprintTimeLeft <= 20 ? 'text-warn' : 'text-accent'}`}>
-                  {sprintTimeLeft}s
-                </span>
-              </div>
-              <div className="sprint-timer-track">
-                <div style={{
-                  height: '100%',
-                  width: `${(sprintTimeLeft / 60) * 100}%`,
-                  background: sprintTimeLeft <= 10 ? 'var(--wrong)' : sprintTimeLeft <= 20 ? 'var(--warn)' : 'var(--accent)',
-                  transition: 'width 1s linear, background 0.3s',
-                  borderRadius: 3,
-                }} />
-              </div>
-            </div>
-          )}
-
-          <div className="row gap-32 align-start row-wrap">
-
-            {/* Left — Combined class grid */}
-            <div className="flex-none">
-              <h3 className="text-sm text-muted mb-2 label-caps">
-                {t('classSprint.grid')}
-              </h3>
-              <MasteryGrid answers={sprintAnswers} problemStats={problemStats as unknown as ProblemStat[]} tier1Unlocked />
-            </div>
-
-            {/* Right — Ticker + leaderboard stacked */}
-            <div className="row gap-24 sprint-ticker-panel">
-
-              {/* Rolling answer ticker */}
-              <div>
-                <h3 className="text-sm text-muted mb-2 label-caps">
-                  {t('classSprint.liveAnswers')}
-                </h3>
-                {recentAnswers.length === 0 ? (
-                  <span className="text-muted text-sm">{t('classSprint.waitingForAnswers')}</span>
-                ) : (
-                  <div className="col gap-4">
-                    {recentAnswers.map(a => {
-                      const p = (players as unknown as Player[]).find(pl => pl.identity.toHexString() === a.playerIdentity.toHexString());
-                      const name = p?.username ?? '?';
-                      return (
-                        <div key={String(a.id)} className={`row gap-6 text-sm ${a.isCorrect ? 'text-accent' : 'text-error'}`}>
-                          <span>{a.isCorrect ? '🟢' : '🔴'}</span>
-                          <span className="fw-semibold">{name}</span>
-                          <span className="text-muted">{a.a}×{a.b}</span>
-                          <span>{a.isCorrect ? '✓' : '✗'}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Mini live leaderboard */}
-              <div>
-                <h3 className="text-sm text-muted mb-2 label-caps">
-                  {t('classSprint.liveScores')}
-                </h3>
-                {liveLB.length === 0 ? (
-                  <span className="text-muted text-sm">{t('classSprint.noScoresYet')}</span>
-                ) : (
-                  <div className="col gap-6">
-                    {liveLB.map((r, i) => (
-                      <div key={r.username} className="row gap-8">
-                        <span className="text-xs text-muted text-right w-4">{i + 1}</span>
-                        <span className="text-sm fw-semibold flex-1">{r.username}</span>
-                        <span className="text-sm text-muted mr-2">{r.correct}✓</span>
-                        <span className="text-sm text-warn tabular-nums">
-                          {r.score.toFixed(1)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* Members + Leaderboard */}
-      <div className="classroom-two-col">
-        {/* Members */}
-        <div className="card">
-          <div className="row-between row-wrap gap-8 mb-3">
-            <h2 className="text-md">{t('classroom.membersHeading')}</h2>
-            <div className="row gap-8">
-              {isTeacher && (
-                <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setShowJoinCode(v => !v)}
-                >
-                  🔗 {t('classroom.joinCode')} {showJoinCode ? '▲' : '▼'}
-                </button>
-              )}
-              {isTeacher && (
-                <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={handlePrintAll}
-                  disabled={members.length === 0 || printing}
-                >
-                  {printing ? '…' : `🖨 ${t('classroom.printCards')}`}
-                </button>
-              )}
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={handleToggleVisibility}
-                disabled={togglingVis}
-                title={amHidden ? t('classroom.showStatsTitle') : t('classroom.hideStatsTitle')}
-              >
-                {amHidden ? t('classroom.showStats') : t('classroom.hideStats')}
-              </button>
-            </div>
-          </div>
-          {isTeacher && printError && (
-            <p className="text-xs text-error mt-1">{printError}</p>
-          )}
-
-          {/* Inline join code — revealed on toggle */}
-          {isTeacher && showJoinCode && (
-            <div className="mb-3" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
-              <div className="row align-start gap-20 row-wrap">
-                <div>
-                  <button
-                    onClick={handleCopyCodeText}
-                    title={t('classroom.copyCodeHint')}
-                    className="join-code-btn"
-                  >
-                    {myClassroom.code}
-                  </button>
-                  <p className="text-xs text-muted mb-10">
-                    {codeTextCopied ? `✓ ${t('common.copied')}` : t('classroom.copyCodeHint')}
-                  </p>
-                  <button className="btn btn-secondary text-sm" onClick={handleCopyLink}>
-                    {codeCopied ? t('common.copied') : t('classroom.copyLink')}
-                  </button>
-                  <p className="text-sm text-muted mt-2 max-w-220">
-                    {t('classroom.joinHint')}
-                  </p>
-                </div>
-                <div className="qr-white-box">
-                  <QRCodeSVG
-                    value={`${window.location.origin}/?join=${myClassroom.code}`}
-                    size={110}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {amHidden && (
-            <p className="text-xs text-muted mb-10 italic">
-              {t('classroom.hiddenHint')}
-            </p>
-          )}
-          {memberRows.length === 0 ? (
-            <p className="text-muted text-base">{t('classroom.noMembers')}</p>
-          ) : (
-            memberRows.map((m, i) => (
-              <div key={m.id} className="classroom-member-row" style={{
-                borderBottom: i < memberRows.length - 1 ? '1px solid var(--border)' : 'none',
-                opacity: m.hidden ? 0.5 : 1,
-              }}>
-                <span className={m.id === myIdentityHex ? 'fw-bold' : ''}>
-                  {m.username}
-                  {m.id === myIdentityHex && (
-                    <span className="text-accent ml-1 text-xs">{t('common.you')}</span>
-                  )}
-                  {m.hidden && (
-                    <span className="text-muted ml-1 text-xs">{t('classroom.hidden')}</span>
-                  )}
-                </span>
-                <div className="row gap-8">
-                  {!m.hidden && m.best !== undefined ? (
-                    <span className="text-warn text-base tabular-nums">
-                      {m.best.toFixed(1)}
-                    </span>
-                  ) : (
-                    <span className="text-muted text-xs">
-                      {m.hidden ? '—' : t('classroom.noSessions')}
-                    </span>
-                  )}
-                  {/* Teacher: tap 🔑 to show this student's personal login QR */}
-                  {isTeacher && m.recoveryCode && (
-                    <button
-                      onClick={() => setQrStudent({ username: m.username, code: m.recoveryCode! })}
-                      title={t('classroom.showLoginCard')}
-                      className="btn-icon text-base"
-                    >
-                      🔑
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Class leaderboard */}
-        <div className="card">
-          <h2 className="mb-3 text-md">{t('classroom.leaderboard')}</h2>
-          {leaderRows.length === 0 ? (
-            <p className="text-muted text-base">{t('classroom.leaderboardEmpty')}</p>
-          ) : (
-            <table className="table-full">
-              <thead>
-                <tr className="divider-bottom">
-                  <th className="tbl-th">{t('classroom.colHash')}</th>
-                  <th className="tbl-th tbl-th--left">{t('classroom.colPlayer')}</th>
-                  <th className="tbl-th">{t('classroom.colScore')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderRows.map((m, i) => {
-                  const isMe = m.id === myIdentityHex;
-                  return (
-                    <tr key={m.id} className={isMe ? 'tr-highlight' : ''}>
-                      <td className={`tbl-td fw-bold text-center ${i < 3 ? 'text-warn' : 'text-muted'}`}>
-                        {i < 3 ? medals[i] : i + 1}
-                      </td>
-                      <td className={`tbl-td ${isMe ? 'fw-bold' : ''}`}>
-                        {m.username}
-                        {isMe && <span className="text-accent ml-1 text-xs">{t('common.you')}</span>}
-                      </td>
-                      <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums">
-                        {m.best!.toFixed(1)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-          <p className="text-xs text-muted mt-3">
-            {t('classroom.liveCaption')}
-          </p>
-        </div>
-      </div>
-
-      {/* Class mastery grid */}
-      {classAnswers.length > 0 && (
-        <div className="card">
-          <h2 className="mb-1 text-md">{t('classroom.classMastery')}</h2>
-          <p className="text-sm text-muted mb-4">
-            {t('classroom.classMasteryDesc', { count: visibleMembers.length })}
-          </p>
-          <MasteryGrid answers={classAnswers} problemStats={problemStats as unknown as ProblemStat[]} tier1Unlocked />
-        </div>
-      )}
-
-      {/* Leave / Close */}
-      <div>
-        <button
-          className="btn btn-secondary text-base"
-          onClick={handleLeave}
-          disabled={leaving}
-        >
-          {leaving ? t('classroom.leaving') : isTeacher ? t('classroom.closeClass') : t('classroom.leaveClass')}
-        </button>
-        {isTeacher && (
-          <p className="text-xs text-muted mt-2">
-            {t('classroom.closeHint')}
-          </p>
-        )}
-      </div>
     </div>
   );
 }

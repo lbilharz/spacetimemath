@@ -1,0 +1,76 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "✓ Enregistré",
+    "copy": "⎘ Copier",
+    "copied": "✓ Copié",
+    "generating": "Génération…",
+    "back": "Retour",
+    "lobby": "Salon",
+    "teacher": "Enseignant",
+    "student": "Élève",
+    "you": "toi",
+    "code": "Code",
+    "or": "ou"
+  },
+  "app": {
+    "brand": "1UP",
+    "tagline": "Connais ton niveau."
+  },
+  "register": {
+    "tagline": "60 secondes. Tables de multiplication. Classement en direct.",
+    "chooseName": "Choisis ton nom",
+    "usernamePlaceholder": "Choisis un nom d'utilisateur …",
+    "usernameError": "Le nom d'utilisateur doit faire entre 1 et 24 caractères",
+    "registering": "Enregistrement…",
+    "createAccountDesc": "Choisis un nom pour ton nouveau compte et commence tout de suite !",
+    "joinSprint": "Démarrer le Level Up",
+    "restoreLink": "Restaurer un compte existant",
+    "restoreHeading": "Restaurer le compte",
+    "restoreDesc": "Saisis ta clé de récupération à 12 caractères pour restaurer l'accès.",
+    "restorePlaceholder": "ex. ABCD34EF5678",
+    "restoring": "Restauration…",
+    "restore": "Restaurer",
+    "restoreTimeout": "Délai d'attente dépassé pour la réponse du serveur — réessaie",
+    "newAccount": "Nouveau compte",
+    "restoreError": "Clé introuvable — vérifie ta clé de récupération à 12 caractères",
+    "footer": "Les problèmes sont pondérés par la difficulté communautaire · propulsé par SpaceTimeDB"
+  },
+  "onboarding": {
+    "card1Title": "60 secondes au compteur",
+    "card1Body": "Résolvez autant de multiplications que possible avant la fin du temps !",
+    "card2Title": "Les problèmes rapportent des points",
+    "card2Body": "Facile = 1 pt · Moyen = 2 pts · Difficile = 3 pts. Les problèmes plus durs rapportent plus !",
+    "card3Title": "Prêt pour le sprint ?",
+    "card3Body": "Lancez votre premier sprint de multiplication de 60 secondes. Répondez au maximum — votre score sera enregistré !",
+    "letsGo": "C'est parti ! 🚀",
+    "startSprint": "Démarrer le sprint 60s ⚡",
+    "okay": "D'accord",
+    "next": "Suivant",
+    "back": "Retour"
+  },
+  "tierPicker": {
+    "cardTitle": "Choisissez votre niveau de départ",
+    "cardBody": "Dites-nous ce que vous savez déjà — vous pourrez le modifier à tout moment.",
+    "tier0Desc": "Je débute",
+    "tier1Desc": "Je connais ×1, ×2 et ×10",
+    "tier2Desc": "Je connais aussi ×3",
+    "tier3Desc": "Je connais aussi ×5",
+    "tier4Desc": "Je connais aussi ×4",
+    "tier5Desc": "Je connais aussi ×6",
+    "tier6Desc": "Je connais aussi ×7",
+    "tier7Desc": "Je connais toutes mes tables !"
+  },
+  "tiers": {
+    "tier0Name": "Novice",
+    "tier1Name": "Bâtisseur",
+    "tier2Name": "Grimpeur",
+    "tier3Name": "Performant",
+    "tier4Name": "Compétent",
+    "tier5Name": "Avancé",
+    "tier6Name": "Expert",
+    "tier7Name": "Maître"
+  }
+}

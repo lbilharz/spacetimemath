@@ -9,54 +9,104 @@ interface Props {
   onNavigate: (tab: NavTab) => void;
 }
 
-const tabs: { id: NavTab; emoji: string | null; labelKey: ParseKeys }[] = [
-  { id: 'lobby',      emoji: null, labelKey: 'nav.home'     },
-  { id: 'classrooms', emoji: '🏫', labelKey: 'nav.classes'  },
-  { id: 'progress',   emoji: '📊', labelKey: 'nav.progress' },
-  { id: 'account',    emoji: '⚙',  labelKey: 'nav.account'  },
+const tabs: { id: NavTab; labelKey: ParseKeys }[] = [
+  { id: 'lobby',      labelKey: 'nav.home'     },
+  { id: 'classrooms', labelKey: 'nav.classes'  },
+  { id: 'progress',   labelKey: 'nav.progress' },
+  { id: 'account',    labelKey: 'nav.account'  },
 ];
+
+const renderIcon = (tabId: NavTab, isActive: boolean) => {
+  const baseClasses = "transition-all duration-300 ease-out";
+  const activeClasses = "scale-[1.15] drop-shadow-md opacity-100";
+  const inactiveClasses = "scale-[0.95] opacity-50 grayscale hover:grayscale-[0.5] hover:opacity-80";
+  const svgClass = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+  
+  switch (tabId) {
+    case 'lobby':
+      return (
+        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
+          <rect width="100" height="100" rx="18" className="fill-slate-800 dark:fill-white/10 transition-colors duration-200"/>
+          <rect x="6"  y="6"  width="26" height="26" rx="6" fill="#5DD23C"/>
+          <rect x="37" y="6"  width="26" height="26" rx="6" fill="#5DD23C"/>
+          <rect x="68" y="6"  width="26" height="26" rx="6" fill="#FBBA00"/>
+          <rect x="6"  y="37" width="26" height="26" rx="6" fill="#5DD23C"/>
+          <rect x="37" y="37" width="26" height="26" rx="6" fill="#FBBA00"/>
+          <rect x="68" y="37" width="26" height="26" rx="6" fill="#4FA7FF"/>
+          <rect x="6"  y="68" width="26" height="26" rx="6" fill="#4FA7FF"/>
+          <rect x="37" y="68" width="26" height="26" rx="6" fill="#E8391D"/>
+          <rect x="68" y="68" width="26" height="26" rx="6" fill="rgba(255,255,255,0.2)"/>
+        </svg>
+      );
+    case 'classrooms':
+      return (
+        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
+          <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+          <rect x="6"  y="6"  width="57" height="57" rx="9" fill="#4FA7FF" />
+          <rect x="68" y="6"  width="26" height="26" rx="6" fill="#5DD23C" />
+          <rect x="68" y="37" width="26" height="26" rx="6" fill="#FBBA00" />
+          <rect x="68" y="68" width="26" height="26" rx="6" fill="#E8391D" />
+          <rect x="37" y="68" width="26" height="26" rx="6" fill="#4FA7FF" opacity="0.6" />
+          <rect x="6"  y="68" width="26" height="26" rx="6" fill="#FBBA00" opacity="0.6" />
+        </svg>
+      );
+    case 'progress':
+      return (
+        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
+          <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+          <rect x="6"  y="68" width="26" height="26" rx="6" fill="#E8391D" />
+          <rect x="37" y="37" width="26" height="57" rx="6" fill="#FBBA00" />
+          <rect x="68" y="6"  width="26" height="88" rx="6" fill="#5DD23C" />
+        </svg>
+      );
+    case 'account':
+      return (
+        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
+          <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+          <rect x="6" y="14" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
+          <rect x="58" y="6" width="26" height="26" rx="8" fill="#4FA7FF" />
+          <rect x="6" y="45" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
+          <rect x="26" y="37" width="26" height="26" rx="8" fill="#5DD23C" />
+          <rect x="6" y="76" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
+          <rect x="42" y="68" width="26" height="26" rx="8" fill="#E8391D" />
+        </svg>
+      );
+  }
+};
 
 export default function BottomNav({ active, onNavigate }: Props) {
   const { t } = useTranslation();
 
   return (
-    <nav className="bottomnav">
-      {tabs.map(tab => {
-        const isActive = active === tab.id;
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onNavigate(tab.id)}
-            className="bottomnav-btn"
-            style={{ color: isActive ? 'var(--accent)' : 'var(--muted)' }}
-          >
-            {tab.id === 'lobby' ? (
-              <>
-                <svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true">
-                  <rect width="100" height="100" rx="14" fill="#2C3E50"/>
-                  <rect x="6"  y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
-                  <rect x="37" y="6"  width="26" height="26" rx="5" fill="#5DD23C"/>
-                  <rect x="68" y="6"  width="26" height="26" rx="5" fill="#FBBA00"/>
-                  <rect x="6"  y="37" width="26" height="26" rx="5" fill="#5DD23C"/>
-                  <rect x="37" y="37" width="26" height="26" rx="5" fill="#FBBA00"/>
-                  <rect x="68" y="37" width="26" height="26" rx="5" fill="#4FA7FF"/>
-                  <rect x="6"  y="68" width="26" height="26" rx="5" fill="#4FA7FF"/>
-                  <rect x="37" y="68" width="26" height="26" rx="5" fill="#E8391D"/>
-                  <rect x="68" y="68" width="26" height="26" rx="5" fill="rgba(255,255,255,0.2)"/>
-                </svg>
-                <span className="fw-extrabold nav-label">1UP</span>
-              </>
-            ) : (
-              <>
-                <span className="nav-icon">{tab.emoji}</span>
-                <span className="fw-semibold label-caps nav-label">
-                  {t(tab.labelKey)}
-                </span>
-              </>
-            )}
-          </button>
-        );
-      })}
+    <nav className="fixed bottom-0 left-0 right-0 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 sm:w-[500px] sm:rounded-[28px] z-50 flex flex-row items-stretch justify-center border-t sm:border border-slate-200/80 bg-white/85 pb-[env(safe-area-inset-bottom)] sm:pb-0 backdrop-blur-xl transition-colors duration-200 dark:border-slate-800/80 dark:bg-slate-900/85 shadow-[0_-8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] sm:shadow-2xl">
+      <div className="flex w-full max-w-xl items-stretch px-2 sm:px-6">
+        {tabs.map(tab => {
+          const isActive = active === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onNavigate(tab.id)}
+              className={`group relative flex flex-1 flex-col items-center justify-end sm:justify-center gap-1.5 p-2 pt-3.5 sm:pt-2.5 sm:pb-2.5 transition-all duration-300 ease-out ${
+                isActive 
+                  ? 'cursor-default text-slate-900 dark:text-white font-bold translate-y-[-2px]' 
+                  : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 active:scale-95'
+              }`}
+            >
+              {isActive && (
+                <div className="absolute top-0 left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-b-full bg-brand-yellow shadow-[0_2px_8px_rgba(250,204,21,0.6)]" />
+              )}
+            
+            <div className="mb-0.5 relative flex items-center justify-center">
+              {renderIcon(tab.id, isActive)}
+            </div>
+            
+              <span className="font-semibold text-[10px] tracking-tight uppercase">
+                {tab.id === 'lobby' ? '1UP' : t(tab.labelKey)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }

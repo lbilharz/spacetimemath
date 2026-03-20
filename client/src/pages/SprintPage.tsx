@@ -9,11 +9,30 @@ import { learningTierOf } from '../utils/learningTier.js';
 import DotArray from '../components/DotArray.js';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
-// Haptics fire-and-forget — silently no-ops on web
 const hapticTap  = () => Haptics.impact({ style: ImpactStyle.Light  }).catch(() => {});
 const hapticOk   = () => Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {});
 const hapticGood = () => Haptics.notification({ type: NotificationType.Success }).catch(() => {});
 const hapticBad  = () => Haptics.notification({ type: NotificationType.Error   }).catch(() => {});
+
+const CloseIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={className} strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+const DeleteIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={className} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" />
+    <line x1="18" y1="9" x2="12" y2="15" />
+    <line x1="12" y1="9" x2="18" y2="15" />
+  </svg>
+);
+const EnterIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={className} strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 10 4 15 9 20" />
+    <path d="M20 4v7a4 4 0 01-4 4H4" />
+  </svg>
+);
 
 // Types inferred from module_bindings
 type ProblemStat = {
@@ -101,12 +120,7 @@ const NUMPAD_KEYS = [1,2,3,4,5,6,7,8,9,'←' as const,0,'OK' as const];
 
 const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
   return (
-    <div className="w-full" style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: 8,
-      maxWidth: 360,
-    }}>
+    <div className="grid grid-cols-3 gap-3 w-full max-w-sm mx-auto">
       {NUMPAD_KEYS.map((key) => {
         const isOk = key === 'OK';
         const isBack = key === '←';
@@ -116,21 +130,18 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
             type="button"
             disabled={disabled}
             onClick={() => onKey(key)}
-            style={{
-              padding: '14px 8px',
-              fontSize: 22,
-              fontWeight: isOk ? 700 : 500,
-              background: isOk ? 'var(--accent)' : 'var(--card2)',
-              color: isOk ? '#0a0a1a' : isBack ? 'var(--muted)' : 'var(--text)',
-              border: '1px solid var(--border)',
-              borderRadius: 12,
-              cursor: 'pointer',
-              opacity: disabled ? 0.4 : 1,
-              transition: 'opacity 0.15s, background 0.15s',
-              WebkitTapHighlightColor: 'transparent',
-            }}
+            className={`
+              flex flex-col items-center justify-center h-[64px] sm:h-[72px] rounded-[20px] transition-all select-none
+              ${isOk ? 'bg-brand-yellow font-black text-slate-900 shadow-sm shadow-brand-yellow/30 hover:bg-[#f5c300] hover:scale-[1.03] active:scale-95' :
+              isBack ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95' :
+              'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white shadow-sm hover:border-slate-300 dark:hover:border-slate-600 hover:-translate-y-0.5 active:scale-95'}
+              ${disabled ? 'opacity-40 pointer-events-none' : ''}
+              focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-yellow/50
+            `}
           >
-            {key}
+            {isOk ? <span className="text-xl sm:text-2xl font-black">{key}</span> :
+             isBack ? <DeleteIcon className="w-7 h-7 sm:w-8 sm:h-8 opacity-80" /> :
+             <span className="text-3xl sm:text-4xl font-extrabold">{key}</span>}
           </button>
         );
       })}
@@ -254,7 +265,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       sessionIdRef.current = null;
       setPreCountdown(null);
     }
-  }, [sessions, sessionId, sprintStarted, classSprintId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sessions, sessionId, sprintStarted, classSprintId]);
 
   // 3a. When session is detected, kick off the pre-countdown
   // Normal sprint: pre-fetch first problem immediately so it arrives before countdown ends
@@ -436,7 +447,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, 600);
   }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
-      nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
+      nextProblemResults, problemStats, timeLeft, submitAnswer, nextProblem,
       issueProblem, input, SPRINT_DURATION]);
 
   // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
@@ -483,13 +494,16 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   );
 
   // --- Render ---
-  const timerColor = timeLeft <= 10 ? 'var(--wrong)' : timeLeft <= 20 ? 'var(--warn)' : 'var(--accent)';
+  const isDanger = timeLeft <= 10;
+  const isWarning = timeLeft <= 20;
+  const timerColorClass = isDanger ? 'text-red-500' : isWarning ? 'text-orange-500' : 'text-brand-yellow';
 
   // Phase: still waiting for session to be created
   if (sessionId === null) {
     return (
-      <div className="loading">
-        <span className="text-sm text-muted">{t('sprint.startingSession')}</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900 px-6">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-800 border-t-brand-yellow mb-4" />
+        <span className="text-sm font-semibold text-slate-500">{t('sprint.startingSession')}</span>
       </div>
     );
   }
@@ -497,21 +511,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // Phase: pre-sprint countdown (3-2-1-Go!)
   if (preCountdown !== null) {
     return (
-      <div className="page" style={{
-        alignItems: 'center', justifyContent: 'center',
-        minHeight: '80vh', gap: 20, textAlign: 'center',
-      }}>
-        <div className="text-sm text-muted fw-semibold" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <div className="flex flex-col items-center justify-center min-h-[80vh] bg-slate-50 dark:bg-slate-900 px-6 text-center animate-in fade-in duration-300">
+        <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6 drop-shadow-sm">
           {t('sprint.getReady')}
         </div>
-        <div style={{
-          fontSize: preCountdown === 0 ? 80 : 108,
-          fontWeight: 900,
-          color: preCountdown === 0 ? 'var(--accent)' : 'var(--text)',
-          lineHeight: 1,
-          fontVariantNumeric: 'tabular-nums',
-          transition: 'color 0.2s, font-size 0.2s',
-        }}>
+        <div className={`font-black tabular-nums leading-none transition-all duration-300 ${preCountdown === 0 ? 'text-[100px] text-brand-yellow scale-110 drop-shadow-[0_0_25px_rgba(250,204,21,0.5)]' : 'text-[120px] text-slate-800 dark:text-white drop-shadow-sm'}`}>
           {preCountdown === 0 ? t('sprint.go') : preCountdown}
         </div>
       </div>
@@ -521,169 +525,128 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // Phase: sprint started but first problem loading
   if (!problem) {
     return (
-      <div className="loading">
-        <span className="text-sm text-muted">{t('sprint.loadingQuestions')}</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900 px-6">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-800 border-t-brand-yellow mb-4" />
+        <span className="text-sm font-semibold text-slate-500">{t('sprint.loadingQuestions')}</span>
       </div>
     );
   }
 
   // Ring timer constants
-  const TOP_H = 52;
-  const RING_R = 15;
+  const RING_R = 18;
   const RING_C = 2 * Math.PI * RING_R;
-  const ringOffset = RING_C * (1 - timeLeft / SPRINT_DURATION);
-
+  const ringOffset = Math.max(0, RING_C * (1 - timeLeft / SPRINT_DURATION));
 
   return (
-    <>
+    <div className="fixed inset-0 bg-slate-50 dark:bg-slate-900 flex flex-col overflow-hidden text-slate-900 dark:text-white transition-colors duration-200">
       {/* ── Fixed top bar ─────────────────────────────────────────── */}
-      <header style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        background: '#2C3E50',
-        height: TOP_H,
-        display: 'flex', alignItems: 'center',
-        padding: '0 16px', gap: 10,
-      }}>
+      <header className="h-[64px] md:h-[72px] shrink-0 px-4 md:px-8 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl z-50">
         <button
           onClick={handleEnd} disabled={ending}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.75)', fontSize: 18, lineHeight: 1,
-            padding: '6px 8px', borderRadius: 8,
-            WebkitTapHighlightColor: 'transparent',
-          }}
+          className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-red-500 transition-colors active:scale-95"
           aria-label={t('sprint.endSprint')}
-        >✕</button>
+        >
+          <CloseIcon className="w-6 h-6" />
+        </button>
 
-        {/* Circular ring timer — one full rotation per 60 s */}
-        <svg width={40} height={40} style={{ flexShrink: 0, display: 'block' }}>
-          <circle cx={20} cy={20} r={RING_R}
-            fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={3.5} />
-          <circle cx={20} cy={20} r={RING_R}
-            fill="none"
-            stroke={timerColor}
-            strokeWidth={3.5}
-            strokeLinecap="round"
-            strokeDasharray={RING_C}
-            strokeDashoffset={ringOffset}
-            transform="rotate(-90 20 20)"
-            style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
-          />
-          <text x={20} y={24.5} textAnchor="middle"
-            fill="white" fontSize={11} fontWeight="bold"
-            style={{ fontVariantNumeric: 'tabular-nums' }}>
-            {timeLeft}
-          </text>
-        </svg>
+        {/* Circular ring timer — center absolute */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+          <svg width={48} height={48} className="drop-shadow-sm">
+            <circle cx={24} cy={24} r={RING_R} fill="none" className="stroke-slate-200 dark:stroke-slate-800" strokeWidth={4} />
+            <circle cx={24} cy={24} r={RING_R}
+              fill="none"
+              stroke="currentColor"
+              className={`transition-all duration-1000 ease-linear ${timerColorClass}`}
+              strokeWidth={4}
+              strokeLinecap="round"
+              strokeDasharray={RING_C}
+              strokeDashoffset={ringOffset}
+              transform="rotate(-90 24 24)"
+            />
+            <text x={24} y={29} textAnchor="middle" fill="currentColor" className="text-sm font-bold tabular-nums">
+              {timeLeft}
+            </text>
+          </svg>
+        </div>
 
         {/* Stats */}
-        <div style={{
-          marginLeft: 'auto',
-          color: 'rgba(255,255,255,0.9)',
-          fontSize: 14, fontWeight: 600,
-          fontVariantNumeric: 'tabular-nums',
-        }}>
+        <div className="font-bold text-sm tracking-tight tabular-nums text-slate-500 dark:text-slate-400">
           {isDiagnostic
-            ? <><b style={{ color: timerColor }}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</b></>
-            : <>✓&nbsp;{correct}/{answered}&nbsp;·&nbsp;{score.toFixed(1)}</>
+            ? <><span className={timerColorClass}>{t('sprint.phase')} {Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4</span></>
+            : <span className="flex items-center gap-1.5"><span className="text-green-500 -mt-0.5">✓</span> {correct}/{answered} <span className="opacity-40">·</span> {score.toFixed(1)}</span>
           }
         </div>
       </header>
 
       {/* ── Middle content — centered between bars ─────────────────── */}
-      <main style={{
-        position: 'fixed',
-        top: TOP_H, left: 0, right: 0, bottom: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px 24px 268px',
-        gap: 28,
-        overflowY: 'auto',
-      }}>
-        {/* Row: dot grid (left) + difficulty tag (right) */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          width: '100%', maxWidth: 380,
-        }}>
-          {problem.a <= 10 && problem.b <= 10
-            ? <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} cellSize={8} />
-            : <div />
-          }
-          <span className={`tag ${difficultyTag.cls}`} style={{ flexShrink: 0, marginTop: 2 }}>
-            {difficultyTag.label}
-          </span>
-        </div>
+      <main className="flex-1 flex flex-col items-center justify-center p-4 min-h-0 w-full relative">
+        <div className="w-full max-w-[380px] flex flex-col items-center h-[280px]">
+          
+          {/* Row: dot grid (left) + difficulty tag (right) */}
+          <div className="flex items-start justify-between w-full h-[120px] mb-4">
+            {problem.a <= 10 && problem.b <= 10
+              ? <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} cellSize={8} />
+              : <div />
+            }
+            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 mt-0.5 transition-colors ${
+              difficultyTag.cls === 'tag-red' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+              difficultyTag.cls === 'tag-warn' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400' :
+              'bg-green-100 text-green-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+            }`}>
+              {difficultyTag.label}
+            </span>
+          </div>
 
-        {/* Equation or feedback */}
-        {feedback ? (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              fontSize: 32, fontWeight: 700,
-              color: feedback.isCorrect ? 'var(--accent)' : 'var(--wrong)',
-            }}>
-              {feedback.isCorrect
-                ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
-                : t('sprint.feedbackTryAgain')}
-            </div>
-            {!feedback.isCorrect && (
-              <div className="text-sm text-muted mt-2">{getRechenweg(problem.a, problem.b).hint}</div>
+          {/* Equation or feedback */}
+          <div className="flex-1 flex items-center justify-center w-full">
+            {feedback ? (
+              <div className="text-center animate-in zoom-in-95 duration-200">
+                <div className={`text-4xl md:text-5xl font-black tracking-tight ${feedback.isCorrect ? 'text-green-500 drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`}>
+                  {feedback.isCorrect
+                    ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
+                    : t('sprint.feedbackTryAgain')}
+                </div>
+                {!feedback.isCorrect && (
+                  <div className="text-sm md:text-base font-bold text-slate-600 dark:text-slate-300 mt-4 px-5 py-3 bg-slate-100 dark:bg-slate-800 rounded-2xl shadow-sm mx-auto max-w-[280px]">
+                    {getRechenweg(problem.a, problem.b).hint}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex items-center justify-center gap-3 w-full animate-in fade-in duration-200">
+                <span className="text-[52px] md:text-6xl font-black tracking-tighter tabular-nums drop-shadow-sm text-slate-800 dark:text-white">
+                  {problem.a}&nbsp;×&nbsp;{problem.b}&nbsp;=
+                </span>
+                <input
+                  ref={inputRef}
+                  type="number"
+                  inputMode={isTouchDevice ? 'none' : 'numeric'}
+                  readOnly={isTouchDevice}
+                  value={input}
+                  onChange={e => !isTouchDevice && setInput(e.target.value)}
+                  placeholder="?"
+                  className="w-[110px] md:w-[130px] rounded-[24px] bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-center text-[44px] md:text-5xl font-black py-3 md:py-4 focus:outline-none focus:border-brand-yellow focus:ring-4 focus:ring-brand-yellow/20 transition-all shadow-sm disabled:opacity-50 text-slate-900 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none m-0"
+                  autoFocus={!isTouchDevice}
+                  disabled={timeLeft === 0}
+                />
+                {/* Desktop Enter Button - Hidden on mobile touch where Numpad is better */}
+                <button
+                  type="submit"
+                  className="hidden sm:flex shrink-0 ml-2 h-[72px] w-[72px] items-center justify-center rounded-[24px] bg-brand-yellow text-slate-900 shadow-sm hover:scale-[1.03] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                  disabled={timeLeft === 0 || !input.trim()}
+                >
+                  <EnterIcon className="w-8 h-8 -ml-1" />
+                </button>
+              </form>
             )}
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            flexWrap: 'wrap', justifyContent: 'center',
-          }}>
-            <span style={{
-              fontSize: 48, fontWeight: 800, letterSpacing: -1,
-              fontVariantNumeric: 'tabular-nums',
-            }}>
-              {problem.a}&nbsp;×&nbsp;{problem.b}&nbsp;=
-            </span>
-            <input
-              ref={inputRef}
-              className="field"
-              type="number"
-              inputMode={isTouchDevice ? 'none' : 'numeric'}
-              readOnly={isTouchDevice}
-              value={input}
-              onChange={e => !isTouchDevice && setInput(e.target.value)}
-              placeholder="?"
-              style={{
-                width: 96, textAlign: 'center',
-                fontSize: 32, fontWeight: 700,
-                padding: '8px 12px', borderRadius: 12,
-                caretColor: isTouchDevice ? 'transparent' : undefined,
-              }}
-              autoFocus={!isTouchDevice}
-              disabled={timeLeft === 0}
-            />
-            <button
-              className="btn btn-primary"
-              type="submit"
-              style={{ fontSize: 22, padding: '10px 18px', borderRadius: 12 }}
-              disabled={timeLeft === 0 || !input.trim()}
-            >↵</button>
-          </form>
-        )}
+        </div>
       </main>
 
       {/* ── Fixed bottom numpad ────────────────────────────────────── */}
-      <footer style={{
-        position: 'fixed',
-        bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: 'var(--card)',
-        borderTop: '1px solid var(--border)',
-        padding: '10px 16px',
-        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
-        display: 'flex', justifyContent: 'center',
-      }}>
+      <footer className="shrink-0 p-4 md:p-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-[calc(1rem+env(safe-area-inset-bottom))]">
         <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
       </footer>
-    </>
+    </div>
   );
 }

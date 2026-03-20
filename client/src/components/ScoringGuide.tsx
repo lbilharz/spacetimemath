@@ -46,15 +46,11 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
       : `${a}×${b}=${a * b}  ${effective.toFixed(2)} pts${isCalibrated ? '  ✓ calibrated' : ''}`;
     return (
       <div
-        className="mastery-cell"
+        className="flex h-[34px] w-full min-w-[34px] items-center justify-center rounded-md text-[11px] font-bold text-white shadow-sm transition-transform hover:scale-[1.1] hover:-translate-y-0.5 hover:shadow-lg hover:z-10 relative cursor-default tabular-nums"
         title={title}
         style={{
           background: weightBg(effective),
-          color: '#fff',
-          fontWeight: 700,
-          fontSize: 11,
-          border: isCalibrated ? '1.5px solid rgba(255,255,255,0.45)' : '1px solid rgba(0,0,0,0.12)',
-          cursor: 'default',
+          border: isCalibrated ? '2px solid rgba(255,255,255,0.5)' : '1px solid rgba(0,0,0,0.05)',
         }}
       >
         {effective.toFixed(1)}
@@ -63,73 +59,63 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
   }
 
   const HeaderDiv = ({ n }: { n: number }) => (
-    <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">{n}</div>
+    <div className="flex h-[34px] w-full min-w-[34px] items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-md border border-slate-100 dark:border-slate-800 tabular-nums">{n}</div>
   );
 
   const RowDiv = ({ n }: { n: number }) => (
-    <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted"
-      style={{ justifyContent: 'flex-end', paddingRight: 4 }}>{n}</div>
+    <div className="flex h-[34px] w-full min-w-[34px] items-center justify-end pr-1.5 text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-md border border-slate-100 dark:border-slate-800 tabular-nums">{n}</div>
   );
 
   const GRID_TPL = `28px repeat(${COLS.length}, ${CELL}px)`;
 
   return (
-    <div id="scoring-guide" className="card">
+    <div id="scoring-guide" className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
       <button
         onClick={() => setOpen(o => !o)}
-        className="row-between w-full"
-        style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          color: 'var(--text)', padding: 0, textAlign: 'left',
-          WebkitTapHighlightColor: 'transparent',
-        }}
+        className="flex w-full items-center justify-between text-left transition-opacity hover:opacity-80 active:opacity-60"
       >
-        <h2>📊 {t('scoring.title')}</h2>
-        <span className="text-xs text-muted">{open ? '▲' : '▼'}</span>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">📊 {t('scoring.title')}</h2>
+        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700/50 rounded-full w-6 h-6 flex items-center justify-center transition-transform">
+          {open ? '▲' : '▼'}
+        </span>
       </button>
 
       {open && (
-        <div className="col gap-16 mt-4">
+        <div className="mt-6 flex flex-col gap-5 pt-5 border-t border-slate-100 dark:border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-300">
 
           {/* Formula */}
-          <div className="text-sm text-muted" style={{ lineHeight: 1.7 }}>
-            <b style={{ color: 'var(--text)' }}>{t('scoring.howTitle')}</b><br />
+          <div className="text-sm text-slate-600 dark:text-slate-400 leading-[1.7]">
+            <b className="text-slate-900 dark:text-slate-200">{t('scoring.howTitle')}</b><br />
             {t('scoring.howBody')}<br />
-            <code style={{
-              fontSize: 11, background: 'var(--card2)', padding: '3px 8px',
-              borderRadius: 4, marginTop: 4, display: 'inline-block',
-              color: 'var(--accent)', letterSpacing: 0,
-            }}>
+            <code className="mt-1.5 inline-block rounded-md bg-slate-50 dark:bg-slate-900/50 px-2.5 py-1 text-[11px] font-mono text-amber-600 dark:text-amber-400 border border-slate-200 dark:border-slate-800">
               w = 0.2 + 1.8 × error_rate + 0.5 × (avg_ms / 10 000)
             </code>
             <br />
-            <span className="text-xs">{t('scoring.calibNote')}</span>
-            <br />
-            <span className="text-xs text-accent fw-semibold">
-              ＋ {t('scoring.digitBonus')}
-            </span>
+            <span className="text-xs opacity-80 mt-1 block">{t('scoring.calibNote')}</span>
+            <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-400/10 px-3 py-1.5 border border-amber-400/20">
+              <span className="text-xs font-bold text-amber-500 uppercase tracking-widest text-[10px]">
+                ＋ {t('scoring.digitBonus')}
+              </span>
+            </div>
           </div>
 
           {/* Legend */}
-          <div className="row-wrap gap-8">
+          <div className="flex flex-wrap gap-2.5">
             {([
               [0.35, `${t('sprint.tagEasy')} < 0.8`],
               [1.0,  `${t('sprint.tagMedium')} 0.8–1.4`],
               [1.75, `${t('sprint.tagHard')} ≥ 1.5`],
             ] as [number, string][]).map(([wt, label]) => (
-              <span key={label} style={{
-                background: weightBg(wt), color: '#fff',
-                padding: '3px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700,
-              }}>
+              <span key={label} className="rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm" style={{ background: weightBg(wt) }}>
                 {label}
               </span>
             ))}
           </div>
 
           {/* 10 × 10 grid */}
-          <div style={{ overflowX: 'auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: GRID_TPL, gap: 3 }}>
-              <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>
+          <div className="overflow-x-auto pb-4 -mx-6 px-6 md:mx-0 md:px-0">
+            <div style={{ display: 'grid', gridTemplateColumns: GRID_TPL, gap: 3, width: 'max-content' }}>
+              <div className="flex h-[34px] w-full min-w-[34px] items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-md border border-slate-100 dark:border-slate-800">×</div>
               {COLS.map(b => <HeaderDiv key={b} n={b} />)}
               {ROWS.map(a => (
                 <Fragment key={a}>
@@ -143,12 +129,12 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
           {/* Extended table (tier 3) */}
           {playerLearningTier >= 3 && (
             <>
-              <div className="text-sm fw-bold text-accent">
+              <div className="mt-2 text-sm font-bold text-amber-500">
                 {t('unlock.tier1GridTitle')}
               </div>
-              <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: GRID_TPL, gap: 3 }}>
-                  <div className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>
+              <div className="overflow-x-auto pb-4 -mx-6 px-6 md:mx-0 md:px-0">
+                <div style={{ display: 'grid', gridTemplateColumns: GRID_TPL, gap: 3, width: 'max-content' }}>
+                  <div className="flex h-[34px] w-full min-w-[34px] items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-md border border-slate-100 dark:border-slate-800">×</div>
                   {EXT_COLS.map(b => <HeaderDiv key={b} n={b} />)}
                   {EXT_ROWS.map(a => (
                     <Fragment key={a}>
@@ -161,7 +147,7 @@ export default function ScoringGuide({ problemStats, playerLearningTier = 0 }: P
             </>
           )}
 
-          <p className="text-xs text-muted" style={{ marginTop: -4 }}>
+          <p className="mt-1 text-xs font-medium text-slate-400 dark:text-slate-500 text-center bg-slate-50 dark:bg-slate-900/30 py-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700/50 px-4">
             {t('scoring.calibLegend')}
           </p>
         </div>

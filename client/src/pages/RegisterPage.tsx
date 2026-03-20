@@ -6,7 +6,7 @@ import { reducers, tables } from '../module_bindings/index.js';
 // Account restore via code entry is temporarily broken — requires a server-side restore reducer.
 import { capturedToken } from '../auth.js';
 import SplashGrid from '../components/SplashGrid.js';
-
+import LanguagePicker from '../components/LanguagePicker.js';
 
 interface Props {
   onRegistered: () => void;
@@ -25,6 +25,7 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [restoreError, setRestoreError] = useState('');
   const [restoring, setRestoring] = useState(false);
   const [autoRestoreCode, setAutoRestoreCode] = useState<string | null>(null);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const restore = params.get('restore');
@@ -96,7 +97,7 @@ export default function RegisterPage({ onRegistered }: Props) {
         row = getRow();
       }
       if (!row) {
-        setRestoreError('Timeout waiting for server response — try again');
+        setRestoreError(t('register.restoreTimeout'));
         setRestoring(false);
         return;
       }
@@ -115,95 +116,165 @@ export default function RegisterPage({ onRegistered }: Props) {
   // Auto-trigger restore when code is pre-populated from URL
   useEffect(() => {
     if (autoRestoreCode && !restoring) {
-      const synth = { preventDefault: () => {} } as unknown as FormEvent;
+      const synth = { preventDefault: () => { } } as unknown as FormEvent;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       handleRestore(synth);
     }
   }, [autoRestoreCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="page" style={{ justifyContent: 'center', minHeight: '80vh' }}>
-      <div className="text-center mb-2">
-        <div className="mb-2"><SplashGrid /></div>
-        <h1 style={{ fontSize: 36 }}>1UP</h1>
-        {!showRestore && <p className="text-muted mt-2">{t('register.tagline')}</p>}
+    <div className="relative flex min-h-[100vh] flex-col items-center justify-center overflow-hidden bg-slate-50 p-6 pb-20 dark:bg-slate-950">
+      {/* Decorative Background Elements */}
+      <div className="absolute -top-24 -start-24 h-96 w-96 rounded-full bg-brand-yellow/10 blur-[100px] dark:bg-brand-yellow/5" />
+      <div className="absolute top-1/2 -end-24 h-96 w-96 -translate-y-1/2 rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-500/5" />
+      <div className="absolute -bottom-24 start-1/2 h-96 w-96 -translate-x-1/2 rtl:translate-x-1/2 rounded-full bg-purple-500/10 blur-[120px] dark:bg-purple-500/5" />
+
+      {/* Language Switcher */}
+      <div className="absolute top-6 end-6 lg:top-10 lg:end-10 overflow-visible">
+        <LanguagePicker />
       </div>
 
-      {!showRestore ? (
-        <div className="card">
-          <h2 className="mb-4">{t('register.chooseName')}</h2>
-          <form onSubmit={handleSubmit} className="col gap-12">
-            <input
-              className="field"
-              type="text"
-              placeholder={t('register.usernamePlaceholder')}
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              maxLength={24}
-              autoFocus
-              disabled={loading}
-            />
-            {error && <p className="text-error text-base">⚠ {error}</p>}
-            <button
-              className="btn btn-primary btn-lg"
-              type="submit"
-              disabled={loading || !username.trim()}
-            >
-              {loading ? t('register.registering') : t('register.joinSprint')}
-            </button>
-          </form>
-
-          <button
-            onClick={() => setShowRestore(true)}
-            className="btn-link mt-4"
-          >
-            {t('register.restoreLink')}
-          </button>
+      <div className="relative mb-6 flex animate-in fade-in slide-in-from-bottom-6 duration-1000 flex-row items-center justify-center gap-4 sm:mb-10 sm:flex-col sm:text-center">
+        <div className="flex-shrink-0 drop-shadow-[0_10px_30px_rgba(234,179,8,0.3)] transition-all hover:scale-110 hover:rotate-3 active:scale-95 cursor-pointer sm:mb-8 sm:drop-shadow-[0_20px_50px_rgba(234,179,8,0.3)]">
+          <div className="scale-75 sm:scale-100">
+            <SplashGrid />
+          </div>
         </div>
-      ) : (
-        <div className="card">
-          <h2 className="mb-2" style={{ fontSize: 16 }}>{t('register.restoreHeading')}</h2>
-          <p className="text-sm text-muted mb-4">
-            {t('register.restoreDesc')}
-          </p>
-          {autoRestoreCode ? (
-            <p className="text-center text-muted text-base">
-              {t('register.restoring')}
+        <div className="flex flex-col items-start sm:items-center">
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white sm:text-7xl">
+            1UP
+          </h1>
+          {!showRestore && (
+            <div className="mt-1 flex flex-col items-start gap-1 sm:mt-6 sm:items-center sm:gap-2">
+              <p className="max-w-[200px] text-xs font-bold leading-tight text-slate-500 dark:text-slate-400 sm:max-w-md sm:text-xl sm:text-slate-600 dark:sm:text-slate-300">
+                {t('register.tagline')}
+              </p>
+              <div className="h-0.5 w-8 rounded-full bg-brand-yellow sm:h-1 sm:w-12" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+        {!showRestore ? (
+          <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+            <h2 className="mb-2 flex items-center gap-3 text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+              <span>{t('register.chooseName')}</span>
+              <span className="animate-bounce text-3xl">👋</span>
+            </h2>
+            <p className="mb-8 animate-in fade-in ltr:slide-in-from-left-4 rtl:slide-in-from-right-4 duration-1000 delay-500 text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+              {t('register.createAccountDesc')}
             </p>
-          ) : (
-            <form onSubmit={handleRestore} className="col gap-12">
+            <form onSubmit={handleSubmit} className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700 flex flex-col gap-4">
               <input
-                className="field"
+                className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 text-lg font-semibold text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-yellow/10 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 lg:text-xl placeholder:text-slate-400"
                 type="text"
-                placeholder={t('register.restorePlaceholder')}
-                value={code}
-                onChange={e => setCode(e.target.value.toUpperCase())}
-                maxLength={12}
+                placeholder={t('register.usernamePlaceholder')}
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                maxLength={24}
                 autoFocus
-                disabled={restoring}
-                style={{ textAlign: 'center', fontSize: 20, letterSpacing: 4, fontWeight: 700 }}
+                disabled={loading}
               />
-              {restoreError && <p className="text-error text-base">⚠ {restoreError}</p>}
+              {error && (
+                <p className="flex items-center gap-2 font-medium text-red-500">
+                  <span className="text-xl">⚠</span> {error}
+                </p>
+              )}
               <button
-                className="btn btn-primary btn-lg"
+                className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 type="submit"
-                disabled={restoring || (code.trim().length !== 6 && code.trim().length !== 12)}
+                disabled={loading || !username.trim()}
               >
-                {restoring ? t('register.restoring') : t('register.restore')}
+                <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
+                <span className="relative flex items-center justify-center gap-2 text-lg font-black uppercase tracking-wider text-slate-900">
+                  {loading ? t('register.registering') : (
+                    <>
+                      {t('register.joinSprint')}
+                      <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span>
+                    </>
+                  )}
+                </span>
               </button>
             </form>
-          )}
 
-          <button
-            onClick={() => { setShowRestore(false); setCode(''); setRestoreError(''); setAutoRestoreCode(null); }}
-            className="btn-link mt-4"
-          >
-            {t('register.newAccount')}
-          </button>
-        </div>
-      )}
+            <div className="my-8 flex items-center gap-4 text-slate-300 dark:text-slate-700">
+              <div className="h-px flex-1 bg-current" />
+              <span className="text-xs font-bold uppercase tracking-widest">{t('common.or')}</span>
+              <div className="h-px flex-1 bg-current" />
+            </div>
 
-      <p className="text-center text-sm text-muted">
+            <button
+              onClick={() => setShowRestore(true)}
+              className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-600 transition-all hover:border-slate-200 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+            >
+              <span>{t('register.restoreLink')}</span>
+              <span className="text-lg transition-transform group-hover:rotate-12">↺</span>
+            </button>
+          </div>
+        ) : (
+          <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+            <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+              {t('register.restoreHeading')}
+            </h2>
+            <p className="mb-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t('register.restoreDesc')}
+            </p>
+            {autoRestoreCode ? (
+              <div className="flex flex-col items-center justify-center py-6">
+                <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-brand-yellow border-t-transparent" />
+                <p className="text-lg font-bold text-slate-900 dark:text-white">
+                  {t('register.restoring')}
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleRestore} className="flex flex-col gap-6">
+                <input
+                  className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-yellow/10 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 lg:text-3xl placeholder:text-slate-300 placeholder:tracking-normal"
+                  type="text"
+                  placeholder={t('register.restorePlaceholder')}
+                  value={code}
+                  onChange={e => setCode(e.target.value.toUpperCase())}
+                  maxLength={12}
+                  autoFocus
+                  disabled={restoring}
+                  style={{ textAlign: 'center' }}
+                />
+                {restoreError && (
+                  <p className="flex items-center gap-2 font-medium text-red-500">
+                    <span className="text-xl">⚠</span> {restoreError}
+                  </p>
+                )}
+                <button
+                  className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  type="submit"
+                  disabled={restoring || (code.trim().length !== 6 && code.trim().length !== 12)}
+                >
+                  <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="relative flex items-center justify-center gap-2 text-lg font-black uppercase tracking-wider text-slate-900">
+                    {restoring ? t('register.restoring') : (
+                      <>
+                        {t('register.restore')}
+                        <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span>
+                      </>
+                    )}
+                  </span>
+                </button>
+              </form>
+            )}
+
+            <button
+              onClick={() => { setShowRestore(false); setCode(''); setRestoreError(''); setAutoRestoreCode(null); }}
+              className="group mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-brand-yellow dark:text-slate-400 dark:hover:text-brand-yellow"
+            >
+              <span className="transition-transform ltr:group-hover:-translate-x-1 rtl:group-hover:translate-x-1 rtl:rotate-180">←</span>
+              <span>{t('register.newAccount')}</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      <p className="mt-12 max-w-xs text-center text-sm font-medium leading-relaxed text-slate-400 dark:text-slate-500 animate-in fade-in duration-1000 delay-500">
         {t('register.footer')}
       </p>
     </div>

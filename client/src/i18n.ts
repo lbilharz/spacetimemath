@@ -3,6 +3,12 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en/translation.json';
 import de from './locales/de/translation.json';
+import fr from './locales/fr/translation.json';
+import nl from './locales/nl/translation.json';
+import tr from './locales/tr/translation.json';
+import uk from './locales/uk/translation.json';
+import ar from './locales/ar/translation.json';
+import zh from './locales/zh/translation.json';
 
 i18n
   .use(LanguageDetector)
@@ -11,9 +17,15 @@ i18n
     resources: {
       en: { translation: en },
       de: { translation: de },
+      fr: { translation: fr },
+      nl: { translation: nl },
+      tr: { translation: tr },
+      uk: { translation: uk },
+      ar: { translation: ar },
+      zh: { translation: zh },
     },
     fallbackLng: 'en',
-    supportedLngs: ['en', 'de'],
+    supportedLngs: ['en', 'de', 'fr', 'nl', 'tr', 'uk', 'ar', 'zh'],
     load: 'languageOnly',
     interpolation: { escapeValue: false },
     detection: {

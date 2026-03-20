@@ -98,60 +98,55 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     }
   }, [pendingJoinCode, classrooms]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleStart = () => {
+  const handleStartSprint = () => {
     setStarting(true);
     onStartSprint(0n); // SprintPage owns session creation on mount
   };
 
   return (
-    <div className="page">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6 pb-[100px] sm:pb-[140px] animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Recovery key nag for teachers with students */}
       {showNag && (
-        <div className="row-wrap gap-12" style={{
-          background: 'rgba(251,186,0,0.12)', border: '1.5px solid var(--accent)',
-          borderRadius: 10, padding: '12px 16px',
-        }}>
-          <span style={{ fontSize: 20 }}>⚠️</span>
-          <p className="flex-1 text-sm">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border-[1.5px] border-amber-400 bg-amber-400/10 p-3 md:p-4">
+          <span className="text-xl">⚠️</span>
+          <p className="flex-1 text-sm text-slate-800 dark:text-slate-200 font-medium">
             {t('lobby.recoveryNag')}
           </p>
-          <button className="btn btn-primary text-sm nowrap" onClick={onGoToAccount}>
+          <button className="rounded-lg bg-brand-yellow px-4 py-2 text-sm font-bold text-slate-900 hover:bg-brand-yellow-hover whitespace-nowrap transition-colors" onClick={onGoToAccount}>
             {t('lobby.recoveryNagCta')}
           </button>
         </div>
       )}
 
       {/* Welcome + Sprint CTA */}
-      <div className="card col gap-16">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
         {myPlayer && (
-          <>
-            <div>
-              <h2 className="text-22 fw-extrabold mb-6">
-                {t('lobby.hello', { name: myPlayer.username })} 👋
-              </h2>
-              <div className="row flex-wrap gap-12">
-                <a
-                  href="/progress#tier-status"
-                  className="fw-semibold text-accent no-underline text-14"
-                >
-                  {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
-                  {' '}Tier {myPlayer.learningTier ?? 0}
-                </a>
-                <span className="text-muted text-12">·</span>
-                <span className="text-muted text-14">
-                  {t('lobby.bestScore')} <b className="text-warn">{myPlayer.bestScore.toFixed(1)}</b>
-                </span>
-                <span className="text-muted text-12">·</span>
-                <span className="text-muted text-14">
-                  {t('lobby.sessions', { count: myPlayer.totalSessions })}
-                </span>
-              </div>
+          <div>
+            <h1 className="mb-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              {t('lobby.hello', { name: myPlayer.username })} 👋
+            </h1>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <a
+                href="/progress#tier-status"
+                className="font-semibold text-brand-yellow hover:text-brand-yellow-hover no-underline transition-colors"
+              >
+                {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
+                {' '}Tier {myPlayer.learningTier ?? 0}
+              </a>
+              <span className="text-slate-400 dark:text-slate-500 text-xs">·</span>
+              <span className="text-slate-500 dark:text-slate-400">
+                {t('lobby.bestScore')} <b className="text-amber-500">{myPlayer.bestScore.toFixed(1)}</b>
+              </span>
+              <span className="text-slate-400 dark:text-slate-500 text-xs">·</span>
+              <span className="text-slate-500 dark:text-slate-400">
+                {t('lobby.sessions', { count: myPlayer.totalSessions })}
+              </span>
             </div>
-          </>
+          </div>
         )}
         <button
-          className="btn btn-primary btn-lg w-full"
-          onClick={handleStart}
+          className={`w-full rounded-2xl bg-brand-yellow py-4 text-[19px] font-black tracking-tight text-slate-900 transition-all active:scale-[0.97] mt-2 ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-[0_8px_30px_rgba(250,204,21,0.35)] hover:shadow-[0_8px_30px_rgba(250,204,21,0.5)] hover:ring-4 hover:ring-brand-yellow/30'}`}
+          onClick={handleStartSprint}
           disabled={starting}
         >
           {starting ? t('lobby.starting') : t('lobby.startSprint')}
@@ -159,21 +154,16 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
       </div>
 
       {/* Live Players */}
-      <div className="card">
-        <h2 style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5,
-          background: 'rgba(93,210,60,0.15)', border: '1px solid rgba(93,210,60,0.35)',
-          borderRadius: 20, padding: '3px 10px', fontWeight: 600, color: 'var(--green)', marginBottom: 12 }}>
-          <span style={{ width: 12, height: 12, borderRadius: '50%', background: 'green', display: 'inline-block' }} />
-          {t('lobby.onlineCount', { count: allOnline.length })}</h2>
-        <div style={{
-          maxHeight: liveList.length > 8 ? 264 : undefined,
-          overflowY: 'auto',
-          borderTop: liveList.length > 0 ? '1px solid var(--border)' : undefined,
-        }}>
-          <table className="table-full">
+      <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
+        <h2 className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-green-500/30 bg-green-500/15 px-3 py-1 font-semibold text-green-700 dark:text-green-400 text-sm">
+          <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+          {t('lobby.onlineCount', { count: allOnline.length })}
+        </h2>
+
+        <div className={`overflow-y-auto ${liveList.length > 8 ? 'max-h-[264px] pr-2' : ''}`}>
+          <table className="w-full border-collapse">
             <tbody>
-              {liveList.map(p => {
+              {liveList.map((p, index) => {
                 const idHex = p.identity.toHexString();
                 const isSelf = idHex === myIdentityHex;
                 const isSprinting = sprintingIds.has(idHex);
@@ -182,42 +172,34 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                 return (
                   <tr
                     key={idHex}
-                    style={{
-                      borderBottom: '1px solid var(--border)',
-                      background: isSelf ? 'rgba(251,186,0,0.08)' : 'transparent',
-                    }}
+                    className={`${index !== liveList.length - 1 ? 'border-b border-slate-100 dark:border-slate-700/50' : ''} ${isSelf ? 'bg-amber-400/5' : 'bg-transparent'}`}
                   >
                     {/* Rank */}
-                    <td className="tbl-td text-center fw-bold tabular-nums" style={{
-                      color: rankIdx < 3 && rankIdx >= 0 ? 'var(--warn)' : 'var(--muted)',
-                      width: 36,
-                      padding: '9px 4px',
-                      fontSize: 14,
-                    }}>
+                    <td className={`w-9 px-1 py-3 text-center text-sm font-bold tabular-nums ${rankIdx < 3 && rankIdx >= 0 ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500'}`}>
                       {rankIdx < 0 ? '—' : rankIdx < 3 ? ['🥇','🥈','🥉'][rankIdx] : rankIdx + 1}
                     </td>
                     {/* Player name + tier */}
-                    <td className="tbl-td" style={{ padding: '9px 4px', fontSize: 14, fontWeight: isSelf ? 700 : 400 }}>
+                    <td className={`px-2 py-3 text-sm ${isSelf ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
                       <span>{p.username}</span>
                       {scoreEntry && (
-                        <span className="ml-6 text-11">
+                        <span className="ml-1.5 text-[11px]">
                           {TIER_EMOJI[Math.min(scoreEntry.learningTier, 7)]}
                         </span>
                       )}
                       {isSelf && (
-                        <span className="text-accent ml-6 text-12">
+                        <span className="ml-2 text-xs font-semibold text-brand-yellow">
                           {t('common.you')}
                         </span>
                       )}
                     </td>
                     {/* Score */}
-                    <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums" style={{ padding: '9px 4px', fontSize: 14, width: 52 }}>
+                    <td className="w-[52px] px-1 py-3 text-right text-sm font-bold tabular-nums text-amber-500">
                       {scoreEntry ? scoreEntry.bestWeightedScore.toFixed(1) : '—'}
                     </td>
                     {/* Playing badge or empty */}
-                    <td className="tbl-td tbl-td--right" style={{ padding: '9px 4px', fontSize: 14, width: 110 }}>
+                    <td className="w-[110px] pl-2 py-3 text-right text-sm">
                       {isSprinting && (
-                        <span className="badge-playing">
+                        <span className="inline-block rounded-md bg-green-500 px-2 py-1 text-[11px] font-bold tracking-wider uppercase text-white shadow-sm">
                           {t('lobby.sprinting')}
                         </span>
                       )}

@@ -4,7 +4,7 @@ import type { ParseKeys } from 'i18next';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 
-type Answer = { id: bigint; a: number; b: number; isCorrect: boolean; sessionId: bigint; userAnswer?: number; responseMs?: number; };
+type Answer = { id: bigint; a: number; b: number; isCorrect: boolean; sessionId: bigint; userAnswer?: number; responseMs?: number; attempts?: number; };
 type ProblemStat = { problemKey: number; a: number; b: number; difficultyWeight: number; };
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   problemStats: ProblemStat[];
   highlightSession?: bigint;
   sessionAnswers?: Answer[];
-  tier1Unlocked?: boolean;
+  showExtended?: boolean;
   focusCell?: { a: number; b: number } | null;
   playerLearningTier?: number;
 }
@@ -23,10 +23,33 @@ function getMastery(answers: Answer[], a: number, b: number): Mastery {
   const pair = answers.filter(ans => ans.a === a && ans.b === b);
   if (pair.length === 0) return 'untouched';
   const recent = pair.slice(-10);
-  const acc = recent.filter(x => x.isCorrect).length / recent.length;
-  if (acc >= 0.8) return 'mastered';
-  if (acc >= 0.5) return 'learning';
+  
+  let score = 0;
+  for (const ans of recent) {
+    if (ans.isCorrect) {
+      const attempts = Math.max(1, ans.attempts ?? 1);
+      if (attempts === 1) score += 1.0;
+      else if (attempts === 2) score += 0.6;
+      else score += 0.3;
+    }
+  }
+  const weightedAcc = score / recent.length;
+
+  if (weightedAcc >= 0.8) return 'mastered';
+  if (weightedAcc >= 0.5) return 'learning';
   return 'struggling';
+}
+
+export function getSessionMastery(ans: Answer | undefined): Mastery | null {
+  if (!ans) return null;
+  if (!ans.isCorrect) return 'struggling';
+
+  const attempts = Math.max(1, ans.attempts ?? 1);
+  const timeSecs = (ans.responseMs ?? 0) / 1000;
+
+  if (attempts >= 3 || timeSecs > 15) return 'struggling';
+  if (attempts === 2 || timeSecs > 6) return 'learning';
+  return 'mastered';
 }
 
 
@@ -46,7 +69,7 @@ const MASTERY_BG: Record<Mastery, string> = {
 
 const EXTENDED_A = [11,12,13,14,15,16,17,18,19,20];
 
-export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], tier1Unlocked = false, focusCell, playerLearningTier }: Props) {
+export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], showExtended = false, focusCell, playerLearningTier }: Props) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
 
@@ -57,10 +80,10 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   const cells: React.ReactNode[] = [];
   // Header row: b labels
-  cells.push(<div key="h0" className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">×</div>);
+  cells.push(<div key="h0" className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">×</div>);
   for (let b = 1; b <= 10; b++) {
     cells.push(
-      <div key={`hb${b}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
+      <div key={`hb${b}`} className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
         {b}
       </div>
     );
@@ -69,15 +92,22 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
   for (let a = 1; a <= 10; a++) {
     // Row label
     cells.push(
-      <div key={`ha${a}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
+      <div key={`ha${a}`} className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
         {a}
       </div>
     );
     for (let b = 1; b <= 10; b++) {
-      const mastery = getMastery(answers, a, b);
+      let mastery = getMastery(answers, a, b);
       const key = a * 100 + b;
       const isHighlighted = sessionKeys.has(key);
       const isSelected = selected?.a === a && selected?.b === b;
+      
+      if (isHighlighted) {
+        const lastSessionAns = sessionAnswers.filter(ans => ans.a === a && ans.b === b).pop();
+        const override = getSessionMastery(lastSessionAns);
+        if (override) mastery = override;
+      }
+
       const stat = problemStats.find(s => s.problemKey === key);
       const w = stat?.difficultyWeight ?? 0;
       const answer = a * b;
@@ -87,7 +117,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       cells.push(
         <button
           key={`${a}-${b}`}
-          className="mastery-cell"
+          className={`w-[34px] h-[34px] rounded-[6px] flex items-center justify-center transition-all shadow-sm relative ${isLocked ? 'cursor-default opacity-25' : 'cursor-pointer hover:scale-[1.05] active:scale-95'}`}
           title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
           onClick={() => !isLocked && setSelected(isSelected ? null : { a, b })}
           style={{
@@ -95,24 +125,19 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
             border: isSelected
               ? `2px solid ${MASTERY_COLORS[mastery]}`
               : isHighlighted
-              ? '2px solid var(--accent)'
+              ? '2px solid #facc15' // brand-yellow
               : `1px solid ${MASTERY_COLORS[mastery]}44`,
             color: MASTERY_COLORS[mastery],
             fontWeight: 600,
             fontSize: 13,
-            position: 'relative',
-            cursor: isLocked ? 'default' : 'pointer',
-            opacity: isLocked ? 0.25 : 1,
+            zIndex: isHighlighted || isSelected ? 10 : 1,
+            boxShadow: isHighlighted ? '0 0 10px rgba(250,204,21,0.3)' : 'none',
           }}
         >
           {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}
           {/* Difficulty dot */}
           {w >= 1.5 && (
-            <span style={{
-              position: 'absolute', top: 2, right: 3,
-              width: 4, height: 4, borderRadius: '50%',
-              background: 'var(--wrong)', display: 'block',
-            }} />
+            <span className="absolute top-[2px] right-[3px] w-1 h-1 rounded-full bg-red-500 block" />
           )}
         </button>
       );
@@ -120,7 +145,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
   }
 
   // Gap row + extended rows (×11–×20) when tier1 is unlocked
-  if (tier1Unlocked) {
+  if (showExtended) {
     // Gap row: 11 cells spanning all columns, acts as visual divider
     for (let i = 0; i < 11; i++) {
       cells.push(
@@ -134,22 +159,30 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
     for (const a of EXTENDED_A) {
       // Row label
       cells.push(
-        <div key={`ext-ha${a}`} className="mastery-cell mastery-cell--label text-xs fw-bold text-muted">
+        <div key={`ext-ha${a}`} className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
           {a}
         </div>
       );
       for (let b = 1; b <= 10; b++) {
-        const mastery = getMastery(answers, a, b);
+        let mastery = getMastery(answers, a, b);
         const key = a * 100 + b;
         const isHighlighted = sessionKeys.has(key);
         const isSelected = selected?.a === a && selected?.b === b;
+
+        if (isHighlighted) {
+          const lastSessionAns = sessionAnswers.filter(ans => ans.a === a && ans.b === b).pop();
+          const override = getSessionMastery(lastSessionAns);
+          if (override) mastery = override;
+        }
+
         const stat = problemStats.find(s => s.problemKey === key);
         const w = stat?.difficultyWeight ?? 0;
         const answer = a * b;
+
         cells.push(
           <button
             key={`ext-${a}-${b}`}
-            className="mastery-cell"
+            className="w-[34px] h-[34px] rounded-[6px] flex items-center justify-center cursor-pointer transition-all hover:scale-[1.05] active:scale-95 shadow-sm relative"
             title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
             onClick={() => setSelected(isSelected ? null : { a, b })}
             style={{
@@ -157,22 +190,18 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
               border: isSelected
                 ? `2px solid ${MASTERY_COLORS[mastery]}`
                 : isHighlighted
-                ? '2px solid var(--accent)'
+                ? '2px solid #facc15'
                 : `1px solid ${MASTERY_COLORS[mastery]}44`,
               color: MASTERY_COLORS[mastery],
               fontWeight: 600,
-              fontSize: 11,
-              position: 'relative',
-              cursor: 'pointer',
+              fontSize: 13,
+              zIndex: isHighlighted || isSelected ? 10 : 1,
+              boxShadow: isHighlighted ? '0 0 10px rgba(250,204,21,0.3)' : 'none',
             }}
           >
-            {answer}
+            {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}
             {w >= 1.5 && (
-              <span style={{
-                position: 'absolute', top: 2, right: 3,
-                width: 4, height: 4, borderRadius: '50%',
-                background: 'var(--wrong)', display: 'block',
-              }} />
+              <span className="absolute top-[2px] right-[3px] w-1 h-1 rounded-full bg-red-500 block" />
             )}
           </button>
         );
@@ -184,7 +213,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   return (
     <div>
-      <div style={{ overflowX: 'auto' }}>
+      <div className="overflow-x-auto pb-2">
         <div style={{
           display: 'grid',
           gridTemplateColumns: '28px repeat(10, 34px)',
@@ -196,27 +225,18 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
       {/* Rechenweg panel */}
       {selected && rw && (
-        <div className="mt-4" style={{
-          background: 'var(--card2)',
-          border: '1px solid var(--border)',
-          borderRadius: 8,
-          padding: '10px 14px',
-        }}>
-          <div className="row gap-10 mb-2">
-            <span className="fw-bold tabular-nums" style={{ fontSize: 15 }}>
+        <div className="mt-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 transition-all animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center justify-between gap-4 mb-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+            <span className="font-black tabular-nums text-lg text-slate-800 dark:text-white">
               {selected.a} × {selected.b} = {selected.a * selected.b}
             </span>
-            <span className="text-xs text-muted fw-semibold label-caps">
+            <span className="text-[11px] text-slate-400 font-bold uppercase tracking-widest whitespace-nowrap">
               {t(rw.strategyKey as ParseKeys)}
             </span>
           </div>
-          <div className="col gap-4">
+          <div className="flex flex-col gap-1.5">
             {rw.steps.map((step, i) => (
-              <div key={i} className="tabular-nums" style={{
-                fontSize: 15,
-                fontWeight: i === rw.steps.length - 1 ? 700 : 400,
-                color: i === rw.steps.length - 1 ? 'var(--accent)' : 'var(--text)',
-              }}>
+              <div key={i} className={`tabular-nums text-[15px] ${i === rw.steps.length - 1 ? 'font-black text-brand-yellow' : 'font-medium text-slate-600 dark:text-slate-300'}`}>
                 {step}{i === rw.steps.length - 1 ? ' ✓' : ''}
               </div>
             ))}
@@ -232,35 +252,37 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
             const recent = pair.slice(-10);
             const correct = recent.filter(x => x.isCorrect).length;
             return (
-              <div className="divider-top mt-2">
-                <div className="text-xs text-muted fw-semibold mb-2">
-                  {correct}/{recent.length} correct (last {recent.length} of {pair.length})
+              <div className="border-t border-slate-200 dark:border-slate-800 mt-4 pt-4">
+                <div className="text-[11px] text-slate-500 font-bold mb-3 uppercase tracking-wider">
+                  {t('mastery.correctOfLast', { correct, recent: recent.length, all: pair.length, defaultValue: `${correct}/${recent.length} RICHTIG (LETZTE ${recent.length} VON ${pair.length})` })}
                 </div>
-                <div className="row-wrap gap-4">
-                  {recent.map((ans, i) => (
-                    <div key={i} className="col gap-1" style={{ alignItems: 'center' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: 4,
-                        background: ans.isCorrect ? 'rgba(93,210,60,0.15)' : 'rgba(232,57,29,0.12)',
-                        border: `1px solid ${ans.isCorrect ? '#5DD23C' : '#E8391D'}`,
-                        color: ans.isCorrect ? '#5DD23C' : '#E8391D',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 13, fontWeight: 700,
-                      }}>
-                        {ans.isCorrect ? '✓' : '✗'}
+                <div className="flex flex-wrap gap-2">
+                  {recent.map((ans, i) => {
+                    const m = getSessionMastery(ans);
+                    let colorClass = '';
+                    let icon = '✗';
+                    if (m === 'mastered') { colorClass = 'bg-green-500/10 border border-green-500/20 text-green-500 dark:bg-green-500/5 dark:text-green-400'; icon = '✓'; }
+                    else if (m === 'learning') { colorClass = 'bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 dark:bg-yellow-500/10 dark:text-yellow-400'; icon = '✓'; }
+                    else { colorClass = 'bg-red-500/10 border border-red-500/20 text-red-500 dark:bg-red-500/5 dark:text-red-400'; icon = ans.isCorrect ? '✓' : '✗'; }
+                    
+                    return (
+                      <div key={i} className="flex flex-col items-center gap-1">
+                        <div className={`w-7 h-7 rounded-md flex items-center justify-center text-sm font-black transition-colors ${colorClass}`}>
+                          {icon}
+                        </div>
+                        {!ans.isCorrect && ans.userAnswer !== undefined && (
+                          <div className="text-[10px] font-black text-red-500 dark:text-red-400">
+                            {ans.userAnswer}
+                          </div>
+                        )}
+                        {ans.responseMs !== undefined && (
+                          <div className={`text-[10px] font-bold ${m === 'mastered' ? 'text-slate-400' : m === 'learning' ? 'text-yellow-600 dark:text-yellow-500' : 'text-red-500 dark:text-red-400'}`}>
+                            {(ans.responseMs / 1000).toFixed(1)}s
+                          </div>
+                        )}
                       </div>
-                      {!ans.isCorrect && ans.userAnswer !== undefined && (
-                        <div style={{ fontSize: 9, color: '#E8391D', fontWeight: 700 }}>
-                          {ans.userAnswer}
-                        </div>
-                      )}
-                      {ans.responseMs !== undefined && (
-                        <div className="text-muted" style={{ fontSize: 9 }}>
-                          {(ans.responseMs / 1000).toFixed(1)}s
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -269,20 +291,19 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       )}
 
       {/* Legend */}
-      <div className="row-wrap gap-16 mt-3">
+      <div className="flex flex-wrap items-center gap-6 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
         {(['mastered', 'learning', 'struggling', 'untouched'] as Mastery[]).map(m => (
-          <div key={m} className="row gap-6">
-            <div style={{
-              width: 12, height: 12, borderRadius: 3,
+          <div key={m} className="flex items-center gap-2.5">
+            <div className="w-3.5 h-3.5 rounded-[4px]" style={{
               background: MASTERY_BG[m],
               border: `1px solid ${MASTERY_COLORS[m]}`,
             }} />
-            <span className="text-xs text-muted">{t(`mastery.${m}` as const)}</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide uppercase">{t(`mastery.${m}` as const)}</span>
           </div>
         ))}
-        <div className="row gap-6">
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--wrong)' }} />
-          <span className="text-xs text-muted">{t('mastery.hardDiff')}</span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-2 h-2 rounded-full bg-red-600 dark:bg-red-500" />
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide uppercase">{t('mastery.hardDiff')}</span>
         </div>
       </div>
     </div>

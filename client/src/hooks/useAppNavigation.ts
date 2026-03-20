@@ -10,8 +10,8 @@ export function useAppNavigation(initialPage: Page) {
   // Ref so event handlers can read the current player without stale closure
   const myPlayerRef = useRef<{ learningTier?: number } | undefined>(undefined);
 
-  const navigate = (newPage: Page, hash?: string) => {
-    const path = PAGE_PATH[newPage] ?? '/';
+  const navigate = (newPage: Page, hash?: string, pushPath?: string) => {
+    const path = pushPath ?? PAGE_PATH[newPage] ?? '/';
     window.history.pushState(null, '', hash ? `${path}#${hash}` : path);
     setPage(newPage);
   };
@@ -37,19 +37,21 @@ export function useAppNavigation(initialPage: Page) {
       e.preventDefault();
       const [rawPath, rawHash] = href.split('#');
       const path = rawPath || window.location.pathname;
-      const targetPage = PATH_MAP[path] ?? 'lobby';
+      let targetPage = PATH_MAP[path] ?? 'lobby';
+      if (path.startsWith('/classroom/')) targetPage = 'classroom';
       if (!myPlayerRef.current && targetPage !== 'register') return;
       navigate(targetPage, rawHash || undefined);
     };
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Browser back / forward
   useEffect(() => {
     const handlePop = () => {
       const path = window.location.pathname;
-      const target = PATH_MAP[path] ?? 'lobby';
+      let target = PATH_MAP[path] ?? 'lobby';
+      if (path.startsWith('/classroom/')) target = 'classroom';
       const safe: Page = TABBED_PAGES.includes(target) ? target : 'lobby';
       setPage(myPlayerRef.current ? safe : 'register');
       const hash = window.location.hash.slice(1);

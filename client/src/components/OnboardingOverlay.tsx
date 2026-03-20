@@ -52,109 +52,98 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
   };
 
   return (
-    <div className="modal-backdrop">
-      <div className="modal-card">
-
-        {isTierStep ? (
-          /* Tier picker card */
-          <>
-            <div className="fw-extrabold text-18 leading-tight text-center">
-              {t('tierPicker.cardTitle')}
-            </div>
-            <div className="text-muted text-sm text-center">
-              {t('tierPicker.cardBody')}
-            </div>
-            <div style={{ width: '100%', maxHeight: 320, overflowY: 'auto' }}>
-              <TierLadder
-                currentTier={0}
-                selectedTier={selectedTier}
-                onSelect={setSelectedTier}
-              />
-            </div>
-          </>
-        ) : (
-          /* Info cards */
-          <>
-            <div className="lh-1" style={{ fontSize: 56 }}>{card!.emoji}</div>
-            <div className="fw-extrabold text-20 leading-tight">
-              {t(card!.titleKey)}
-            </div>
-            <div className="text-muted text-15">
-              {t(card!.bodyKey)}
-            </div>
-          </>
-        )}
-
-        {/* Step dots */}
-        <div className="row gap-8 mt-1">
-          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-            <div key={i} style={{
-              width: 8, height: 8,
-              borderRadius: '50%',
-              background: i === step ? 'var(--accent)' : 'var(--border)',
-              transition: 'background 0.2s',
-            }} />
-          ))}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="relative flex w-full max-w-md max-h-[90vh] flex-col overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+        
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto px-8 pt-10 pb-6">
+          <div className="flex flex-col items-center gap-6 text-center">
+            {isTierStep ? (
+              /* Tier picker card */
+              <>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                    {t('tierPicker.cardTitle')}
+                  </h2>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    {t('tierPicker.cardBody')}
+                  </p>
+                </div>
+                <div className="w-full">
+                  <TierLadder
+                    currentTier={0}
+                    selectedTier={selectedTier}
+                    onSelect={setSelectedTier}
+                  />
+                </div>
+              </>
+            ) : (
+              /* Info cards */
+              <>
+                <div className="text-7xl leading-none drop-shadow-sm animate-bounce duration-[2000ms]">{card!.emoji}</div>
+                <div className="flex flex-col gap-3">
+                  <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                    {t(card!.titleKey)}
+                  </h2>
+                  <p className="text-[17px] font-medium leading-relaxed text-slate-600 dark:text-slate-300">
+                    {t(card!.bodyKey)}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Buttons */}
-        <div className="col gap-8 w-full mt-1">
-          <div className="row gap-10 w-full">
-            {step > 0 && (
+        {/* Footer with Controls */}
+        <div className="border-t border-slate-100 bg-slate-50/50 p-5 dark:border-slate-800 dark:bg-slate-800/50">
+          <div className="flex flex-col gap-3">
+            
+            {/* Step dots */}
+            <div className="flex justify-center gap-1.5">
+              {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+                <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === step ? 'w-5 bg-brand-yellow' : 'w-1 bg-slate-200 dark:bg-slate-700'}`} />
+              ))}
+            </div>
+
+            {/* Primary Actions */}
+            <div className="flex gap-2">
+              {step > 0 && (
+                <button
+                  onClick={() => setStep(s => s - 1)}
+                  className="group flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                >
+                  <span className="transition-transform ltr:group-hover:-translate-x-0.5 rtl:group-hover:translate-x-0.5 rtl:rotate-180">←</span>
+                  {t('onboarding.back')}
+                </button>
+              )}
+              
               <button
-                onClick={() => setStep(s => s - 1)}
-                style={{
-                  flex: 1, padding: '10px 0',
-                  background: 'var(--card2)', border: '1px solid var(--border)',
-                  borderRadius: 8, color: 'var(--muted)', fontSize: 14, fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                {t('onboarding.back')}
-              </button>
-            )}
-            {isLast && noSprint ? (
-              <button onClick={handleOkay} disabled={finishing}
-                style={{
-                  flex: 2, padding: '16px 0', background: 'var(--accent)',
-                  border: 'none', borderRadius: 10, color: '#2C3E50',
-                  fontSize: 18, fontWeight: 900,
-                  cursor: finishing ? 'default' : 'pointer', opacity: finishing ? 0.7 : 1,
-                  boxShadow: '0 4px 20px rgba(251,186,0,0.4)', letterSpacing: '-0.3px',
-                  WebkitTapHighlightColor: 'transparent',
-                }}>
-                {t('onboarding.okay')}
-              </button>
-            ) : (
-              <button
-                onClick={isLast ? handleDone : () => setStep(s => s + 1)}
+                onClick={isLast ? (noSprint ? handleOkay : handleDone) : () => setStep(s => s + 1)}
                 disabled={finishing}
-                style={{
-                  flex: 2, padding: isLast ? '16px 0' : '11px 0',
-                  background: 'var(--accent)', border: 'none', borderRadius: 10,
-                  color: '#2C3E50', fontSize: isLast ? 18 : 15, fontWeight: 900,
-                  cursor: finishing ? 'default' : 'pointer', opacity: finishing ? 0.7 : 1,
-                  boxShadow: isLast ? '0 4px 20px rgba(251,186,0,0.4)' : 'none',
-                  letterSpacing: isLast ? '-0.3px' : 'normal',
-                  WebkitTapHighlightColor: 'transparent',
-                }}>
-                {isLast ? t('onboarding.startSprint') : t('onboarding.next')}
+                className={`group relative flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl px-4 transition-all active:scale-[0.98] disabled:opacity-50 ${
+                  isLast
+                    ? 'bg-brand-yellow text-slate-900 shadow-md'
+                    : 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                }`}
+              >
+                <span className="text-[13px] font-black uppercase tracking-wider">
+                  {isLast ? (noSprint ? t('onboarding.okay') : t('onboarding.startSprint')) : t('onboarding.next')}
+                </span>
+                <span className="text-base transition-transform ltr:group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 rtl:rotate-180">→</span>
+              </button>
+            </div>
+
+            {/* Optional Skip/Okay Link */}
+            {isLast && !noSprint && (
+              <button
+                onClick={handleOkay}
+                disabled={finishing}
+                className="text-center text-[11px] font-bold text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200 underline underline-offset-4"
+              >
+                {t('onboarding.okay')}
               </button>
             )}
           </div>
-
-          {isLast && !noSprint && (
-            <button onClick={handleOkay} disabled={finishing} className="w-full"
-              style={{
-                padding: '10px 0', background: 'var(--card2)',
-                border: '1px solid var(--border)', borderRadius: 8,
-                color: 'var(--muted)', fontSize: 14, fontWeight: 600,
-                cursor: finishing ? 'default' : 'pointer', opacity: finishing ? 0.7 : 1,
-                WebkitTapHighlightColor: 'transparent',
-              }}>
-              {t('onboarding.okay')}
-            </button>
-          )}
         </div>
       </div>
     </div>

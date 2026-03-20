@@ -1,0 +1,76 @@
+{
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "saving": "正在保存…",
+    "saved": "✓ 已保存",
+    "copy": "⎘ 复制",
+    "copied": "✓ 已复制",
+    "generating": "正在生成…",
+    "back": "返回",
+    "lobby": "大厅",
+    "teacher": "教师",
+    "student": "学生",
+    "you": "你",
+    "code": "代码",
+    "or": "或"
+  },
+  "app": {
+    "brand": "1UP",
+    "tagline": "了解你的水平。"
+  },
+  "register": {
+    "tagline": "60 秒。乘法表。实时排行榜。",
+    "chooseName": "选择你的名字",
+    "usernamePlaceholder": "选择用户名 …",
+    "usernameError": "用户名必须为 1-24 个字符",
+    "registering": "正在注册…",
+    "createAccountDesc": "为你的新账户选择一个名字，立即开始！",
+    "joinSprint": "开始升级",
+    "restoreLink": "恢复现有账户",
+    "restoreHeading": "恢复账户",
+    "restoreDesc": "输入 12 位永久恢复密钥以恢复访问权限。",
+    "restorePlaceholder": "例如 ABCD34EF5678",
+    "restoring": "正在恢复…",
+    "restore": "恢复",
+    "restoreTimeout": "等待服务器响应超时 — 请重试",
+    "newAccount": "新账户",
+    "restoreError": "未找到密钥 — 请检查你的 12 位恢复密钥",
+    "footer": "题目按社区难度加权 · 由 SpaceTimeDB 驱动"
+  },
+  "onboarding": {
+    "card1Title": "60 秒计时",
+    "card1Body": "在时间用完之前，尽可能多地解决乘法问题！",
+    "card2Title": "题目分值不同",
+    "card2Body": "简单 = 1 分 · 中等 = 2 分 · 困难 = 3 分。越难的题目得分越高！",
+    "card3Title": "准备好冲刺了吗？",
+    "card3Body": "开始你的第一次 60 秒乘法冲刺。尽可能多地回答问题——你的分数将被记录！",
+    "letsGo": "开始吧！ 🚀",
+    "startSprint": "开始 60 秒冲刺 ⚡",
+    "okay": "好的",
+    "next": "下一步",
+    "back": "返回"
+  },
+  "tierPicker": {
+    "cardTitle": "选择你的起始等级",
+    "cardBody": "告诉我们你已经掌握了什么——你可以随时调整。",
+    "tier0Desc": "刚刚开始",
+    "tier1Desc": "我掌握了 ×1、×2 和 ×10",
+    "tier2Desc": "我也掌握了 ×3",
+    "tier3Desc": "我也掌握了 ×5",
+    "tier4Desc": "我也掌握了 ×4",
+    "tier5Desc": "我也掌握了 ×6",
+    "tier6Desc": "我也掌握了 ×7",
+    "tier7Desc": "我掌握了所有乘法表！"
+  },
+  "tiers": {
+    "tier0Name": "初学者",
+    "tier1Name": "建筑师",
+    "tier2Name": "攀登者",
+    "tier3Name": "成就者",
+    "tier4Name": "熟练者",
+    "tier5Name": "进阶者",
+    "tier6Name": "专家",
+    "tier7Name": "大师"
+  }
+}

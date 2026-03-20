@@ -1,0 +1,76 @@
+{
+  "common": {
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "saving": "Opslaan…",
+    "saved": "✓ Opgeslagen",
+    "copy": "⎘ Kopiëren",
+    "copied": "✓ Gekopieerd",
+    "generating": "Genereren…",
+    "back": "Terug",
+    "lobby": "Lobby",
+    "teacher": "Leraar",
+    "student": "Student",
+    "you": "jij",
+    "code": "Code",
+    "or": "of"
+  },
+  "app": {
+    "brand": "1UP",
+    "tagline": "Ken je niveau."
+  },
+  "register": {
+    "tagline": "60 seconden. Vermenigvuldigingstabellen. Live ranglijst.",
+    "chooseName": "Kies je naam",
+    "usernamePlaceholder": "Kies gebruikersnaam …",
+    "usernameError": "Gebruikersnaam moet 1-24 tekens zijn",
+    "registering": "Registreren…",
+    "createAccountDesc": "Kies een naam voor je nieuwe account en ga direct aan de slag!",
+    "joinSprint": "Start Level Up",
+    "restoreLink": "Bestaand account herstellen",
+    "restoreHeading": "Account herstellen",
+    "restoreDesc": "Voer je 12-cijferige herstelsleutel in om toegang te herstellen.",
+    "restorePlaceholder": "bijv. ABCD34EF5678",
+    "restoring": "Herstellen…",
+    "restore": "Herstellen",
+    "restoreTimeout": "Time-out bij wachten op serverreactie — probeer het opnieuw",
+    "newAccount": "Nieuw account",
+    "restoreError": "Sleutel niet gevonden — controleer je 12-cijferige herstelsleutel",
+    "footer": "Problemen zijn gewogen op basis van de moeilijkheidsgraad van de gemeenschap · aangedreven door SpaceTimeDB"
+  },
+  "onboarding": {
+    "card1Title": "60 seconden op de klok",
+    "card1Body": "Los zoveel mogelijk vermenigvuldigingen op voordat de tijd om is!",
+    "card2Title": "Problemen leveren punten op",
+    "card2Body": "Makkelijk = 1 pt · Gemiddeld = 2 pt · Moeilijk = 3 pt. Moeilijkere sommen geven meer punten!",
+    "card3Title": "Klaar voor de sprint?",
+    "card3Body": "Start je eerste 60-seconden vermenigvuldigingssprint. Beantwoord er zoveel mogelijk — je score wordt opgeslagen!",
+    "letsGo": "Laten we gaan! 🚀",
+    "startSprint": "Start 60s sprint ⚡",
+    "okay": "Oké",
+    "next": "Volgende",
+    "back": "Terug"
+  },
+  "tierPicker": {
+    "cardTitle": "Kies je startniveau",
+    "cardBody": "Vertel ons wat je al kunt — je kunt het op elk moment wijzigen.",
+    "tier0Desc": "Ik begin net",
+    "tier1Desc": "Ik ken ×1, ×2 en ×10",
+    "tier2Desc": "Ik ken ook ×3",
+    "tier3Desc": "Ik ken ook ×5",
+    "tier4Desc": "Ik ken ook ×4",
+    "tier5Desc": "Ik ken ook ×6",
+    "tier6Desc": "Ik ken ook ×7",
+    "tier7Desc": "Ik ken al mijn tafels!"
+  },
+  "tiers": {
+    "tier0Name": "Starter",
+    "tier1Name": "Bouwer",
+    "tier2Name": "Klimmer",
+    "tier3Name": "Presteerder",
+    "tier4Name": "Vaardig",
+    "tier5Name": "Gevorderd",
+    "tier6Name": "Expert",
+    "tier7Name": "Meester"
+  }
+}

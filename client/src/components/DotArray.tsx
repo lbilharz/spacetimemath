@@ -37,11 +37,7 @@ function DotArray({ a, b, faded = false, cellSize = 12 }: Props) {
 
   return (
     <div
-      style={{
-        opacity: faded ? 1 : 0.9,
-        transition: 'opacity 1s',
-        display: 'inline-block',
-      }}
+      className={`inline-block transition-opacity duration-1000 ${faded ? 'opacity-100' : 'opacity-90'}`}
     >
       {INDICES.map((row) => (
         <div
@@ -54,35 +50,37 @@ function DotArray({ a, b, faded = false, cellSize = 12 }: Props) {
         >
           {/* First block: columns 0–4 */}
           <div style={{ display: 'flex', gap }}>
-            {INDICES.slice(0, BLOCK_SIZE).map((col) => (
-              <div
-                key={col}
-                style={{
-                  width: cellSize,
-                  height: cellSize,
-                  borderRadius: radius,
-                  backgroundColor: row < rows && col < cols ? 'var(--accent)' : 'transparent',
-                  border: row < rows && col < cols ? 'none' : '1px solid var(--accent)',
-                  opacity: 1,
-                }}
-              />
-            ))}
+            {INDICES.slice(0, BLOCK_SIZE).map((col) => {
+              const active = row < rows && col < cols;
+              return (
+                <div
+                  key={col}
+                  style={{
+                    width: cellSize,
+                    height: cellSize,
+                    borderRadius: radius,
+                  }}
+                  className={active ? 'bg-brand-yellow border-none' : 'bg-transparent border border-brand-yellow/60 dark:border-brand-yellow/40'}
+                />
+              );
+            })}
           </div>
           {/* Second block: columns 5–9 */}
           <div style={{ display: 'flex', gap }}>
-            {INDICES.slice(BLOCK_SIZE).map((col) => (
-              <div
-                key={col}
-                style={{
-                  width: cellSize,
-                  height: cellSize,
-                  borderRadius: radius,
-                  backgroundColor: row < rows && col < cols ? 'var(--accent)' : 'transparent',
-                  border: row < rows && col < cols ? 'none' : '1px solid var(--accent)',
-                  opacity: 1,
-                }}
-              />
-            ))}
+            {INDICES.slice(BLOCK_SIZE).map((col) => {
+              const active = row < rows && col < cols;
+              return (
+                <div
+                  key={col}
+                  style={{
+                    width: cellSize,
+                    height: cellSize,
+                    borderRadius: radius,
+                  }}
+                  className={active ? 'bg-brand-yellow border-none' : 'bg-transparent border border-brand-yellow/60 dark:border-brand-yellow/40'}
+                />
+              );
+            })}
           </div>
         </div>
       ))}

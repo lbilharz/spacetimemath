@@ -41,19 +41,15 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
   const tiersPresent = Array.from(new Set(bestScores.map(s => s.learningTier))).sort();
 
   return (
-    <div className="card">
-      <h2 className="mb-3">{t('leaderboard.title')}</h2>
+    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
+      <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">🏆 {t('leaderboard.title')}</h2>
 
       {/* Tier filter tabs */}
       {tiersPresent.length > 1 && (
-        <div className="row-wrap gap-6 mb-4">
+        <div className="flex flex-wrap gap-2 mb-5">
           <button
             onClick={() => setTierFilter(-1)}
-            style={{
-              padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-              background: tierFilter === -1 ? 'var(--accent)' : 'var(--card2)',
-              color: tierFilter === -1 ? '#000' : 'var(--muted)',
-            }}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${tierFilter === -1 ? 'bg-brand-yellow text-slate-900 shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:hover:bg-slate-700'}`}
           >
             {t('leaderboard.tierAll')}
           </button>
@@ -61,103 +57,98 @@ export default function Leaderboard({ bestScores, myIdentityHex, myLearningTier:
             <button
               key={tier}
               onClick={() => setTierFilter(tier)}
-              style={{
-                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-                background: tierFilter === tier ? 'var(--accent)' : 'var(--card2)',
-                color: tierFilter === tier ? '#000' : 'var(--muted)',
-              }}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${tierFilter === tier ? 'bg-brand-yellow text-slate-900 shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-700/50 dark:text-slate-400 dark:hover:bg-slate-700'}`}
             >
-              {TIER_EMOJI[Math.min(tier, 7)]} {t(`tiers.tier${tier}Name` as ParseKeys)}
+              <span>{TIER_EMOJI[Math.min(tier, 7)]}</span>
+              <span>{t(`tiers.tier${tier}Name` as ParseKeys)}</span>
             </button>
           ))}
         </div>
       )}
 
       {rows.length === 0 ? (
-        <p className="text-muted text-sm">
+        <p className="text-sm text-slate-500 dark:text-slate-400 italic py-4 text-center bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
           {t('leaderboard.empty')}
         </p>
       ) : (
-        <table className="table-full">
-          <thead>
-            <tr className="divider-bottom">
-              <th className="tbl-th">{t('leaderboard.colHash')}</th>
-              <th className="tbl-th tbl-th--left">{t('leaderboard.colPlayer')}</th>
-              <th className="tbl-th">{t('leaderboard.colScore')}</th>
-              <th className="tbl-th">{t('leaderboard.colAccuracy')}</th>
-              <th className="tbl-th">{t('leaderboard.colAnswers')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((s, i) => {
-              const isMe = s.playerIdentity.toHexString() === myIdentityHex;
-              return (
-                <tr
-                  key={s.playerIdentity.toHexString()}
-                  style={{
-                    borderBottom: '1px solid var(--border)',
-                    background: isMe ? 'rgba(251,186,0,0.08)' : 'transparent',
-                  }}
-                >
-                  <td className="tbl-td fw-bold text-center tabular-nums" style={{ color: i < 3 ? 'var(--warn)' : 'var(--muted)' }}>
-                    {i < 3 ? medals[i] : i + 1}
-                  </td>
-                  <td className={`tbl-td${isMe ? ' fw-bold' : ''}`}>
-                    <span>{s.username}</span>
-                    {tierFilter === -1 && (
-                      <span className="text-xs" style={{ marginLeft: 6 }} title={t(`tiers.tier${s.learningTier}Name` as ParseKeys)}>
-                        {TIER_EMOJI[Math.min(s.learningTier, 7)]}
-                      </span>
-                    )}
-                    {isMe && <span className="text-accent text-xs" style={{ marginLeft: 6 }}>{t('leaderboard.you')}</span>}
-                  </td>
-                  <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums">
-                    {s.bestWeightedScore.toFixed(1)}
-                  </td>
-                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
-                    {s.bestAccuracyPct}%
-                  </td>
-                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
-                    {s.bestTotalAnswered}
-                  </td>
-                </tr>
-              );
-            })}
-            {/* "You" row when player is outside the top 10 */}
-            {myRow && (
-              <>
-                <tr>
-                  <td colSpan={5} className="text-center text-muted text-sm" style={{ padding: '4px 0', letterSpacing: 2 }}>
-                    ···
-                  </td>
-                </tr>
-                <tr style={{ background: 'rgba(251,186,0,0.08)', borderTop: '1px solid var(--border)' }}>
-                  <td className="tbl-td fw-bold text-muted text-center">
-                    {myRankIndex + 1}
-                  </td>
-                  <td className="tbl-td fw-bold">
-                    <span>{myRow.username}</span>
-                    {tierFilter === -1 && (
-                      <span className="text-xs" style={{ marginLeft: 6 }}>{TIER_EMOJI[Math.min(myRow.learningTier, 7)]}</span>
-                    )}
-                    <span className="text-accent text-xs" style={{ marginLeft: 6 }}>{t('leaderboard.you')}</span>
-                  </td>
-                  <td className="tbl-td tbl-td--right fw-bold text-warn tabular-nums">
-                    {myRow.bestWeightedScore.toFixed(1)}
-                  </td>
-                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
-                    {myRow.bestAccuracyPct}%
-                  </td>
-                  <td className="tbl-td tbl-td--right text-muted tabular-nums">
-                    {myRow.bestTotalAnswered}
-                  </td>
-                </tr>
-              </>
-            )}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto w-full">
+          <table className="w-full border-collapse whitespace-nowrap">
+            <thead>
+              <tr className="border-b border-slate-200 dark:border-slate-700 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <th className="px-2 py-3 text-center font-bold w-10">{t('leaderboard.colHash')}</th>
+                <th className="px-2 py-3 text-left font-bold">{t('leaderboard.colPlayer')}</th>
+                <th className="px-2 py-3 text-right font-bold">{t('leaderboard.colScore')}</th>
+                <th className="px-2 py-3 text-right font-bold">{t('leaderboard.colAccuracy')}</th>
+                <th className="px-2 py-3 text-right font-bold">{t('leaderboard.colAnswers')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((s, i) => {
+                const isMe = s.playerIdentity.toHexString() === myIdentityHex;
+                return (
+                  <tr
+                    key={s.playerIdentity.toHexString()}
+                    className={`border-b border-slate-100 dark:border-slate-700/50 ${isMe ? 'bg-amber-400/5' : 'bg-transparent'}`}
+                  >
+                    <td className={`px-2 py-3 text-center text-sm font-bold tabular-nums ${i < 3 ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500'}`}>
+                      {i < 3 ? medals[i] : i + 1}
+                    </td>
+                    <td className={`px-2 py-3 text-sm flex items-center ${isMe ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                      <span>{s.username}</span>
+                      {tierFilter === -1 && (
+                        <span className="ml-2 text-[11px]" title={t(`tiers.tier${s.learningTier}Name` as ParseKeys)}>
+                          {TIER_EMOJI[Math.min(s.learningTier, 7)]}
+                        </span>
+                      )}
+                      {isMe && <span className="ml-2 text-xs font-bold text-brand-yellow tracking-tight">{t('leaderboard.you')}</span>}
+                    </td>
+                    <td className="px-2 py-3 text-right text-sm font-bold tabular-nums text-amber-500">
+                      {s.bestWeightedScore.toFixed(1)}
+                    </td>
+                    <td className="px-2 py-3 text-right text-sm font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+                      {s.bestAccuracyPct}%
+                    </td>
+                    <td className="px-2 py-3 text-right text-sm font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+                      {s.bestTotalAnswered}
+                    </td>
+                  </tr>
+                );
+              })}
+              {myRow && (
+                <>
+                  <tr>
+                    <td colSpan={5} className="py-2 text-center text-xs tracking-[4px] text-slate-400 dark:text-slate-500">
+                      ···
+                    </td>
+                  </tr>
+                  <tr className="border-t border-slate-200 dark:border-slate-700 bg-amber-400/5">
+                    <td className="px-2 py-3 text-center text-sm font-bold text-slate-400 dark:text-slate-500">
+                      {myRankIndex + 1}
+                    </td>
+                    <td className="px-2 py-3 text-sm font-bold text-slate-900 dark:text-white flex items-center">
+                      <span>{myRow?.username}</span>
+                      {tierFilter === -1 && (
+                        <span className="ml-2 text-[11px]">{TIER_EMOJI[Math.min(myRow?.learningTier ?? 0, 7)]}</span>
+                      )}
+                      <span className="ml-2 text-xs font-bold text-brand-yellow tracking-tight">{t('leaderboard.you')}</span>
+                    </td>
+                    <td className="px-2 py-3 text-right text-sm font-bold tabular-nums text-amber-500">
+                      {myRow?.bestWeightedScore.toFixed(1)}
+                    </td>
+                    <td className="px-2 py-3 text-right text-sm font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+                      {myRow?.bestAccuracyPct}%
+                    </td>
+                    <td className="px-2 py-3 text-right text-sm font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+                      {myRow?.bestTotalAnswered}
+                    </td>
+                  </tr>
+                </>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
-      <p className="text-xs text-muted mt-2">
+      <p className="mt-4 text-xs font-medium text-slate-400 dark:text-slate-500 text-center">
         {t('leaderboard.footer')}
       </p>
     </div>

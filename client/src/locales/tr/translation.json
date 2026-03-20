@@ -1,0 +1,76 @@
+{
+  "common": {
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor…",
+    "saved": "✓ Kaydedildi",
+    "copy": "⎘ Kopyala",
+    "copied": "✓ Kopyalandı",
+    "generating": "Oluşturuluyor…",
+    "back": "Geri",
+    "lobby": "Lobi",
+    "teacher": "Öğretmen",
+    "student": "Öğrenci",
+    "you": "sen",
+    "code": "Kod",
+    "or": "veya"
+  },
+  "app": {
+    "brand": "1UP",
+    "tagline": "Seviyeni bil."
+  },
+  "register": {
+    "tagline": "60 saniye. Çarpım tablosu. Canlı liderlik tablosu.",
+    "chooseName": "Adını seç",
+    "usernamePlaceholder": "Kullanıcı adı seç …",
+    "usernameError": "Kullanıcı adı 1-24 karakter arası olmalıdır",
+    "registering": "Kaydediliyor…",
+    "createAccountDesc": "Yeni hesabın için bir ad seç ve hemen başla!",
+    "joinSprint": "Level Up'ı Başlat",
+    "restoreLink": "Mevcut hesabı kurtar",
+    "restoreHeading": "Hesabı kurtar",
+    "restoreDesc": "Erişimi kurtarmak için 12 karakterlik kurtarma anahtarını gir.",
+    "restorePlaceholder": "örn. ABCD34EF5678",
+    "restoring": "Kurtarılıyor…",
+    "restore": "Kurtar",
+    "restoreTimeout": "Sunucu yanıtı için zaman aşımı — tekrar dene",
+    "newAccount": "Yeni hesap",
+    "restoreError": "Anahtar bulunamadı — 12 karakterlik kurtarma anahtarını kontrol et",
+    "footer": "Problemler topluluk zorluğuna göre ağırlıklandırılmıştır · SpaceTimeDB tarafından desteklenmektedir"
+  },
+  "onboarding": {
+    "card1Title": "Saat 60 saniye",
+    "card1Body": "Süre bitmeden mümkün olduğunca çok çarpma işlemini çöz!",
+    "card2Title": "Problemler puan kazandırır",
+    "card2Body": "Kolay = 1 pt · Orta = 2 pt · Zor = 3 pt. Daha zor sorular daha fazla puan getirir!",
+    "card3Title": "Sprint için hazır mısın?",
+    "card3Body": "İlk 60 saniyelik çarpım sprintini başlat. Mümkün olduğunca çok cevapla — puanın kaydedilecek!",
+    "letsGo": "Haydi başlayalım! 🚀",
+    "startSprint": "60s Sprint Başlat ⚡",
+    "okay": "Tamam",
+    "next": "İleri",
+    "back": "Geri"
+  },
+  "tierPicker": {
+    "cardTitle": "Başlangıç Seviyeni Seç",
+    "cardBody": "Neleri bildiğini bize söyle — istediğin zaman değiştirebilirsin.",
+    "tier0Desc": "Yeni başlıyorum",
+    "tier1Desc": "×1, ×2 ve ×10 biliyorum",
+    "tier2Desc": "×3 de biliyorum",
+    "tier3Desc": "×5 de biliyorum",
+    "tier4Desc": "×4 de biliyorum",
+    "tier5Desc": "×6 da biliyorum",
+    "tier6Desc": "×7 de biliyorum",
+    "tier7Desc": "Tüm tablolarımı biliyorum!"
+  },
+  "tiers": {
+    "tier0Name": "Başlangıç",
+    "tier1Name": "Geliştirici",
+    "tier2Name": "Tırmanıcı",
+    "tier3Name": "Başarılı",
+    "tier4Name": "Yetenekli",
+    "tier5Name": "İleri",
+    "tier6Name": "Uzman",
+    "tier7Name": "Usta"
+  }
+}

@@ -123,6 +123,7 @@ export default function PageRenderer({
           sessionId={sessionId!}
           myIdentityHex={myIdentityHex!}
           playerLearningTier={myPlayer?.learningTier ?? 0}
+          extendedMode={myPlayer?.extendedMode ?? false}
           newlyUnlockedTier={
             // eslint-disable-next-line react-hooks/refs
             (myPlayer?.learningTier ?? 0) > tierAtSprintStartRef.current

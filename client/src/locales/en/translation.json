@@ -12,7 +12,8 @@
     "teacher": "Teacher",
     "student": "Student",
     "you": "you",
-    "code": "code"
+    "code": "code",
+    "or": "or"
   },
   "app": {
     "brand": "1UP",
@@ -25,17 +26,19 @@
   "register": {
     "tagline": "60 seconds. Multiplication tables. Live leaderboard.",
     "chooseName": "Choose your name",
-    "usernamePlaceholder": "Enter username…",
+    "usernamePlaceholder": "Choose username …",
     "usernameError": "Username must be 1–24 characters",
     "registering": "Registering…",
-    "joinSprint": "Join the Sprint →",
-    "restoreLink": "↩ Restore existing account",
+    "createAccountDesc": "Choose a name for your new account and get started right away!",
+    "joinSprint": "Start Level Up",
+    "restoreLink": "Restore existing account",
     "restoreHeading": "Restore account",
     "restoreDesc": "Enter your 12-character permanent recovery key to restore access.",
     "restorePlaceholder": "e.g. ABCD34EF5678",
     "restoring": "Restoring…",
-    "restore": "Restore →",
-    "newAccount": "← New account",
+    "restore": "Restore",
+    "restoreTimeout": "Timeout waiting for server response — try again",
+    "newAccount": "New account",
     "restoreError": "Key not found — check your 12-character recovery key",
     "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB"
   },
@@ -78,8 +81,8 @@
     "letsGo": "Let's go! 🚀",
     "startSprint": "Start 60s Sprint ⚡",
     "okay": "Okay",
-    "next": "Next →",
-    "back": "← Back"
+    "next": "Next",
+    "back": "Back"
   },
   "sprint": {
     "getReady": "Get ready!",
@@ -193,7 +196,7 @@
     "terms": "Terms"
   },
   "leaderboard": {
-    "title": "🏆 Leaderboard",
+    "title": "Leaderboard",
     "empty": "No sessions yet — be the first!",
     "colHash": "#",
     "colPlayer": "Player",
@@ -286,7 +289,13 @@
     "waitingForAnswers": "Waiting for answers…",
     "liveScores": "Live scores",
     "noScoresYet": "No scores yet",
-    "diagnostic": "Diagnostic assessment (60s)"
+    "diagnostic": "Diagnostic assessment (60s)",
+    "modalTitle": "Select Sprint Mode",
+    "modalDesc": "Do you want to start a normal practice round or objectively measure the class's current level?",
+    "diagnosticTitle": "Diagnostic Sprint",
+    "diagnosticDesc": "Assessment test. Tests all problem types equally to build an unbiased class mastery heatmap.",
+    "trainingTitle": "Training Sprint",
+    "trainingDesc": "Adaptive. Adjusts to individual student weaknesses to close targeted gaps. Ideal for daily practice."
   },
   "tierPicker": {
     "cardTitle": "Pick Your Starting Level",
