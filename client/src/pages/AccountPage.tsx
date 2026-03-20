@@ -338,12 +338,10 @@ export default function AccountPage({ myPlayer }: Props) {
         )}
       </div>
 
-      {/* Legal */}
       <div className="mt-4 flex flex-wrap items-center justify-center gap-6 pb-2">
         {[
-          { key: 'account.imprint',  href: 'https://www.bettermarks.com/impressum/' },
-          { key: 'account.privacy',  href: 'https://www.bettermarks.com/datenschutz/' },
-          { key: 'account.terms',    href: 'https://www.bettermarks.com/agb/' },
+          { key: 'account.imprint',  href: 'https://spacetimemath.vercel.app/impressum' },
+          { key: 'account.privacy',  href: 'https://spacetimemath.vercel.app/datenschutz' },
         ].map(({ key, href }) => (
           <a
             key={key}

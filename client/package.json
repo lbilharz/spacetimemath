@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "lint": "eslint",
+    "lint:i18n": "node scripts/check-translations.js",
     "preview": "vite preview"
   },
   "dependencies": {
