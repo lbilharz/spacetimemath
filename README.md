@@ -3,7 +3,7 @@
   <img src="assets/hero_mockup.png" alt="Better 1UP Hero Showcase" width="900" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
   <br/><br/>
   
-  <h1>Better 1UP <br/><sub>(formerly SpaceTimeMath)</sub></h1>
+  <h1>Better 1UP </h1>
   <p><b>Real-time multiplayer multiplication trainer. Adaptive problem selection, difficulty-weighted scoring, live sync via SpaceTimeDB.</b></p>
 
   <a href="https://better-1up.vercel.app"><img src="https://img.shields.io/badge/Play_the_Game-%23FBBA00?style=for-the-badge&logoColor=white" alt="Play Now" /></a>
