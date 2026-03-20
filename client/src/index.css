@@ -12,9 +12,23 @@
 }
 
 @layer base {
-  html {
+  html, body, #root {
+    min-height: 100dvh;
     font-family: var(--font-sans);
     background-color: var(--color-brand-bg);
     color: var(--color-brand-text);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    padding-top: env(safe-area-inset-top);
+    overflow: auto;
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
   }
 }

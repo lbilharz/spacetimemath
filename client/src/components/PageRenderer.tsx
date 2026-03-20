@@ -62,7 +62,7 @@ export default function PageRenderer({
   navigate,
 }: Props) {
   return (
-    <main className={`content-area${showBottomNav ? ' has-bottom-nav' : ''}`}>
+    <main className={`flex-1 w-full flex flex-col items-center pt-7 px-4 pb-12 ${showBottomNav ? 'pb-32 mb-[env(safe-area-inset-bottom)]' : ''}`}>
       {page === 'register' && <RegisterPage onRegistered={() => {
         // Preserve ?join=CODE so LobbyPage can auto-join after new-user registration
         const search = window.location.search;
