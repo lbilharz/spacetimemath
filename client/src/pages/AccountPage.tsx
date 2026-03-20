@@ -192,13 +192,13 @@ export default function AccountPage({ myPlayer }: Props) {
 
       {/* App Preferences */}
       <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
-        <h2 className="mb-6 text-base font-bold text-slate-900 dark:text-white">⚙️ App-Einstellungen</h2>
+        <h2 className="mb-6 text-base font-bold text-slate-900 dark:text-white">⚙️ {t('account.settings')}</h2>
         
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-bold text-sm text-slate-700 dark:text-slate-300">Dark Mode</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Erscheinungsbild anpassen</div>
+              <div className="font-bold text-sm text-slate-700 dark:text-slate-300">{t('account.darkMode')}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.darkModeDesc')}</div>
             </div>
             <button
               onClick={() => document.documentElement.classList.toggle('dark')}
@@ -215,7 +215,7 @@ export default function AccountPage({ myPlayer }: Props) {
           <div className="flex items-center justify-between">
             <div>
               <div className="font-bold text-sm text-slate-700 dark:text-slate-300">{t('account.language')}</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.languageDesc', 'Sprache der App')}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.languageDesc')}</div>
             </div>
             <LanguagePicker />
           </div>

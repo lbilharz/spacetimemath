@@ -139,6 +139,7 @@
     "noMembers": "Die Klasse ist noch leer.",
     "hidden": "verborgen",
     "noSessions": "keine Sprints",
+    "accessAndInvite": "Zugang & Einladung",
     "leaderboard": "🏆 Klassenrangliste",
     "leaderboardEmpty": "Starte deinen ersten Sprint, um die Rangliste zu füllen!",
     "colHash": "#",
@@ -191,9 +192,13 @@
     "deleteConfirm": "Ja, alles löschen",
     "deleteCancel": "Abbrechen",
     "language": "Sprache",
+    "languageDesc": "Sprache der App",
     "imprint": "Impressum",
     "privacy": "Datenschutz",
-    "terms": "AGB"
+    "terms": "AGB",
+    "settings": "App-Einstellungen",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Erscheinungsbild anpassen"
   },
   "leaderboard": {
     "title": "Rangliste",
@@ -240,7 +245,9 @@
   },
   "classes": {
     "empty": "Noch keine Klassen",
-    "emptyHint": "Tritt einer bestehenden Klasse bei oder erstelle eine eigene."
+    "emptyHint": "Tritt einer bestehenden Klasse bei oder erstelle eine eigene.",
+    "createError": "Klassenraum konnte nicht erstellt werden",
+    "joinError": "Klassenraum nicht gefunden"
   },
   "extendedTables": {
     "title": "Erweiterte Tabellen",

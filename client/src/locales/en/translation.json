@@ -139,6 +139,7 @@
     "noMembers": "No members yet.",
     "hidden": "hidden",
     "noSessions": "no sessions",
+    "accessAndInvite": "Access & Invite",
     "leaderboard": "🏆 Class Leaderboard",
     "leaderboardEmpty": "Start sprinting to populate the board!",
     "colHash": "#",
@@ -191,9 +192,13 @@
     "deleteConfirm": "Yes, delete everything",
     "deleteCancel": "Cancel",
     "language": "Language",
+    "languageDesc": "App language",
     "imprint": "Imprint",
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "settings": "App Settings",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Adjust appearance"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -240,7 +245,9 @@
   },
   "classes": {
     "empty": "No classes yet",
-    "emptyHint": "Join an existing class or create your own."
+    "emptyHint": "Join an existing class or create your own.",
+    "createError": "Failed to create classroom",
+    "joinError": "Classroom not found"
   },
   "extendedTables": {
     "title": "Extended Tables",

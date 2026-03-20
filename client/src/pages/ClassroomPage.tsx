@@ -467,7 +467,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
 
         {/* Access Codes & QR */}
         <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
-          <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">Zugang & Einladung</h2>
+          <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">{t('classroom.accessAndInvite')}</h2>
           <div className="flex flex-col sm:flex-row gap-8 items-start">
             <div className="flex-1 space-y-4">
               <div>

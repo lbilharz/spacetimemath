@@ -113,7 +113,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       if (created) onEnterClassroom(created.id);
       else { setPanel('none'); setClassName(''); }
     } catch (err: unknown) {
-      setClassError((err as Error)?.message ?? 'Failed to create classroom');
+      setClassError((err as Error)?.message ?? t('classes.createError'));
       setSubmitting(false);
     }
   };
@@ -129,7 +129,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       if (classroom) onEnterClassroom(classroom.id);
       else { setPanel('none'); setJoinCode(''); }
     } catch (err: unknown) {
-      setClassError((err as Error)?.message ?? 'Classroom not found');
+      setClassError((err as Error)?.message ?? t('classes.joinError'));
       setSubmitting(false);
     }
   };
