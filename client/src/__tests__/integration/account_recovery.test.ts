@@ -128,12 +128,6 @@ describe('ACCT-04: get_class_recovery_codes for teacher download', () => {
     });
     classroomId = classroom.id;
 
-    // Student joins the classroom
-    const joinCode = classroom.joinCode ?? classroom.join_code ?? '';
-    if (joinCode) {
-      await student.conn.reducers.joinClassroom({ code: joinCode });
-    }
-
     // Student creates a recovery key
     await student.conn.reducers.createRecoveryKey({ token: student.token });
 

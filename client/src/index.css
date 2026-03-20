@@ -6,12 +6,22 @@
 @theme {
   --color-brand-yellow: #facc15;
   --color-brand-yellow-hover: #eab308;
-  --color-brand-text: #1e293b;
-  --color-brand-bg: #f8fafc;
+  --color-brand-text: var(--theme-text);
+  --color-brand-bg: var(--theme-bg);
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 
 @layer base {
+  :root {
+    --theme-bg: #f8fafc; /* slate-50 */
+    --theme-text: #1e293b; /* slate-800 */
+  }
+
+  .dark {
+    --theme-bg: #0f172a; /* slate-900 */
+    --theme-text: #f8fafc; /* slate-50 */
+  }
+
   html, body, #root {
     min-height: 100dvh;
     font-family: var(--font-sans);
