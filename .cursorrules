@@ -1,0 +1,3 @@
+# Project Rules
+
+- **No `any` unless absolutely necessary**: Avoid using the `any` type in TypeScript. If you must use it, provide a very good reason in a comment. Prefer using proper interfaces, types, or `unknown` with type guards.
