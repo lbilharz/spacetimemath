@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-17 after v1.1 milestone)
 Milestone v1.1 complete and archived (2 phases, 2 plans).
 Status: Ready for `/gsd:new-milestone` to start v1.2
 
-Last activity: 2026-03-19 — Completed quick task 260319-p1b: retry-on-wrong sprint behavior (no server submission, no time penalty, "Try again!" feedback)
+Last activity: 2026-03-21 — Completed quick task 260321-c6m: WebSocket reconnection stability (no splash on reconnect, sprint state preserved, no repeated questions)
 
 Progress: [██████████] 100% (2/2 phases complete)
 
@@ -43,9 +43,10 @@ Progress: [██████████] 100% (2/2 phases complete)
 | 260318-v10 | center sprint screen content vertically between header and numpad on tall devices | 2026-03-18 | 8e7e710 | [260318-v10-center-sprint-screen-content-vertically-](./quick/260318-v10-center-sprint-screen-content-vertically-/) |
 | 260319-21o | tune tier advancement: last-3 window, 60% pairs threshold, brilliant-sprint fast-track | 2026-03-19 | 9183c8f | [260319-21o-tune-tier-advancement-last-3-window-60-p](./quick/260319-21o-tune-tier-advancement-last-3-window-60-p/) |
 | 260319-p1b | retry-on-wrong sprint behavior: wrong answers re-offer same problem, no server submission, no time penalty | 2026-03-19 | 870f311 | [260319-p1b-in-spacetimemath-app-sprints-should-re-o](./quick/260319-p1b-in-spacetimemath-app-sprints-should-re-o/) |
+| 260321-c6m | WebSocket reconnection stability: no splash on reconnect, sprint state preserved, no repeated questions | 2026-03-21 | 4e07962 | [260321-c6m-fix-websocket-reconnection-stability-on-](./quick/260321-c6m-fix-websocket-reconnection-stability-on-/) |
 
 ## Session Continuity
 
-Last session: 2026-03-19
-Stopped at: Completed quick-260319-p1b (retry-on-wrong sprint: "Try again!" feedback, same problem re-offered, no server submission)
+Last session: 2026-03-21
+Stopped at: Completed quick-260321-c6m (WebSocket reconnection stability: wasEverConnected guard, lastConsumedTokenRef, isActive guard)
 Resume file: None
