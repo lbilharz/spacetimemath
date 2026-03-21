@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { ClassSprint, Player } from '../module_bindings/types.js';
 import type { Identity } from 'spacetimedb';
@@ -143,6 +143,7 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
 
 export default function SprintPage({ myIdentityHex, classSprintId, onFinished }: Props) {
   const { t } = useTranslation();
+  const { isActive } = useSpacetimeDB();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
@@ -201,6 +202,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const inputRef = useRef<HTMLInputElement>(null);
   // SEC-10: queue an answer if the token hasn't arrived yet, retry when it does
   const pendingAnswerRef = useRef<{ sessionId: bigint; a: number; b: number; userAnswer: number; responseMs: number; attempts: number } | null>(null);
+  // Track last consumed problem token to prevent re-consuming same problem on WS reconnect
+  const lastConsumedTokenRef = useRef<string | null>(null);
 
   // 0. Sync timeLeft with SPRINT_DURATION (solo) or server startedAt (class sprint)
   useEffect(() => {
@@ -249,15 +252,17 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // 2b. Safety: if the detected session gets closed before the sprint starts
   // (e.g. start_session's orphan cleanup ran after we detected an old session),
   // reset so effect 2 can re-detect the freshly created session.
+  // Guard: skip during WS reconnect (isActive false = subscription gap, not a real completion).
   useEffect(() => {
     if (sessionId === null || sprintStarted || classSprintId !== undefined) return;
+    if (!isActive) return; // subscription gap during reconnect — ignore
     const sess = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId));
     if (sess?.isComplete) {
       setSessionId(null);
       sessionIdRef.current = null;
       setPreCountdown(null);
     }
-  }, [sessions, sessionId, sprintStarted, classSprintId]);
+  }, [sessions, sessionId, sprintStarted, classSprintId, isActive]);
 
   // 3a. When session is detected, kick off the pre-countdown
   // Normal sprint: pre-fetch first problem immediately so it arrives before countdown ends
@@ -310,6 +315,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (!row) return;
     // Only update if this is for our current session
     if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
+    // Prevent re-consuming the same problem token on WS reconnect (subscription re-fire)
+    if (row.token === lastConsumedTokenRef.current) return;
     setProblem({ a: row.a, b: row.b });
     setAttempts(1);
     problemStartRef.current = Date.now();
@@ -401,6 +408,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       return;
     }
 
+    // Record consumed token so effect 3d ignores this row on WS reconnect re-fire
+    lastConsumedTokenRef.current = tokenRow.token;
     // Correct answer: submit to SpaceTimeDB (fire-and-forget to keep UX fast)
     submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts, problemToken: tokenRow.token });
 
