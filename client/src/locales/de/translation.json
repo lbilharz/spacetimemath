@@ -55,7 +55,7 @@
     "sessions_other": "{{count}} Sprints",
     "starting": "Startet…",
     "startSprint": "Sprint starten",
-    "recoveryNag": "Du hast eine offene Klasse — schick dir deinen Wiederherstellungsschlüssel per E-Mail, damit du keinen Zugang verlierst.",
+    "recoveryNag": "Du hast eine offene Klasse — sichere dir deinen Account-Wiederherstellungsschlüssel, damit du keinen Zugang verlierst.",
     "recoveryNagCta": "Zum Account →",
     "viewClass": "📚 Ansehen →",
     "createClass": "Klasse erstellen",
@@ -198,7 +198,10 @@
     "terms": "AGB",
     "settings": "App-Einstellungen",
     "darkMode": "Dark Mode",
-    "darkModeDesc": "Erscheinungsbild anpassen"
+    "darkModeDesc": "Erscheinungsbild anpassen",
+    "keySaved": "Sicher verwahrt (Warnung ausblenden)",
+    "regenerateDesc": "Bist du sicher? Dein alter Schlüssel wird dauerhaft ungültig!",
+    "regenerateConfirm": "Bestätigen & Neu generieren"
   },
   "leaderboard": {
     "title": "Rangliste",

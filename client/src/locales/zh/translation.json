@@ -55,7 +55,7 @@
     "sessions_other": "{{count}} 次练习",
     "starting": "正在启动…",
     "startSprint": "开始冲刺",
-    "recoveryNag": "你有一个包含学生的班级 — 请通过电子邮件发送恢复密钥，以免丢失访问权限。",
+    "recoveryNag": "您有一个活跃的班级 — 请务必妥善保存您的帐户恢复密钥，以免失去访问权限。",
     "recoveryNagCta": "前往个人账户 →",
     "viewClass": "📚 查看 →",
     "createClass": "+ 创建班级",
@@ -198,7 +198,10 @@
     "terms": "服务条款",
     "settings": "应用设置",
     "darkMode": "深色模式",
-    "darkModeDesc": "调整外观"
+    "darkModeDesc": "调整外观",
+    "keySaved": "我已安全记录此信息",
+    "regenerateDesc": "您确定吗？您的旧恢复密钥将永久失效！",
+    "regenerateConfirm": "确认并重新生成"
   },
   "leaderboard": {
     "title": "排行榜",

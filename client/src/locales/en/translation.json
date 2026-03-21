@@ -55,7 +55,7 @@
     "sessions_other": "{{count}} sessions",
     "starting": "Starting…",
     "startSprint": "Start Sprint",
-    "recoveryNag": "You have a class with students — email yourself your recovery key so you don't lose access.",
+    "recoveryNag": "You have an active classroom — please secure your Account Recovery Key so you don't lose access to your students.",
     "recoveryNagCta": "Go to Account →",
     "viewClass": "📚 View →",
     "createClass": "+ Create class",
@@ -198,7 +198,10 @@
     "terms": "Terms",
     "settings": "App Settings",
     "darkMode": "Dark Mode",
-    "darkModeDesc": "Adjust appearance"
+    "darkModeDesc": "Adjust appearance",
+    "keySaved": "I have securely written this down",
+    "regenerateDesc": "Are you sure? Your old recovery key will be permanently invalidated!",
+    "regenerateConfirm": "Confirm & Regenerate"
   },
   "leaderboard": {
     "title": "Leaderboard",

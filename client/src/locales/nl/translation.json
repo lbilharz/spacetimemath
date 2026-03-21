@@ -55,7 +55,7 @@
     "sessions_other": "{{count}} sessies",
     "starting": "Starten…",
     "startSprint": "Start Sprint",
-    "recoveryNag": "Je hebt een klas met leerlingen — e-mail je herstelsleutel naar jezelf zodat je de toegang niet verliest.",
+    "recoveryNag": "Je hebt een actieve klas — beveilig je Accountherstelsleutel zodat je de toegang tot je studenten niet verliest.",
     "recoveryNagCta": "Ga naar Account →",
     "viewClass": "📚 Bekijken →",
     "createClass": "+ Klas aanmaken",
@@ -198,7 +198,10 @@
     "terms": "Voorwaarden",
     "settings": "App-instellingen",
     "darkMode": "Donkere modus",
-    "darkModeDesc": "Uiterlijk aanpassen"
+    "darkModeDesc": "Uiterlijk aanpassen",
+    "keySaved": "Ik heb dit veilig opgeschreven",
+    "regenerateDesc": "Weet je het zeker? Je oude herstelsleutel wordt permanent ongeldig!",
+    "regenerateConfirm": "Bevestigen & Opnieuw genereren"
   },
   "leaderboard": {
     "title": "Ranglijst",

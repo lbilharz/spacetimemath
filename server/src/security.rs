@@ -162,7 +162,10 @@ pub fn restore_recovery_key(ctx: &ReducerContext, code: String, token: String) -
 /// Only called when the user clicks "Regenerate" in the Account page.
 #[reducer]
 pub fn regenerate_recovery_key(ctx: &ReducerContext, token: String) -> Result<(), String> {
-    let _player = get_player(ctx)?;
+    let player = get_player(ctx)?;
+    // Strip validation flag so UI forces user to re-save the new code
+    ctx.db.players().identity().update(crate::Player { recovery_emailed: false, ..player });
+
     let old: Vec<_> = ctx.db.recovery_keys()
         .iter()
         .filter(|k| k.owner == ctx.sender())

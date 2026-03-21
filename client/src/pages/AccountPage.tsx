@@ -60,12 +60,15 @@ export default function AccountPage({ myPlayer }: Props) {
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
   const [keyRevealed, setKeyRevealed] = useState(false);
+  const [confirmRegenerate, setConfirmRegenerate] = useState(false);
 
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
     await regenerateRecoveryKey({ token: capturedToken });
     setGeneratingKey(false);
+    setConfirmRegenerate(false);
+    setKeyRevealed(false);
   };
 
   const handleCopyKey = () => {
@@ -75,31 +78,7 @@ export default function AccountPage({ myPlayer }: Props) {
     setTimeout(() => setKeyCopied(false), 2000);
   };
 
-  // Email recovery key
-  const [emailInput, setEmailInput] = useState('');
-  const [emailSending, setEmailSending] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [emailError, setEmailError] = useState('');
-
-  const handleEmailKey = async () => {
-    if (!myRecoveryKey || !emailInput.trim()) return;
-    setEmailSending(true);
-    setEmailError('');
-    try {
-      const res = await fetch('/api/send-recovery-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
-      });
-      if (!res.ok) throw new Error();
-      await markRecoveryEmailed();
-      setEmailSent(true);
-    } catch {
-      setEmailError(t('account.emailKeyError'));
-    } finally {
-      setEmailSending(false);
-    }
-  };
+  // Email recovery UI variables removed
 
   const handleRename = async () => {
     const name = newName.trim();
@@ -250,42 +229,52 @@ export default function AccountPage({ myPlayer }: Props) {
               </button>
             </div>
             
-            <div className="flex flex-wrap gap-2">
-              {keyRevealed && (
-                <button className="flex-1 rounded-xl bg-brand-yellow px-4 py-2.5 text-xs font-bold text-slate-900 transition-transform active:scale-95 shadow-sm" onClick={handleCopyKey}>
-                  {keyCopied ? t('common.copied') : t('common.copy')}
-                </button>
-              )}
-              <button className="flex-1 rounded-xl bg-slate-100 dark:bg-slate-700/50 px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-200 dark:border-slate-700/50 shadow-sm" onClick={handleGenerateRecoveryKey} disabled={generatingKey}>
-                {generatingKey ? '...' : t('account.regenerate')}
-              </button>
-            </div>
-
-            {/* Email recovery key */}
-            <div className="mt-2 pt-5 border-t border-slate-100 dark:border-slate-700/50">
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
-                {t('account.emailKeyDesc')}
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={emailInput}
-                  onChange={e => setEmailInput(e.target.value)}
-                  placeholder={t('account.emailKeyPlaceholder')}
-                  className="w-full flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
-                  onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
-                />
-                <button
-                  className="shrink-0 rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition-transform active:scale-95 disabled:opacity-50"
-                  onClick={handleEmailKey}
-                  disabled={emailSending || !emailInput.trim()}
-                >
-                  {emailSending ? '…' : t('account.emailKeySend')}
+            {!confirmRegenerate ? (
+              <div className="flex flex-wrap gap-2">
+                {keyRevealed && (
+                  <button className="flex-1 rounded-xl bg-brand-yellow px-4 py-2.5 text-xs font-bold text-slate-900 transition-transform active:scale-95 shadow-sm" onClick={handleCopyKey}>
+                    {keyCopied ? t('common.copied') : t('common.copy')}
+                  </button>
+                )}
+                <button className="flex-1 rounded-xl bg-slate-100 dark:bg-slate-700/50 px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-200 dark:border-slate-700/50 shadow-sm" onClick={() => setConfirmRegenerate(true)} disabled={generatingKey}>
+                  {generatingKey ? '...' : t('account.regenerate')}
                 </button>
               </div>
-              {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">✓ {t('account.emailKeySent')}</p>}
-              {emailError && <p className="mt-2 text-xs font-bold text-red-500">{emailError}</p>}
-            </div>
+            ) : (
+              <div className="mt-1 flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/30 dark:bg-red-500/10 animate-in fade-in slide-in-from-top-2 duration-300">
+                <p className="text-xs font-bold text-red-600 dark:text-red-400">
+                  {t('account.regenerateDesc')}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    className="flex-1 rounded-xl bg-white dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    onClick={() => setConfirmRegenerate(false)}
+                    disabled={generatingKey}
+                  >
+                    {t('account.deleteCancel')}
+                  </button>
+                  <button
+                    className="flex-1 rounded-xl bg-red-600 dark:bg-red-500 text-white px-4 py-2.5 text-xs font-bold transition-transform active:scale-95 shadow-md shadow-red-600/20"
+                    onClick={handleGenerateRecoveryKey}
+                    disabled={generatingKey}
+                  >
+                    {generatingKey ? '...' : t('account.regenerateConfirm')}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Email recovery disabled until domain is purchased */}
+            {!myPlayer.recoveryEmailed && (
+              <div className="mt-3 pt-5 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
+                <button
+                  className="w-full rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-4 py-3 text-sm font-bold text-slate-800 dark:text-slate-100 transition-colors active:scale-[0.98]"
+                  onClick={() => markRecoveryEmailed()}
+                >
+                  ✓ {t('account.keySaved')}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button

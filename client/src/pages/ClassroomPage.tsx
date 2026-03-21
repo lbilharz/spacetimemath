@@ -37,10 +37,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
   const leaveClassroom        = useSTDBReducer(reducers.leaveClassroom);
-  const toggleVisibility      = useSTDBReducer(reducers.toggleClassroomVisibility);
   const startClassSprint      = useSTDBReducer(reducers.startClassSprint);
   const endClassSprint        = useSTDBReducer(reducers.endClassSprint);
-  const getClassRecoveryCodes = useSTDBReducer(reducers.getClassRecoveryCodes);
   // Subscription not filtered server-side — rows are teacher-scoped at insert time.
   // Client filters by classroomId in the polling loop below.
   const [classRecoveryResults] = useTable(tables.class_recovery_results);

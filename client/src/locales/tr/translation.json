@@ -55,7 +55,7 @@
     "sessions_other": "{{count}} oturum",
     "starting": "Başlatılıyor…",
     "startSprint": "Sprint Başlat",
-    "recoveryNag": "Öğrencileri olan bir sınıfın var — erişimi kaybetmemek için kurtarma anahtarını kendine e-postala.",
+    "recoveryNag": "Aktif bir sınıfınız var — öğrencilerinize erişimi kaybetmemek için lütfen Hesap Kurtarma Anahtarınızı güvenliğe alın.",
     "recoveryNagCta": "Hesaba git →",
     "viewClass": "📚 Görüntüle →",
     "createClass": "+ Sınıf oluştur",
@@ -198,7 +198,10 @@
     "terms": "Şartlar",
     "settings": "Uygulama Ayarları",
     "darkMode": "Karanlık Mod",
-    "darkModeDesc": "Görünümü ayarla"
+    "darkModeDesc": "Görünümü ayarla",
+    "keySaved": "Güvenli bir şekilde kaydettim",
+    "regenerateDesc": "Emin misiniz? Eski kurtarma anahtarınız kalıcı olarak geçersiz kılınacak!",
+    "regenerateConfirm": "Onayla & Yeniden Oluştur"
   },
   "leaderboard": {
     "title": "Liderlik Tablosu",

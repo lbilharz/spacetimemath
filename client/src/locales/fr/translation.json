@@ -55,7 +55,7 @@
     "sessions_other": "{{count}} sessions",
     "starting": "Démarrage…",
     "startSprint": "Démarrer le sprint",
-    "recoveryNag": "Vous avez une classe avec des élèves — envoyez-vous votre clé de récupération par e-mail pour ne pas perdre l'accès.",
+    "recoveryNag": "Vous avez une classe active — veuillez sécuriser votre clé de récupération de compte pour ne pas perdre l'accès.",
     "recoveryNagCta": "Aller au compte →",
     "viewClass": "📚 Voir →",
     "createClass": "+ Créer une classe",
@@ -198,7 +198,10 @@
     "terms": "Conditions",
     "settings": "Paramètres App",
     "darkMode": "Mode Sombre",
-    "darkModeDesc": "Ajuster l'apparence"
+    "darkModeDesc": "Ajuster l'apparence",
+    "keySaved": "J'ai noté cela en sécurité",
+    "regenerateDesc": "Êtes-vous sûr ? Votre ancienne clé sera définitivement invalidée !",
+    "regenerateConfirm": "Confirmer et regénérer"
   },
   "leaderboard": {
     "title": "Classement",
