@@ -228,7 +228,7 @@ describe('SEC-08: register rejects usernames with invalid characters', () => {
   afterAll(() => disconnect(client.conn));
 
   it('SEC-08: register with a username containing a null byte is rejected', async () => {
-    // eslint-disable-next-line no-control-regex
+     
     await expect(
       client.conn.reducers.register({ username: 'bad\u0000name' })
     ).rejects.toThrow();

@@ -8,6 +8,8 @@ import ClassroomStartSprintModal from '../components/classroom/ClassroomStartSpr
 import ClassroomLiveSprintView from '../components/classroom/ClassroomLiveSprintView.js';
 import ClassroomSprintReviewView from '../components/classroom/ClassroomSprintReviewView.js';
 import ClassroomLobbyView from '../components/classroom/ClassroomLobbyView.js';
+
+interface Props {
   myIdentityHex: string;
   classroomId: bigint;
   onStartSprint: (id: bigint) => void;

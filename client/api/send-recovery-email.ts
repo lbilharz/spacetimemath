@@ -11,7 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'email and code required' });
   }
 
-  const appUrl = process.env.APP_URL ?? 'https://spacetimemath.vercel.app';
+  const appUrl = process.env.APP_URL ?? 'https://better-1up.vercel.app';
   const restoreUrl = `${appUrl}/?restore=${encodeURIComponent(code)}`;
 
   const { error } = await resend.emails.send({
