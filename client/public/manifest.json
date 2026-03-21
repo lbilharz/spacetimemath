@@ -4,6 +4,8 @@
   "description": "Einmaleins üben mit Gegner",
   "start_url": "/",
   "scope": "/",
+  "capture_links": "existing-client-navigate",
+  "handle_links": "preferred",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#2C3E50",

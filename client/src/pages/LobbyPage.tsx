@@ -104,11 +104,17 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     onStartSprint(0n); // SprintPage owns session creation on mount
   };
 
+  const PlayIcon = ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  );
+
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
       {/* Recovery key nag for teachers with students */}
       {showNag && (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl border-[1.5px] border-amber-400 bg-amber-400/10 p-3 md:p-4">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border-[1.5px] border-brand-yellow bg-brand-yellow/10 p-3 md:p-4">
           <span className="text-xl">⚠️</span>
           <p className="flex-1 text-sm text-slate-800 dark:text-slate-200 font-medium">
             {t('lobby.recoveryNag')}
@@ -136,7 +142,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
               </a>
               <span className="text-slate-400 dark:text-slate-500 text-xs">·</span>
               <span className="text-slate-500 dark:text-slate-400">
-                {t('lobby.bestScore')} <b className="text-amber-500">{myPlayer.bestScore.toFixed(1)}</b>
+                {t('lobby.bestScore')} <b className="text-brand-yellow">{myPlayer.bestScore.toFixed(1)}</b>
               </span>
               <span className="text-slate-400 dark:text-slate-500 text-xs">·</span>
               <span className="text-slate-500 dark:text-slate-400">
@@ -146,10 +152,11 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
           </div>
         )}
         <button
-          className={`w-full rounded-2xl bg-brand-yellow py-4 text-[19px] font-black tracking-tight text-slate-900 transition-all active:scale-[0.97] mt-2 ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-[0_8px_30px_rgba(250,204,21,0.35)] hover:shadow-[0_8px_30px_rgba(250,204,21,0.5)] hover:ring-4 hover:ring-brand-yellow/30'}`}
+          className={`group flex items-center justify-center gap-3 w-full rounded-2xl bg-brand-yellow py-4 text-[19px] font-black tracking-tight text-slate-900 transition-all active:scale-[0.97] mt-2 ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-[0_8px_30px_rgba(250,204,21,0.35)] hover:shadow-[0_8px_30px_rgba(250,204,21,0.5)] hover:ring-4 hover:ring-brand-yellow/30'}`}
           onClick={handleStartSprint}
           disabled={starting}
         >
+          <PlayIcon className={`h-8 w-8 transition-transform ${starting ? '' : 'group-hover:scale-110'}`} />
           {starting ? t('lobby.starting') : t('lobby.startSprint')}
         </button>
       </div>
@@ -173,10 +180,10 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                 return (
                   <tr
                     key={idHex}
-                    className={`${index !== liveList.length - 1 ? 'border-b border-slate-100 dark:border-slate-700/50' : ''} ${isSelf ? 'bg-amber-400/5' : 'bg-transparent'}`}
+                    className={`${index !== liveList.length - 1 ? 'border-b border-slate-100 dark:border-slate-700/50' : ''} ${isSelf ? 'bg-brand-yellow/5' : 'bg-transparent'}`}
                   >
                     {/* Rank */}
-                    <td className={`w-9 px-1 py-3 text-center text-sm font-bold tabular-nums ${rankIdx < 3 && rankIdx >= 0 ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500'}`}>
+                    <td className={`w-9 px-1 py-3 text-center text-sm font-bold tabular-nums ${rankIdx < 3 && rankIdx >= 0 ? 'text-brand-yellow' : 'text-slate-400 dark:text-slate-500'}`}>
                       {rankIdx < 0 ? '—' : rankIdx < 3 ? ['🥇','🥈','🥉'][rankIdx] : rankIdx + 1}
                     </td>
                     {/* Player name + tier */}
@@ -194,7 +201,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                       )}
                     </td>
                     {/* Score */}
-                    <td className="w-[52px] px-1 py-3 text-right text-sm font-bold tabular-nums text-amber-500">
+                    <td className="w-[52px] px-1 py-3 text-right text-sm font-bold tabular-nums text-brand-yellow">
                       {scoreEntry ? scoreEntry.bestWeightedScore.toFixed(1) : '—'}
                     </td>
                     {/* Playing badge or empty */}

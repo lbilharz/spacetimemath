@@ -17,12 +17,27 @@ pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String
     }
     let _player = get_player(ctx)?;
     let code = make_code(ctx);
-    let classroom = ctx.db.classrooms().insert(Classroom {
-        id: 0, code, name, teacher: ctx.sender(),
-    });
-    ctx.db.classroom_members().insert(ClassroomMember {
-        id: 0, classroom_id: classroom.id, player_identity: ctx.sender(), hidden: false,
-    });
+
+    // Use try_insert loop to survive auto_inc reset after SpacetimeDB deploys
+    let mut classroom_opt: Option<Classroom> = None;
+    for _ in 0..200 {
+        if let Ok(c) = ctx.db.classrooms().try_insert(Classroom {
+            id: 0, code: code.clone(), name: name.clone(), teacher: ctx.sender(),
+        }) {
+            classroom_opt = Some(c);
+            break;
+        }
+    }
+    let classroom = classroom_opt.ok_or("Failed to create classroom due to ID collision")?;
+
+    for _ in 0..200 {
+        if ctx.db.classroom_members().try_insert(ClassroomMember {
+            id: 0, classroom_id: classroom.id, player_identity: ctx.sender(), hidden: false,
+        }).is_ok() {
+            break;
+        }
+    }
+    
     Ok(())
 }
 
@@ -41,9 +56,13 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
     if ctx.db.classroom_members().iter().any(|m| m.classroom_id == cid && m.player_identity == ctx.sender()) {
         return Ok(());
     }
-    ctx.db.classroom_members().insert(ClassroomMember {
-        id: 0, classroom_id: cid, player_identity: ctx.sender(), hidden: false,
-    });
+    for _ in 0..200 {
+        if ctx.db.classroom_members().try_insert(ClassroomMember {
+            id: 0, classroom_id: cid, player_identity: ctx.sender(), hidden: false,
+        }).is_ok() {
+            break;
+        }
+    }
     Ok(())
 }
 

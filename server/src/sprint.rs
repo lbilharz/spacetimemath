@@ -11,7 +11,7 @@ use crate::{
 };
 use crate::{
     players, sessions, answers, issued_problems, issued_problem_results,
-    sprint_sequences, next_problem_results, problem_stats, best_scores,
+    sprint_sequences, next_problem_results, problem_stats, best_scores, class_sprints,
 };
 
 #[reducer]
@@ -90,7 +90,8 @@ pub fn issue_problem(
         }
     } else {
         let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
-        if pair_tier > player.learning_tier {
+        let is_diag = ctx.db.class_sprints().id().find(session.class_sprint_id).map(|s| s.is_diagnostic).unwrap_or(false);
+        if !is_diag && pair_tier > player.learning_tier {
             return Err("Problem pair above player's current tier".into());
         }
     }
@@ -251,7 +252,8 @@ pub fn submit_answer(
     } else {
         let pair_tier = pair_learning_tier(a, b)
             .ok_or_else(|| "Invalid problem pair".to_string())?;
-        if pair_tier > player.learning_tier {
+        let is_diag = ctx.db.class_sprints().id().find(session.class_sprint_id).map(|s| s.is_diagnostic).unwrap_or(false);
+        if !is_diag && pair_tier > player.learning_tier {
             return Err("Problem pair above player's current tier".into());
         }
     }

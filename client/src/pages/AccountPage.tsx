@@ -202,7 +202,10 @@ export default function AccountPage({ myPlayer }: Props) {
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.darkModeDesc')}</div>
             </div>
             <button
-              onClick={() => document.documentElement.classList.toggle('dark')}
+              onClick={() => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+              }}
               className="flex h-10 w-14 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-lg transition-colors border border-slate-200 dark:border-slate-700 shadow-inner active:scale-95"
               title="Toggle Dark Mode"
             >

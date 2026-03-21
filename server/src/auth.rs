@@ -12,11 +12,6 @@ fn validate_username(name: &str) -> Result<(), String> {
     if name.chars().any(|c| c.is_control()) {
         return Err("Username contains invalid characters".into());
     }
-    // Reject non-Latin scripts (above U+024F) to prevent Unicode homoglyph attacks.
-    // Latin, Latin-1 Supplement, Latin Extended-A/B cover EU languages including German.
-    if name.chars().any(|c| (c as u32) > 0x024F) {
-        return Err("Username contains unsupported characters".into());
-    }
     Ok(())
 }
 
