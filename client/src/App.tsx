@@ -45,6 +45,10 @@ export default function App() {
   const seenClassSprintIds = useRef(new Set<bigint>());
   const tierAtSprintStartRef = useRef<number>(0);
   const hasFetchedRecoveryCodeRef = useRef(false);
+  // Track first-ever connection so we never re-show splash on WS reconnect.
+  // Must be state (not ref) because it's read during render for the splash guard.
+  const [wasEverConnected, setWasEverConnected] = useState(false);
+  useEffect(() => { if (isActive) setWasEverConnected(true); }, [isActive]); // eslint-disable-line react-hooks/set-state-in-effect
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
 
@@ -124,11 +128,23 @@ export default function App() {
   // ── Reconnect guard ─────────────────────────────────────────────────────────
   const isActiveRef = useRef(isActive);
   useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
+  const pageRef = useRef(page);
+  useEffect(() => { pageRef.current = page; }, [page]);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        timer = setTimeout(() => { if (!isActiveRef.current) window.location.reload(); }, 3000);
+        timer = setTimeout(() => {
+          if (!isActiveRef.current) {
+            // During an active sprint, never force-reload — the sprint's own
+            // reconnection handling preserves state. The SDK will auto-reconnect.
+            if (pageRef.current === 'sprint') {
+              console.warn('[reconnect] WS still down after 8s but sprint in progress — skipping reload');
+              return;
+            }
+            window.location.reload();
+          }
+        }, 8000);
       } else {
         clearTimeout(timer);
       }
@@ -218,7 +234,9 @@ export default function App() {
 
   // First-ever load: show branded splash for at least 1.5 s,
   // then keep showing until the connection is up and we have a player.
-  if (!splashDone || (!isActive && !effectivePlayer)) {
+  // Once we've connected at least once, never re-show splash on WS reconnect
+  // (the "reconnecting" pill handles that instead).
+  if (!splashDone || (!isActive && !effectivePlayer && !wasEverConnected)) {
     return (
       <div className="fixed inset-0 bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center gap-0 z-[9999] transition-colors duration-200">
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 58%, rgba(251,186,0,0.18) 0%, transparent 70%)' }} />

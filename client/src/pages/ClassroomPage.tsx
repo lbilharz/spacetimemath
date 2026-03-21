@@ -6,6 +6,8 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import { QRCodeSVG } from 'qrcode.react';
+import { pdf } from '@react-pdf/renderer';
+import { Concept3PdfCards } from '../components/Concept3PdfCards.js';
 import PageContainer from '../components/PageContainer.js';
 
 interface Props {
@@ -52,6 +54,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const [codeCopied, setCodeCopied] = useState(false);
   const [codeTextCopied, setCodeTextCopied] = useState(false);
   const [printing, setPrinting] = useState(false);
+  const [printingModern, setPrintingModern] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
   const [startingClassSprint, setStartingClassSprint] = useState(false);
   const [showStartModal, setShowStartModal] = useState(false);
@@ -380,6 +383,65 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
     }
   };
 
+  const handlePrintModernAll = async () => {
+    if (printingModern || !myClassroom) return;
+    setPrintingModern(true);
+    setPrintError(null);
+    try {
+      const prevCount = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length;
+      await getClassRecoveryCodes({ classroomId });
+      const POLL = 50, TIMEOUT = 5_000;
+      let resultRows = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId);
+      if (prevCount > 0) {
+        const clearDeadline = Date.now() + 2_000;
+        while (Date.now() < clearDeadline) {
+          if (classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId).length === 0) break;
+          await new Promise(res => setTimeout(res, POLL));
+        }
+      }
+      const deadline = Date.now() + TIMEOUT;
+      while (Date.now() < deadline) {
+        resultRows = classRecoveryResultsRef.current.filter(r => r.classroomId === classroomId);
+        if (resultRows.length > 0) break;
+        await new Promise(res => setTimeout(res, POLL));
+      }
+      if (resultRows.length === 0) { setPrintError(t('classroom.printNoKeys')); return; }
+
+      const qrDataUrls = await Promise.all(resultRows.map(async (r: ClassRecoveryResult) => {
+        const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(restoreUrl(r.code))}`;
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return new Promise<string>(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      }));
+
+      const cardsData = resultRows.map((r: ClassRecoveryResult, i: number) => ({
+        username: r.username,
+        code: r.code,
+        qrDataUrl: qrDataUrls[i],
+      }));
+      
+      const origin = globalThis.location.origin.split('//')[1] || '';
+      const blob = await pdf(
+        <Concept3PdfCards cards={cardsData} classroomName={myClassroom.name} origin={origin} />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${myClassroom.name}-concept3-cards.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setPrintingModern(false);
+    }
+  };
+
   const medals = ['🥇', '🥈', '🥉'];
 
 
@@ -396,18 +458,14 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   );
 
   const PlayIcon = ({ className }: { className?: string }) => (
-    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-      <rect x="22" y="16" width="20" height="68" rx="6" fill="#4FA7FF" />
-      <rect x="46" y="28" width="20" height="44" rx="6" fill="#FBBA00" />
-      <rect x="70" y="40" width="20" height="20" rx="6" fill="#5DD23C" />
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M8 5v14l11-7z" />
     </svg>
   );
 
   const StopIcon = ({ className }: { className?: string }) => (
-    <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-      <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-      <rect x="28" y="28" width="44" height="44" rx="10" fill="#E8391D" />
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <rect x="6" y="6" width="12" height="12" rx="2" />
     </svg>
   );
 
@@ -515,10 +573,17 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
               </button>
               <button
                 onClick={handlePrintAll}
-                disabled={members.length === 0 || printing}
+                disabled={members.length === 0 || printing || printingModern}
+                className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 disabled:opacity-50"
+              >
+                {printing ? 'Generiere...' : 'Print (Alt)'}
+              </button>
+              <button
+                onClick={handlePrintModernAll}
+                disabled={members.length === 0 || printing || printingModern}
                 className="rounded-xl bg-brand-yellow px-4 py-2 text-sm font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50"
               >
-                {printing ? 'Generiere...' : 'Print PDFs'}
+                {printingModern ? 'Generiere...' : 'Print PDFs'}
               </button>
             </div>
           </div>
@@ -609,9 +674,9 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
               <button
                 onClick={handleEndClassSprint}
                 disabled={endingClassSprint}
-                className="flex items-center gap-2 rounded-2xl bg-red-500 px-6 py-3.5 font-bold text-white transition-transform active:scale-95 shadow-md shadow-red-500/20 disabled:opacity-50"
+                className="group flex items-center gap-3 rounded-2xl bg-red-500 px-6 sm:px-8 py-4 text-lg font-black tracking-tight text-white transition-all active:scale-95 hover:scale-[1.02] shadow-md shadow-red-500/20 disabled:opacity-50 disabled:hover:scale-100"
               >
-                <StopIcon className="h-5 w-5" />
+                <StopIcon className="h-7 w-7 transition-transform group-hover:scale-110" />
                 {t('classSprint.end')}
               </button>
             </div>
@@ -703,16 +768,16 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => setShowSettings(true)}
-              className="group flex h-[48px] w-[48px] items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all focus:outline-none"
+              className="group flex h-[56px] w-[56px] items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-[1.02] active:scale-95 transition-all focus:outline-none"
             >
-              <SettingsIcon className="text-slate-500 dark:text-slate-400 transition-transform group-hover:rotate-[15deg]" />
+              <SettingsIcon className="h-6 w-6 text-slate-500 dark:text-slate-400 transition-transform group-hover:rotate-[15deg]" />
             </button>
             <button
               onClick={() => setShowStartModal(true)}
               disabled={startingClassSprint}
-              className="flex items-center gap-2 rounded-2xl bg-brand-yellow px-6 py-3 font-bold text-slate-900 h-[48px] shadow-sm shadow-brand-yellow/20 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 disabled:hover:scale-100"
+              className="group flex items-center justify-center gap-3 rounded-2xl bg-brand-yellow px-6 sm:px-8 py-4 text-[19px] font-black tracking-tight text-slate-900 h-[56px] shadow-sm shadow-brand-yellow/20 hover:scale-[1.02] active:scale-[0.97] transition-all disabled:opacity-50 disabled:hover:scale-100"
             >
-              <PlayIcon className="h-5 w-5 -ml-1" />
+              <PlayIcon className="h-7 w-7 transition-transform group-hover:scale-110" />
               {startingClassSprint ? t('classSprint.starting') : t('classSprint.start')}
             </button>
           </div>
