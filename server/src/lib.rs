@@ -97,6 +97,7 @@ pub struct IssuedProblem {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
+    #[sats(default)]
     pub options: Vec<u32>,
 }
 
@@ -111,6 +112,7 @@ pub struct IssuedProblemResult {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
+    #[sats(default)]
     pub options: Vec<u32>,
 }
 
@@ -140,6 +142,7 @@ pub struct NextProblemResult {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
+    #[sats(default)]
     pub options: Vec<u32>,
 }
 

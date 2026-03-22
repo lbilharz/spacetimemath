@@ -280,7 +280,7 @@ export default function App() {
             localStorage.removeItem('_joinedViaClassroom');
             
             // Brand new user explicitly skips the legacy patch-notes
-            try { localStorage.setItem('seen_3x_migration', '1'); } catch {}
+            try { localStorage.setItem('seen_3x_migration', '1'); } catch (e) { console.warn(e); }
             setMigrationAcked(true);
 
             tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
@@ -293,7 +293,7 @@ export default function App() {
       {effectivePlayer && effectivePlayer.onboardingDone && effectivePlayer.totalSessions > 0 && !migrationAcked && (
         <MigrationOverlay 
           onDone={() => {
-            try { localStorage.setItem('seen_3x_migration', '1'); } catch {}
+            try { localStorage.setItem('seen_3x_migration', '1'); } catch (e) { console.warn(e); }
             setMigrationAcked(true);
           }}
         />
