@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Classroom, Answer, ProblemStat, Player } from '../../module_bindings/types.js';
+import type { Classroom, Answer, ProblemStat, Player, NextProblemResult, IssuedProblemResult, Session } from '../../module_bindings/types.js';
 import PageContainer from '../PageContainer.js';
 import MasteryGrid from '../MasteryGrid.js';
 import { StopIcon } from '../Icons.js';
+import StudentObserverModal from './StudentObserverModal.js';
+import { useState } from 'react';
 
 interface Props {
   myClassroom: Classroom;
@@ -15,6 +17,10 @@ interface Props {
   liveLB: { identityHex: string; username: string; correct: number; score: number }[];
   recentAnswers: Answer[];
   players: Player[];
+  nextProblemResults: NextProblemResult[];
+  issuedProblemResults: IssuedProblemResult[];
+  sessions: Session[];
+  isDiagnostic: boolean;
 }
 
 export default function ClassroomLiveSprintView({
@@ -26,9 +32,14 @@ export default function ClassroomLiveSprintView({
   problemStats,
   liveLB,
   recentAnswers,
-  players
+  players,
+  nextProblemResults,
+  issuedProblemResults,
+  sessions,
+  isDiagnostic
 }: Props) {
   const { t } = useTranslation();
+  const [selectedStudentHex, setSelectedStudentHex] = useState<string | null>(null);
 
   return (
     <PageContainer maxWidth="max-w-7xl" className="pb-[140px] sm:pb-[160px]">
@@ -94,14 +105,18 @@ export default function ClassroomLiveSprintView({
           ) : (
             <div className="flex flex-col gap-3">
               {liveLB.map((r, i) => (
-                <div key={r.identityHex} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 dark:border-slate-700/50 dark:bg-slate-800/50 p-3">
+                <button 
+                  key={r.identityHex} 
+                  onClick={() => setSelectedStudentHex(r.identityHex)}
+                  className="flex w-full items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 dark:border-slate-700/50 dark:bg-slate-800/50 p-3 transition-colors hover:border-brand-yellow/30 hover:bg-brand-yellow/5 group cursor-pointer text-left"
+                >
                   <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${i === 0 ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-700'}`}>
                     {i + 1}
                   </div>
-                  <span className="flex-1 text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{r.username}</span>
+                  <span className="flex-1 text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-brand-yellow transition-colors">{r.username}</span>
                   <span className="text-xs font-medium text-slate-400">{r.correct}✓</span>
                   <span className="text-sm font-black tabular-nums text-brand-yellow drop-shadow-sm">{r.score.toFixed(1)}</span>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -128,6 +143,19 @@ export default function ClassroomLiveSprintView({
           )}
         </div>
       </div>
+
+      {selectedStudentHex && (
+        <StudentObserverModal
+          studentIdentityHex={selectedStudentHex}
+          studentName={liveLB.find(r => r.identityHex === selectedStudentHex)?.username ?? '?'}
+          sprintAnswers={sprintAnswers}
+          nextProblemResults={nextProblemResults}
+          issuedProblemResults={issuedProblemResults}
+          sessions={sessions}
+          onClose={() => setSelectedStudentHex(null)}
+          isDiagnostic={isDiagnostic}
+        />
+      )}
     </PageContainer>
   );
 }

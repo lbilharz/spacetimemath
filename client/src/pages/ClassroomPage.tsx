@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session } from '../module_bindings/types.js';
+import type { Answer, ClassSprint, Classroom, ClassroomMember, Player, ProblemStat, Session, NextProblemResult, IssuedProblemResult } from '../module_bindings/types.js';
 import ClassroomSettingsModal from '../components/classroom/ClassroomSettingsModal.js';
 import ClassroomStartSprintModal from '../components/classroom/ClassroomStartSprintModal.js';
 import ClassroomLiveSprintView from '../components/classroom/ClassroomLiveSprintView.js';
@@ -34,6 +34,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const [answers]           = useTable(tables.answers);
   const [players]           = useTable(tables.players);
   const [problemStats]      = useTable(tables.problem_stats);
+  const [nextProblemResults] = useTable(tables.next_problem_results);
+  const [issuedProblemResults] = useTable(tables.issued_problem_results);
   // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
   const leaveClassroom        = useSTDBReducer(reducers.leaveClassroom);
@@ -257,6 +259,10 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
         liveLB={liveLB}
         recentAnswers={recentAnswers}
         players={players as unknown as Player[]}
+        nextProblemResults={nextProblemResults as unknown as NextProblemResult[]}
+        issuedProblemResults={issuedProblemResults as unknown as IssuedProblemResult[]}
+        sessions={sessions as unknown as Session[]}
+        isDiagnostic={activeSprint.isDiagnostic}
       />
     );
   }

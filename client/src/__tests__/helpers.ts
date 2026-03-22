@@ -17,6 +17,7 @@ const ALL_TABLES = [
   'SELECT * FROM online_players',
   'SELECT * FROM issued_problem_results',
   'SELECT * FROM next_problem_results',
+  'SELECT * FROM teacher_focus',
 ];
 
 export interface ConnectedClient {

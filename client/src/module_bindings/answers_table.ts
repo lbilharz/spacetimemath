@@ -21,4 +21,5 @@ export default __t.row({
   responseMs: __t.u32().name("response_ms"),
   answeredAt: __t.timestamp().name("answered_at"),
   attempts: __t.u8(),
+  promptMode: __t.u8().name("prompt_mode"),
 });

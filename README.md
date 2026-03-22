@@ -24,11 +24,6 @@
 
 Better 1UP is a high-speed, adaptive multiplication trainer. It features a UI that offers tactile feedback, progressive web app (PWA) mobile support, and seamless multiplayer synchronization.
 
-### What's New
-- **Internationalization (i18n):** Fully translated into English, German, Turkish, and Arabic.
-- **Premium Concept 3 UI:** High-contrast Navy headers, stacked equations, and native-feeling mobile components.
-- **Progressive Web App:** Installable on iOS and Android with full Safe Area support for a native fullscreen experience.
-
 ---
 
 ## Features
@@ -36,6 +31,8 @@ Better 1UP is a high-speed, adaptive multiplication trainer. It features a UI th
 **Sprint (60 s)**
 - Adaptive selection: `p(appear) ∝ difficulty_weight × (1.5 − last10_accuracy)`
 - Score = Σ difficulty weights of correct answers; wrong answer = −2 s penalty
+- **Modality Multiplier**: Typed answers (Type Mode) award 3.0x points relative to Multiple-Choice (Tap Mode) to incentivize mental exertion.
+- **Teacher Telemetry**: Teachers can focus on a student in the Live Class view to stream their keystrokes/taps in real time.
 - Tier-gated pool: only unlocked pairs appear until mastery gates open the next tier
 
 **Learning tiers** (unlocked automatically at end of session)

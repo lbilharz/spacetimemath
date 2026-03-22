@@ -14,6 +14,78 @@ use crate::{
     sprint_sequences, next_problem_results, problem_stats, best_scores, class_sprints,
 };
 
+fn splitmix64(mut x: u64) -> u64 {
+    x = x.wrapping_add(0x9E3779B97F4A7C15);
+    x = (x ^ (x >> 30)).wrapping_mul(0xBF58476D1CE4E5B9);
+    x = (x ^ (x >> 27)).wrapping_mul(0x94D049BB133111EB);
+    x ^ (x >> 31)
+}
+
+fn generate_tap_options(session_id: u64, a: u8, b: u8) -> Vec<u32> {
+    let ans = (a as u32) * (b as u32);
+    let mut pool = Vec::new();
+    
+    // Neighbors
+    if b < 255 { pool.push((a as u32) * (b as u32 + 1)); }
+    if b > 1 { pool.push((a as u32) * (b as u32 - 1)); }
+    if a < 255 { pool.push((a as u32 + 1) * (b as u32)); }
+    if a > 1 { pool.push((a as u32 - 1) * (b as u32)); }
+    
+    // +/- 10
+    pool.push(ans + 10);
+    if ans > 10 { pool.push(ans - 10); }
+    
+    // Addition confusion
+    pool.push((a as u32) + (b as u32));
+    
+    // Transposition (e.g., 42 -> 24)
+    if ans >= 10 && ans % 10 != ans / 10 {
+        let flipped = (ans % 10) * 10 + (ans / 10);
+        pool.push(flipped);
+    }
+    
+    // Filter out invalid/duplicate/correct answers
+    pool.retain(|&x| x > 0 && x != ans);
+    pool.sort_unstable();
+    pool.dedup();
+    
+    let mut seed = splitmix64(session_id ^ ((a as u64) << 32 | (b as u64) << 16));
+    
+    // Shuffle pool
+    for i in (1..pool.len()).rev() {
+        seed = splitmix64(seed);
+        let j = (seed as usize) % (i + 1);
+        pool.swap(i, j);
+    }
+
+
+    
+    // Take exactly 3 distractors
+    let mut options: Vec<u32> = pool.into_iter().take(3).collect();
+    
+    // In case pool was too small (unlikely), pad safely
+    let mut pad = 1;
+    while options.len() < 3 {
+        let candidate = ans + pad;
+        if candidate != ans && !options.contains(&candidate) {
+            options.push(candidate);
+        }
+        pad += 1;
+    }
+    
+    // Insert correct answer
+    options.push(ans);
+    
+    // Shuffle options so correct answer isn't always last
+    for i in (1..options.len()).rev() {
+        seed = splitmix64(seed);
+        let j = (seed as usize) % (i + 1);
+        options.swap(i, j);
+    }
+    
+    options
+}
+
 #[reducer]
 pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
@@ -42,6 +114,7 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
             is_complete: false,
             started_at: ctx.timestamp,
             class_sprint_id: 0,
+            heat: 0,
         }) {
             // SEQ: generate and store problem sequence for this session
             let seq_str = build_sequence(ctx, inserted.id, player.learning_tier, player.extended_mode, player.extended_level);
@@ -96,12 +169,20 @@ pub fn issue_problem(
         }
     }
     let token = make_code(ctx);
+    
+    let session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
+    let prompt_mode = if session.heat >= 3 { 0 } else { 1 };
+    
+    let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
+
     ctx.db.issued_problems().insert(IssuedProblem {
         id: 0,
         session_id,
         a,
         b,
         token: token.clone(),
+        prompt_mode,
+        options: options.clone(),
     });
     // Write token to result table for client to read
     match ctx.db.issued_problem_results().owner().find(ctx.sender()) {
@@ -109,12 +190,16 @@ pub fn issue_problem(
             ctx.db.issued_problem_results().owner().update(IssuedProblemResult {
                 owner: ctx.sender(),
                 token,
+                prompt_mode,
+                options: options.clone(),
             });
         }
         None => {
             ctx.db.issued_problem_results().insert(IssuedProblemResult {
                 owner: ctx.sender(),
                 token,
+                prompt_mode,
+                options,
             });
         }
     }
@@ -161,6 +246,10 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
     seq.index += 1;
     ctx.db.sprint_sequences().session_id().update(seq);
 
+    let session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
+    let prompt_mode = if session.heat >= 3 { 0 } else { 1 };
+    let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
+
     // Issue token (reuse SEC-10 IssuedProblem pattern)
     let token = make_code(ctx);
     ctx.db.issued_problems().insert(IssuedProblem {
@@ -169,6 +258,8 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
         a,
         b,
         token: token.clone(),
+        prompt_mode,
+        options: options.clone(),
     });
 
     // Upsert NextProblemResult for the client subscription
@@ -180,6 +271,8 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
                 a,
                 b,
                 token,
+                prompt_mode,
+                options: options.clone(),
             });
         }
         None => {
@@ -189,6 +282,8 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
                 a,
                 b,
                 token,
+                prompt_mode,
+                options,
             });
         }
     }
@@ -264,12 +359,22 @@ pub fn submit_answer(
         .find(|ip| ip.session_id == session_id && ip.a == a && ip.b == b && ip.token == problem_token)
         .ok_or_else(|| "Problem not issued or token invalid".to_string())?;
     let issued_id = issued.id;
+    let answered_prompt_mode = issued.prompt_mode;
     ctx.db.issued_problems().id().delete(issued_id); // one-time use
     // Clean up result table entry
     ctx.db.issued_problem_results().owner().delete(ctx.sender());
 
     let correct_answer = (a as u32) * (b as u32);
     let is_correct = user_answer == correct_answer;
+
+    // Track Heat in the Session
+    let mut session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
+    if is_correct && response_ms <= 3000 {
+        session.heat = session.heat.saturating_add(1);
+    } else if !is_correct || response_ms > 6000 {
+        session.heat = 0;
+    }
+    ctx.db.sessions().id().update(session);
 
     // try_insert retry loop: auto_inc counter may be out of sync with restored rows.
     for _ in 0..200 {
@@ -282,6 +387,7 @@ pub fn submit_answer(
             is_correct,
             response_ms,
             attempts,
+            prompt_mode: answered_prompt_mode,
             answered_at: ctx.timestamp,
         }).is_ok() { break; }
     }
@@ -341,12 +447,19 @@ pub(crate) fn finalize_session(ctx: &ReducerContext, session: Session) {
         .filter(|a| a.is_correct)
         .map(|a| {
             let key = (a.a as u16) * 100 + (a.b as u16);
-            let base = ctx.db.problem_stats().problem_key().find(key)
+            let derived_difficulty = ctx.db.problem_stats().problem_key().find(key)
                 .map(|s| s.difficulty_weight).unwrap_or(1.0);
             let digit_bonus: f32 = if a.a.max(a.b) >= 11 {
                 if (a.a as u32) * (a.b as u32) >= 100 { 1.0 } else { 0.5 }
             } else { 0.0 };
-            base + digit_bonus
+            
+            let base = derived_difficulty + digit_bonus;
+            
+            let modality_multiplier = if a.prompt_mode == 0 { 3.0 } else { 1.0 };
+            let consistency_multiplier = if a.attempts == 1 { 1.0 } else { 0.5 };
+            let speed_bonus = if a.response_ms < 2000 { 1.5 } else { 1.0 };
+            
+            base * modality_multiplier * consistency_multiplier * speed_bonus
         })
         .sum();
     ctx.db.sessions().id().update(Session {
@@ -436,4 +549,34 @@ pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity,
             }
         }
     }
+}
+
+#[reducer]
+pub fn focus_student(ctx: &ReducerContext, student_id: Option<Identity>) -> Result<(), String> {
+    use crate::teacher_focus;
+    ctx.db.teacher_focus().teacher_id().delete(ctx.sender());
+    if let Some(id) = student_id {
+        ctx.db.teacher_focus().insert(crate::TeacherFocus {
+            teacher_id: ctx.sender(),
+            focused_student_id: id,
+        });
+    }
+    Ok(())
+}
+
+#[reducer]
+pub fn sync_keystroke(ctx: &ReducerContext, current_input: String) -> Result<(), String> {
+    use crate::teacher_focus;
+    use crate::student_keystrokes;
+    // Check if any teacher is actively watching this student
+    let is_focused = ctx.db.teacher_focus().iter().any(|f| f.focused_student_id == ctx.sender());
+    if is_focused {
+        ctx.db.student_keystrokes().student_id().delete(ctx.sender());
+        ctx.db.student_keystrokes().insert(crate::StudentKeystroke {
+            student_id: ctx.sender(),
+            current_input,
+            timestamp: ctx.timestamp,
+        });
+    }
+    Ok(())
 }

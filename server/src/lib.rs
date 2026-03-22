@@ -59,6 +59,8 @@ pub struct Session {
     pub started_at: Timestamp,
     #[default(0u64)]
     pub class_sprint_id: u64,  // 0 = solo sprint; non-zero = class sprint
+    #[default(0)]
+    pub heat: u8,
 }
 
 #[table(accessor = answers, public)]
@@ -78,6 +80,8 @@ pub struct Answer {
     pub answered_at: Timestamp,
     #[default(1)]
     pub attempts: u8,
+    #[default(0)]
+    pub prompt_mode: u8, // 0 = Type, 1 = Tap
 }
 
 /// SEC-10: Server-issued problem token table.
@@ -91,6 +95,9 @@ pub struct IssuedProblem {
     pub a: u8,
     pub b: u8,
     pub token: String,
+    #[default(0)]
+    pub prompt_mode: u8,
+    pub options: Vec<u32>,
 }
 
 /// SEC-10: Result table surfaced to the client so it can read the issued token.
@@ -102,6 +109,9 @@ pub struct IssuedProblemResult {
     #[primary_key]
     pub owner: Identity,
     pub token: String,
+    #[default(0)]
+    pub prompt_mode: u8,
+    pub options: Vec<u32>,
 }
 
 /// SEQ-01: Server-side sprint problem sequence (private — never pushed to client).
@@ -128,6 +138,24 @@ pub struct NextProblemResult {
     pub a: u8,
     pub b: u8,
     pub token: String,
+    #[default(0)]
+    pub prompt_mode: u8,
+    pub options: Vec<u32>,
+}
+
+#[table(accessor = teacher_focus, public)]
+pub struct TeacherFocus {
+    #[primary_key]
+    pub teacher_id: Identity,
+    pub focused_student_id: Identity,
+}
+
+#[table(accessor = student_keystrokes, public)]
+pub struct StudentKeystroke {
+    #[primary_key]
+    pub student_id: Identity,
+    pub current_input: String,
+    pub timestamp: spacetimedb::Timestamp,
 }
 
 /// Per ordered-pair community stats + Derived Score
@@ -171,6 +199,16 @@ pub struct BestScore {
     pub best_total_answered: u32,
     #[index(btree)]
     pub learning_tier: u8,
+}
+
+/// A Phase 6 migration archival table to safely store original 1.0x points
+/// before they are converted into 3.0x points for legacy players.
+#[table(accessor = legacy_score_backups, public)]
+pub struct LegacyScoreBackup {
+    #[primary_key]
+    pub player_identity: Identity,
+    pub original_best_score: f32,
+    pub backed_up_at: Timestamp,
 }
 
 #[table(accessor = online_players, public)]
@@ -415,6 +453,38 @@ pub fn migrate_seed_best_scores(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+/// Migration v3: Migrate economy scoring to v2. 
+/// Triples all existing points in `Session`, `Player`, and `BestScore`.
+/// Safe to call ONCE. Do not call multiple times or scores will 9x.
+#[reducer]
+pub fn migrate_v3_economy_tripler(ctx: &ReducerContext) -> Result<(), String> {
+    for s in ctx.db.sessions().iter() {
+        if s.weighted_score > 0.0 {
+            ctx.db.sessions().id().update(Session {
+                weighted_score: s.weighted_score * 3.0,
+                ..s
+            });
+        }
+    }
+    for p in ctx.db.players().iter() {
+        if p.best_score > 0.0 {
+            ctx.db.players().identity().update(Player {
+                best_score: p.best_score * 3.0,
+                ..p
+            });
+        }
+    }
+    for bs in ctx.db.best_scores().iter() {
+        if bs.best_weighted_score > 0.0 {
+            ctx.db.best_scores().player_identity().update(BestScore {
+                best_weighted_score: bs.best_weighted_score * 3.0,
+                ..bs
+            });
+        }
+    }
+    Ok(())
+}
+
 /// Recompute all core (category=1) pair weights using the current blending formula.
 /// Fixes two classes of wrong values in production:
 ///   (a) old bootstrap bugs: 4×5, 5×4, 3×6, 3×7, 3×9 were all 0.8; correct values are 0.6/0.7
@@ -495,6 +565,7 @@ pub fn restore_session(
         is_complete,
         started_at: Timestamp::from_micros_since_unix_epoch(started_at_micros),
         class_sprint_id: 0,
+        heat: 0,
     });
     Ok(())
 }
@@ -524,6 +595,7 @@ pub fn restore_answer(
         is_correct,
         response_ms,
         attempts: 1, // legacy restore data: treat as first-attempt correct
+        prompt_mode: 0, // legacy treat as Type
         answered_at: Timestamp::from_micros_since_unix_epoch(answered_at_micros),
     });
     Ok(())

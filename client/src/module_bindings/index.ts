@@ -41,6 +41,7 @@ import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import DeletePlayerReducer from "./delete_player_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
+import FocusStudentReducer from "./focus_student_reducer";
 import GetClassRecoveryCodesReducer from "./get_class_recovery_codes_reducer";
 import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
 import IssueProblemReducer from "./issue_problem_reducer";
@@ -54,6 +55,7 @@ import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
 import MigrateSeedBestScoresReducer from "./migrate_seed_best_scores_reducer";
 import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reducer";
 import MigrateSeedExtendedStatsReducer from "./migrate_seed_extended_stats_reducer";
+import MigrateV3EconomyTriplerReducer from "./migrate_v_3_economy_tripler_reducer";
 import NextProblemReducer from "./next_problem_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
@@ -71,6 +73,7 @@ import SetUsernameReducer from "./set_username_reducer";
 import StartClassSprintReducer from "./start_class_sprint_reducer";
 import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
+import SyncKeystrokeReducer from "./sync_keystroke_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
 
 // Import all procedure arg schemas
@@ -90,6 +93,8 @@ import ProblemStatsRow from "./problem_stats_table";
 import RecoveryCodeResultsRow from "./recovery_code_results_table";
 import RestoreResultsRow from "./restore_results_table";
 import SessionsRow from "./sessions_table";
+import StudentKeystrokesRow from "./student_keystrokes_table";
+import TeacherFocusRow from "./teacher_focus_table";
 import UnlockLogsRow from "./unlock_logs_table";
 
 /** Type-only namespace exports for generated type groups. */
@@ -280,6 +285,28 @@ const tablesSchema = __schema({
       { name: 'sessions_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, SessionsRow),
+  student_keystrokes: __table({
+    name: 'student_keystrokes',
+    indexes: [
+      { name: 'student_id', algorithm: 'btree', columns: [
+        'studentId',
+      ] },
+    ],
+    constraints: [
+      { name: 'student_keystrokes_student_id_key', constraint: 'unique', columns: ['studentId'] },
+    ],
+  }, StudentKeystrokesRow),
+  teacher_focus: __table({
+    name: 'teacher_focus',
+    indexes: [
+      { name: 'teacher_id', algorithm: 'btree', columns: [
+        'teacherId',
+      ] },
+    ],
+    constraints: [
+      { name: 'teacher_focus_teacher_id_key', constraint: 'unique', columns: ['teacherId'] },
+    ],
+  }, TeacherFocusRow),
   unlock_logs: __table({
     name: 'unlock_logs',
     indexes: [
@@ -302,6 +329,7 @@ const reducersSchema = __reducers(
   __reducerSchema("delete_player", DeletePlayerReducer),
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
+  __reducerSchema("focus_student", FocusStudentReducer),
   __reducerSchema("get_class_recovery_codes", GetClassRecoveryCodesReducer),
   __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
   __reducerSchema("issue_problem", IssueProblemReducer),
@@ -315,6 +343,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_seed_best_scores", MigrateSeedBestScoresReducer),
   __reducerSchema("migrate_seed_extended_pairs", MigrateSeedExtendedPairsReducer),
   __reducerSchema("migrate_seed_extended_stats", MigrateSeedExtendedStatsReducer),
+  __reducerSchema("migrate_v_3_economy_tripler", MigrateV3EconomyTriplerReducer),
   __reducerSchema("next_problem", NextProblemReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
@@ -332,6 +361,7 @@ const reducersSchema = __reducers(
   __reducerSchema("start_class_sprint", StartClassSprintReducer),
   __reducerSchema("start_session", StartSessionReducer),
   __reducerSchema("submit_answer", SubmitAnswerReducer),
+  __reducerSchema("sync_keystroke", SyncKeystrokeReducer),
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
 );
 

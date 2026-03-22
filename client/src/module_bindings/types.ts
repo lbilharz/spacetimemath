@@ -21,6 +21,7 @@ export const Answer = __t.object("Answer", {
   responseMs: __t.u32(),
   answeredAt: __t.timestamp(),
   attempts: __t.u8(),
+  promptMode: __t.u8(),
 });
 export type Answer = __Infer<typeof Answer>;
 
@@ -82,12 +83,16 @@ export const IssuedProblem = __t.object("IssuedProblem", {
   a: __t.u8(),
   b: __t.u8(),
   token: __t.string(),
+  promptMode: __t.u8(),
+  options: __t.array(__t.u32()),
 });
 export type IssuedProblem = __Infer<typeof IssuedProblem>;
 
 export const IssuedProblemResult = __t.object("IssuedProblemResult", {
   owner: __t.identity(),
   token: __t.string(),
+  promptMode: __t.u8(),
+  options: __t.array(__t.u32()),
 });
 export type IssuedProblemResult = __Infer<typeof IssuedProblemResult>;
 
@@ -97,6 +102,8 @@ export const NextProblemResult = __t.object("NextProblemResult", {
   a: __t.u8(),
   b: __t.u8(),
   token: __t.string(),
+  promptMode: __t.u8(),
+  options: __t.array(__t.u32()),
 });
 export type NextProblemResult = __Infer<typeof NextProblemResult>;
 
@@ -165,6 +172,7 @@ export const Session = __t.object("Session", {
   isComplete: __t.bool(),
   startedAt: __t.timestamp(),
   classSprintId: __t.u64(),
+  heat: __t.u8(),
 });
 export type Session = __Infer<typeof Session>;
 
@@ -175,6 +183,19 @@ export const SprintSequence = __t.object("SprintSequence", {
   index: __t.u32(),
 });
 export type SprintSequence = __Infer<typeof SprintSequence>;
+
+export const StudentKeystroke = __t.object("StudentKeystroke", {
+  studentId: __t.identity(),
+  currentInput: __t.string(),
+  timestamp: __t.timestamp(),
+});
+export type StudentKeystroke = __Infer<typeof StudentKeystroke>;
+
+export const TeacherFocus = __t.object("TeacherFocus", {
+  teacherId: __t.identity(),
+  focusedStudentId: __t.identity(),
+});
+export type TeacherFocus = __Infer<typeof TeacherFocus>;
 
 export const UnlockLog = __t.object("UnlockLog", {
   id: __t.u64(),

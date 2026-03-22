@@ -97,6 +97,10 @@
     "feedbackCorrect": "✓ +{{points}} pts",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
     "feedbackTryAgain": "Réessaie !",
+    "migration": {
+      "title": "Bon Retour !",
+      "body": "Pendant votre absence, nous avons mis à jour notre système mondial de points ! Les réponses en mode Saisie valent désormais 3x plus de points. Nous avons automatiquement multiplié votre score historique par 3 afin de préserver votre place dans le classement."
+    },
     "ending": "Fin de session…",
     "endSprint": "Terminer le sprint",
     "phase": "Phase"

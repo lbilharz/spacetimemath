@@ -169,6 +169,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
                     is_complete: false,
                     started_at: ctx.timestamp,
                     class_sprint_id: sprint.id,
+                    heat: 0,
                 }) {
                     // SEQ: generate and store problem sequence for this student session
                     // Class sprints don't use extended mode (player.extended_mode ignored for class context)

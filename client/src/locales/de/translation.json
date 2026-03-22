@@ -101,6 +101,10 @@
     "endSprint": "Sprint beenden",
     "phase": "Phase"
   },
+  "migration": {
+    "title": "Willkommen zurück!",
+    "body": "Während du weg warst, haben wir unser globales Punktesystem aktualisiert! Antworten im Tipp-Modus (ohne Buttons) geben jetzt 3x so viele Punkte. Wir haben deine bisherige Höchstpunktzahl automatisch mit 3 multipliziert, damit du deinen Platz in der Rangliste nicht verlierst."
+  },
   "results": {
     "heading": "Sprint abgeschlossen!",
     "finalizing": "Sitzung wird abgeschlossen…",

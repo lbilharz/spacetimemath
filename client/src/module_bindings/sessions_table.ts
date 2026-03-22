@@ -21,4 +21,5 @@ export default __t.row({
   isComplete: __t.bool().name("is_complete"),
   startedAt: __t.timestamp().name("started_at"),
   classSprintId: __t.u64().name("class_sprint_id"),
+  heat: __t.u8(),
 });

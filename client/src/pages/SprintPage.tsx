@@ -7,6 +7,7 @@ import type { Identity } from 'spacetimedb';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 import DotArray from '../components/DotArray.js';
+import TapLayout from '../components/TapLayout.js';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 // Haptics fire-and-forget — silently no-ops on web
@@ -31,6 +32,8 @@ type Session = {
 type IssuedProblemResult = {
   owner: Identity;
   token: string;
+  promptMode: number;
+  options: Uint32Array | number[];
 };
 type NextProblemResult = {
   owner: Identity;
@@ -38,6 +41,8 @@ type NextProblemResult = {
   a: number;
   b: number;
   token: string;
+  promptMode: number;
+  options: Uint32Array | number[];
 };
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -88,7 +93,7 @@ interface Props {
   onFinished: (sessionId: bigint) => void;
 }
 
-type Feedback = { isCorrect: boolean; points: number; correct: number } | null;
+type Feedback = { isCorrect: boolean; points: number; correct: number; isTapPenalty?: boolean } | null;
 
 const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
 
@@ -187,7 +192,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const [preCountdown, setPreCountdown] = useState<number | null>(null);
   const [sprintStarted, setSprintStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(SPRINT_DURATION);
-  const [problem, setProblem] = useState<{ a: number; b: number } | null>(null);
+  const [problem, setProblem] = useState<{ a: number; b: number; promptMode: number; options: number[] } | null>(null);
   const [input, setInput] = useState('');
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [score, setScore] = useState(0);
@@ -200,10 +205,21 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const problemStartRef = useRef(Date.now());
   const sessionIdRef = useRef<bigint | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  // SEC-10: queue an answer if the token hasn't arrived yet, retry when it does
   const pendingAnswerRef = useRef<{ sessionId: bigint; a: number; b: number; userAnswer: number; responseMs: number; attempts: number } | null>(null);
   // Track last consumed problem token to prevent re-consuming same problem on WS reconnect
   const lastConsumedTokenRef = useRef<string | null>(null);
+
+  const [teacherFocus] = useTable(tables.teacher_focus);
+  const syncKeystroke = useSTDBReducer(reducers.syncKeystroke);
+
+  const amIFocused = Array.from(teacherFocus as unknown as any[]).some(f => f.focusedStudentId.toHexString() === myIdentityHex);
+  const isComplete = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId))?.isComplete ?? false;
+
+  useEffect(() => {
+    if (amIFocused && !isComplete && !ending) {
+      syncKeystroke({ currentInput: input }).catch(() => {});
+    }
+  }, [input, amIFocused, isComplete, ending, syncKeystroke]);
 
   // 0. Sync timeLeft with SPRINT_DURATION (solo) or server startedAt (class sprint)
   useEffect(() => {
@@ -297,7 +313,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   useEffect(() => {
     if (sprintStarted && !problem && isDiagnostic && eligibleStats.length > 0) {
       const p = selectDiagnosticProblem(0, undefined);
-      setProblem(p);
+      // Fallback for diagnostic mode since it isn't using the server sequence yet
+      setProblem({ ...p, promptMode: 0, options: [] });
       lastKeyRef.current = p.a * 100 + p.b;
       problemStartRef.current = Date.now();
       if (sessionIdRef.current !== null) {
@@ -317,7 +334,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
     // Prevent re-consuming the same problem token on WS reconnect (subscription re-fire)
     if (row.token === lastConsumedTokenRef.current) return;
-    setProblem({ a: row.a, b: row.b });
+    setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
     setAttempts(1);
     problemStartRef.current = Date.now();
     if (!('ontouchstart' in window)) inputRef.current?.focus();
@@ -369,28 +386,34 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     onFinished(sid);
   }, [ending, endSession, onFinished]);
 
-  const doSubmit = useCallback(async () => {
+  const doSubmit = useCallback(async (overrideAnswer?: number) => {
     if (!problem || sessionId === null || feedback !== null) return;
-    const userAnswer = parseInt(input, 10);
-    if (isNaN(userAnswer) || input.trim() === '') return;
+    const userAnswer = overrideAnswer !== undefined ? overrideAnswer : parseInt(input, 10);
+    if (isNaN(userAnswer)) return;
+    if (overrideAnswer === undefined && input.trim() === '') return;
 
     const responseMs = Math.min(Date.now() - problemStartRef.current, 30_000);
     const correct_answer = problem.a * problem.b;
     const isCorrect = userAnswer === correct_answer;
 
     const stat = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
-    const pts = isCorrect ? (stat?.difficultyWeight ?? 1.0) : 0;
+    const basePts = isCorrect ? (stat?.difficultyWeight ?? 1.0) : 0;
+    const finalPts = isCorrect && problem.promptMode === 0 ? basePts * 3 : basePts;
 
     if (!isCorrect) {
       // Wrong answer: show "try again" feedback, keep same problem, NO server submission
       hapticBad();
-      setFeedback({ isCorrect: false, points: 0, correct: correct_answer });
+      
+      const isTapMode = problem.promptMode === 1;
+      setFeedback({ isCorrect: false, points: 0, correct: correct_answer, isTapPenalty: isTapMode });
       setAttempts(a => a + 1);
-      setInput('');
+      if (!isTapMode) setInput('');
+      
+      const penaltyTimeMs = isTapMode ? 1500 : 800; // Longer penalty for guessing in Tap mode
       setTimeout(() => {
         setFeedback(null);
-        if (!('ontouchstart' in window)) inputRef.current?.focus();
-      }, 800);
+        if (!isTapMode && !('ontouchstart' in window)) inputRef.current?.focus();
+      }, penaltyTimeMs);
       return;
     }
 
@@ -416,9 +439,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     // Update local score display
     setAnswered(n => n + 1);
     setCorrect(n => n + 1);
-    setScore(s => +(s + pts).toFixed(2));
+    setScore(s => +(s + finalPts).toFixed(2));
 
-    const fb = { isCorrect: true, points: pts, correct: correct_answer };
+    const fb = { isCorrect: true, points: finalPts, correct: correct_answer };
     hapticGood();
     setFeedback(fb);
     setInput('');
@@ -435,7 +458,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         // Diagnostic: client selects next problem
         const elapsed = SPRINT_DURATION - timeLeft;
         const next = selectDiagnosticProblem(elapsed, lastKeyRef.current);
-        setProblem(next);
+        setProblem({ ...next, promptMode: 0, options: [] });
         setAttempts(1);
         lastKeyRef.current = next.a * 100 + next.b;
         problemStartRef.current = Date.now();
@@ -475,6 +498,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (key === '←') { hapticTap(); setInput(i => i.slice(0, -1)); }
     else if (key === 'OK') { hapticOk(); doSubmit(); }
     else { hapticTap(); setInput(i => i.length < 3 ? i + String(key) : i); }
+  }, [doSubmit]);
+
+  const handleTapAnswer = useCallback((ans: number) => {
+    hapticTap();
+    doSubmit(ans);
   }, [doSubmit]);
 
   // --- Derived values (memoized, placed unconditionally before early returns) ---
@@ -627,7 +655,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         </div>
 
         {/* Equation or feedback */}
-        {feedback ? (
+        {feedback && !feedback.isTapPenalty ? (
           <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
             <div style={{
               fontSize: 32, fontWeight: 800,
@@ -652,9 +680,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
               </div>
             </div>
             
-            <form onSubmit={handleSubmit} style={{
-              display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'
-            }}>
+            {problem.promptMode === 1 ? (
+              <TapLayout options={problem.options} onAnswer={handleTapAnswer} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
+            ) : (
+              <form onSubmit={handleSubmit} style={{
+                display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'
+              }}>
               <input
                 ref={inputRef}
                 className="field bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
@@ -690,22 +721,25 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                 disabled={timeLeft === 0 || !input.trim()}
               >↵</button>
             </form>
+            )}
           </div>
         )}
       </main>
 
       {/* ── Fixed bottom numpad ────────────────────────────────────── */}
-      <footer style={{
-        position: 'fixed',
-        bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: 'var(--card)',
-        borderTop: '1px solid var(--border)',
-        padding: '10px 16px',
-        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
-        display: 'flex', justifyContent: 'center',
-      }}>
-        <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
-      </footer>
+      {problem.promptMode === 0 && (
+        <footer style={{
+          position: 'fixed',
+          bottom: 0, left: 0, right: 0, zIndex: 100,
+          background: 'var(--card)',
+          borderTop: '1px solid var(--border)',
+          padding: '10px 16px',
+          paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
+          display: 'flex', justifyContent: 'center',
+        }}>
+          <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
+        </footer>
+      )}
     </>
   );
 }

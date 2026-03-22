@@ -101,6 +101,10 @@
     "endSprint": "End Sprint",
     "phase": "Phase"
   },
+  "migration": {
+    "title": "Welcome Back!",
+    "body": "While you were away, we updated our global point system! Type Mode answers are now worth 3x the points. We've automatically multiplied your historical score so you don't lose your spot on the leaderboard."
+  },
   "results": {
     "heading": "Session Complete!",
     "finalizing": "Finalizing session…",

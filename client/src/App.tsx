@@ -6,6 +6,7 @@ import type { ClassSprint, Classroom, ClassroomMember } from './module_bindings/
 // capturedToken import removed (SEC-01): recovery key auto-gen no longer needed here
 import BottomNav from './components/BottomNav.js';
 import OnboardingOverlay from './components/OnboardingOverlay.js';
+import MigrationOverlay from './components/MigrationOverlay.js';
 import SplashGrid from './components/SplashGrid.js';
 import PageRenderer from './components/PageRenderer.js';
 import { useAppNavigation } from './hooks/useAppNavigation.js';
@@ -49,6 +50,11 @@ export default function App() {
   // Must be state (not ref) because it's read during render for the splash guard.
   const [wasEverConnected, setWasEverConnected] = useState(false);
   useEffect(() => { if (isActive) setWasEverConnected(true); }, [isActive]); // eslint-disable-line react-hooks/set-state-in-effect
+
+  // Phase 6 Rollout guard for returning users:
+  const [migrationAcked, setMigrationAcked] = useState(() => {
+    try { return !!localStorage.getItem('seen_3x_migration'); } catch { return false; }
+  });
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
 
@@ -272,10 +278,24 @@ export default function App() {
           noSprint={!!localStorage.getItem('_joinedViaClassroom')}
           onDone={() => {
             localStorage.removeItem('_joinedViaClassroom');
+            
+            // Brand new user explicitly skips the legacy patch-notes
+            try { localStorage.setItem('seen_3x_migration', '1'); } catch {}
+            setMigrationAcked(true);
+
             tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
             navigate('sprint');
           }}
           onClose={() => localStorage.removeItem('_joinedViaClassroom')}
+        />
+      )}
+
+      {effectivePlayer && effectivePlayer.onboardingDone && effectivePlayer.totalSessions > 0 && !migrationAcked && (
+        <MigrationOverlay 
+          onDone={() => {
+            try { localStorage.setItem('seen_3x_migration', '1'); } catch {}
+            setMigrationAcked(true);
+          }}
         />
       )}
 

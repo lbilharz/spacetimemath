@@ -10,25 +10,25 @@ if (!code) {
 const AGENT_COUNT = 10;
 const TOKEN_FILE = 'bot_tokens.json';
 
-const MATHEMATICIANS = [
-  "Euler", "Gauss", "Newton", "Riemann", "Lagrange",
-  "Noether", "Hypatia", "Lovelace", "Germain", "Mirzakhani",
-  "Turing", "vonNeumann", "Ramanujan", "Euclid", "Pythagoras",
-  "Archimedes", "Descartes", "Fibonacci", "Pascal", "Fermat"
+const KIDS = [
+  "Emil", "Mila", "Anton", "Kian", "Clara",
+  "Levi", "Elif", "Oskar", "Ida", "Yasin",
+  "Leni", "Finn", "Maja", "Ali", "Nele",
+  "Karl", "Elias", "Noa", "Lotte", "Fiete"
 ];
 
 // Dictates the simulation speed limits & accuracy of each bot, simulating real class disparity
 const SKILL_PROFILES = [
-  { baseMs: 400, varianceMs: 500, errorRate: 0.02 },  // Euler: Very fast, precise
-  { baseMs: 500, varianceMs: 800, errorRate: 0.05 },  // Gauss
-  { baseMs: 700, varianceMs: 1200, errorRate: 0.08 }, // Newton
-  { baseMs: 1000, varianceMs: 1500, errorRate: 0.12 }, // Riemann
-  { baseMs: 1200, varianceMs: 2000, errorRate: 0.18 }, // Lagrange
-  { baseMs: 1500, varianceMs: 2500, errorRate: 0.25 }, // Noether
-  { baseMs: 2000, varianceMs: 3000, errorRate: 0.35 }, // Hypatia
-  { baseMs: 2500, varianceMs: 3500, errorRate: 0.45 }, // Lovelace
-  { baseMs: 3000, varianceMs: 4500, errorRate: 0.60 }, // Germain
-  { baseMs: 3500, varianceMs: 5500, errorRate: 0.75 }, // Mirzakhani: Very slow, struggles
+  { baseMs: 700, varianceMs: 500, errorRate: 0.02 },  // Emil: Very fast, precise
+  { baseMs: 800, varianceMs: 800, errorRate: 0.05 },  // Mila
+  { baseMs: 900, varianceMs: 1200, errorRate: 0.08 }, // Anton
+  { baseMs: 1000, varianceMs: 1500, errorRate: 0.12 }, // Kian
+  { baseMs: 1200, varianceMs: 2000, errorRate: 0.18 }, // Clara
+  { baseMs: 1500, varianceMs: 2500, errorRate: 0.25 }, // Levi
+  { baseMs: 2000, varianceMs: 3000, errorRate: 0.35 }, // Elif
+  { baseMs: 2500, varianceMs: 3500, errorRate: 0.45 }, // Oskar
+  { baseMs: 3000, varianceMs: 4500, errorRate: 0.60 }, // Ida
+  { baseMs: 3500, varianceMs: 5500, errorRate: 0.75 }, // Yasin: Very slow, struggles
 ];
 
 let globalTokens: string[] = [];
@@ -46,7 +46,7 @@ async function startAgent(index: number, existingToken?: string) {
   console.log(`Agent ${index} connecting...`);
   const client = await connect(existingToken);
   const hex = client.identity.toHexString();
-  const botName = MATHEMATICIANS[(index - 1) % MATHEMATICIANS.length];
+  const botName = KIDS[(index - 1) % KIDS.length];
   
   globalTokens[index - 1] = client.token;
   fs.writeFileSync(TOKEN_FILE, JSON.stringify(globalTokens, null, 2));
@@ -58,8 +58,18 @@ async function startAgent(index: number, existingToken?: string) {
     console.log(`Agent ${index} reconnected via token (${hex.slice(0, 6)}) as ${botName}.`);
   }
   
-  console.log(`Agent ${index} joining classroom ${code}...`);
-  await client.conn.reducers.joinClassroom({ code });
+  try {
+    console.log(`Agent ${index} joining classroom ${code}...`);
+    await client.conn.reducers.joinClassroom({ code });
+  } catch (e: any) {
+    if (e.message?.includes('register')) {
+      console.log(`Agent ${index} orphaned by DB wipe! Re-registering as ${botName}...`);
+      await client.conn.reducers.register({ username: botName });
+      await client.conn.reducers.joinClassroom({ code });
+    } else {
+      throw e;
+    }
+  }
   
   while (true) {
     console.log(`Agent ${index} ready. Waiting for teacher to start class sprint...`);
@@ -120,21 +130,51 @@ async function startAgent(index: number, existingToken?: string) {
       // Use profile to simulate human latency
       const profile = SKILL_PROFILES[(index - 1) % SKILL_PROFILES.length];
       const thinkingTime = profile.baseMs + Math.random() * profile.varianceMs;
-      await new Promise(r => setTimeout(r, thinkingTime));
       
       seenTokens.add(problemToken);
 
-      // Mutate answer based on profile accuracy
+      // Evaluate answer and potential mistakes BEFORE simulating typing
       let submittedAnswer = a * b;
       let attempts = 1;
       const makeError = Math.random() < profile.errorRate;
       
       if (makeError) {
-        // Plausible calculation errors
         const errorModifiers = [+1, -1, +2, -2, +10, -10, +a, -a, +b, -b];
         const mod = errorModifiers[Math.floor(Math.random() * errorModifiers.length)];
         submittedAnswer = Math.max(1, (a * b) + mod);
         attempts = 2; // Simulating a multi-try stumble
+      }
+
+      // Simulate human typing delay
+      const answerStr = submittedAnswer.toString();
+
+      if (isDiagnostic) {
+        // TAP MODE Simulator
+        await new Promise(r => setTimeout(r, thinkingTime));
+        const isFocused = Array.from(client.conn.db.teacher_focus.iter()).some(
+          (f: any) => f.focusedStudentId.toHexString() === hex
+        );
+        if (isFocused) {
+          client.conn.reducers.syncKeystroke({ currentInput: answerStr }).catch(() => {});
+          // Hold the visual tap highlight for 150ms before committing the result to the server
+          await new Promise(r => setTimeout(r, 150));
+        }
+      } else {
+        // TYPE MODE Simulator
+        const delayPerKeystroke = thinkingTime / Math.max(1, answerStr.length);
+        for (let charIdx = 1; charIdx <= answerStr.length; charIdx++) {
+          await new Promise(r => setTimeout(r, delayPerKeystroke));
+          
+          // Opt-in Telemetry: Am I being watched right now?
+          const isFocused = Array.from(client.conn.db.teacher_focus.iter()).some(
+            (f: any) => f.focusedStudentId.toHexString() === hex
+          );
+          
+          if (isFocused) {
+            const partial = answerStr.slice(0, charIdx);
+            client.conn.reducers.syncKeystroke({ currentInput: partial }).catch(() => {});
+          }
+        }
       }
 
       try {
