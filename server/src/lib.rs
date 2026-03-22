@@ -97,7 +97,8 @@ pub struct IssuedProblem {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    pub options: Option<Vec<u32>>,
+    #[sats(default)]
+    pub options: Vec<u32>,
 }
 
 /// SEC-10: Result table surfaced to the client so it can read the issued token.
@@ -111,7 +112,8 @@ pub struct IssuedProblemResult {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    pub options: Option<Vec<u32>>,
+    #[sats(default)]
+    pub options: Vec<u32>,
 }
 
 /// SEQ-01: Server-side sprint problem sequence (private — never pushed to client).
@@ -140,7 +142,8 @@ pub struct NextProblemResult {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    pub options: Option<Vec<u32>>,
+    #[sats(default)]
+    pub options: Vec<u32>,
 }
 
 #[table(accessor = teacher_focus, public)]

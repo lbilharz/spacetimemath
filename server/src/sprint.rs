@@ -182,7 +182,7 @@ pub fn issue_problem(
         a,
         b,
         prompt_mode,
-        options: Some(options.clone()),
+        options: options.clone(),
         token: token.clone(),
     });
     // Write token to result table for client to read
@@ -193,7 +193,7 @@ pub fn issue_problem(
                 owner: ctx.sender(),
                 token,
                 prompt_mode,
-                options: Some(options_res),
+                options: options_res,
             });
         }
         None => {
@@ -201,7 +201,7 @@ pub fn issue_problem(
                 owner: ctx.sender(),
                 token,
                 prompt_mode,
-                options: Some(options_res),
+                options: options_res,
             });
         }
     }
@@ -262,7 +262,7 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
         a,
         b,
         prompt_mode,
-        options: Some(options_sys),
+        options: options_sys,
         token: token.clone(),
     });
 
@@ -276,13 +276,13 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
                 a,
                 b,
                 prompt_mode,
-                options: Some(options_res),
+                options: options_res,
                 token,
             });
         }
         None => {
             ctx.db.next_problem_results().insert(NextProblemResult {
-                owner: ctx.sender(), session_id: session.id, a, b, prompt_mode, options: Some(options_res), token
+                owner: ctx.sender(), session_id: session.id, a, b, prompt_mode, options: options_res, token
             });
         }
     }
