@@ -97,7 +97,19 @@ pub struct IssuedProblem {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    #[sats(default)]
+}
+
+#[table(accessor = issued_problems_v2)]
+pub struct IssuedProblemV2 {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub session_id: u64,
+    pub a: u8,
+    pub b: u8,
+    pub token: String,
+    #[default(0)]
+    pub prompt_mode: u8,
     pub options: Vec<u32>,
 }
 
@@ -112,7 +124,15 @@ pub struct IssuedProblemResult {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    #[sats(default)]
+}
+
+#[table(accessor = issued_problem_results_v2, public)]
+pub struct IssuedProblemResultV2 {
+    #[primary_key]
+    pub owner: Identity,
+    pub token: String,
+    #[default(0)]
+    pub prompt_mode: u8,
     pub options: Vec<u32>,
 }
 
@@ -143,6 +163,19 @@ pub struct NextProblemResult {
     #[default(0)]
     pub prompt_mode: u8,
     #[sats(default)]
+    pub options: Vec<u32>,
+}
+
+#[table(accessor = next_problem_results_v2, public)]
+pub struct NextProblemResultV2 {
+    #[primary_key]
+    pub owner: Identity,
+    pub session_id: u64,
+    pub a: u8,
+    pub b: u8,
+    pub token: String,
+    #[default(0)]
+    pub prompt_mode: u8,
     pub options: Vec<u32>,
 }
 

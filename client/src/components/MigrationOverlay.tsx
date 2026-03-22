@@ -41,7 +41,7 @@ export default function MigrationOverlay({ onDone }: Props) {
             className="group relative flex h-12 w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl px-4 transition-all active:scale-[0.98] disabled:opacity-50 bg-brand-yellow text-slate-900 shadow-md"
           >
             <span className="text-[13px] font-black uppercase tracking-wider">
-              {t('common.okay')}
+              {t('onboarding.okay')}
             </span>
           </button>
         </div>
