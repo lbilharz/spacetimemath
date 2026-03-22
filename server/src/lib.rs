@@ -86,8 +86,8 @@ pub struct Answer {
 
 /// SEC-10: Server-issued problem token table.
 /// Each row is created by issue_problem and consumed by submit_answer (one-time use).
-#[table(accessor = issued_problems_v2)]
-pub struct IssuedProblemV2 {
+#[table(accessor = issued_problems)]
+pub struct IssuedProblem {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
@@ -97,23 +97,21 @@ pub struct IssuedProblemV2 {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    #[sats(default)]
-    pub options: Vec<u32>,
+    pub options: Option<Vec<u32>>,
 }
 
 /// SEC-10: Result table surfaced to the client so it can read the issued token.
 /// Made public because SpacetimeDB 2.0.3 private tables cannot be subscribed to
 /// via SELECT * or receive row pushes via ReducerResult.
 /// The token is short-lived (consumed on submit_answer) and not a long-term secret.
-#[table(accessor = issued_problem_results_v2, public)]
-pub struct IssuedProblemResultV2 {
+#[table(accessor = issued_problem_results, public)]
+pub struct IssuedProblemResult {
     #[primary_key]
     pub owner: Identity,
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    #[sats(default)]
-    pub options: Vec<u32>,
+    pub options: Option<Vec<u32>>,
 }
 
 /// SEQ-01: Server-side sprint problem sequence (private — never pushed to client).
@@ -132,8 +130,8 @@ pub struct SprintSequence {
 /// SEQ-02: Public result table for server-driven problem delivery.
 /// One row per player — upserted by next_problem reducer.
 /// Made public because SpacetimeDB 2.0.3 requires public for row-push to subscribers.
-#[table(accessor = next_problem_results_v2, public)]
-pub struct NextProblemResultV2 {
+#[table(accessor = next_problem_results, public)]
+pub struct NextProblemResult {
     #[primary_key]
     pub owner: Identity,
     pub session_id: u64,
@@ -142,8 +140,7 @@ pub struct NextProblemResultV2 {
     pub token: String,
     #[default(0)]
     pub prompt_mode: u8,
-    #[sats(default)]
-    pub options: Vec<u32>,
+    pub options: Option<Vec<u32>>,
 }
 
 #[table(accessor = teacher_focus, public)]
