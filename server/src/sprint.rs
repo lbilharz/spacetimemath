@@ -3,15 +3,15 @@
 
 use spacetimedb::{reducer, ReducerContext, Table, Identity};
 use crate::{
-    Player, Session, Answer, IssuedProblem, IssuedProblemResult,
-    SprintSequence, NextProblemResult, ProblemStat, BestScore,
+    Player, Session, Answer, IssuedProblemV2, IssuedProblemResultV2,
+    SprintSequence, NextProblemResultV2, ProblemStat, BestScore,
     get_player, make_code, pair_learning_tier,
     bootstrap_weight, build_sequence, check_and_unlock,
     MAX_ANSWERS_PER_SESSION, MIN_RESPONSE_MS, MAX_RESPONSE_MS,
 };
 use crate::{
-    players, sessions, answers, issued_problems, issued_problem_results,
-    sprint_sequences, next_problem_results, problem_stats, best_scores, class_sprints,
+    players, sessions, answers, issued_problems_v2, issued_problem_results_v2,
+    sprint_sequences, next_problem_results_v2, problem_stats, best_scores, class_sprints,
 };
 
 fn splitmix64(mut x: u64) -> u64 {
@@ -174,8 +174,9 @@ pub fn issue_problem(
     let prompt_mode = if session.heat >= 3 { 0 } else { 1 };
     
     let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
+    let options_res = options.clone(); // For the result table
 
-    ctx.db.issued_problems().insert(IssuedProblem {
+    ctx.db.issued_problems_v2().insert(IssuedProblemV2 {
         id: 0,
         session_id,
         a,
@@ -185,21 +186,22 @@ pub fn issue_problem(
         options: options.clone(),
     });
     // Write token to result table for client to read
-    match ctx.db.issued_problem_results().owner().find(ctx.sender()) {
+    let existing_result = ctx.db.issued_problem_results_v2().owner().find(ctx.sender());
+    match existing_result {
         Some(_) => {
-            ctx.db.issued_problem_results().owner().update(IssuedProblemResult {
+            ctx.db.issued_problem_results_v2().owner().update(IssuedProblemResultV2 {
                 owner: ctx.sender(),
                 token,
                 prompt_mode,
-                options: options.clone(),
+                options: options_res,
             });
         }
         None => {
-            ctx.db.issued_problem_results().insert(IssuedProblemResult {
+            ctx.db.issued_problem_results_v2().insert(IssuedProblemResultV2 {
                 owner: ctx.sender(),
                 token,
                 prompt_mode,
-                options,
+                options: options_res,
             });
         }
     }
@@ -249,41 +251,44 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
     let session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
     let prompt_mode = if session.heat >= 3 { 0 } else { 1 };
     let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
+    let options_sys = options.clone(); // For the IssuedProblemV2 table
+    let options_res = options.clone(); // For the NextProblemResultV2 table
 
     // Issue token (reuse SEC-10 IssuedProblem pattern)
-    let token = make_code(ctx);
-    ctx.db.issued_problems().insert(IssuedProblem {
-        id: 0,
-        session_id,
+    let token = make_code(ctx); // Assuming make_code(ctx) is the equivalent of generate_random_token()
+    ctx.db.issued_problems_v2().insert(IssuedProblemV2 {
+        id: 0, // Assuming id is still auto-incremented
+        session_id: session.id,
         a,
         b,
-        token: token.clone(),
         prompt_mode,
-        options: options.clone(),
+        options: options_sys,
+        token: token.clone(),
     });
 
     // Upsert NextProblemResult for the client subscription
-    match ctx.db.next_problem_results().owner().find(ctx.sender()) {
+    let existing_result = ctx.db.next_problem_results_v2().owner().find(ctx.sender());
+    match existing_result {
         Some(_) => {
-            ctx.db.next_problem_results().owner().update(NextProblemResult {
+            ctx.db.next_problem_results_v2().owner().update(NextProblemResultV2 {
                 owner: ctx.sender(),
-                session_id,
+                session_id: session.id,
                 a,
                 b,
-                token,
                 prompt_mode,
-                options: options.clone(),
+                options: options_res,
+                token,
             });
         }
         None => {
-            ctx.db.next_problem_results().insert(NextProblemResult {
+            ctx.db.next_problem_results_v2().insert(NextProblemResultV2 {
                 owner: ctx.sender(),
-                session_id,
+                session_id: session.id,
                 a,
                 b,
-                token,
                 prompt_mode,
-                options,
+                options: options_res,
+                token,
             });
         }
     }
@@ -354,15 +359,14 @@ pub fn submit_answer(
     }
 
     // SEC-10: verify server-issued problem token
-    let issued = ctx.db.issued_problems()
+    let issued = ctx.db.issued_problems_v2()
         .iter()
         .find(|ip| ip.session_id == session_id && ip.a == a && ip.b == b && ip.token == problem_token)
         .ok_or_else(|| "Problem not issued or token invalid".to_string())?;
     let issued_id = issued.id;
     let answered_prompt_mode = issued.prompt_mode;
-    ctx.db.issued_problems().id().delete(issued_id); // one-time use
-    // Clean up result table entry
-    ctx.db.issued_problem_results().owner().delete(ctx.sender());
+    ctx.db.issued_problems_v2().id().delete(issued_id); // one-time use
+    ctx.db.issued_problem_results_v2().owner().delete(ctx.sender());
 
     let correct_answer = (a as u32) * (b as u32);
     let is_correct = user_answer == correct_answer;

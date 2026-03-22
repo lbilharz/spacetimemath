@@ -1,7 +1,7 @@
 use spacetimedb::{reducer, ReducerContext, Table};
-use crate::{sessions, answers, issued_problems, sprint_sequences, best_scores,
+use crate::{sessions, answers, issued_problems_v2, sprint_sequences, best_scores,
             unlock_logs, recovery_keys, recovery_code_results,
-            issued_problem_results, classroom_members,
+            issued_problem_results_v2, classroom_members,
             classrooms, online_players, players};
 
 /// GDPR-01: Erase all data for the calling player.
@@ -19,11 +19,11 @@ pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
 
     // 2. Delete issued_problems for those sessions (must happen before sessions are deleted)
     for sid in &session_ids {
-        let to_delete: Vec<u64> = ctx.db.issued_problems().iter()
-            .filter(|ip| ip.session_id == *sid)
-            .map(|ip| ip.id)
+        let to_delete: Vec<u64> = ctx.db.issued_problems_v2().iter()
+            .filter(|p| p.session_id == *sid)
+            .map(|p| p.id)
             .collect();
-        for id in to_delete { ctx.db.issued_problems().id().delete(id); }
+        for id in to_delete { ctx.db.issued_problems_v2().id().delete(id); }
     }
 
     // 2b. Delete sprint_sequences for those sessions (SEQ-06 GDPR cascade)
@@ -60,7 +60,7 @@ pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
     ctx.db.recovery_code_results().owner().delete(sender);
 
     // 8. Delete issued_problem_results
-    ctx.db.issued_problem_results().owner().delete(sender);
+    ctx.db.issued_problem_results_v2().owner().delete(sender);
 
     // 9. Handle classroom memberships — if teacher, close entire classroom
     let memberships: Vec<_> = ctx.db.classroom_members().iter()

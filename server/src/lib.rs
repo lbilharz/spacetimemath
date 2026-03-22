@@ -86,8 +86,8 @@ pub struct Answer {
 
 /// SEC-10: Server-issued problem token table.
 /// Each row is created by issue_problem and consumed by submit_answer (one-time use).
-#[table(accessor = issued_problems)]
-pub struct IssuedProblem {
+#[table(accessor = issued_problems_v2)]
+pub struct IssuedProblemV2 {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
@@ -105,8 +105,8 @@ pub struct IssuedProblem {
 /// Made public because SpacetimeDB 2.0.3 private tables cannot be subscribed to
 /// via SELECT * or receive row pushes via ReducerResult.
 /// The token is short-lived (consumed on submit_answer) and not a long-term secret.
-#[table(accessor = issued_problem_results, public)]
-pub struct IssuedProblemResult {
+#[table(accessor = issued_problem_results_v2, public)]
+pub struct IssuedProblemResultV2 {
     #[primary_key]
     pub owner: Identity,
     pub token: String,
@@ -132,8 +132,8 @@ pub struct SprintSequence {
 /// SEQ-02: Public result table for server-driven problem delivery.
 /// One row per player — upserted by next_problem reducer.
 /// Made public because SpacetimeDB 2.0.3 requires public for row-push to subscribers.
-#[table(accessor = next_problem_results, public)]
-pub struct NextProblemResult {
+#[table(accessor = next_problem_results_v2, public)]
+pub struct NextProblemResultV2 {
     #[primary_key]
     pub owner: Identity,
     pub session_id: u64,
