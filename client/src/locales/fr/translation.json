@@ -99,7 +99,8 @@
     "feedbackTryAgain": "Réessaie !",
     "ending": "Fin de session…",
     "endSprint": "Terminer le sprint",
-    "phase": "Phase"
+    "phase": "Phase",
+    "tapPenalty": "C'est faux. Courte pause..."
   },
   "migration": {
     "title": "Bon Retour !",

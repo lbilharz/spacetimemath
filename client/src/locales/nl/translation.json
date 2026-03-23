@@ -99,7 +99,8 @@
     "feedbackTryAgain": "Probeer opnieuw!",
     "ending": "Sessie beëindigen…",
     "endSprint": "Sprint beëindigen",
-    "phase": "Fase"
+    "phase": "Fase",
+    "tapPenalty": "Dat was fout. Korte pauze..."
   },
   "migration": {
     "title": "Welkom terug!",

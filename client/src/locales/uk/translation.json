@@ -99,7 +99,8 @@
     "feedbackTryAgain": "Спробуй ще раз!",
     "ending": "Завершення…",
     "endSprint": "Завершити спринт",
-    "phase": "Фаза"
+    "phase": "Фаза",
+    "tapPenalty": "Невірно. Коротка пауза..."
   },
   "migration": {
     "title": "З поверненням!",

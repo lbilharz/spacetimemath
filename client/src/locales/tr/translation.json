@@ -99,7 +99,8 @@
     "feedbackTryAgain": "Tekrar dene!",
     "ending": "Bitiriliyor…",
     "endSprint": "Sprinti Bitir",
-    "phase": "Faz"
+    "phase": "Faz",
+    "tapPenalty": "Yanlış cevap. Kısa bir mola..."
   },
   "migration": {
     "title": "Tekrar Hoş Geldin!",
