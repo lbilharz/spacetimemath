@@ -97,13 +97,13 @@
     "feedbackCorrect": "✓ +{{points}} pts",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
     "feedbackTryAgain": "Réessaie !",
-    "migration": {
-      "title": "Bon Retour !",
-      "body": "Nous avons ajouté des questions à choix multiples ! Puisque taper vos réponses directement est plus difficile, cela rapporte désormais 3x plus de points. Pour l'équité du classement, nous avons automatiquement triplé votre ancien score."
-    },
     "ending": "Fin de session…",
     "endSprint": "Terminer le sprint",
     "phase": "Phase"
+  },
+  "migration": {
+    "title": "Bon Retour !",
+    "body": "Nous avons ajouté des questions à choix multiples ! Puisque taper vos réponses directement est plus difficile, cela rapporte désormais 3x plus de points. Pour l'équité du classement, nous avons automatiquement triplé votre ancien score."
   },
   "results": {
     "heading": "Session terminée !",
@@ -309,7 +309,20 @@
     "diagnosticTitle": "Sprint Diagnostic",
     "diagnosticDesc": "Test d'évaluation. Teste tous les types de problèmes équitablement pour construire une heatmap de maîtrise sans biais.",
     "trainingTitle": "Sprint d'Entraînement",
-    "trainingDesc": "Adaptatif. S'ajuste aux faiblesses individuelles pour combler les lacunes ciblées. Idéal pour la pratique quotidienne."
+    "trainingDesc": "Adaptatif. S'ajuste aux faiblesses individuelles pour combler les lacunes ciblées. Idéal pour la pratique quotidienne.",
+    "review": {
+      "title": "Sprint Terminé !",
+      "subtitle": "Voici les performances de votre classe",
+      "accuracy": "Précision de la Classe",
+      "totalAnswers": "Réponses Calculées",
+      "activeRunners": "Participants Actifs",
+      "insights": "Aperçus Didactiques",
+      "hardest": "Nécessite de la Pratique",
+      "fastest": "Paire la Plus Rapide",
+      "slowest": "Paire la Plus Lente",
+      "leaderboard": "Podium du Sprint",
+      "correctShort": "FAIT"
+    }
   },
   "tierPicker": {
     "cardTitle": "Choisis ton niveau de départ",

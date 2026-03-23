@@ -309,7 +309,20 @@
     "diagnosticTitle": "Diagnostische Sprint",
     "diagnosticDesc": "Beoordelingstocht. Test alle soorten sommen gelijkmatig om een onbevooroordeelde heatmap van de klasbeheersing op te bouwen.",
     "trainingTitle": "Trainingssprint",
-    "trainingDesc": "Adaptief. Past zich aan individuele zwaktes van studenten aan om gerichte hiaten te dichten. Ideaal voor dagelijkse oefening."
+    "trainingDesc": "Adaptief. Past zich aan individuele zwaktes van studenten aan om gerichte hiaten te dichten. Ideaal voor dagelijkse oefening.",
+    "review": {
+      "title": "Sprint Voltooid!",
+      "subtitle": "Hier is de prestatie van je klas",
+      "accuracy": "Klas Nauwkeurigheid",
+      "totalAnswers": "Berekende Antwoorden",
+      "activeRunners": "Actieve Deelnemers",
+      "insights": "Didactische Inzichten",
+      "hardest": "Oefening Nodig",
+      "fastest": "Snelste Paar",
+      "slowest": "Langzaamste Paar",
+      "leaderboard": "Sprint Podium",
+      "correctShort": "KLAAR"
+    }
   },
   "tierPicker": {
     "cardTitle": "Kies je startniveau",

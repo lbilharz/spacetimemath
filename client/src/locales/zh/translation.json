@@ -309,7 +309,20 @@
     "diagnosticTitle": "诊断冲刺",
     "diagnosticDesc": "测评。均匀测试所有题型，以构建客观的班级掌握热力图。",
     "trainingTitle": "训练冲刺",
-    "trainingDesc": "自适应。根据学生个体薄弱环节进行调整，有针对性地查漏补缺。非常适合日常练习。"
+    "trainingDesc": "自适应。根据学生个体薄弱环节进行调整，有针对性地查漏补缺。非常适合日常练习。",
+    "review": {
+      "title": "冲刺完成！",
+      "subtitle": "这是您班级的成绩",
+      "accuracy": "班级准确率",
+      "totalAnswers": "计算答案",
+      "activeRunners": "活跃参与者",
+      "insights": "教学洞察",
+      "hardest": "需要练习",
+      "fastest": "最快配对",
+      "slowest": "最慢配对",
+      "leaderboard": "冲刺领奖台",
+      "correctShort": "完成"
+    }
   },
   "tierPicker": {
     "cardTitle": "选择你的起始等级",
