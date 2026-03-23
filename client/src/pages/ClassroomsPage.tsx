@@ -4,6 +4,7 @@ import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Classroom, ClassroomMember } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
+import { AddIcon, JoinIcon, ViewArrowIcon, EmptyClassroomIcon, ClassesIcon } from '../components/Icons.js';
 
 interface Props {
   myIdentityHex: string | undefined;
@@ -12,62 +13,7 @@ interface Props {
 
 type Panel = 'none' | 'create' | 'join';
 
-const AddIcon = ({ className }: { className?: string }) => (
-  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="37" y="37" width="26" height="26" rx="6" fill="#4FA7FF"/>
-    <rect x="37" y="6"  width="26" height="26" rx="6" fill="#E8391D"/>
-    <rect x="37" y="68" width="26" height="26" rx="6" fill="#5DD23C"/>
-    <rect x="6"  y="37" width="26" height="26" rx="6" fill="#FBBA00"/>
-    <rect x="68" y="37" width="26" height="26" rx="6" fill="#FBBA00"/>
-  </svg>
-);
 
-const JoinIcon = ({ className }: { className?: string }) => (
-  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="68" y="6"  width="26" height="88" rx="6" fill="#4FA7FF"/>
-    <rect x="37" y="6"  width="26" height="26" rx="6" fill="#4FA7FF"/>
-    <rect x="37" y="68" width="26" height="26" rx="6" fill="#4FA7FF"/>
-    <rect x="37" y="37" width="26" height="26" rx="6" fill="#FBBA00"/>
-    <rect x="6"  y="37" width="26" height="26" rx="6" fill="#E8391D"/>
-  </svg>
-);
-
-const ViewArrowIcon = ({ className }: { className?: string }) => (
-  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="6"  y="37" width="26" height="26" rx="6" fill="#4FA7FF"/>
-    <rect x="37" y="37" width="26" height="26" rx="6" fill="#4FA7FF"/>
-    <rect x="37" y="6"  width="26" height="26" rx="6" fill="#E8391D"/>
-    <rect x="68" y="37" width="26" height="26" rx="6" fill="#FBBA00"/>
-    <rect x="37" y="68" width="26" height="26" rx="6" fill="#5DD23C"/>
-  </svg>
-);
-
-const EmptyClassroomIcon = ({ className }: { className?: string }) => (
-  <svg width="64" height="64" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="6"  y="6"  width="57" height="57" rx="9" fill="currentColor" opacity="0.2"/>
-    <rect x="68" y="6"  width="26" height="26" rx="6" fill="currentColor" opacity="0.3"/>
-    <rect x="68" y="37" width="26" height="26" rx="6" fill="currentColor" opacity="0.2"/>
-    <rect x="68" y="68" width="26" height="26" rx="6" fill="currentColor" opacity="0.1"/>
-    <rect x="37" y="68" width="26" height="26" rx="6" fill="currentColor" opacity="0.3"/>
-    <rect x="6"  y="68" width="26" height="26" rx="6" fill="currentColor" opacity="0.2"/>
-  </svg>
-);
-
-const ClassesIcon = ({ className }: { className?: string }) => (
-  <svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="6"  y="6"  width="57" height="57" rx="9" fill="#4FA7FF" />
-    <rect x="68" y="6"  width="26" height="26" rx="6" fill="#5DD23C" />
-    <rect x="68" y="37" width="26" height="26" rx="6" fill="#FBBA00" />
-    <rect x="68" y="68" width="26" height="26" rx="6" fill="#E8391D" />
-    <rect x="37" y="68" width="26" height="26" rx="6" fill="#4FA7FF" opacity="0.6" />
-    <rect x="6"  y="68" width="26" height="26" rx="6" fill="#FBBA00" opacity="0.6" />
-  </svg>
-);
 
 export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Props) {
   const { t } = useTranslation();

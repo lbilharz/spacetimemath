@@ -4,6 +4,7 @@ import { tables } from '../module_bindings/index.js';
 import type { Answer, ClassSprint, Classroom, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import PageContainer from '../components/PageContainer.js';
+import { ResultsIcon } from '../components/Icons.js';
 
 interface Props {
   classSprintId: bigint;
@@ -11,14 +12,7 @@ interface Props {
   onBack: () => void;
 }
 
-const ResultsIcon = ({ className }: { className?: string }) => (
-  <svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <circle cx="50" cy="50" r="30" fill="none" stroke="#4FA7FF" strokeWidth="8" />
-    <circle cx="50" cy="50" r="15" fill="#E8391D" />
-    <path d="M70 30L85 15" stroke="#FBBA00" strokeWidth="6" strokeLinecap="round" />
-  </svg>
-);
+
 
 export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }: Props) {
   const { t } = useTranslation();

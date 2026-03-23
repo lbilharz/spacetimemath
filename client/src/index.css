@@ -8,6 +8,10 @@
   --color-brand-yellow-hover: #eab308;
   --color-brand-text: var(--theme-text);
   --color-brand-bg: var(--theme-bg);
+  --color-icon-green: var(--icon-green);
+  --color-icon-yellow: var(--icon-yellow);
+  --color-icon-blue: var(--icon-blue);
+  --color-icon-red: var(--icon-red);
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 
@@ -15,11 +19,21 @@
   :root {
     --theme-bg: #f8fafc; /* slate-50 */
     --theme-text: #1e293b; /* slate-800 */
+    /* Icon Palette (Light Mode) */
+    --icon-green: #5DD23C;
+    --icon-yellow: #FBBA00;
+    --icon-blue: #4FA7FF;
+    --icon-red: #E8391D;
   }
 
   .dark {
     --theme-bg: #0f172a; /* slate-900 */
     --theme-text: #f8fafc; /* slate-50 */
+    /* Icon Palette (Dark Mode - alter if necessary) */
+    --icon-green: #5DD23C;
+    --icon-yellow: #FBBA00;
+    --icon-blue: #4FA7FF;
+    --icon-red: #E8391D;
   }
 
   html, body, #root {

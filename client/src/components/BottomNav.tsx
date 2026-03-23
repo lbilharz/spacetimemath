@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import type { Page } from '../navigation.js';
+import { LobbyIcon, ClassesIcon, ProgressIcon, AccountIcon } from './Icons.js';
 
 export type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
 
@@ -24,53 +25,13 @@ const renderIcon = (tabId: NavTab, isActive: boolean) => {
   
   switch (tabId) {
     case 'lobby':
-      return (
-        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
-          <rect width="100" height="100" rx="18" className="fill-slate-800 dark:fill-white/10 transition-colors duration-200"/>
-          <rect x="6"  y="6"  width="26" height="26" rx="6" fill="#5DD23C"/>
-          <rect x="37" y="6"  width="26" height="26" rx="6" fill="#5DD23C"/>
-          <rect x="68" y="6"  width="26" height="26" rx="6" fill="#FBBA00"/>
-          <rect x="6"  y="37" width="26" height="26" rx="6" fill="#5DD23C"/>
-          <rect x="37" y="37" width="26" height="26" rx="6" fill="#FBBA00"/>
-          <rect x="68" y="37" width="26" height="26" rx="6" fill="#4FA7FF"/>
-          <rect x="6"  y="68" width="26" height="26" rx="6" fill="#4FA7FF"/>
-          <rect x="37" y="68" width="26" height="26" rx="6" fill="#E8391D"/>
-          <rect x="68" y="68" width="26" height="26" rx="6" fill="rgba(255,255,255,0.2)"/>
-        </svg>
-      );
+      return <LobbyIcon className={svgClass} customBackground={<rect width="100" height="100" rx="18" className="fill-slate-800 dark:fill-white/10 transition-colors duration-200"/>} />;
     case 'classrooms':
-      return (
-        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
-          <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-          <rect x="6"  y="6"  width="57" height="57" rx="9" fill="#4FA7FF" />
-          <rect x="68" y="6"  width="26" height="26" rx="6" fill="#5DD23C" />
-          <rect x="68" y="37" width="26" height="26" rx="6" fill="#FBBA00" />
-          <rect x="68" y="68" width="26" height="26" rx="6" fill="#E8391D" />
-          <rect x="37" y="68" width="26" height="26" rx="6" fill="#4FA7FF" opacity="0.6" />
-          <rect x="6"  y="68" width="26" height="26" rx="6" fill="#FBBA00" opacity="0.6" />
-        </svg>
-      );
+      return <ClassesIcon className={svgClass} />;
     case 'progress':
-      return (
-        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
-          <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-          <rect x="6"  y="68" width="26" height="26" rx="6" fill="#E8391D" />
-          <rect x="37" y="37" width="26" height="57" rx="6" fill="#FBBA00" />
-          <rect x="68" y="6"  width="26" height="88" rx="6" fill="#5DD23C" />
-        </svg>
-      );
+      return <ProgressIcon className={svgClass} />;
     case 'account':
-      return (
-        <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={svgClass}>
-          <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-          <rect x="6" y="14" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
-          <rect x="58" y="6" width="26" height="26" rx="8" fill="#4FA7FF" />
-          <rect x="6" y="45" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
-          <rect x="26" y="37" width="26" height="26" rx="8" fill="#5DD23C" />
-          <rect x="6" y="76" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
-          <rect x="42" y="68" width="26" height="26" rx="8" fill="#E8391D" />
-        </svg>
-      );
+      return <AccountIcon className={svgClass} />;
   }
 };
 

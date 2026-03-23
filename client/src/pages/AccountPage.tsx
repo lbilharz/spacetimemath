@@ -7,6 +7,7 @@ import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
 import PageContainer from '../components/PageContainer.js';
+import { AccountIcon } from '../components/Icons.js';
 
 
 interface Props {
@@ -15,17 +16,7 @@ interface Props {
   onBack: () => void;
 }
 
-const AccountIcon = ({ className }: { className?: string }) => (
-  <svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="6" y="14" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
-    <rect x="58" y="6" width="26" height="26" rx="8" fill="#4FA7FF" />
-    <rect x="6" y="45" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
-    <rect x="26" y="37" width="26" height="26" rx="8" fill="#5DD23C" />
-    <rect x="6" y="76" width="88" height="10" rx="5" fill="currentColor" opacity="0.25" />
-    <rect x="42" y="68" width="26" height="26" rx="8" fill="#E8391D" />
-  </svg>
-);
+
 
 export default function AccountPage({ myPlayer }: Props) {
   const { t } = useTranslation();

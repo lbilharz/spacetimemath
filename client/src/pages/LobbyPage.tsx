@@ -6,6 +6,7 @@ import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Player, Probl
 import Leaderboard from '../components/Leaderboard.js';
 import ScoringGuide from '../components/ScoringGuide.js';
 import PageContainer from '../components/PageContainer.js';
+import { PlayIcon } from '../components/Icons.js';
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
@@ -96,12 +97,6 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
     setStarting(true);
     onStartSprint(0n); // SprintPage owns session creation on mount
   };
-
-  const PlayIcon = ({ className }: { className?: string }) => (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
 
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">

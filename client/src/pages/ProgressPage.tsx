@@ -8,6 +8,7 @@ import MasteryGrid from '../components/MasteryGrid.js';
 import SprintHistory from '../components/SprintHistory.js';
 import TierLadder from '../components/TierLadder.js';
 import PageContainer from '../components/PageContainer.js';
+import { ProgressIcon } from '../components/Icons.js';
 
 interface Props {
   myIdentityHex: string;
@@ -18,14 +19,7 @@ interface Props {
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
 
-const ProgressIcon = ({ className }: { className?: string }) => (
-  <svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true" className={className}>
-    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
-    <rect x="6"  y="68" width="26" height="26" rx="6" fill="#E8391D" />
-    <rect x="37" y="37" width="26" height="57" rx="6" fill="#FBBA00" />
-    <rect x="68" y="6"  width="26" height="88" rx="6" fill="#5DD23C" />
-  </svg>
-);
+
 
 export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false, extendedLevel = 0 }: Props) {
   const { t } = useTranslation();
