@@ -25,27 +25,55 @@ function loadSavedToken(): string | undefined {
 const STDB_URI = import.meta.env.VITE_SPACETIMEDB_URI ?? 'ws://127.0.0.1:3000';
 const STDB_DB  = import.meta.env.VITE_SPACETIMEDB_DB  ?? 'spacetimemath';
 
-const savedToken = loadSavedToken();
-const base = DbConnection.builder()
-  .withUri(STDB_URI)
-  .withDatabaseName(STDB_DB);
+function Root() {
+  const [reconnectCount, setReconnectCount] = React.useState(0);
 
-const connectionBuilder = (savedToken ? base.withToken(savedToken) : base)
-  .onConnect((_conn, identity, token) => {
-    setCapturedToken(token);
-    localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: identity.toHexString(), token }));
-  })
-  .onConnectError((_conn, err) => {
-    console.error('[STDB] Connection error:', err);
-  })
-  .onDisconnect((_conn, err) => {
-    console.warn('[STDB] Disconnected:', err);
-  });
+  React.useEffect(() => {
+    // Expose a global hook for App.tsx's visibility fallback to trigger a quiet SDK reconnect
+    // without trashing React component state or scroll position.
+    (window as any).__force_stdb_reconnect = () => {
+      setReconnectCount(c => c + 1);
+    };
+  }, []);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  const connectionBuilder = React.useMemo(() => {
+    const savedToken = loadSavedToken();
+    
+    // By appending `?rc=N` to the URI, we change the URI string.
+    // The SpacetimeDB React `ConnectionManager` uses the URI as a cache key,
+    // so changing it forces `SpacetimeDBProvider` to release the dead socket
+    // and build a completely fresh DbConnection under the hood. 
+    // The query param is safely discarded by underlying websocket URL parsing.
+    const uriWithParam = reconnectCount > 0 
+      ? `${STDB_URI}?rc=${reconnectCount}` 
+      : STDB_URI;
+
+    const base = DbConnection.builder()
+      .withUri(uriWithParam)
+      .withDatabaseName(STDB_DB);
+
+    return (savedToken ? base.withToken(savedToken) : base)
+      .onConnect((_conn, identity, token) => {
+        setCapturedToken(token);
+        localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: identity.toHexString(), token }));
+      })
+      .onConnectError((_conn, err) => {
+        console.error('[STDB] Connection error:', err);
+      })
+      .onDisconnect((_conn, err) => {
+        console.warn('[STDB] Disconnected:', err);
+      });
+  }, [reconnectCount]);
+
+  return (
     <SpacetimeDBProvider connectionBuilder={connectionBuilder}>
       <App />
     </SpacetimeDBProvider>
-  </React.StrictMode>,
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Root />
+  </React.StrictMode>
 );

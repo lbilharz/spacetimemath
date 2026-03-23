@@ -136,28 +136,61 @@ export default function App() {
   useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
   const pageRef = useRef(page);
   useEffect(() => { pageRef.current = page; }, [page]);
+  
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
+    
+    // 1. Recover when bringing app to foreground
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         timer = setTimeout(() => {
           if (!isActiveRef.current) {
-            // During an active sprint, never force-reload — the sprint's own
-            // reconnection handling preserves state. The SDK will auto-reconnect.
             if (pageRef.current === 'sprint') {
-              console.warn('[reconnect] WS still down after 8s but sprint in progress — skipping reload');
+              console.warn('[reconnect] WS still down after 8s foregrounded, but sprint in progress — skipping reconnect');
               return;
             }
-            window.location.reload();
+            if ((window as any).__force_stdb_reconnect) {
+              console.log('[reconnect] WS down after 8s foregrounded — explicitly forcing SpacetimeDB reconnect.');
+              (window as any).__force_stdb_reconnect();
+            }
           }
         }, 8000);
       } else {
         clearTimeout(timer);
       }
     };
+
+    // 2. Recover instantly when OS reports internet is back
+    const handleOnline = () => {
+      if (!isActiveRef.current && (window as any).__force_stdb_reconnect && pageRef.current !== 'sprint') {
+        console.log('[reconnect] Network is back online — forcefully reconnecting.');
+        (window as any).__force_stdb_reconnect();
+      }
+    };
+
     document.addEventListener('visibilitychange', handleVisibility);
-    return () => { document.removeEventListener('visibilitychange', handleVisibility); clearTimeout(timer); };
+    window.addEventListener('online', handleOnline);
+    return () => { 
+      document.removeEventListener('visibilitychange', handleVisibility); 
+      window.removeEventListener('online', handleOnline);
+      clearTimeout(timer); 
+    };
   }, []);
+
+  // 3. Fallback: Repeatedly try to reconnect every 5 seconds if connection is dead
+  // and we've already passed the onboarding (effectivePlayer exists).
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (!isActive && effectivePlayer) {
+      interval = setInterval(() => {
+        if (!isActiveRef.current && pageRef.current !== 'sprint' && (window as any).__force_stdb_reconnect) {
+          console.log('[reconnect] Auto-retry loop firing...');
+          (window as any).__force_stdb_reconnect();
+        }
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, effectivePlayer]);
 
   // ── Sprint helpers ──────────────────────────────────────────────────────────
   const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
