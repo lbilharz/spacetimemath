@@ -103,7 +103,7 @@
   },
   "migration": {
     "title": "Welcome Back!",
-    "body": "We've upgraded our point system! Typing your answers directly (instead of using buttons) now earns you 3x the points. To keep the leaderboard fair, we've automatically tripled your past score."
+    "body": "We've upgraded our point system! Typing your answers directly (instead of using multiple-choice buttons) now earns you 3x the points. To keep the leaderboard fair, we've automatically tripled your past score."
   },
   "results": {
     "heading": "Session Complete!",
