@@ -103,7 +103,7 @@
   },
   "migration": {
     "title": "Welcome Back!",
-    "body": "While you were away, we updated our global point system! Type Mode answers are now worth 3x the points. We've automatically multiplied your historical score so you don't lose your spot on the leaderboard."
+    "body": "We've upgraded our point system! Typing your answers directly (instead of using buttons) now earns you 3x the points. To keep the leaderboard fair, we've automatically tripled your past score."
   },
   "results": {
     "heading": "Session Complete!",

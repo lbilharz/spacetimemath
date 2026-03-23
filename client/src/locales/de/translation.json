@@ -103,7 +103,7 @@
   },
   "migration": {
     "title": "Willkommen zurück!",
-    "body": "Wir haben das Punkte-System verbessert! Antworten im Tipp-Modus (ohne Buttons) geben jetzt 3x so viele Punkte. Deine alten Punkte wurden automatisch verdreifacht, damit du deinen Platz in der Rangliste behältst."
+    "body": "Wir haben das Punkte-System verbessert! Freie Eingaben (ohne Multiple-Choice Buttons) geben jetzt 3x so viele Punkte. Damit die Rangliste fair bleibt, wurden deine alten Punkte passend dazu automatisch verdreifacht."
   },
   "results": {
     "heading": "Sprint abgeschlossen!",
