@@ -2,15 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../../module_bindings/index.js';
-import type { Answer, IssuedProblemResult, NextProblemResult, Session } from '../../module_bindings/types.js';
+import type { Answer, IssuedProblemResultV2, NextProblemResultV2, Session } from '../../module_bindings/types.js';
 import { Identity } from 'spacetimedb';
 
 interface Props {
   studentIdentityHex: string;
   studentName: string;
   sprintAnswers: Answer[];
-  nextProblemResults: NextProblemResult[];
-  issuedProblemResults: IssuedProblemResult[];
+  nextProblemResults: NextProblemResultV2[];
+  issuedProblemResults: IssuedProblemResultV2[];
   sessions: Session[];
   onClose: () => void;
   isDiagnostic: boolean;
@@ -67,9 +67,9 @@ export default function StudentObserverModal({
   // 2. Find the exact problem they are currently looking at on their screen
   const activeProblemRow = useMemo(() => {
     if (isDiagnostic) {
-      return (issuedProblemResults as unknown as IssuedProblemResult[]).find(r => r.owner.toHexString() === studentIdentityHex);
+      return (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(r => r.owner.toHexString() === studentIdentityHex);
     } else {
-      return (nextProblemResults as unknown as NextProblemResult[]).find(r => r.owner.toHexString() === studentIdentityHex);
+      return (nextProblemResults as unknown as NextProblemResultV2[]).find(r => r.owner.toHexString() === studentIdentityHex);
     }
   }, [isDiagnostic, issuedProblemResults, nextProblemResults, studentIdentityHex]);
 

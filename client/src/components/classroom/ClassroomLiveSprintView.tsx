@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Classroom, Answer, ProblemStat, Player, NextProblemResult, IssuedProblemResult, Session } from '../../module_bindings/types.js';
+import type { Classroom, Answer, ProblemStat, Player, NextProblemResultV2, IssuedProblemResultV2, Session } from '../../module_bindings/types.js';
 import PageContainer from '../PageContainer.js';
 import MasteryGrid from '../MasteryGrid.js';
 import { StopIcon } from '../Icons.js';
@@ -17,8 +17,8 @@ interface Props {
   liveLB: { identityHex: string; username: string; correct: number; score: number }[];
   recentAnswers: Answer[];
   players: Player[];
-  nextProblemResults: NextProblemResult[];
-  issuedProblemResults: IssuedProblemResult[];
+  nextProblemResults: NextProblemResultV2[];
+  issuedProblemResults: IssuedProblemResultV2[];
   sessions: Session[];
   isDiagnostic: boolean;
 }
