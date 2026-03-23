@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo, FormEvent } f
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { ClassSprint, Player } from '../module_bindings/types.js';
-import type { Identity } from 'spacetimedb';
+import type { ClassSprint, Player, NextProblemResultV2, IssuedProblemResultV2 } from '../module_bindings/types.js';
+
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 import DotArray from '../components/DotArray.js';
@@ -28,21 +28,6 @@ type Answer = {
 type Session = {
   id: bigint; playerIdentity: { toHexString(): string };
   isComplete: boolean; weightedScore: number; classSprintId: bigint;
-};
-type IssuedProblemResult = {
-  owner: Identity;
-  token: string;
-  promptMode: number;
-  options: Uint32Array | number[];
-};
-type NextProblemResult = {
-  owner: Identity;
-  sessionId: bigint;
-  a: number;
-  b: number;
-  token: string;
-  promptMode: number;
-  options: Uint32Array | number[];
 };
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -177,9 +162,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const nextProblem = useSTDBReducer(reducers.nextProblem);
 
   // SEC-10: Read back the server-issued problem token (diagnostic sprint)
-  const [issuedProblemResults] = useTable(tables.issued_problem_results);
+  const [issuedProblemResults] = useTable(tables.issued_problem_results_v2);
   // Server-driven problem delivery (normal sprint)
-  const [nextProblemResults] = useTable(tables.next_problem_results);
+  const [nextProblemResults] = useTable(tables.next_problem_results_v2);
 
   // My answers (all-time — used for mastery-based problem selection)
   const myAnswers = useMemo(
@@ -326,7 +311,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // 3d. Receive server-delivered problem from NextProblemResult subscription (normal sprint only)
   useEffect(() => {
     if (isDiagnostic || !sprintStarted || ending) return;
-    const row = (nextProblemResults as unknown as NextProblemResult[]).find(
+    const row = (nextProblemResults as unknown as NextProblemResultV2[]).find(
       r => r.owner.toHexString() === myIdentityHex
     );
     if (!row) return;
@@ -419,10 +404,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
     // SEC-10: Get the current token for this player (source differs by sprint type)
     const tokenRow = isDiagnostic
-      ? (issuedProblemResults as unknown as IssuedProblemResult[]).find(
+      ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
           r => r.owner.toHexString() === myIdentityHex
         )
-      : (nextProblemResults as unknown as NextProblemResult[]).find(
+      : (nextProblemResults as unknown as NextProblemResultV2[]).find(
           r => r.owner.toHexString() === myIdentityHex
         );
     if (!tokenRow) {
@@ -478,10 +463,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     const pending = pendingAnswerRef.current;
     if (!pending) return;
     const tokenRow = isDiagnostic
-      ? (issuedProblemResults as unknown as IssuedProblemResult[]).find(
+      ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
           r => r.owner.toHexString() === myIdentityHex
         )
-      : (nextProblemResults as unknown as NextProblemResult[]).find(
+      : (nextProblemResults as unknown as NextProblemResultV2[]).find(
           r => r.owner.toHexString() === myIdentityHex
         );
     if (!tokenRow) return;
