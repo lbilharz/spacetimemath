@@ -31,11 +31,18 @@ export default function App() {
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
 
+  // Ensure these SpacetimeDB subscriptions are "elevated" to the root component 
+  // so their data is permanently cached and they don't get unsubscribed / instantly 
+  // cleared under the hood every time we navigate between Lobby/Classroom pages.
   const { identity, isActive, connectionError } = useSpacetimeDB();
   const [players] = useTable(tables.players);
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [classSprints] = useTable(tables.class_sprints);
+  // Elevate Lobby data to prevent leaderboard flashing on page switch
+  useTable(tables.best_scores);
+  useTable(tables.online_players);
+  useTable(tables.problem_stats);
   // recovery_keys is now a private table (SEC-01) — App.tsx fetches via getMyRecoveryCode once per session (UX-05)
   const { page, setPage, navigate, myPlayerRef } = useAppNavigation('register');
   const [sessionId, setSessionId] = useState<bigint | null>(null);
@@ -138,25 +145,17 @@ export default function App() {
   useEffect(() => { pageRef.current = page; }, [page]);
   
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    
     // 1. Recover when bringing app to foreground
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        timer = setTimeout(() => {
-          if (!isActiveRef.current) {
-            if (pageRef.current === 'sprint') {
-              console.warn('[reconnect] WS still down after 8s foregrounded, but sprint in progress — skipping reconnect');
-              return;
-            }
-            if ((window as any).__force_stdb_reconnect) {
-              console.log('[reconnect] WS down after 8s foregrounded — explicitly forcing SpacetimeDB reconnect.');
-              (window as any).__force_stdb_reconnect();
-            }
-          }
-        }, 8000);
-      } else {
-        clearTimeout(timer);
+      if (document.visibilityState === 'visible' && !isActiveRef.current) {
+        if (pageRef.current === 'sprint') {
+          console.warn('[reconnect] WS still down foregrounded, but sprint in progress — skipping reconnect');
+          return;
+        }
+        if ((window as any).__force_stdb_reconnect) {
+          console.log('[reconnect] WS down foregrounded — explicitly forcing SpacetimeDB reconnect instantly.');
+          (window as any).__force_stdb_reconnect();
+        }
       }
     };
 
@@ -173,7 +172,6 @@ export default function App() {
     return () => { 
       document.removeEventListener('visibilitychange', handleVisibility); 
       window.removeEventListener('online', handleOnline);
-      clearTimeout(timer); 
     };
   }, []);
 

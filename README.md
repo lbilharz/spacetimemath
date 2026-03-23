@@ -26,6 +26,7 @@ Better 1UP is a high-speed, adaptive multiplication trainer. It features a UI th
 
 ---
 
+
 ## Features
 
 **Sprint (60 s)**
