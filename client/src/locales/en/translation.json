@@ -97,7 +97,7 @@
     "feedbackCorrect": "✓ +{{points}} pts",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
     "feedbackTryAgain": "Try again!",
-    "tapPenalty": "That was wrong. Short break...",
+    "tapPenalty": "Not quite right. Take a quick moment...",
     "ending": "Ending…",
     "endSprint": "End Sprint",
     "phase": "Phase"

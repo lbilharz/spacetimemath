@@ -97,7 +97,7 @@
     "feedbackCorrect": "✓ +{{points}} Pkt.",
     "feedbackWrong": "✗ {{a}} × {{b}} = {{correct}} (−2s)",
     "feedbackTryAgain": "Nochmal!",
-    "tapPenalty": "Das war falsch. Kurze Pause...",
+    "tapPenalty": "Noch nicht ganz richtig. Überleg noch mal kurz...",
     "ending": "Wird beendet…",
     "endSprint": "Sprint beenden",
     "phase": "Phase"
