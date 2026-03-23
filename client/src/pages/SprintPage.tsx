@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo, FormEvent } f
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { ClassSprint, Player, NextProblemResultV2, IssuedProblemResultV2 } from '../module_bindings/types.js';
+import type { ClassSprint, Player, NextProblemResultV2, IssuedProblemResultV2, ProblemStat, Answer, Session } from '../module_bindings/types.js';
 
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
@@ -16,19 +16,7 @@ const hapticOk   = () => Haptics.impact({ style: ImpactStyle.Medium }).catch(() 
 const hapticGood = () => Haptics.notification({ type: NotificationType.Success }).catch(() => {});
 const hapticBad  = () => Haptics.notification({ type: NotificationType.Error   }).catch(() => {});
 
-// Types inferred from module_bindings
-type ProblemStat = {
-  problemKey: number; a: number; b: number; category: number;
-  attemptCount: number; correctCount: number; avgResponseMs: number; difficultyWeight: number;
-};
-type Answer = {
-  id: bigint; playerIdentity: { toHexString(): string }; sessionId: bigint;
-  a: number; b: number; userAnswer: number; isCorrect: boolean; responseMs: number;
-};
-type Session = {
-  id: bigint; playerIdentity: { toHexString(): string };
-  isComplete: boolean; weightedScore: number; classSprintId: bigint;
-};
+
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
 
