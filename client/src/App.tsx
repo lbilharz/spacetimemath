@@ -148,10 +148,6 @@ export default function App() {
     // 1. Recover when bringing app to foreground
     const handleVisibility = () => {
       if (document.visibilityState === 'visible' && !isActiveRef.current) {
-        if (pageRef.current === 'sprint') {
-          console.warn('[reconnect] WS still down foregrounded, but sprint in progress — skipping reconnect');
-          return;
-        }
         if ((window as any).__force_stdb_reconnect) {
           console.log('[reconnect] WS down foregrounded — explicitly forcing SpacetimeDB reconnect instantly.');
           (window as any).__force_stdb_reconnect();
@@ -161,7 +157,7 @@ export default function App() {
 
     // 2. Recover instantly when OS reports internet is back
     const handleOnline = () => {
-      if (!isActiveRef.current && (window as any).__force_stdb_reconnect && pageRef.current !== 'sprint') {
+      if (!isActiveRef.current && (window as any).__force_stdb_reconnect) {
         console.log('[reconnect] Network is back online — forcefully reconnecting.');
         (window as any).__force_stdb_reconnect();
       }
@@ -181,7 +177,7 @@ export default function App() {
     let interval: ReturnType<typeof setInterval>;
     if (!isActive && effectivePlayer) {
       interval = setInterval(() => {
-        if (!isActiveRef.current && pageRef.current !== 'sprint' && (window as any).__force_stdb_reconnect) {
+        if (!isActiveRef.current && (window as any).__force_stdb_reconnect) {
           console.log('[reconnect] Auto-retry loop firing...');
           (window as any).__force_stdb_reconnect();
         }
