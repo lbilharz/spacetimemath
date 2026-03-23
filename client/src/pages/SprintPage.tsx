@@ -171,8 +171,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(0);
   const [correct, setCorrect] = useState(0);
+  const [combo, setCombo] = useState(0);
   const [attempts, setAttempts] = useState(1);
   const [ending, setEnding] = useState(false);
+  const [interstitial, setInterstitial] = useState<'tap' | 'type' | null>(null);
 
   const lastKeyRef = useRef<number | undefined>(undefined);
   const problemStartRef = useRef(Date.now());
@@ -307,11 +309,31 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
     // Prevent re-consuming the same problem token on WS reconnect (subscription re-fire)
     if (row.token === lastConsumedTokenRef.current) return;
+    
+    const newMode = row.promptMode;
+    const oldMode = problem?.promptMode;
+    const isFirstProblem = problem === null;
+    
+    if (!isFirstProblem && oldMode !== undefined && newMode !== oldMode) {
+      setInterstitial(newMode === 1 ? 'tap' : 'type');
+      lastConsumedTokenRef.current = row.token;
+
+      setTimeout(() => {
+        setInterstitial(null);
+        setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
+        setAttempts(1);
+        problemStartRef.current = Date.now();
+        if (!('ontouchstart' in window) && row.promptMode === 0) inputRef.current?.focus();
+      }, 1500);
+      return;
+    }
+
+    lastConsumedTokenRef.current = row.token;
     setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
     setAttempts(1);
     problemStartRef.current = Date.now();
-    if (!('ontouchstart' in window)) inputRef.current?.focus();
-  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex]);
+    if (!('ontouchstart' in window) && row.promptMode === 0) inputRef.current?.focus();
+  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex, problem?.promptMode]);
 
   // 4. Sprint timer
   // Class sprint: tick is derived from server's startedAt — survives reloads
@@ -376,6 +398,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (!isCorrect) {
       // Wrong answer: show "try again" feedback, keep same problem, NO server submission
       hapticBad();
+      setCombo(0);
       
       const isTapMode = problem.promptMode === 1;
       setFeedback({ isCorrect: false, points: 0, correct: correct_answer, isTapPenalty: isTapMode });
@@ -410,6 +433,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     submitAnswer({ sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts, problemToken: tokenRow.token });
 
     // Update local score display
+    setCombo(c => c + 1);
     setAnswered(n => n + 1);
     setCorrect(n => n + 1);
     setScore(s => +(s + finalPts).toFixed(2));
@@ -611,6 +635,22 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         gap: 24,
         overflowY: 'auto',
       }}>
+        {/* Power Meter */}
+        {sprintStarted && !isDiagnostic && (
+          <div className="w-full max-w-[380px] flex items-center justify-between mb-[-8px]">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Streak</span>
+            <div className="flex gap-1.5 object-right">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className={`h-1.5 w-10 sm:w-12 rounded-full transition-all duration-300 ${
+                  combo > i 
+                    ? (i === 4 ? 'bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)]' : 'bg-brand-yellow shadow-[0_0_8px_rgba(251,186,0,0.5)]') 
+                    : 'bg-slate-200 dark:bg-slate-800'
+                }`} />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Row: dot grid (left) + difficulty tag (right) */}
         <div style={{
           display: 'flex',
@@ -628,7 +668,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         </div>
 
         {/* Equation or feedback */}
-        {feedback && !feedback.isTapPenalty ? (
+        {interstitial ? (
+          <div className="flex flex-col items-center justify-center min-h-[180px] w-full max-w-[360px] animate-in slide-in-from-bottom-4 fade-in duration-300">
+            <div className={`text-2xl font-black uppercase tracking-widest px-8 py-6 rounded-3xl border-4 shadow-xl flex flex-col items-center gap-3 ${interstitial === 'tap' ? 'bg-indigo-50/90 dark:bg-indigo-900/50 text-indigo-500 border-indigo-200 dark:border-indigo-800' : 'bg-brand-yellow/10 text-amber-600 border-brand-yellow/30'}`}>
+               <span className="text-5xl animate-bounce">{interstitial === 'tap' ? '👆' : '⌨️'}</span>
+               {interstitial === 'tap' ? 'TAP MODE' : 'TYPE MODE'}
+            </div>
+          </div>
+        ) : feedback && !feedback.isTapPenalty ? (
           <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
             <div style={{
               fontSize: 32, fontWeight: 800,
@@ -654,7 +701,20 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
             </div>
             
             {problem.promptMode === 1 ? (
-              <TapLayout options={problem.options} onAnswer={handleTapAnswer} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
+              <div className="relative w-full flex justify-center">
+                <TapLayout options={problem.options} onAnswer={handleTapAnswer} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
+                
+                {feedback?.isTapPenalty && (
+                  <div className="absolute inset-x-0 -top-4 -bottom-4 z-10 flex flex-col items-center justify-center bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm rounded-3xl animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-red-500 text-white font-black px-6 py-4 rounded-2xl shadow-[0_8px_30px_rgb(239,68,68,0.3)] flex flex-col items-center transform transition-transform">
+                      <span className="text-3xl mb-1">⏱</span>
+                      <span className="text-lg tracking-tight leading-tight text-center">
+                        {t('sprint.tapPenalty', { defaultValue: 'Kurze Pause...' })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <form onSubmit={handleSubmit} style={{
                 display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'

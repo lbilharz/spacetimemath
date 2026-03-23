@@ -56,7 +56,20 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
             const stat = (problemStats as unknown as ProblemStat[]).find(ps => ps.problemKey === key);
             return sum + (stat?.difficultyWeight ?? 1.0);
           }, 0);
-      return { identityHex, username: player?.username ?? s.username, score, correct, total, isComplete };
+
+      let maxStreak = 0;
+      let currentStreak = 0;
+      const sortedSa = [...sa].sort((ansA, ansB) => Number(ansA.id - ansB.id));
+      for (const ans of sortedSa) {
+        if (ans.isCorrect) {
+          currentStreak++;
+          if (currentStreak > maxStreak) maxStreak = currentStreak;
+        } else {
+          currentStreak = 0;
+        }
+      }
+
+      return { identityHex, username: player?.username ?? s.username, score, correct, total, isComplete, maxStreak };
     })
     .sort((a, b) => b.score - a.score);
 
@@ -96,9 +109,10 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
           <p className="text-slate-500 italic">{t('classSprint.noResults')}</p>
         ) : (
           <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-[3rem_1fr_4rem_4rem] gap-4 px-4 py-2 border-b border-slate-100 dark:border-slate-700/50 mb-2">
+            <div className="grid grid-cols-[3rem_1fr_4.5rem_4rem_4rem] gap-4 px-4 py-2 border-b border-slate-100 dark:border-slate-700/50 mb-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">#</span>
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t('classroom.colPlayer')}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">{t('classSprint.colStreak', { defaultValue: 'Streak' })}</span>
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">{t('classSprint.colScore')}</span>
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">{t('classSprint.colCorrect')}</span>
             </div>
@@ -107,7 +121,7 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
               return (
                 <div
                   key={r.identityHex}
-                  className={`grid grid-cols-[3rem_1fr_4rem_4rem] gap-4 items-center rounded-2xl p-4 transition-colors ${
+                  className={`grid grid-cols-[3rem_1fr_4.5rem_4rem_4rem] gap-4 items-center rounded-2xl p-4 transition-colors ${
                     isMe ? 'bg-amber-50 dark:bg-amber-500/10 border border-brand-yellow/30' : 'bg-slate-50 dark:bg-slate-900/50 border border-transparent'
                   } ${!r.isComplete ? 'opacity-60 grayscale-[0.5]' : ''}`}
                 >
@@ -118,6 +132,10 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
                     {r.username}
                     {isMe && <span className="ml-2 rounded-md bg-brand-yellow/20 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('common.you')}</span>}
                     {!r.isComplete && <span className="ml-2 text-xs opacity-50">⏱</span>}
+                  </div>
+                  <div className={`font-bold text-right text-[15px] flex items-center justify-end gap-1 ${r.maxStreak >= 5 ? 'text-orange-500' : 'text-slate-400'}`}>
+                    {r.maxStreak >= 5 && <span className="text-xs">🔥</span>}
+                    {r.maxStreak}
                   </div>
                   <div className="font-black tabular-nums text-right text-brand-yellow text-lg">
                     {r.score.toFixed(1)}

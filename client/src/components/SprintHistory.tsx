@@ -72,6 +72,15 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                     .sort((a, b) => Number(a.id - b.id));
 
                   const wrongCount = sessionAnswers.filter(a => !a.isCorrect).length;
+                  
+                  let maxStreak = 0;
+                  let currentStreak = 0;
+                  for (const ans of sessionAnswers) {
+                    if (ans.isCorrect) {
+                      currentStreak++;
+                      if (currentStreak > maxStreak) maxStreak = currentStreak;
+                    } else currentStreak = 0;
+                  }
 
                   return (
                     <div key={String(session.id)} className="flex flex-col rounded-[16px] overflow-hidden border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-900/30 transition-all">
@@ -89,6 +98,12 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
                             <span className="text-green-500 mr-1">✓</span> {session.rawScore}
                             <span className="text-slate-400 font-medium ml-0.5">/{session.totalAnswered}</span>
                           </span>
+                          
+                          {maxStreak >= 5 && (
+                            <span className="text-sm font-black text-orange-500 ml-1" title={t('history.streak', { defaultValue: 'Longest Streak' })}>
+                              🔥 {maxStreak}
+                            </span>
+                          )}
                           
                           {wrongCount > 0 && (
                             <span className="text-sm font-black text-red-500">
