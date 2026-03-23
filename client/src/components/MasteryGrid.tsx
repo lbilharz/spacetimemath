@@ -4,8 +4,7 @@ import type { ParseKeys } from 'i18next';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
 
-type Answer = { id: bigint; a: number; b: number; isCorrect: boolean; sessionId: bigint; userAnswer?: number; responseMs?: number; attempts?: number; };
-type ProblemStat = { problemKey: number; a: number; b: number; difficultyWeight: number; };
+import type { Answer, ProblemStat } from '../module_bindings/types.js';
 
 interface Props {
   answers: Answer[];

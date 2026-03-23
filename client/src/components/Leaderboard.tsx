@@ -2,15 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 
-type BestScore = {
-  playerIdentity: { toHexString(): string };
-  username: string;
-  bestWeightedScore: number;
-  bestAccuracyPct: number;
-  bestTotalAnswered: number;
-  learningTier: number;
-};
-
+import type { BestScore } from '../module_bindings/types.js';
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
 interface Props {

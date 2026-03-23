@@ -1,5 +1,6 @@
 import type { MutableRefObject } from 'react';
 import type { Page } from '../navigation.js';
+import type { Player } from '../module_bindings/types.js';
 import RegisterPage from '../pages/RegisterPage.js';
 import LobbyPage from '../pages/LobbyPage.js';
 import ProgressPage from '../pages/ProgressPage.js';
@@ -10,17 +11,7 @@ import ClassroomPage from '../pages/ClassroomPage.js';
 import ClassroomsPage from '../pages/ClassroomsPage.js';
 import ClassSprintResultsPage from '../pages/ClassSprintResultsPage.js';
 
-type Player = {
-  identity: { toHexString(): string };
-  username: string;
-  bestScore: number;
-  totalSessions: number;
-  learningTier: number;
-  recoveryEmailed?: boolean;
-  onboardingDone?: boolean;
-  extendedMode: boolean;
-  extendedLevel: number;
-};
+
 
 interface Props {
   page: Page;

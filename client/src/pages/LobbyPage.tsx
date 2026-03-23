@@ -2,21 +2,14 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, ProblemStat, Session } from '../module_bindings/types.js';
+import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Player, ProblemStat, Session } from '../module_bindings/types.js';
 import Leaderboard from '../components/Leaderboard.js';
 import ScoringGuide from '../components/ScoringGuide.js';
 import PageContainer from '../components/PageContainer.js';
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
-type Player = {
-  identity: { toHexString(): string };
-  username: string;
-  bestScore: number;
-  totalSessions: number;
-  learningTier?: number;
-  recoveryEmailed?: boolean;
-};
+
 
 interface Props {
   myPlayer: Player | undefined;

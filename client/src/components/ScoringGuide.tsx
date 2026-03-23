@@ -1,7 +1,8 @@
 import { useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ProblemStat } from '../module_bindings/types.js';
 
-type ProblemStat = { a: number; b: number; difficultyWeight: number; attemptCount: number };
+
 
 interface Props {
   problemStats: ProblemStat[];

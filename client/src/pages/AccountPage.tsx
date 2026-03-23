@@ -2,21 +2,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { RecoveryCodeResult } from '../module_bindings/types.js';
+import type { RecoveryCodeResult, Player } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
 import PageContainer from '../components/PageContainer.js';
 
-type Player = {
-  identity: { toHexString(): string };
-  username: string;
-  bestScore: number;
-  totalSessions: number;
-  recoveryEmailed?: boolean;
-  learningTier: number;
-  extendedMode: boolean;
-};
 
 interface Props {
   myPlayer: Player;
