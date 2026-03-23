@@ -17,5 +17,4 @@ export default __t.row({
   b: __t.u8(),
   token: __t.string(),
   promptMode: __t.u8().name("prompt_mode"),
-  options: __t.array(__t.u32()),
 });

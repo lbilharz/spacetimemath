@@ -84,7 +84,6 @@ export const IssuedProblem = __t.object("IssuedProblem", {
   b: __t.u8(),
   token: __t.string(),
   promptMode: __t.u8(),
-  options: __t.array(__t.u32()),
 });
 export type IssuedProblem = __Infer<typeof IssuedProblem>;
 
@@ -92,9 +91,34 @@ export const IssuedProblemResult = __t.object("IssuedProblemResult", {
   owner: __t.identity(),
   token: __t.string(),
   promptMode: __t.u8(),
-  options: __t.array(__t.u32()),
 });
 export type IssuedProblemResult = __Infer<typeof IssuedProblemResult>;
+
+export const IssuedProblemResultV2 = __t.object("IssuedProblemResultV2", {
+  owner: __t.identity(),
+  token: __t.string(),
+  promptMode: __t.u8(),
+  options: __t.array(__t.u32()),
+});
+export type IssuedProblemResultV2 = __Infer<typeof IssuedProblemResultV2>;
+
+export const IssuedProblemV2 = __t.object("IssuedProblemV2", {
+  id: __t.u64(),
+  sessionId: __t.u64(),
+  a: __t.u8(),
+  b: __t.u8(),
+  token: __t.string(),
+  promptMode: __t.u8(),
+  options: __t.array(__t.u32()),
+});
+export type IssuedProblemV2 = __Infer<typeof IssuedProblemV2>;
+
+export const LegacyScoreBackup = __t.object("LegacyScoreBackup", {
+  playerIdentity: __t.identity(),
+  originalBestScore: __t.f32(),
+  backedUpAt: __t.timestamp(),
+});
+export type LegacyScoreBackup = __Infer<typeof LegacyScoreBackup>;
 
 export const NextProblemResult = __t.object("NextProblemResult", {
   owner: __t.identity(),
@@ -103,9 +127,19 @@ export const NextProblemResult = __t.object("NextProblemResult", {
   b: __t.u8(),
   token: __t.string(),
   promptMode: __t.u8(),
-  options: __t.array(__t.u32()),
 });
 export type NextProblemResult = __Infer<typeof NextProblemResult>;
+
+export const NextProblemResultV2 = __t.object("NextProblemResultV2", {
+  owner: __t.identity(),
+  sessionId: __t.u64(),
+  a: __t.u8(),
+  b: __t.u8(),
+  token: __t.string(),
+  promptMode: __t.u8(),
+  options: __t.array(__t.u32()),
+});
+export type NextProblemResultV2 = __Infer<typeof NextProblemResultV2>;
 
 export const OnlinePlayer = __t.object("OnlinePlayer", {
   identity: __t.identity(),

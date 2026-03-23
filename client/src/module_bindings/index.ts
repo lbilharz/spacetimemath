@@ -86,7 +86,10 @@ import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
 import IssuedProblemResultsRow from "./issued_problem_results_table";
+import IssuedProblemResultsV2Row from "./issued_problem_results_v_2_table";
+import LegacyScoreBackupsRow from "./legacy_score_backups_table";
 import NextProblemResultsRow from "./next_problem_results_table";
+import NextProblemResultsV2Row from "./next_problem_results_v_2_table";
 import OnlinePlayersRow from "./online_players_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
@@ -199,6 +202,28 @@ const tablesSchema = __schema({
       { name: 'issued_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
     ],
   }, IssuedProblemResultsRow),
+  issued_problem_results_v2: __table({
+    name: 'issued_problem_results_v_2',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'issued_problem_results_v_2_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, IssuedProblemResultsV2Row),
+  legacy_score_backups: __table({
+    name: 'legacy_score_backups',
+    indexes: [
+      { name: 'player_identity', algorithm: 'btree', columns: [
+        'playerIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'legacy_score_backups_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
+    ],
+  }, LegacyScoreBackupsRow),
   next_problem_results: __table({
     name: 'next_problem_results',
     indexes: [
@@ -210,6 +235,17 @@ const tablesSchema = __schema({
       { name: 'next_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
     ],
   }, NextProblemResultsRow),
+  next_problem_results_v2: __table({
+    name: 'next_problem_results_v_2',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'next_problem_results_v_2_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, NextProblemResultsV2Row),
   online_players: __table({
     name: 'online_players',
     indexes: [

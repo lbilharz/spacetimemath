@@ -14,5 +14,4 @@ export default __t.row({
   owner: __t.identity().primaryKey(),
   token: __t.string(),
   promptMode: __t.u8().name("prompt_mode"),
-  options: __t.array(__t.u32()),
 });

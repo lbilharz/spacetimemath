@@ -103,7 +103,7 @@
   },
   "migration": {
     "title": "Willkommen zurück!",
-    "body": "Während du weg warst, haben wir unser globales Punktesystem aktualisiert! Antworten im Tipp-Modus (ohne Buttons) geben jetzt 3x so viele Punkte. Wir haben deine bisherige Höchstpunktzahl automatisch mit 3 multipliziert, damit du deinen Platz in der Rangliste nicht verlierst."
+    "body": "Wir haben das Punkte-System verbessert! Antworten im Tipp-Modus (ohne Buttons) geben jetzt 3x so viele Punkte. Deine alten Punkte wurden automatisch verdreifacht, damit du deinen Platz in der Rangliste behältst."
   },
   "results": {
     "heading": "Sprint abgeschlossen!",
