@@ -101,6 +101,10 @@
     "endSprint": "Sprint beëindigen",
     "phase": "Fase"
   },
+  "migration": {
+    "title": "Welkom terug!",
+    "body": "We hebben meerkeuzevragen toegevoegd! Omdat zelf je antwoord typen uitdagender is, levert dit nu 3x zoveel punten op. Om het scorebord eerlijk te houden, hebben we je oude score automatisch verdrievoudigd."
+  },
   "results": {
     "heading": "Sessie voltooid!",
     "finalizing": "Sessie afronden…",

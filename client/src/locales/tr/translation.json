@@ -101,6 +101,10 @@
     "endSprint": "Sprinti Bitir",
     "phase": "Faz"
   },
+  "migration": {
+    "title": "Tekrar Hoş Geldin!",
+    "body": "Çoktan seçmeli soruları ekledik! Cevapları doğrudan yazmak daha zor olduğu için artık 3 kat daha fazla puan kazandırıyor. Liderlik tablosunu adil tutmak için geçmiş puanınızı otomatik olarak üçe katladık."
+  },
   "results": {
     "heading": "Oturum Tamamlandı!",
     "finalizing": "Oturum sonlandırılıyor…",
