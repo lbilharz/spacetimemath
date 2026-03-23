@@ -534,6 +534,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   if (preCountdown !== null) {
     return (
       <div className="page" style={{
+        display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         minHeight: '80vh', gap: 20, textAlign: 'center',
       }}>
