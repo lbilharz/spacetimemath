@@ -99,7 +99,7 @@
     "feedbackTryAgain": "Réessaie !",
     "migration": {
       "title": "Bon Retour !",
-      "body": "Nous avons amélioré notre système de points ! Taper vos réponses directement (sans utiliser de boutons) rapporte désormais 3 fois plus de points. Pour l'équité du classement, nous avons automatiquement triplé votre ancien score."
+      "body": "Nous avons ajouté des questions à choix multiples ! Puisque taper vos réponses directement est plus difficile, cela rapporte désormais 3x plus de points. Pour l'équité du classement, nous avons automatiquement triplé votre ancien score."
     },
     "ending": "Fin de session…",
     "endSprint": "Terminer le sprint",

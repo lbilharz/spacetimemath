@@ -103,7 +103,7 @@
   },
   "migration": {
     "title": "Willkommen zurück!",
-    "body": "Wir haben das Punkte-System verbessert! Freie Eingaben (ohne Multiple-Choice Buttons) geben jetzt 3x so viele Punkte. Damit die Rangliste fair bleibt, wurden deine alten Punkte passend dazu automatisch verdreifacht."
+    "body": "Wir haben Multiple-Choice-Aufgaben eingeführt! Da die freie Eingabe anspruchsvoller ist, gibt sie ab sofort 3x so viele Punkte. Damit die Rangliste fair bleibt, haben wir deine alten Punkte automatisch verdreifacht."
   },
   "results": {
     "heading": "Sprint abgeschlossen!",
