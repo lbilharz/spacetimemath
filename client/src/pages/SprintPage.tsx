@@ -126,8 +126,16 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
             key={key}
             type="button"
             disabled={disabled}
-            onClick={() => onKey(key)}
-            className={`pressable ${isOk ? 'text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'}`}
+            onPointerDown={(e) => {
+              if (e.button !== 0 && e.pointerType === 'mouse') return;
+              onKey(key);
+            }}
+            onClick={(e) => e.preventDefault()} // Suppress ghost clicks
+            className={`select-none transition-all duration-75 active:scale-[0.92] ${
+              isOk 
+                ? 'text-slate-900 active:brightness-75' 
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white active:bg-slate-300 dark:active:bg-slate-600'
+            }`}
             style={{
               padding: '14px 8px',
               fontSize: 22,
@@ -143,6 +151,7 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
+              touchAction: 'manipulation', // Disables double-tap zoom delay entirely
             }}
           >
             {key}
