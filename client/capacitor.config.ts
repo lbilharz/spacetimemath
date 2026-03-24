@@ -5,8 +5,6 @@ const config: CapacitorConfig = {
   appName: '1UP',
   webDir: 'dist',
   ios: {
-    backgroundColor: '#F5F4F0',   // matches --bg
-    contentInset: 'always',
   },
   plugins: {
     LocalNotifications: {

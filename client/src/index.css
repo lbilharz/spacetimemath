@@ -47,7 +47,6 @@
   }
 
   body {
-    padding-top: env(safe-area-inset-top);
     overflow: auto;
   }
 
