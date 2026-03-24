@@ -58,6 +58,40 @@ function getMasteryLocal(answers: Answer[], a: number, b: number): Mastery {
   return 'struggling';
 }
 
+// ── Performance Telemetry ─────────────────────────────────────────────────────
+// Measures true hardware-to-paint latency (Interaction to Next Paint equivalent)
+function useInteractionLatency() {
+  const [latency, setLatency] = useState(0);
+  useEffect(() => {
+    let interactionStart = 0;
+    const handleStart = () => { interactionStart = performance.now(); };
+    const handleEnd = () => {
+      // Queue a callback precisely after the next physical screen paint
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (interactionStart > 0) {
+            setLatency(performance.now() - interactionStart);
+            interactionStart = 0;
+          }
+        }, 0);
+      });
+    };
+
+    window.addEventListener('touchstart', handleStart, { capture: true, passive: true });
+    window.addEventListener('touchend', handleEnd, { capture: true, passive: true });
+    window.addEventListener('keydown', handleStart, { capture: true, passive: true });
+    window.addEventListener('keyup', handleEnd, { capture: true, passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleStart, { capture: true });
+      window.removeEventListener('touchend', handleEnd, { capture: true });
+      window.removeEventListener('keydown', handleStart, { capture: true });
+      window.removeEventListener('keyup', handleEnd, { capture: true });
+    };
+  }, []);
+  return latency;
+}
+
 
 interface Props {
   myIdentityHex: string;
@@ -122,6 +156,7 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
 export default function SprintPage({ myIdentityHex, classSprintId, onFinished }: Props) {
   const { t } = useTranslation();
   const { isActive } = useSpacetimeDB();
+  const hwLatency = useInteractionLatency();
   const [sessions] = useTable(tables.sessions);
   const [allAnswers] = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
@@ -615,7 +650,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         >✕</button>
 
         <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-          <div style={{ color: 'white', fontWeight: 800, fontSize: 16, lineHeight: 1.2, letterSpacing: '-0.5px' }}>1UP</div>
+          <div style={{ color: 'white', fontWeight: 800, fontSize: 16, lineHeight: 1.2, letterSpacing: '-0.5px' }}>
+            1UP <span className="text-[10px] font-normal opacity-50 ml-1 tracking-normal">{hwLatency > 0 ? `${hwLatency.toFixed(0)}ms` : ''}</span>
+          </div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.2, fontWeight: 500 }}>
             {isDiagnostic 
               ? `${t('sprint.phase')} ${Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4`
