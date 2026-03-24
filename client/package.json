@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
     "lint": "eslint",
     "lint:i18n": "node scripts/check-translations.js",
     "preview": "vite preview"
@@ -36,6 +37,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.2.0",
     "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.58.2",
     "@types/html2canvas": "^0.5.35",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

@@ -22,22 +22,6 @@ function hasSavedCredentials(): boolean {
 }
 const isSessionRestore = hasSavedCredentials();
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Sinkhole component for SpacetimeDB subscriptions.
-// By isolating these `useTable` hooks in a component that returns `null`, 
-// we securely instruct the SpacetimeDB Client to fetch these tables over WebSocket 
-// without poisoning the React context tree of `App` or `SprintPage` with 24fps VDOM diffs.
-// ──────────────────────────────────────────────────────────────────────────────
-const SprintSubscriptionsSinkhole = () => {
-  useTable(tables.sessions);
-  useTable(tables.answers);
-  useTable(tables.issued_problem_results_v2);
-  useTable(tables.next_problem_results_v2);
-  useTable(tables.teacher_focus);
-  return null;
-};
-const MemoizedSinkhole = React.memo(SprintSubscriptionsSinkhole);
-
 export default function App() {
   const { t, i18n } = useTranslation();
 
@@ -310,9 +294,6 @@ export default function App() {
 
   return (
     <>
-      {/* Invisible global subscriptions that power the offline cache poller */}
-      {isActive && effectivePlayer && <MemoizedSinkhole />}
-
       {/* Subtle reconnecting pill — shown instead of a full blank screen */}
       {!isActive && effectivePlayer && (
         <div className="fixed top-[60px] left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full px-4 py-1.5 text-[13px] font-semibold z-[999] pointer-events-none drop-shadow-md">

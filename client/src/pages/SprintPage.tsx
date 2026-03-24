@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo, FormEvent } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
-import { reducers } from '../module_bindings/index.js';
+import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
+import { tables, reducers } from '../module_bindings/index.js';
 import type { ClassSprint, Player, NextProblemResultV2, IssuedProblemResultV2, ProblemStat, Answer, Session } from '../module_bindings/types.js';
 
 import { getRechenweg } from '../utils/rechenwege.js';
@@ -162,98 +162,47 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
   );
 });
 
-// ── Unified Database Cache Poller Firewall ────────────────────────────────────
-// Instead of 8 leaky global `useTable` hooks forcing 96fps React renders on iOS,
-// we aggressively firewall the massive WebSocket traffic by explicitly probing the 
-// synchronous SpacetimeDB cache memory directly.
-function useSprintData(db: any, myIdentityHex: string, classSprintId: bigint, sessionId: bigint | null, problemA?: number, problemB?: number) {
-  const [state, setState] = useState({
-    myNextRow: null as NextProblemResultV2 | null,
-    myIssuedRow: null as IssuedProblemResultV2 | null,
-    amIFocused: false,
-    isComplete: false,
-    isActive: true,
-    isDiagnostic: false,
-    mastery: 'untouched' as Mastery,
-    playerLearningTier: 0,
-    eligibleProblemStats: [] as ProblemStat[],
-    myAnswers: [] as Answer[],
-    classSprintStartedAt: null as bigint | null,
-  });
-
-  useEffect(() => {
-    const check = () => {
-      if (!db) return;
-      const nextRow = Array.from(db.next_problem_results_v2.iter()).find((r: any) => r.owner.toHexString() === myIdentityHex) as NextProblemResultV2 | undefined;
-      const issuedRow = Array.from(db.issued_problem_results_v2.iter()).find((r: any) => r.owner.toHexString() === myIdentityHex) as IssuedProblemResultV2 | undefined;
-      const amIFocused = Array.from(db.teacher_focus.iter()).some((f: any) => f.focusedStudentId.toHexString() === myIdentityHex);
-      
-      let isComplete = false;
-      if (sessionId !== null) {
-        const s = Array.from(db.sessions.iter()).find((s: any) => String(s.id) === String(sessionId)) as Session | undefined;
-        isComplete = !!s?.isComplete;
-      }
-      
-      let isActive = true;
-      let isDiagnostic = false;
-      let classSprintStartedAt: bigint | null = null;
-      if (classSprintId !== 0n) {
-        const cs = Array.from(db.class_sprints.iter()).find((c: any) => String(c.id) === String(classSprintId)) as ClassSprint | undefined;
-        if (cs) { isActive = cs.isActive; isDiagnostic = cs.isDiagnostic; classSprintStartedAt = cs.startedAt.microsSinceUnixEpoch; }
-      }
-
-      const playerLearningTier = (Array.from(db.players.iter()) as Player[]).find(
-        p => p.identity.toHexString() === myIdentityHex
-      )?.learningTier ?? 0;
-
-      const problemStats = Array.from(db.problem_stats.iter()) as ProblemStat[];
-      const eligibleProblemStats = problemStats.filter(s => learningTierOf(s.a, s.b) <= playerLearningTier);
-
-      const myAnswers = (Array.from(db.answers.iter()) as Answer[]).filter((a: any) => a.playerIdentity.toHexString() === myIdentityHex);
-
-      let mastery: Mastery = 'untouched';
-      if (problemA !== undefined && problemB !== undefined) {
-        mastery = getMasteryLocal(myAnswers, problemA, problemB);
-      }
-
-      setState(prev => {
-        const next = { 
-          myNextRow: nextRow || null, 
-          myIssuedRow: issuedRow || null, 
-          amIFocused, 
-          isComplete, 
-          isActive, 
-          isDiagnostic, 
-          mastery,
-          playerLearningTier,
-          eligibleProblemStats,
-          myAnswers,
-          classSprintStartedAt,
-        };
-        return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
-      });
-    };
-    
-    check();
-    const id = setInterval(check, 100);
-    return () => clearInterval(id);
-  }, [myIdentityHex, classSprintId, sessionId, problemA, problemB]);
-
-  return state;
-}
-
 export default function SprintPage({ myIdentityHex, classSprintId, onFinished }: Props) {
   const { t } = useTranslation();
+  const { isActive } = useSpacetimeDB();
   const hwLatency = useInteractionLatency();
+  const [sessions] = useTable(tables.sessions);
+  const [allAnswers] = useTable(tables.answers);
+  const [problemStats] = useTable(tables.problem_stats);
+  const [players] = useTable(tables.players);
+  const [classSprints] = useTable(tables.class_sprints);
+
+  // Derive sprint mode from the active class sprint (if any)
+  const isDiagnostic = classSprintId
+    ? !!((classSprints as ClassSprint[]).find(s => s.id === classSprintId)?.isDiagnostic)
+    : false;
+  const SPRINT_DURATION = isDiagnostic ? 60 : 60;
+
+  const playerLearningTier: number = (players as Player[]).find(
+    p => p.identity.toHexString() === myIdentityHex
+  )?.learningTier ?? 0;
+
+  const eligibleStats = useMemo(
+    () => (problemStats as ProblemStat[]).filter(s => learningTierOf(s.a, s.b) <= playerLearningTier),
+    [problemStats, playerLearningTier]
+  );
 
   const startSession = useSTDBReducer(reducers.startSession);
   const submitAnswer = useSTDBReducer(reducers.submitAnswer);
   const endSession = useSTDBReducer(reducers.endSession);
   const issueProblem = useSTDBReducer(reducers.issueProblem);
   const nextProblem = useSTDBReducer(reducers.nextProblem);
-  const syncKeystroke = useSTDBReducer(reducers.syncKeystroke);
 
-  const SPRINT_DURATION = 60; // Always 60 seconds, regardless of diagnostic mode
+  // SEC-10: Read back the server-issued problem token (diagnostic sprint)
+  const [issuedProblemResults] = useTable(tables.issued_problem_results_v2);
+  // Server-driven problem delivery (normal sprint)
+  const [nextProblemResults] = useTable(tables.next_problem_results_v2);
+
+  // My answers (all-time — used for mastery-based problem selection)
+  const myAnswers = useMemo(
+    () => allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex) as Answer[],
+    [allAnswers, myIdentityHex]
+  );
 
   // Sprint state
   const [sessionId, setSessionId] = useState<bigint | null>(null);
@@ -270,14 +219,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const [attempts, setAttempts] = useState(1);
   const [ending, setEnding] = useState(false);
   const [interstitial, setInterstitial] = useState<'tap' | 'type' | null>(null);
-  const [isComplete, setIsComplete] = useState(false); // Local state for session completion
-
-  // ── Database State ────────────────────────────────────────────────────────
-  // We explicitly fetch data via interval polling to stop React rendering 24 times a second
-  const stdb = useSpacetimeDB();
-  const db = stdb.getConnection()?.db;
-  const sprintData = useSprintData(db, myIdentityHex, classSprintId ?? 0n, sessionId, problem?.a, problem?.b);
-  const isDiagnostic = sprintData.isDiagnostic;
 
   const lastKeyRef = useRef<number | undefined>(undefined);
   const problemStartRef = useRef(Date.now());
@@ -287,12 +228,17 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // Track last consumed problem token to prevent re-consuming same problem on WS reconnect
   const lastConsumedTokenRef = useRef<string | null>(null);
 
+  const [teacherFocus] = useTable(tables.teacher_focus);
+  const syncKeystroke = useSTDBReducer(reducers.syncKeystroke);
+
+  const amIFocused = Array.from(teacherFocus as unknown as any[]).some(f => f.focusedStudentId.toHexString() === myIdentityHex);
+  const isComplete = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId))?.isComplete ?? false;
+
   useEffect(() => {
-    if (sprintData.amIFocused && !isComplete && !ending) {
-      const currentInputVal = inputRef.current ? inputRef.current.value : input;
-      syncKeystroke({ currentInput: currentInputVal }).catch(() => {});
+    if (amIFocused && !isComplete && !ending) {
+      syncKeystroke({ currentInput: input }).catch(() => {});
     }
-  }, [input, sprintData.amIFocused, isComplete, ending, syncKeystroke]);
+  }, [input, amIFocused, isComplete, ending, syncKeystroke]);
 
   // Enforce desktop focus whenever the input is supposed to be visible
   useEffect(() => {
@@ -306,59 +252,60 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   useEffect(() => {
     if (sprintStarted) return;
     if (classSprintId !== undefined) {
-      if (sprintData.classSprintStartedAt !== null) {
-        const startMs = Number(sprintData.classSprintStartedAt / 1000n);
+      const cs = (classSprints as ClassSprint[]).find(s => String(s.id) === String(classSprintId));
+      if (cs) {
+        const startMs = Number(cs.startedAt.microsSinceUnixEpoch / 1000n);
         setTimeLeft(Math.max(0, SPRINT_DURATION - Math.floor((Date.now() - startMs) / 1000)));
       }
     } else {
       setTimeLeft(SPRINT_DURATION);
     }
-  }, [SPRINT_DURATION, classSprintId, sprintData.classSprintStartedAt, sprintStarted]);
+  }, [SPRINT_DURATION, classSprints]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 1. Start session on mount — skip for class sprints (server pre-creates the session)
   useEffect(() => {
     if (classSprintId === undefined) {
       startSession();
     }
-  }, [classSprintId, startSession]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2. Detect new session for this player
   // Use the NEWEST incomplete session (highest id) so a leftover abandoned session
   // with an exhausted sequence never blocks a freshly created one.
   useEffect(() => {
-    if (sessionId !== null || !db) return;
-    const matched = (Array.from(db.sessions.iter()) as Session[]).filter(s => {
-      if (s.playerIdentity.toHexString() !== myIdentityHex || s.isComplete) return false;
+    if (sessionId !== null) return;
+    const matched = sessions.filter(s => {
+      const sess = s as Session;
+      if (sess.playerIdentity.toHexString() !== myIdentityHex || sess.isComplete) return false;
       // For class sprints, only accept the session created for this specific sprint
-      if (classSprintId !== undefined) return String(s.classSprintId) === String(classSprintId);
+      if (classSprintId !== undefined) return String(sess.classSprintId) === String(classSprintId);
       // Solo sprint: accept any incomplete session (classSprintId === 0n)
-      return !s.classSprintId || s.classSprintId === 0n;
+      return !sess.classSprintId || sess.classSprintId === 0n;
     });
     // Pick the newest (highest auto-inc id) to avoid picking up an abandoned sprint
     const mySession = matched.reduce<typeof matched[0] | undefined>((best, s) =>
-      !best || Number(s.id) > Number(best.id) ? s : best
+      !best || (s as Session).id > (best as Session).id ? s : best
     , undefined);
     if (mySession) {
-      setSessionId(mySession.id);
-      sessionIdRef.current = mySession.id;
+      setSessionId((mySession as Session).id);
+      sessionIdRef.current = (mySession as Session).id;
     }
-  }, [myIdentityHex, sessionId, classSprintId, db]);
+  }, [sessions, myIdentityHex, sessionId, classSprintId]);
 
-  // 1. Check if server auto-finalized our session
+  // 2b. Safety: if the detected session gets closed before the sprint starts
+  // (e.g. start_session's orphan cleanup ran after we detected an old session),
+  // reset so effect 2 can re-detect the freshly created session.
+  // Guard: skip during WS reconnect (isActive false = subscription gap, not a real completion).
   useEffect(() => {
-    if (sprintStarted && sessionId !== null && !isComplete && sprintData.isComplete) {
-      setIsComplete(true);
-      setEnding(true);
+    if (sessionId === null || sprintStarted || classSprintId !== undefined) return;
+    if (!isActive) return; // subscription gap during reconnect — ignore
+    const sess = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId));
+    if (sess?.isComplete) {
+      setSessionId(null);
+      sessionIdRef.current = null;
+      setPreCountdown(null);
     }
-  }, [sprintData.isComplete, sessionId, sprintStarted, isComplete]);
-
-  // 2. Class Sprint auto-shutdown
-  useEffect(() => {
-    if (classSprintId !== undefined && classSprintId !== 0n && !sprintData.isActive && sprintStarted && !isComplete) {
-      setIsComplete(true);
-      setEnding(true);
-    }
-  }, [sprintData.isActive, classSprintId, sprintStarted, isComplete]);
+  }, [sessions, sessionId, sprintStarted, classSprintId, isActive]);
 
   // 3a. When session is detected, kick off the pre-countdown
   // Normal sprint: pre-fetch first problem immediately so it arrives before countdown ends
@@ -368,7 +315,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (!isDiagnostic) {
       nextProblem({ sessionId });
     }
-  }, [sessionId, preCountdown, sprintStarted, isDiagnostic, nextProblem]);
+  }, [sessionId, preCountdown, sprintStarted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 3b. Tick the pre-countdown: 3→2→1→0("Go!")→null+sprintStarted
   useEffect(() => {
@@ -391,22 +338,24 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // Calling nextProblem here for normal sprints would cause a double-call that skips
   // problem #1 in the sequence (the pre-fetch result gets overwritten immediately).
   useEffect(() => {
-    if (sprintStarted && !problem && !isDiagnostic && !sprintData.myNextRow) {
-       // Just wait for 3d to pick up the pre-fetched token from effect 3a.
-    } else if (sprintStarted && !problem && isDiagnostic && sprintData.eligibleProblemStats.length > 0) {
+    if (sprintStarted && !problem && isDiagnostic && eligibleStats.length > 0) {
       const p = selectDiagnosticProblem(0, undefined);
       // Fallback for diagnostic mode since it isn't using the server sequence yet
       setProblem({ ...p, promptMode: 0, options: [] });
+      lastKeyRef.current = p.a * 100 + p.b;
+      problemStartRef.current = Date.now();
       if (sessionIdRef.current !== null) {
         issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
       }
     }
-  }, [sprintStarted, problem, sprintData.eligibleProblemStats.length, isDiagnostic, sessionId, issueProblem]);
+  }, [sprintStarted, problem, problemStats.length, isDiagnostic, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 3d. Receive server-delivered problem from NextProblemResult subscription (normal sprint only)
   useEffect(() => {
     if (isDiagnostic || !sprintStarted || ending) return;
-    const row = sprintData.myNextRow;
+    const row = (nextProblemResults as unknown as NextProblemResultV2[]).find(
+      r => r.owner.toHexString() === myIdentityHex
+    );
     if (!row) return;
     // Only update if this is for our current session
     if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
@@ -434,7 +383,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
     setAttempts(1);
     problemStartRef.current = Date.now();
-  }, [sprintData.myNextRow, isDiagnostic, sprintStarted, ending, problem?.promptMode]);
+  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex, problem?.promptMode]);
 
   // 4. Sprint timer
   // Class sprint: tick is derived from server's startedAt — survives reloads
@@ -442,8 +391,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   useEffect(() => {
     if (!sprintStarted) return;
     if (classSprintId !== undefined) {
-      if (sprintData.classSprintStartedAt === null) return;
-      const startMs = Number(sprintData.classSprintStartedAt / 1000n);
+      const cs = (classSprints as ClassSprint[]).find(s => String(s.id) === String(classSprintId));
+      if (!cs) return;
+      const startMs = Number(cs.startedAt.microsSinceUnixEpoch / 1000n);
       const tick = () => setTimeLeft(Math.max(0, SPRINT_DURATION - Math.floor((Date.now() - startMs) / 1000)));
       tick();
       const id = setInterval(tick, 1000);
@@ -454,23 +404,24 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       }, 1000);
       return () => clearInterval(id);
     }
-  }, [sprintStarted, classSprintId, SPRINT_DURATION, sprintData.classSprintStartedAt]);
+  }, [sprintStarted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 5a. Solo: end session when timer hits 0
   useEffect(() => {
     if (timeLeft === 0 && sprintStarted && sessionId !== null && !ending && classSprintId === undefined) {
       handleEnd();
     }
-  }, [timeLeft, sprintStarted, sessionId, ending, classSprintId]);
+  }, [timeLeft, sprintStarted, sessionId, ending]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 5b. Class sprint: navigate when server marks session complete OR timer expires
   useEffect(() => {
     if (classSprintId === undefined || sessionId === null || ending) return;
-    if (sprintData.isComplete || timeLeft === 0) {
+    const mySession = (sessions as unknown as Session[]).find(s => String(s.id) === String(sessionId));
+    if (mySession?.isComplete || timeLeft === 0) {
       setEnding(true);
       onFinished(sessionId);
     }
-  }, [sprintData.isComplete, timeLeft, classSprintId, sessionId, ending, onFinished]);
+  }, [sessions, timeLeft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEnd = useCallback(async () => {
     const sid = sessionIdRef.current;
@@ -491,7 +442,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     const correct_answer = problem.a * problem.b;
     const isCorrect = userAnswer === correct_answer;
 
-    const stat = sprintData.eligibleProblemStats.find(s => s.problemKey === problem.a * 100 + problem.b);
+    const stat = (problemStats as ProblemStat[]).find(s => s.problemKey === problem.a * 100 + problem.b);
     const basePts = isCorrect ? (stat?.difficultyWeight ?? 1.0) : 0;
     const finalPts = isCorrect && problem.promptMode === 0 ? basePts * 3 : basePts;
 
@@ -516,7 +467,13 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }
 
     // SEC-10: Get the current token for this player (source differs by sprint type)
-    const tokenRow = isDiagnostic ? sprintData.myIssuedRow : sprintData.myNextRow;
+    const tokenRow = isDiagnostic
+      ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        )
+      : (nextProblemResults as unknown as NextProblemResultV2[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        );
     if (!tokenRow) {
       // Token not yet available — queue and retry when it arrives (useEffect below)
       pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts };
@@ -562,26 +519,26 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       }
       // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, 600);
-  }, [problem, sessionId, feedback, isDiagnostic, sprintData.myIssuedRow,
-      sprintData.myNextRow, sprintData.eligibleProblemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
+  }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
+      nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
       issueProblem, input, SPRINT_DURATION, attempts]);
 
-  // SEC-10: Retry any queued answer once the token arrives
+  // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
   useEffect(() => {
     const pending = pendingAnswerRef.current;
     if (!pending) return;
-    const tokenRow = isDiagnostic ? sprintData.myIssuedRow : sprintData.myNextRow;
+    const tokenRow = isDiagnostic
+      ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        )
+      : (nextProblemResults as unknown as NextProblemResultV2[]).find(
+          r => r.owner.toHexString() === myIdentityHex
+        );
     if (!tokenRow) return;
-
-    // Found token! Discard queue and immediately fire submission
     pendingAnswerRef.current = null;
     submitAnswer({ ...pending, problemToken: tokenRow.token });
-  }, [sprintData.myIssuedRow, sprintData.myNextRow, isDiagnostic, submitAnswer]);
+  }, [issuedProblemResults, nextProblemResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    await doSubmit();
-  };
 
   const handleNumpadKey = useCallback((key: number | '←' | 'OK') => {
     if (key === 'OK') { hapticOk(); doSubmit(); return; }
@@ -609,8 +566,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   // --- Derived values (memoized, placed unconditionally before early returns) ---
   const currentStat = useMemo(
-    () => sprintData.eligibleProblemStats.find(s => s.problemKey === (problem?.a ?? 0) * 100 + (problem?.b ?? 0)),
-    [sprintData.eligibleProblemStats, problem]
+    () => (problemStats as ProblemStat[]).find(s => s.problemKey === (problem?.a ?? 0) * 100 + (problem?.b ?? 0)),
+    [problemStats, problem]
   );
   const difficultyTag = useMemo(() => {
     const w = currentStat?.difficultyWeight ?? 1;
@@ -618,61 +575,27 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
          : w >= 1.0 ? { label: t('sprint.tagMedium'), cls: 'tag-warn' }
          :             { label: t('sprint.tagEasy'), cls: 'tag-green' };
   }, [currentStat, t]);
-  const mastery = sprintData.mastery;
+  const mastery = useMemo(
+    () => problem ? getMasteryLocal(myAnswers, problem.a, problem.b) : 'untouched' as Mastery,
+    [myAnswers, problem]
+  );
 
   // --- Render ---
-  const timerColor = timeLeft <= 10 ? 'var(--wrong)' : timeLeft <= 20 ? 'var(--warn)' : 'var(--accent)';
+  // --- Render ---
+  // Secure Event Proxies bypass stale closures inside the useMemo'd DOM tree below
+  const handlersRef = useRef({ handleEnd, doSubmit, handleNumpadKey, handleTapAnswer });
+  handlersRef.current = { handleEnd, doSubmit, handleNumpadKey, handleTapAnswer };
 
-  // Phase: still waiting for session to be created
-  if (sessionId === null) {
+  const renderedUI = useMemo(() => {
+    if (!problem) return null;
+
+    const timerColor = timeLeft <= 10 ? 'var(--wrong)' : timeLeft <= 20 ? 'var(--warn)' : 'var(--accent)';
+    const RING_R = 18;
+    const RING_C = 2 * Math.PI * RING_R;
+    const ringOffset = RING_C * (1 - timeLeft / SPRINT_DURATION);
+
     return (
-      <div className="loading">
-        <span className="text-sm text-muted">{t('sprint.startingSession')}</span>
-      </div>
-    );
-  }
-
-  // Phase: pre-sprint countdown (3-2-1-Go!)
-  if (preCountdown !== null) {
-    return (
-      <div className="page" style={{
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        minHeight: '80vh', gap: 20, textAlign: 'center',
-      }}>
-        <div className="text-sm text-muted fw-semibold" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          {t('sprint.getReady')}
-        </div>
-        <div style={{
-          fontSize: preCountdown === 0 ? 80 : 108,
-          fontWeight: 900,
-          color: preCountdown === 0 ? 'var(--accent)' : 'var(--text)',
-          lineHeight: 1,
-          fontVariantNumeric: 'tabular-nums',
-          transition: 'color 0.2s, font-size 0.2s',
-        }}>
-          {preCountdown === 0 ? t('sprint.go') : preCountdown}
-        </div>
-      </div>
-    );
-  }
-
-  // Phase: sprint started but first problem loading
-  if (!problem) {
-    return (
-      <div className="loading">
-        <span className="text-sm text-muted">{t('sprint.loadingQuestions')}</span>
-      </div>
-    );
-  }
-
-  // Ring timer constants
-  const RING_R = 18;
-  const RING_C = 2 * Math.PI * RING_R;
-  const ringOffset = RING_C * (1 - timeLeft / SPRINT_DURATION);
-
-  return (
-    <>
+      <>
       {/* ── Fixed top bar ─────────────────────────────────────────── */}
       <header className="bg-[#2C3E50] dark:bg-slate-950 border-b border-transparent dark:border-slate-800" style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
@@ -683,7 +606,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <button
-          onClick={handleEnd} disabled={ending}
+          onClick={() => handlersRef.current.handleEnd()} disabled={ending}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: 'rgba(255,255,255,0.7)', fontSize: 24, lineHeight: 1,
@@ -807,7 +730,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
             
             {problem.promptMode === 1 ? (
               <div className="relative w-full flex justify-center">
-                <TapLayout options={problem.options} onAnswer={handleTapAnswer} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
+                <TapLayout options={problem.options} onAnswer={ans => handlersRef.current.handleTapAnswer(ans)} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
                 
                 {feedback?.isTapPenalty && (
                   <div className="absolute inset-x-0 -top-4 -bottom-4 z-10 flex flex-col items-center justify-center bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm rounded-3xl animate-in fade-in zoom-in-95 duration-200">
@@ -821,7 +744,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                 )}
               </div>
             ) : (
-              <form onSubmit={handleSubmit} style={{
+              <form onSubmit={e => { e.preventDefault(); handlersRef.current.doSubmit(); }} style={{
                 display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'
               }}>
               <input
@@ -877,9 +800,62 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
           paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
           display: 'flex', justifyContent: 'center',
         }}>
-          <Numpad disabled={timeLeft === 0 || !!feedback} onKey={handleNumpadKey} />
+          <Numpad disabled={timeLeft === 0 || !!feedback} onKey={key => handlersRef.current.handleNumpadKey(key)} />
         </footer>
       )}
     </>
   );
+  }, [
+    // Visual DOM dependencies (primitives or stable refs)
+    timeLeft, SPRINT_DURATION,
+    problem, input, interstitial, feedback,
+    combo, score, correct, answered,
+    mastery, difficultyTag, hwLatency, ending,
+    isDiagnostic, isTouchDevice, t
+  ]);
+
+  // Phase: still waiting for session to be created
+  if (sessionId === null) {
+    return (
+      <div className="loading">
+        <span className="text-sm text-muted">{t('sprint.startingSession')}</span>
+      </div>
+    );
+  }
+
+  // Phase: pre-sprint countdown (3-2-1-Go!)
+  if (preCountdown !== null) {
+    return (
+      <div className="page" style={{
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        minHeight: '80vh', gap: 20, textAlign: 'center',
+      }}>
+        <div className="text-sm text-muted fw-semibold" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          {t('sprint.getReady')}
+        </div>
+        <div style={{
+          fontSize: preCountdown === 0 ? 80 : 108,
+          fontWeight: 900,
+          color: preCountdown === 0 ? 'var(--accent)' : 'var(--text)',
+          lineHeight: 1,
+          fontVariantNumeric: 'tabular-nums',
+          transition: 'color 0.2s, font-size 0.2s',
+        }}>
+          {preCountdown === 0 ? t('sprint.go') : preCountdown}
+        </div>
+      </div>
+    );
+  }
+
+  // Phase: sprint started but first problem loading
+  if (!problem) {
+    return (
+      <div className="loading">
+        <span className="text-sm text-muted">{t('sprint.loadingQuestions')}</span>
+      </div>
+    );
+  }
+
+  return renderedUI;
 }
