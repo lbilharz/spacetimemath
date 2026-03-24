@@ -204,7 +204,9 @@
     "settings": "App Settings",
     "darkMode": "Dark Mode",
     "darkModeDesc": "Adjust appearance",
-    "keySaved": "I have securely written this down",
+    "telemetry": "Telemetry (FPS)",
+    "telemetryDesc": "Display performance metrics and latency",
+    "keySaved": "Safely stored (dismiss warning)",
     "regenerateDesc": "Are you sure? Your old recovery key will be permanently invalidated!",
     "regenerateConfirm": "Confirm & Regenerate"
   },

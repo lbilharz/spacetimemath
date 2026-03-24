@@ -44,6 +44,9 @@ export default function AccountPage({ myPlayer }: Props) {
   const [keyRevealed, setKeyRevealed] = useState(false);
   const [confirmRegenerate, setConfirmRegenerate] = useState(false);
 
+  // App Settings
+  const [showTelemetry, setShowTelemetry] = useState(() => localStorage.getItem('show_telemetry') === '1');
+
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
@@ -176,6 +179,26 @@ export default function AccountPage({ myPlayer }: Props) {
           </div>
 
           <div className="h-px w-full bg-slate-100 dark:bg-slate-700/50" />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-bold text-sm text-slate-700 dark:text-slate-300">{t('account.telemetry')}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.telemetryDesc')}</div>
+            </div>
+            <button
+              onClick={() => {
+                const next = !showTelemetry;
+                setShowTelemetry(next);
+                if (next) localStorage.setItem('show_telemetry', '1');
+                else localStorage.removeItem('show_telemetry');
+              }}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${showTelemetry ? 'bg-brand-yellow' : 'bg-slate-200 dark:bg-slate-700'}`}
+              aria-pressed={showTelemetry}
+              aria-label={t('account.telemetry')}
+            >
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform ${showTelemetry ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+          </div>
 
           <div className="flex items-center justify-between">
             <div>

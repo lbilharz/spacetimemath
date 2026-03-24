@@ -204,6 +204,8 @@
     "settings": "App-Einstellungen",
     "darkMode": "Dark Mode",
     "darkModeDesc": "Erscheinungsbild anpassen",
+    "telemetry": "Telemetrie (FPS)",
+    "telemetryDesc": "Leistungsdaten und Latenz anzeigen",
     "keySaved": "Sicher verwahrt (Warnung ausblenden)",
     "regenerateDesc": "Bist du sicher? Dein alter Schlüssel wird dauerhaft ungültig!",
     "regenerateConfirm": "Bestätigen & Neu generieren"

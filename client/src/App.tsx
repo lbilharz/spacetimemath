@@ -250,7 +250,7 @@ export default function App() {
   }, [myPlayer?.identity, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Render ──────────────────────────────────────────────────────────────────
-  if (connectionError) {
+  if (connectionError && !wasEverConnected) {
     return (
       <div className="fixed inset-0 bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center gap-0 z-[9999] transition-colors duration-200">
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 58%, rgba(251,186,0,0.18) 0%, transparent 70%)' }} />
@@ -295,7 +295,7 @@ export default function App() {
   return (
     <>
       {/* Subtle reconnecting pill — shown instead of a full blank screen */}
-      {!isActive && effectivePlayer && (
+      {(!isActive || connectionError) && effectivePlayer && (
         <div className="fixed top-[60px] left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full px-4 py-1.5 text-[13px] font-semibold z-[999] pointer-events-none drop-shadow-md">
           {t('app.reconnecting')}
         </div>

@@ -619,7 +619,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
         <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           <div style={{ color: 'white', fontWeight: 800, fontSize: 16, lineHeight: 1.2, letterSpacing: '-0.5px' }}>
-            1UP <span className="text-[10px] font-normal opacity-50 ml-1 tracking-normal">{hwLatency > 0 ? `${hwLatency.toFixed(0)}ms` : ''}</span>
+            1UP
+            {typeof window !== 'undefined' && window.localStorage.getItem('show_telemetry') === '1' && (
+              <span className="ml-2 font-mono text-[12px] font-black text-emerald-400 bg-emerald-950/80 ring-1 ring-emerald-500/30 px-1.5 py-[1px] rounded shadow-inner drop-shadow-md tracking-tighter align-middle">
+                {hwLatency > 0 ? `${hwLatency.toFixed(0)}ms` : '--ms'}
+              </span>
+            )}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.2, fontWeight: 500 }}>
             {isDiagnostic 
