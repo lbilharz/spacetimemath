@@ -121,7 +121,8 @@
     "backToLobby": "Lobiye Dön",
     "scoringExplained": "Bu nasıl puanlanıyor?",
     "viewProgress": "Gelişimini gör",
-    "problemsTitle": "Bu sprintteki problemler"
+    "problemsTitle": "Bu sprintteki problemler",
+    "maxStreak": "Maks. Seri"
   },
   "classroom": {
     "notFound": "Sınıf bulunamadı",
@@ -206,7 +207,13 @@
     "darkModeDesc": "Görünümü ayarla",
     "keySaved": "Güvenli bir şekilde kaydettim",
     "regenerateDesc": "Emin misiniz? Eski kurtarma anahtarınız kalıcı olarak geçersiz kılınacak!",
-    "regenerateConfirm": "Onayla & Yeniden Oluştur"
+    "regenerateConfirm": "Onayla & Yeniden Oluştur",
+    "telemetry": "Telemetri",
+    "telemetryDesc": "Performans ölçümlerini ve gecikmeyi göster",
+    "remindersHeading": "Bildirimler",
+    "noReminders": "Aktif hatırlatıcı yok. Serini sürdürmek için bir tane ekle!",
+    "daily": "Her gün",
+    "weekly": "Belirli günler"
   },
   "leaderboard": {
     "title": "Liderlik Tablosu",
@@ -374,5 +381,14 @@
     "nextUnlock5": "×8'i açmak için ×7'de ustalaş",
     "nextUnlock6": "×9'u açmak için ×8'de ustalaş",
     "allUnlocked": "Tüm tablolar açıldı! 🎉"
+  },
+  "days": {
+    "mo": "Pt",
+    "tu": "Sa",
+    "we": "Ça",
+    "th": "Pe",
+    "fr": "Cu",
+    "sa": "Ct",
+    "su": "Pa"
   }
 }

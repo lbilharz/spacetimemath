@@ -121,7 +121,8 @@
     "backToLobby": "Terug naar Lobby",
     "scoringExplained": "Hoe wordt dit gescoord?",
     "viewProgress": "Bekijk je voortgang",
-    "problemsTitle": "Sommen in deze sprint"
+    "problemsTitle": "Sommen in deze sprint",
+    "maxStreak": "Max. reeks"
   },
   "classroom": {
     "notFound": "Klas niet gevonden",
@@ -206,7 +207,13 @@
     "darkModeDesc": "Uiterlijk aanpassen",
     "keySaved": "Ik heb dit veilig opgeschreven",
     "regenerateDesc": "Weet je het zeker? Je oude herstelsleutel wordt permanent ongeldig!",
-    "regenerateConfirm": "Bevestigen & Opnieuw genereren"
+    "regenerateConfirm": "Bevestigen & Opnieuw genereren",
+    "telemetry": "Telemetrie",
+    "telemetryDesc": "Toon prestatiestatistieken en latentie",
+    "remindersHeading": "Push Herinneringen",
+    "noReminders": "Geen actieve herinneringen. Voeg er een toe om je reeks te behouden!",
+    "daily": "Elke dag",
+    "weekly": "Specifieke dagen"
   },
   "leaderboard": {
     "title": "Ranglijst",
@@ -374,5 +381,14 @@
     "nextUnlock5": "Beheers ×7 om ×8 te ontgrendelen",
     "nextUnlock6": "Beheers ×8 om ×9 te ontgrendelen",
     "allUnlocked": "Alle tafels ontgrendeld! 🎉"
+  },
+  "days": {
+    "mo": "Ma",
+    "tu": "Di",
+    "we": "Wo",
+    "th": "Do",
+    "fr": "Vr",
+    "sa": "Za",
+    "su": "Zo"
   }
 }

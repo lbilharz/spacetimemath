@@ -121,7 +121,8 @@
     "backToLobby": "العودة إلى اللوبي",
     "scoringExplained": "كيف يتم حساب النقاط؟",
     "viewProgress": "عرض تقدمك",
-    "problemsTitle": "المسائل في هذا السبرينت"
+    "problemsTitle": "المسائل في هذا السبرينت",
+    "maxStreak": "أقصى سلسلة"
   },
   "classroom": {
     "notFound": "الفصل الدراسي غير موجود",
@@ -206,7 +207,13 @@
     "darkModeDesc": "تعديل المظهر",
     "keySaved": "لقد قمت بتدوين هذا بأمان",
     "regenerateDesc": "هل أنت متأكد؟ سيتم إبطال مفتاح الاسترداد القديم الخاص بك بشكل دائم!",
-    "regenerateConfirm": "تأكيد وإعادة إنشاء"
+    "regenerateConfirm": "تأكيد وإعادة إنشاء",
+    "telemetry": "قياس الأداء",
+    "telemetryDesc": "عرض مقاييس الأداء وزمن الوصول",
+    "remindersHeading": "تذكيرات",
+    "noReminders": "لا توجد تذكيرات نشطة. أضف واحداً للحفاظ على سلسلتك!",
+    "daily": "كل يوم",
+    "weekly": "أيام محددة"
   },
   "leaderboard": {
     "title": "قائمة المتصدرين",
@@ -374,5 +381,14 @@
     "nextUnlock5": "×8 أتقن ×7 لفتح",
     "nextUnlock6": "×9 أتقن ×8 لفتح",
     "allUnlocked": "!تم فتح جميع الجداول 🎉"
+  },
+  "days": {
+    "mo": "ن",
+    "tu": "ث",
+    "we": "ر",
+    "th": "خ",
+    "fr": "ج",
+    "sa": "س",
+    "su": "ح"
   }
 }

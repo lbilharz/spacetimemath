@@ -9,6 +9,7 @@ import tr from './locales/tr/translation.json';
 import uk from './locales/uk/translation.json';
 import ar from './locales/ar/translation.json';
 import zh from './locales/zh/translation.json';
+import es from './locales/es/translation.json';
 
 i18n
   .use(LanguageDetector)
@@ -23,9 +24,10 @@ i18n
       uk: { translation: uk },
       ar: { translation: ar },
       zh: { translation: zh },
+      es: { translation: es },
     },
     fallbackLng: 'en',
-    supportedLngs: ['en', 'de', 'fr', 'nl', 'tr', 'uk', 'ar', 'zh'],
+    supportedLngs: ['en', 'de', 'fr', 'nl', 'tr', 'uk', 'ar', 'zh', 'es'],
     load: 'languageOnly',
     interpolation: { escapeValue: false },
     detection: {

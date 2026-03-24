@@ -121,7 +121,8 @@
     "backToLobby": "Retour au salon",
     "scoringExplained": "Comment est-ce noté ?",
     "viewProgress": "Voir ta progression",
-    "problemsTitle": "Problèmes de ce sprint"
+    "problemsTitle": "Problèmes de ce sprint",
+    "maxStreak": "Série max"
   },
   "classroom": {
     "notFound": "Classe introuvable",
@@ -206,7 +207,13 @@
     "darkModeDesc": "Ajuster l'apparence",
     "keySaved": "J'ai noté cela en sécurité",
     "regenerateDesc": "Êtes-vous sûr ? Votre ancienne clé sera définitivement invalidée !",
-    "regenerateConfirm": "Confirmer et regénérer"
+    "regenerateConfirm": "Confirmer et regénérer",
+    "telemetry": "Télémétrie",
+    "telemetryDesc": "Afficher les mesures de performance et la latence",
+    "remindersHeading": "Rappels Push",
+    "noReminders": "Aucun rappel actif. Ajoutez-en un pour garder votre série !",
+    "daily": "Tous les jours",
+    "weekly": "Jours spécifiques"
   },
   "leaderboard": {
     "title": "Classement",
@@ -374,5 +381,14 @@
     "nextUnlock5": "Maîtrise ×7 pour débloquer ×8",
     "nextUnlock6": "Maîtrise ×8 pour débloquer ×9",
     "allUnlocked": "Toutes les tables sont débloquées ! 🎉"
+  },
+  "days": {
+    "mo": "Lu",
+    "tu": "Ma",
+    "we": "Me",
+    "th": "Je",
+    "fr": "Ve",
+    "sa": "Sa",
+    "su": "Di"
   }
 }

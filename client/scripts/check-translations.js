@@ -63,6 +63,7 @@ function checkTranslations() {
 
   if (totalWarnings > 0) {
     console.log(`\n\x1b[31mDone. Found ${totalWarnings} missing translations across ${locales.length} languages.\x1b[0m`);
+    process.exit(1);
   } else {
     console.log(`\n\x1b[32mDone. All languages are fully translated.\x1b[0m`);
   }

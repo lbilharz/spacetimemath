@@ -121,7 +121,8 @@
     "backToLobby": "返回大厅",
     "scoringExplained": "如何计分？",
     "viewProgress": "查看你的进度",
-    "problemsTitle": "本次冲刺题目"
+    "problemsTitle": "本次冲刺题目",
+    "maxStreak": "最高连胜"
   },
   "classroom": {
     "notFound": "未找到班级",
@@ -206,7 +207,13 @@
     "darkModeDesc": "调整外观",
     "keySaved": "我已安全记录此信息",
     "regenerateDesc": "您确定吗？您的旧恢复密钥将永久失效！",
-    "regenerateConfirm": "确认并重新生成"
+    "regenerateConfirm": "确认并重新生成",
+    "telemetry": "性能遥测",
+    "telemetryDesc": "显示性能指标和延迟",
+    "remindersHeading": "推送提醒",
+    "noReminders": "没有活动的提醒。添加一个来保持你的连胜！",
+    "daily": "每天",
+    "weekly": "特定日期"
   },
   "leaderboard": {
     "title": "排行榜",
@@ -374,5 +381,14 @@
     "nextUnlock5": "熟练掌握 ×7 以解锁 ×8",
     "nextUnlock6": "熟练掌握 ×8 以解锁 ×9",
     "allUnlocked": "所有表格均已解锁！ 🎉"
+  },
+  "days": {
+    "mo": "一",
+    "tu": "二",
+    "we": "三",
+    "th": "四",
+    "fr": "五",
+    "sa": "六",
+    "su": "日"
   }
 }
