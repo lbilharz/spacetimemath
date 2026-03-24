@@ -15,6 +15,15 @@
     "code": "code",
     "or": "or"
   },
+  "days": {
+    "mo": "Mo",
+    "tu": "Tu",
+    "we": "We",
+    "th": "Th",
+    "fr": "Fr",
+    "sa": "Sa",
+    "su": "Su"
+  },
   "app": {
     "brand": "1UP",
     "connecting": "Connecting to SpacetimeDB…",
@@ -112,6 +121,7 @@
     "weightedScore": "weighted score",
     "correct": "Correct",
     "accuracy": "Accuracy",
+    "maxStreak": "Max Streak",
     "rank": "Rank",
     "struggled": "You struggled with:",
     "struggledHint": "These will appear more often in your next sprint.",
@@ -208,7 +218,11 @@
     "telemetryDesc": "Display performance metrics and latency",
     "keySaved": "Safely stored (dismiss warning)",
     "regenerateDesc": "Are you sure? Your old recovery key will be permanently invalidated!",
-    "regenerateConfirm": "Confirm & Regenerate"
+    "regenerateConfirm": "Confirm & Regenerate",
+    "remindersHeading": "Push Reminders",
+    "noReminders": "No active reminders. Add one to keep your streak alive!",
+    "daily": "Every day",
+    "weekly": "Specific days"
   },
   "leaderboard": {
     "title": "Leaderboard",

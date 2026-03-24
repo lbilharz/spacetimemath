@@ -9,10 +9,10 @@ import OnboardingOverlay from './components/OnboardingOverlay.js';
 import MigrationOverlay from './components/MigrationOverlay.js';
 import SplashGrid from './components/SplashGrid.js';
 import PageRenderer from './components/PageRenderer.js';
-import React from 'react';
 import { useAppNavigation } from './hooks/useAppNavigation.js';
 import { TABBED_PAGES, PAGE_PATH, PATH_MAP } from './navigation.js';
 import type { Page } from './navigation.js';
+import { Capacitor } from '@capacitor/core';
 
 export type { Page };
 
@@ -63,6 +63,15 @@ export default function App() {
   const [migrationAcked, setMigrationAcked] = useState(() => {
     try { return !!localStorage.getItem('seen_3x_migration'); } catch { return false; }
   });
+
+  // Deeplink Intent State (Notification Taps)
+  const [pendingIntent, setPendingIntent] = useState<string | null>(() => {
+    try { return localStorage.getItem('_pending_intent'); } catch { return null; }
+  });
+  useEffect(() => {
+    if (pendingIntent) localStorage.setItem('_pending_intent', pendingIntent);
+    else localStorage.removeItem('_pending_intent');
+  }, [pendingIntent]);
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
 
@@ -235,6 +244,26 @@ export default function App() {
     return () => clearTimeout(id);
   }, [incomingClassSprint]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Local Notification Deep Linking ───────────────────────────────────────────
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
+      LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+        if (action.notification.extra?.intent === 'start_sprint') {
+          setPendingIntent('start_sprint');
+        }
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    // Wait until WS is up and effectivePlayer is definitively loaded
+    if (pendingIntent === 'start_sprint' && effectivePlayer && isActive && page !== 'sprint') {
+      setPendingIntent(null);
+      goToSprint(0n, 'lobby');
+    }
+  }, [pendingIntent, effectivePlayer, isActive, page, goToSprint]); // Wait, goToSprint is closure-bound. Disable lint for exhaustive-deps below if needed!
+
   // Auto-navigate to URL-indicated page after login.
   // NOTE: we cannot call navigate() here because it strips query params like ?join=CODE.
   // Instead we push the URL manually, preserving search params so LobbyPage can auto-join.
@@ -341,13 +370,15 @@ export default function App() {
       )}
 
       {backTarget && (
-        <div className="h-11 flex items-center px-4 gap-2.5 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900/80 backdrop-blur-md transition-colors duration-200">
-          <button
-            onClick={() => navigate(backTarget)}
-            className="flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors"
-          >
-            ← {page === 'classroom' ? t('common.lobby') : t('common.back')}
-          </button>
+        <div className="pt-[max(env(safe-area-inset-top),_0px)] bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shrink-0 transition-colors duration-200 sticky top-0 z-50">
+          <div className="h-11 flex items-center px-4 gap-2.5">
+            <button
+              onClick={() => navigate(backTarget)}
+              className="flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors cursor-pointer"
+            >
+              ← {page === 'classroom' ? t('common.lobby') : t('common.back')}
+            </button>
+          </div>
         </div>
       )}
 

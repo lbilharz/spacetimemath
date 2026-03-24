@@ -8,6 +8,7 @@ import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
 import PageContainer from '../components/PageContainer.js';
 import { AccountIcon } from '../components/Icons.js';
+import RemindersSettings from '../components/RemindersSettings.js';
 
 
 interface Props {
@@ -97,7 +98,7 @@ export default function AccountPage({ myPlayer }: Props) {
 
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
-      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-3">
+      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
           <AccountIcon className="drop-shadow-sm scale-110" />
         </div>
@@ -158,7 +159,7 @@ export default function AccountPage({ myPlayer }: Props) {
       {/* App Preferences */}
       <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
         <h2 className="mb-6 text-base font-bold text-slate-900 dark:text-white">⚙️ {t('account.settings')}</h2>
-        
+
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between">
             <div>
@@ -207,6 +208,8 @@ export default function AccountPage({ myPlayer }: Props) {
             </div>
             <LanguagePicker />
           </div>
+
+          <RemindersSettings />
         </div>
       </div>
 
@@ -233,7 +236,7 @@ export default function AccountPage({ myPlayer }: Props) {
                 {keyRevealed ? '🙈' : '👁️'}
               </button>
             </div>
-            
+
             {!confirmRegenerate ? (
               <div className="flex flex-wrap gap-2">
                 {keyRevealed && (
@@ -338,8 +341,8 @@ export default function AccountPage({ myPlayer }: Props) {
 
       <div className="mt-4 flex flex-wrap items-center justify-center gap-6 pb-2">
         {[
-          { key: 'account.imprint',  href: 'https://better1up.vercel.app/impressum' },
-          { key: 'account.privacy',  href: 'https://better1up.vercel.app/datenschutz' },
+          { key: 'account.imprint', href: 'https://better1up.vercel.app/impressum' },
+          { key: 'account.privacy', href: 'https://better1up.vercel.app/datenschutz' },
         ].map(({ key, href }) => (
           <a
             key={key}
