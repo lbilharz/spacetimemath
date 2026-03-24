@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Sprint Reliability E2E', () => {
 
   test('Solo Sprint loads successfully and displays first problem', async ({ page }) => {
+
     // 1. Navigate to the app lobby
     await page.goto('/');
 
@@ -14,21 +15,43 @@ test.describe('Sprint Reliability E2E', () => {
     // Press enter or click the submit button
     await nameInput.press('Enter');
 
-    // 3. Skip the Onboarding overlay (clicks "Los geht's" or equivalent)
-    const overlayBtn = page.getByRole('button').filter({ hasText: /(Los|Skip|Später)/i });
-    try {
-      if (await overlayBtn.isVisible({ timeout: 5000 })) {
-        await overlayBtn.click();
+    // 3. Defensively wait for the Onboarding overlay to fade in after registration
+    const overlayBtn = page.getByRole('button').filter({ hasText: '→' }).first();
+    await overlayBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
+
+    let attempts = 0;
+    while (attempts < 10) {
+      attempts++;
+      try {
+        // Pre-click Tier 1 on the Ladder to guarantee the backend finds assigned math sequences
+        await page.getByText(/Tier 1/i).first().click({ timeout: 50 }).catch(() => {});
+
+        if (await overlayBtn.isVisible({ timeout: 500 })) {
+          await overlayBtn.click();
+          await page.waitForTimeout(600); // wait for next slide/modal animation
+        } else {
+          break; // Overlay is gone
+        }
+      } catch (err) {
+        await page.waitForTimeout(300);
       }
-    } catch {
-      // Ignored if it doesn't appear
     }
     
-    // 4. In Lobby, click "Sprint starten" (Start Solo Sprint)
-    await page.waitForLoadState('networkidle');
-    const startBtn = page.getByRole('button').filter({ hasText: /Sprint/i }).first();
-    await startBtn.waitFor({ state: 'visible', timeout: 10000 });
-    await startBtn.click();
+    // 4. In Lobby, click "Sprint starten" (Start Solo Sprint), unless the Onboarding
+    // already fired us directly into the sprint page path.
+    let isAlreadySprinting = false;
+    try {
+      await page.waitForURL('**/sprint', { timeout: 3000 });
+      isAlreadySprinting = true;
+    } catch {
+      isAlreadySprinting = false;
+    }
+    
+    if (!isAlreadySprinting) {
+      const startBtn = page.getByRole('button').filter({ hasText: /Sprint/i }).first();
+      await startBtn.waitFor({ state: 'visible', timeout: 10000 });
+      await startBtn.click();
+    }
 
     // 5. Watch countdown 3 2 1 Go!
     // It shouldn't get stuck on "Lade Aufgaben..." ("Loading tasks...")

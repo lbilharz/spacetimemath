@@ -383,7 +383,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
     setAttempts(1);
     problemStartRef.current = Date.now();
-  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex, problem?.promptMode]);
+  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex, problem?.promptMode, sessionId]);
 
   // 4. Sprint timer
   // Class sprint: tick is derived from server's startedAt — survives reloads

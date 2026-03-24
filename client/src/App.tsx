@@ -312,7 +312,7 @@ export default function App() {
             setMigrationAcked(true);
 
             tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
-            navigate('sprint');
+            goToSprint(0n, 'lobby');
           }}
           onClose={() => localStorage.removeItem('_joinedViaClassroom')}
         />
