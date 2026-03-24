@@ -196,6 +196,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     }
   }, [input, amIFocused, isComplete, ending, syncKeystroke]);
 
+  // Enforce desktop focus whenever the input is supposed to be visible
+  useEffect(() => {
+    if (sprintStarted && !ending && feedback === null && !interstitial && problem?.promptMode === 0 && !isTouchDevice) {
+      // Small timeout guarantees React has committed the unmounted/remounted DOM elements
+      setTimeout(() => inputRef.current?.focus(), 10);
+    }
+  }, [feedback, interstitial, problem?.promptMode, sprintStarted, ending]);
+
   // 0. Sync timeLeft with SPRINT_DURATION (solo) or server startedAt (class sprint)
   useEffect(() => {
     if (sprintStarted) return;
@@ -323,7 +331,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
         setAttempts(1);
         problemStartRef.current = Date.now();
-        if (!('ontouchstart' in window) && row.promptMode === 0) inputRef.current?.focus();
       }, 1500);
       return;
     }
@@ -332,7 +339,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
     setAttempts(1);
     problemStartRef.current = Date.now();
-    if (!('ontouchstart' in window) && row.promptMode === 0) inputRef.current?.focus();
   }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex, problem?.promptMode]);
 
   // 4. Sprint timer
@@ -383,9 +389,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   const doSubmit = useCallback(async (overrideAnswer?: number) => {
     if (!problem || sessionId === null || feedback !== null) return;
-    const userAnswer = overrideAnswer !== undefined ? overrideAnswer : parseInt(input, 10);
+    const currentVal = inputRef.current ? inputRef.current.value : input;
+    const userAnswer = overrideAnswer !== undefined ? overrideAnswer : parseInt(currentVal, 10);
     if (isNaN(userAnswer)) return;
-    if (overrideAnswer === undefined && input.trim() === '') return;
+    if (overrideAnswer === undefined && currentVal.trim() === '') return;
 
     const responseMs = Math.min(Date.now() - problemStartRef.current, 30_000);
     const correct_answer = problem.a * problem.b;
@@ -403,12 +410,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       const isTapMode = problem.promptMode === 1;
       setFeedback({ isCorrect: false, points: 0, correct: correct_answer, isTapPenalty: isTapMode });
       setAttempts(a => a + 1);
-      if (!isTapMode) setInput('');
+      if (!isTapMode) {
+        if (inputRef.current) inputRef.current.value = '';
+        setInput('');
+      }
       
       const penaltyTimeMs = isTapMode ? 1500 : 800; // Longer penalty for guessing in Tap mode
       setTimeout(() => {
         setFeedback(null);
-        if (!isTapMode && !('ontouchstart' in window)) inputRef.current?.focus();
       }, penaltyTimeMs);
       return;
     }
@@ -441,6 +450,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     const fb = { isCorrect: true, points: finalPts, correct: correct_answer };
     hapticGood();
     setFeedback(fb);
+    if (inputRef.current) inputRef.current.value = '';
     setInput('');
 
     // Normal sprint: pre-fetch next problem immediately so server RTT overlaps with feedback display
@@ -462,7 +472,6 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         if (sessionIdRef.current !== null) {
           issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
         }
-        if (!('ontouchstart' in window)) inputRef.current?.focus();
       }
       // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, 600);
@@ -492,9 +501,22 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   };
 
   const handleNumpadKey = useCallback((key: number | '←' | 'OK') => {
-    if (key === '←') { hapticTap(); setInput(i => i.slice(0, -1)); }
-    else if (key === 'OK') { hapticOk(); doSubmit(); }
-    else { hapticTap(); setInput(i => i.length < 3 ? i + String(key) : i); }
+    if (key === 'OK') { hapticOk(); doSubmit(); return; }
+    
+    hapticTap();
+    if (inputRef.current) {
+      let val = inputRef.current.value;
+      if (key === '←') {
+        val = val.slice(0, -1);
+      } else if (val.length < 3) {
+        val += String(key);
+      }
+      inputRef.current.value = val;
+      setInput(val);
+    } else {
+      if (key === '←') { setInput(i => i.slice(0, -1)); }
+      else { setInput(i => i.length < 3 ? i + String(key) : i); }
+    }
   }, [doSubmit]);
 
   const handleTapAnswer = useCallback((ans: number) => {
@@ -726,8 +748,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                 type="number"
                 inputMode={isTouchDevice ? 'none' : 'numeric'}
                 readOnly={isTouchDevice}
-                value={input}
-                onChange={e => !isTouchDevice && setInput(e.target.value)}
+                defaultValue={""}
+                onInput={e => {
+                  if (!isTouchDevice) setInput(e.currentTarget.value);
+                }}
                 placeholder="?"
                 style={{
                   flex: 1, maxWidth: 160, textAlign: 'center',
