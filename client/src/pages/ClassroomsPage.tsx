@@ -20,11 +20,11 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const createClassroom = useSTDBReducer(reducers.createClassroom);
-  const joinClassroom   = useSTDBReducer(reducers.joinClassroom);
+  const joinClassroom = useSTDBReducer(reducers.joinClassroom);
 
-  const [panel, setPanel]       = useState<Panel>('none');
+  const [panel, setPanel] = useState<Panel>('none');
   const [className, setClassName] = useState('');
-  const [joinCode, setJoinCode]   = useState('');
+  const [joinCode, setJoinCode] = useState('');
   const [classError, setClassError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -83,7 +83,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
 
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
-      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-3">
+      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
           <ClassesIcon className="drop-shadow-sm scale-110" />
         </div>
@@ -94,7 +94,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       {myClassrooms.length > 0 ? (
         <div className="flex flex-col gap-4">
           {myClassrooms.map(c => {
-            const isTeacher  = c.teacher?.toHexString() === myIdentityHex;
+            const isTeacher = c.teacher?.toHexString() === myIdentityHex;
             const memberCount = (classroomMembers as unknown as ClassroomMember[]).filter(m => m.classroomId === c.id).length;
             return (
               <button
@@ -130,7 +130,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
         </div>
       ) : (
         panel === 'none' && (
-          <div className="flex flex-col items-center justify-center p-12 mt-6 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/20">
+          <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/20">
             <EmptyClassroomIcon className="mb-4 opacity-40 drop-shadow-sm grayscale saturate-0 text-slate-400 dark:text-slate-500" />
             <div className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('classes.empty')}</div>
             <div className="text-sm font-medium text-slate-500 dark:text-slate-400 max-w-xs">{t('classes.emptyHint')}</div>
