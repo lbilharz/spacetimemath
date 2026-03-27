@@ -211,9 +211,9 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
             {(() => {
               const weights = myDkt.kcMastery;
-              let minIdx = 0;
-              let maxIdx = 0;
-              for (let i = 1; i < 11; i++) {
+              let minIdx = 1;
+              let maxIdx = 1;
+              for (let i = 2; i < 11; i++) {
                 if (weights[i] < weights[minIdx]) minIdx = i;
                 if (weights[i] > weights[maxIdx]) maxIdx = i;
               }
