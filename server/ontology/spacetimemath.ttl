@@ -1,0 +1,55 @@
+@prefix : <http://spacetimemath.io/edu/> .
+@prefix edu: <http://edugraph.io/edu#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://spacetimemath.io/edu/> a owl:Ontology ;
+    rdfs:comment "SpacetimeMath Extension Ontology for granular 1x1 Multiplication Cognitive Knowledge Components." ;
+    owl:imports <http://edugraph.io/edu#> .
+
+:MathsMultiplicationZeroProperty a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Understanding the Zero Property of Multiplication where any number multiplied by 0 equals 0." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationIdentityProperty a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Understanding the Identity Property of Multiplication where any number multiplied by 1 equals itself." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact2s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 2s multiplication fact family (doubling)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact5s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 5s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact9s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 9s multiplication fact family (finger tricks or N * 10 - N pattern)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact10s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 10s multiplication fact family (Base 10 shift)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationSquare a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of Perfect Squares within the 1x1 to 10x10 bounds (e.g., 6x6, 7x7)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationCommutative a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Explicit cognitive understanding of the Commutative Application allowing fact reversal (a * b = b * a)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFactHard a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the core 'Hard Facts' memory cluster not covered by simple rules or squares (e.g., 6x7, 6x8, 7x8)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationExtendedBase10 a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "The ability to track mathematical multiplication out of single digits and into extended teen sequences via base 10 mental logic (e.g., 12 * 7)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationExtendedCoreDigit a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "The fundamental single-digit multiplication required inside of an extended Base 10 problem (e.g., recognizing 2 * 7 inside 12 * 7)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .

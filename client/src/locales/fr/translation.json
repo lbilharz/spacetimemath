@@ -390,5 +390,22 @@
     "fr": "Ve",
     "sa": "Sa",
     "su": "Di"
+  },
+  "dkt": {
+    "0": "Multiplier par 0 — N'importe quel nombre fois zéro donne toujours zéro.",
+    "1": "Multiplier par 1 — N'importe quel nombre fois un reste le même.",
+    "2": "Les 2 (×2) — Il suffit de doubler le nombre.",
+    "3": "Les 5 (×5) — La réponse se termine toujours par 0 ou 5.",
+    "4": "Les 9 (×9) — Le chiffre des dizaines est toujours un de moins que le nombre.",
+    "5": "Les 10 (×10) — Il suffit d'ajouter un zéro à la fin.",
+    "6": "Nombres Carrés — Multiplier un nombre par lui-même (ex. 6×6, 8×8).",
+    "7": "Règle d'Échange — Comprendre que 4×5 est identique à 5×4.",
+    "8": "Opérations Difficiles — Les problèmes les plus difficiles comme 6×7, 6×8 et 7×8.",
+    "9": "Grandes Dizaines (×20) — Multiplier par des nombres comme 20 ou 25.",
+    "10": "Bases Avancées — Multiplier avec des nombres au-dessus de 10 (comme 15×8).",
+    "title": "Ton Profil d'Apprentissage",
+    "desc": "Notre IA a analysé tes sprints. Voici tes points forts et ce que tu devrais réviser.",
+    "weakest": "Prochain Objectif",
+    "strongest": "Maîtrisé"
   }
 }

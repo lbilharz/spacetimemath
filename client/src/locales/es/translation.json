@@ -391,5 +391,22 @@
     "nextUnlock5": "Nivel 5 completado",
     "nextUnlock6": "Nivel 6 completado",
     "allUnlocked": "¡Tablas resueltas! 🎉"
+  },
+  "dkt": {
+    "0": "Multiplicando por 0 — Cualquier número por cero es siempre cero.",
+    "1": "Multiplicando por 1 — Cualquier número por uno sigue siendo el mismo.",
+    "2": "Los 2s (×2) — Simplemente duplica el número.",
+    "3": "Los 5s (×5) — El resultado siempre termina en 0 o 5.",
+    "4": "Los 9s (×9) — Las decenas siempre son uno menos que el número.",
+    "5": "Los 10s (×10) — Solo tienes que añadir un cero al final.",
+    "6": "Cuadrados — Multiplicar un número por sí mismo (ej. 6×6, 8×8).",
+    "7": "Regla de Cambio — Entender que 4×5 es lo mismo que 5×4.",
+    "8": "Operaciones Difíciles — Los problemas más difíciles como 6×7, 6×8 y 7×8.",
+    "9": "Decenas Grandes (×20) — Multiplicar por números como 20 o 25.",
+    "10": "Básicos Avanzados — Multiplicar con números por encima de 10 (como 15×8).",
+    "title": "Tu Análisis de Aprendizaje",
+    "desc": "Nuestra IA ha analizado tus sprints. Aquí ves dónde destacas y en qué debes enfocarte.",
+    "weakest": "Próximo Objetivo",
+    "strongest": "Dominado"
   }
 }

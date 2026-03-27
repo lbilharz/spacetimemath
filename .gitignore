@@ -27,3 +27,4 @@ dist/
 # GSD planning docs (local only)
 .planning/
 !.planning/codebase/
+trainer/.venv/

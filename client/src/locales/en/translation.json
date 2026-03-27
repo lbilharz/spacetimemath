@@ -390,5 +390,22 @@
     "nextUnlock5": "Master ×7 to unlock ×8",
     "nextUnlock6": "Master ×8 to unlock ×9",
     "allUnlocked": "All tables unlocked! 🎉"
+  },
+  "dkt": {
+    "title": "Your Learning Profile",
+    "desc": "Our AI analyzed all your past sprints. Here is where you shine and what you should focus on next.",
+    "weakest": "Next Goal",
+    "strongest": "Mastered",
+    "0": "Multiplying by 0 — Anything times zero is always zero.",
+    "1": "Multiplying by 1 — Anything times one stays exactly the same.",
+    "2": "The 2s (×2) — Just double the other number.",
+    "3": "The 5s (×5) — The answer always ends in 0 or 5.",
+    "4": "The 9s (×9) — The tens place is always one less than the number.",
+    "5": "The 10s (×10) — Just attach a zero to the end.",
+    "6": "Square Numbers — Multiplying a number by itself (e.g., 6×6, 8×8).",
+    "7": "Swap Rule — Understanding that 4×5 is the same as 5×4.",
+    "8": "Hard Core Facts — The trickiest problems like 6×7, 6×8, and 7×8.",
+    "9": "Big Tens (×20) — Multiplying by numbers like 20 or 25.",
+    "10": "Advanced Basics — Multiplying with numbers above 10 (like 15×8)."
   }
 }

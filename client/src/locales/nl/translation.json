@@ -390,5 +390,22 @@
     "fr": "Vr",
     "sa": "Za",
     "su": "Zo"
+  },
+  "dkt": {
+    "0": "Vermenigvuldigen met 0 — Alles keer nul is altijd nul.",
+    "1": "Vermenigvuldigen met 1 — Alles keer één blijft precies hetzelfde.",
+    "2": "De 2-tafel (×2) — Verdubbel gewoon het getal.",
+    "3": "De 5-tafel (×5) — Het antwoord eindigt altijd op 0 of 5.",
+    "4": "De 9-tafel (×9) — Het tiental is altijd één minder dan het getal.",
+    "5": "De 10-tafel (×10) — Plak gewoon een nul aan het einde.",
+    "6": "Kwadraten — Een getal met zichzelf vermenigvuldigen (bijv. 6×6, 8×8).",
+    "7": "Omkeerregel — Begrijpen dat 4×5 hetzelfde is als 5×4.",
+    "8": "Moeilijke Sommen — De lastigste problemen zoals 6×7, 6×8 en 7×8.",
+    "9": "Grote Tientallen (×20) — Vermenigvuldigen met getallen zoals 20 of 25.",
+    "10": "Gevorderde Basis — Rekenen met getallen groter dan 10 (zoals 15×8).",
+    "title": "Jouw Leerprofiel",
+    "desc": "Onze AI heeft al je sprints geanalyseerd. Hier zie je waar je in uitblinkt en wat je nu moet oefenen.",
+    "weakest": "Volgende Doel",
+    "strongest": "Beheerst"
   }
 }

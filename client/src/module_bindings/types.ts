@@ -113,6 +113,17 @@ export const IssuedProblemV2 = __t.object("IssuedProblemV2", {
 });
 export type IssuedProblemV2 = __Infer<typeof IssuedProblemV2>;
 
+export const KcTelemetry = __t.object("KcTelemetry", {
+  id: __t.u64(),
+  sessionId: __t.u64(),
+  playerIdentity: __t.identity(),
+  knowledgeComponent: __t.u32(),
+  isCorrect: __t.bool(),
+  latencyMs: __t.u32(),
+  timestamp: __t.u64(),
+});
+export type KcTelemetry = __Infer<typeof KcTelemetry>;
+
 export const LegacyScoreBackup = __t.object("LegacyScoreBackup", {
   playerIdentity: __t.identity(),
   originalBestScore: __t.f32(),
@@ -163,6 +174,13 @@ export const Player = __t.object("Player", {
   extendedLevel: __t.u8(),
 });
 export type Player = __Infer<typeof Player>;
+
+export const PlayerDktWeights = __t.object("PlayerDktWeights", {
+  playerIdentity: __t.identity(),
+  kcMastery: __t.array(__t.f32()),
+  lastUpdatedTimestamp: __t.u64(),
+});
+export type PlayerDktWeights = __Infer<typeof PlayerDktWeights>;
 
 export const ProblemStat = __t.object("ProblemStat", {
   problemKey: __t.u16(),

@@ -13,6 +13,7 @@ import { useAppNavigation } from './hooks/useAppNavigation.js';
 import { TABBED_PAGES, PAGE_PATH, PATH_MAP } from './navigation.js';
 import type { Page } from './navigation.js';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 
 export type { Page };
 
@@ -72,6 +73,31 @@ export default function App() {
     if (pendingIntent) localStorage.setItem('_pending_intent', pendingIntent);
     else localStorage.removeItem('_pending_intent');
   }, [pendingIntent]);
+
+  // Universal Link (iOS Associated Domains) Interception
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const urlListener = CapApp.addListener('appUrlOpen', (event) => {
+      // event.url looks like: https://better-1up.vercel.app/classrooms?join=123
+      const slug = event.url.split('.app').pop();
+      if (!slug) return;
+      
+      if (slug.includes('join=')) {
+        try { localStorage.setItem('_joinedViaClassroom', '1'); } catch { /* noop */ }
+      }
+      
+      if (slug.startsWith('/classrooms') || slug.startsWith('/classroom')) {
+        navigate('classrooms' as Page, undefined, slug);
+      } else if (slug.startsWith('/account')) {
+        navigate('account' as Page, undefined, slug);
+      } else if (slug.startsWith('/results')) {
+        navigate('results' as Page, undefined, slug);
+      } else {
+        navigate('lobby' as Page, undefined, slug);
+      }
+    });
+    return () => { urlListener.then(l => l.remove()); };
+  }, [navigate]);
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
 

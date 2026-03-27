@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ParseKeys } from 'i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { BestScore, Classroom, ClassroomMember, OnlinePlayer, Player, ProblemStat, Session } from '../module_bindings/types.js';
@@ -126,7 +127,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
                 className="font-semibold text-brand-yellow hover:text-brand-yellow-hover no-underline transition-colors"
               >
                 {TIER_EMOJI[Math.min(myPlayer.learningTier ?? 0, 7)]}
-                {' '}Tier {myPlayer.learningTier ?? 0}
+                {' '}{t('tiers.statusLevel' as ParseKeys, { tier: myPlayer.learningTier ?? 0 })}
               </a>
               <span className="text-slate-400 dark:text-slate-500 text-xs">·</span>
               <span className="text-slate-500 dark:text-slate-400">

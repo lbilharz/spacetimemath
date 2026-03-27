@@ -47,6 +47,7 @@ import StartSessionReducer from "../start_session_reducer";
 import SubmitAnswerReducer from "../submit_answer_reducer";
 import SyncKeystrokeReducer from "../sync_keystroke_reducer";
 import ToggleClassroomVisibilityReducer from "../toggle_classroom_visibility_reducer";
+import UpdateDktWeightsReducer from "../update_dkt_weights_reducer";
 
 export type CompleteOnboardingParams = __Infer<typeof CompleteOnboardingReducer>;
 export type ConsumeRestoreResultParams = __Infer<typeof ConsumeRestoreResultReducer>;
@@ -89,4 +90,5 @@ export type StartSessionParams = __Infer<typeof StartSessionReducer>;
 export type SubmitAnswerParams = __Infer<typeof SubmitAnswerReducer>;
 export type SyncKeystrokeParams = __Infer<typeof SyncKeystrokeReducer>;
 export type ToggleClassroomVisibilityParams = __Infer<typeof ToggleClassroomVisibilityReducer>;
+export type UpdateDktWeightsParams = __Infer<typeof UpdateDktWeightsReducer>;
 

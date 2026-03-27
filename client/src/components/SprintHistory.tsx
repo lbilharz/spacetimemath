@@ -15,7 +15,7 @@ export default function SprintHistory({ sessions, answers, myIdentityHex }: Prop
   const [openId, setOpenId] = useState<bigint | null>(null);
 
   const mySessions = (sessions as Session[])
-    .filter(s => s.isComplete && s.playerIdentity.toHexString() === myIdentityHex)
+    .filter(s => s.isComplete && s.playerIdentity.toHexString() === myIdentityHex && s.totalAnswered > 0)
     .sort((a, b) => Number(b.startedAt.microsSinceUnixEpoch - a.startedAt.microsSinceUnixEpoch));
 
   if (mySessions.length === 0) return null;

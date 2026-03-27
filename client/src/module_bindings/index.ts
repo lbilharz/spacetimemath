@@ -75,6 +75,7 @@ import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
 import SyncKeystrokeReducer from "./sync_keystroke_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
+import UpdateDktWeightsReducer from "./update_dkt_weights_reducer";
 
 // Import all procedure arg schemas
 
@@ -91,6 +92,7 @@ import LegacyScoreBackupsRow from "./legacy_score_backups_table";
 import NextProblemResultsRow from "./next_problem_results_table";
 import NextProblemResultsV2Row from "./next_problem_results_v_2_table";
 import OnlinePlayersRow from "./online_players_table";
+import PlayerDktWeightsRow from "./player_dkt_weights_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
 import RecoveryCodeResultsRow from "./recovery_code_results_table";
@@ -257,6 +259,17 @@ const tablesSchema = __schema({
       { name: 'online_players_identity_key', constraint: 'unique', columns: ['identity'] },
     ],
   }, OnlinePlayersRow),
+  player_dkt_weights: __table({
+    name: 'player_dkt_weights',
+    indexes: [
+      { name: 'player_identity', algorithm: 'btree', columns: [
+        'playerIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'player_dkt_weights_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
+    ],
+  }, PlayerDktWeightsRow),
   players: __table({
     name: 'players',
     indexes: [
@@ -399,6 +412,7 @@ const reducersSchema = __reducers(
   __reducerSchema("submit_answer", SubmitAnswerReducer),
   __reducerSchema("sync_keystroke", SyncKeystrokeReducer),
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
+  __reducerSchema("update_dkt_weights", UpdateDktWeightsReducer),
 );
 
 /** The schema information for all procedures in this module. This is defined the same way as the procedures would have been defined in the server. */

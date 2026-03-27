@@ -5,6 +5,7 @@ mod classroom;
 mod auth;
 mod security;
 mod gdpr;
+pub mod generator;
 
 // Re-export scheduled reducers so the `scheduled(...)` macro in #[table] attributes can find them.
 pub use classroom::auto_end_class_sprint;
@@ -134,6 +135,37 @@ pub struct IssuedProblemResultV2 {
     #[default(0)]
     pub prompt_mode: u8,
     pub options: Vec<u32>,
+}
+
+/// AI Engine: Passive Telemetry Ledger for offline PyTorch LSTM inference.
+/// Stores immutable, anonymized sequences of success/failure mapped strictly 
+/// against the semantic EduGraph Ontology ID array.
+// -------------------------------------------------------
+// Phase 3 DKT ML Ingestion (Deep Knowledge Tracing)
+// -------------------------------------------------------
+// An offline PyTorch loop calculates the student's mastery weights based
+// on `kc_telemetry` and forces HTTP synchronization specifically here.
+#[table(accessor = player_dkt_weights, public)]
+pub struct PlayerDktWeights {
+    #[primary_key]
+    pub player_identity: Identity,
+    // Holds 11 probabilities matching the `generator::EduGraphKC` variants.
+    // e.g. index 0 corresponds to KC #1 (Zero Property), mapped continuously.
+    pub kc_mastery: Vec<f32>,
+    pub last_updated_timestamp: u64,
+}
+
+#[table(accessor = kc_telemetry)]
+pub struct KcTelemetry {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub session_id: u64,
+    pub player_identity: Identity,
+    pub knowledge_component: u32,
+    pub is_correct: bool,
+    pub latency_ms: u32,
+    pub timestamp: u64,
 }
 
 /// SEQ-01: Server-side sprint problem sequence (private — never pushed to client).
@@ -1101,3 +1133,38 @@ pub struct EndSprintSchedule {
     pub class_sprint_id: u64,
 }
 
+/// DKT-01: Secure AI Webhook Sink.
+/// Called exclusively by the offline Hugging Face PyTorch script 
+/// to push synthesized mastery matrices back into the edge.
+#[reducer]
+pub fn update_dkt_weights(
+    ctx: &ReducerContext,
+    secret_key: String,
+    target_player_hex: String,
+    weights: Vec<f32>,
+) -> Result<(), String> {
+    if secret_key != "hf-bot-secret" {
+        return Err("Unauthorized ML Sink Access".into());
+    }
+    
+    let target_player = spacetimedb::Identity::from_hex(&target_player_hex)
+        .map_err(|_| "Invalid Identity hex".to_string())?;
+    
+    // Fallback dimension check
+    if weights.len() != 11 {
+        return Err("Fatal: DKT Tensors MUST strictly correspond to the 11 EduGraph Ontology nodes.".into());
+    }
+    
+    let row = PlayerDktWeights {
+        player_identity: target_player,
+        kc_mastery: weights,
+        last_updated_timestamp: 0,
+    };
+    
+    // Upsert semantic matrix
+    match ctx.db.player_dkt_weights().player_identity().find(target_player) {
+        Some(_) => { ctx.db.player_dkt_weights().player_identity().update(row); }
+        None    => { ctx.db.player_dkt_weights().insert(row); }
+    }
+    Ok(())
+}

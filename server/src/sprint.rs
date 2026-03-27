@@ -12,6 +12,7 @@ use crate::{
 use crate::{
     players, sessions, answers, issued_problems_v2, issued_problem_results_v2,
     sprint_sequences, next_problem_results_v2, problem_stats, best_scores, class_sprints,
+    kc_telemetry, player_dkt_weights
 };
 
 fn splitmix64(mut x: u64) -> u64 {
@@ -175,6 +176,7 @@ pub fn issue_problem(
     
     let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
     let options_res = options.clone(); // For the result table
+    let generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
 
     ctx.db.issued_problems_v2().insert(IssuedProblemV2 {
         id: 0,
@@ -256,6 +258,8 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
 
     // Issue token (reuse SEC-10 IssuedProblem pattern)
     let token = make_code(ctx); // Assuming make_code(ctx) is the equivalent of generate_random_token()
+    let generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
+
     ctx.db.issued_problems_v2().insert(IssuedProblemV2 {
         id: 0, // Assuming id is still auto-incremented
         session_id: session.id,
@@ -373,6 +377,20 @@ pub fn submit_answer(
         session.heat = 0;
     }
     ctx.db.sessions().id().update(session);
+
+    // AI Engine Telemetry (Log KCs)
+    let generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
+    for &kc in &generated_kcs {
+        ctx.db.kc_telemetry().insert(crate::KcTelemetry {
+            id: 0,
+            session_id,
+            player_identity: player.identity,
+            knowledge_component: kc,
+            is_correct,
+            latency_ms: response_ms,
+            timestamp: ctx.timestamp.to_micros_since_unix_epoch() as u64,
+        });
+    }
 
     // try_insert retry loop: auto_inc counter may be out of sync with restored rows.
     for _ in 0..200 {

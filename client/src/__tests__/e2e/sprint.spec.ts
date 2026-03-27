@@ -32,7 +32,7 @@ test.describe('Sprint Reliability E2E', () => {
         } else {
           break; // Overlay is gone
         }
-      } catch (err) {
+      } catch {
         await page.waitForTimeout(300);
       }
     }

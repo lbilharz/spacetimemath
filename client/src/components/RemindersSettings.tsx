@@ -10,6 +10,7 @@ export default function RemindersSettings() {
     try {
       const stored = localStorage.getItem('user_reminders');
       if (stored) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setReminders(JSON.parse(stored));
       } else {
         // Default migration

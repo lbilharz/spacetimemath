@@ -9,6 +9,7 @@ import type { Answer, ProblemStat } from '../module_bindings/types.js';
 interface Props {
   answers: Answer[];
   problemStats: ProblemStat[];
+  dktWeights?: number[];
   highlightSession?: bigint;
   sessionAnswers?: Answer[];
   showExtended?: boolean;
@@ -17,27 +18,6 @@ interface Props {
 }
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
-
-function getMastery(answers: Answer[], a: number, b: number): Mastery {
-  const pair = answers.filter(ans => ans.a === a && ans.b === b);
-  if (pair.length === 0) return 'untouched';
-  const recent = pair.slice(-10);
-  
-  let score = 0;
-  for (const ans of recent) {
-    if (ans.isCorrect) {
-      const attempts = Math.max(1, ans.attempts ?? 1);
-      if (attempts === 1) score += 1.0;
-      else if (attempts === 2) score += 0.6;
-      else score += 0.3;
-    }
-  }
-  const weightedAcc = score / recent.length;
-
-  if (weightedAcc >= 0.8) return 'mastered';
-  if (weightedAcc >= 0.5) return 'learning';
-  return 'struggling';
-}
 
 export function getSessionMastery(ans: Answer | undefined): Mastery | null {
   if (!ans) return null;
@@ -49,6 +29,37 @@ export function getSessionMastery(ans: Answer | undefined): Mastery | null {
   if (attempts >= 3 || timeSecs > 15) return 'struggling';
   if (attempts === 2 || timeSecs > 6) return 'learning';
   return 'mastered';
+}
+
+function mapKcIndex(a: number, b: number): number {
+  const maxVal = Math.max(a, b);
+  if (maxVal > 10) return 9; // Extended Base 10
+  if (a === 0 || b === 0) return 0; // Zero Property
+  if (a === 1 || b === 1) return 1; // Identity
+  if (a === b) return 6; // Squares
+  if (a === 2 || b === 2) return 2; // Fact 2s
+  if (a === 5 || b === 5) return 3; // Fact 5s
+  if (a === 9 || b === 9) return 4; // Fact 9s
+  if (a === 10 || b === 10) return 5; // Fact 10s
+  
+  if ((a === 6 && b === 7) || (a === 7 && b === 6) ||
+      (a === 6 && b === 8) || (a === 8 && b === 6) ||
+      (a === 7 && b === 8) || (a === 8 && b === 7)) {
+      return 8; // Hard Facts
+  }
+  return -1; // Fallback
+}
+
+function getMasteryFromTensor(dktWeights: number[] | undefined, a: number, b: number): Mastery {
+  if (!dktWeights || dktWeights.length < 11) return 'untouched';
+  
+  const kcIdx = mapKcIndex(a, b);
+  if (kcIdx === -1) return 'learning'; // Default fallback for untagged cells like 3x4
+  
+  const w = dktWeights[kcIdx];
+  if (w >= 0.8) return 'mastered';
+  if (w >= 0.5) return 'learning';
+  return 'struggling';
 }
 
 
@@ -68,7 +79,7 @@ const MASTERY_BG: Record<Mastery, string> = {
 
 const EXTENDED_A = [11,12,13,14,15,16,17,18,19,20];
 
-export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], showExtended = false, focusCell, playerLearningTier }: Props) {
+export default function MasteryGrid({ answers, problemStats, dktWeights, highlightSession: _highlightSession, sessionAnswers = [], showExtended = false, focusCell, playerLearningTier }: Props) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
 
@@ -96,7 +107,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       </div>
     );
     for (let b = 1; b <= 10; b++) {
-      let mastery = getMastery(answers, a, b);
+      let mastery = getMasteryFromTensor(dktWeights, a, b);
       const key = a * 100 + b;
       const isHighlighted = sessionKeys.has(key);
       const isSelected = selected?.a === a && selected?.b === b;
@@ -163,7 +174,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
         </div>
       );
       for (let b = 1; b <= 10; b++) {
-        let mastery = getMastery(answers, a, b);
+        let mastery = getMasteryFromTensor(dktWeights, a, b);
         const key = a * 100 + b;
         const isHighlighted = sessionKeys.has(key);
         const isSelected = selected?.a === a && selected?.b === b;

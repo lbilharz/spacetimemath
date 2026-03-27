@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { useTable } from 'spacetimedb/react';
@@ -82,6 +82,19 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
   const [gridFocus, setGridFocus] = useState<{ a: number; b: number } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const isComplete = session?.isComplete ?? false;
+
+  // Trigger DKT Hugging Face AI pipeline once the session finalized
+  useEffect(() => {
+    if (isComplete && myIdentityHex) {
+      // Fire and forget webhook. The remote Hugging Face Python worker intercepts this,
+      // runs the PyTorch LSTM locally, and publishes the resulting PlayerDktWeights matrix.
+      fetch(`https://lbillharz-spacetimemath-dkt.hf.space/train`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_hex: myIdentityHex })
+      }).catch(err => console.debug("[DKT] Webhook failed:", err));
+    }
+  }, [isComplete, myIdentityHex]);
 
   if (showCelebration && newlyUnlockedTier !== undefined) {
     return <TierUnlockCelebration tier={newlyUnlockedTier} onContinue={() => setShowCelebration(false)} />;

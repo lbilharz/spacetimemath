@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Answer, ProblemStat, Session } from '../module_bindings/types.js';
+import type { Answer, ProblemStat, Session, PlayerDktWeights } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import SprintHistory from '../components/SprintHistory.js';
 import TierLadder from '../components/TierLadder.js';
@@ -23,15 +23,16 @@ const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆
 
 export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false, extendedLevel = 0 }: Props) {
   const { t } = useTranslation();
-  const [sessions]     = useTable(tables.sessions);
+  const [sessions] = useTable(tables.sessions);
   const [answers]      = useTable(tables.answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const setLearningTier   = useSTDBReducer(reducers.setLearningTier);
-  const setExtendedMode   = useSTDBReducer(reducers.setExtendedMode);
+  const [dktWeights]   = useTable(tables.player_dkt_weights);
+  const setLearningTier = useSTDBReducer(reducers.setLearningTier);
+  const setExtendedMode = useSTDBReducer(reducers.setExtendedMode);
 
-  const [adjusting, setAdjusting]         = useState(false);
-  const [pendingTier, setPendingTier]     = useState(playerLearningTier);
-  const [saving, setSaving]               = useState(false);
+  const [adjusting, setAdjusting] = useState(false);
+  const [pendingTier, setPendingTier] = useState(playerLearningTier);
+  const [saving, setSaving] = useState(false);
   const [extendedSaving, setExtendedSaving] = useState(false);
 
   const handleToggleExtended = async (enabled: boolean) => {
@@ -42,6 +43,10 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
 
   const myAnswers = (answers as unknown as Answer[]).filter(
     a => a.playerIdentity.toHexString() === myIdentityHex
+  );
+
+  const myDkt = (dktWeights as unknown as PlayerDktWeights[])?.find(
+    w => w.playerIdentity.toHexString() === myIdentityHex
   );
 
   const isMaxTier = playerLearningTier >= 7;
@@ -56,21 +61,20 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
 
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
-      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-3">
+      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
           <ProgressIcon className="drop-shadow-sm scale-110" />
         </div>
         {t('nav.progress')}
       </h1>
-      
+
       {/* My Level card — unified summary + edit */}
       <div
         id="my-level"
-        className={`bg-white dark:bg-slate-800 rounded-[28px] p-6 sm:p-8 flex flex-col gap-8 shadow-sm transition-all relative overflow-hidden ${
-          isMaxTier 
-            ? 'border-2 border-brand-yellow/50 dark:border-brand-yellow/30 shadow-[0_0_40px_-10px_rgba(250,204,21,0.15)]' 
+        className={`bg-white dark:bg-slate-800 rounded-[28px] p-6 sm:p-8 flex flex-col gap-8 shadow-sm transition-all relative overflow-hidden ${isMaxTier
+            ? 'border-2 border-brand-yellow/50 dark:border-brand-yellow/30 shadow-[0_0_40px_-10px_rgba(250,204,21,0.15)]'
             : 'border border-slate-200 dark:border-slate-700'
-        }`}
+          }`}
       >
         {isMaxTier && (
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-yellow/5 rounded-full blur-2xl pointer-events-none" />
@@ -178,23 +182,60 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
                 onChange={e => handleToggleExtended(e.target.checked)}
               />
               <span
-                className={`absolute inset-0 rounded-full transition-colors duration-200 ${
-                  extendedMode 
-                    ? 'bg-brand-yellow border-brand-yellow shadow-[0_0_15px_-3px_rgba(250,204,21,0.5)]' 
+                className={`absolute inset-0 rounded-full transition-colors duration-200 ${extendedMode
+                    ? 'bg-brand-yellow border-brand-yellow shadow-[0_0_15px_-3px_rgba(250,204,21,0.5)]'
                     : 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600'
-                } border`}
+                  } border`}
               />
               <span
-                className={`absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-all duration-200 shadow-sm ${
-                  extendedMode 
-                    ? 'translate-x-6 bg-slate-900' 
+                className={`absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-all duration-200 shadow-sm ${extendedMode
+                    ? 'translate-x-6 bg-slate-900'
                     : 'translate-x-0 bg-white dark:bg-slate-400'
-                }`}
+                  }`}
               />
             </label>
           </div>
         )}
       </div>
+
+      {myDkt && myDkt.kcMastery && myDkt.kcMastery.length === 11 && (
+        <div id="dkt-insights" className="bg-white dark:bg-slate-800 rounded-[28px] p-6 sm:p-8 flex flex-col shadow-sm border border-brand-indigo/30 dark:border-brand-indigo/20 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-indigo/5 rounded-full blur-2xl pointer-events-none" />
+          <h2 className="text-2xl font-black text-brand-indigo dark:text-indigo-400 mb-2 tracking-tight flex items-center gap-2">
+            <span className="text-xl">🧠</span> {t('dkt.title')}
+          </h2>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6 max-w-2xl relative z-10">
+            {t('dkt.desc')}
+          </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+            {(() => {
+              const weights = myDkt.kcMastery;
+              let minIdx = 0;
+              let maxIdx = 0;
+              for (let i = 1; i < 11; i++) {
+                if (weights[i] < weights[minIdx]) minIdx = i;
+                if (weights[i] > weights[maxIdx]) maxIdx = i;
+              }
+              
+              return (
+                <>
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden">
+                    <div className="absolute -top-6 -right-6 text-6xl opacity-10 blur-[1px]">🎯</div>
+                    <span className="text-xs font-black uppercase tracking-widest text-red-500/80">{t('dkt.weakest')}</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{t(`dkt.${minIdx}` as ParseKeys)}</span>
+                  </div>
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/30 rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden">
+                    <div className="absolute -top-6 -right-6 text-6xl opacity-10 blur-[1px]">⚡</div>
+                    <span className="text-xs font-black uppercase tracking-widest text-green-500/80">{t('dkt.strongest')}</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{t(`dkt.${maxIdx}` as ParseKeys)}</span>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
 
       <div id="mastery" className="bg-white dark:bg-slate-800 rounded-[28px] p-6 sm:p-8 flex flex-col shadow-sm border border-slate-200 dark:border-slate-700">
         <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">{t('lobby.masteryTitle')}</h2>
@@ -204,6 +245,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
         <div className="overflow-x-auto -mx-2 px-2 pb-4">
           <MasteryGrid
             answers={myAnswers}
+            dktWeights={myDkt?.kcMastery as unknown as number[]}
             problemStats={problemStats as unknown as ProblemStat[]}
             showExtended={isMaxTier && extendedMode}
             playerLearningTier={playerLearningTier}

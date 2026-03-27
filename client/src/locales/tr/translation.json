@@ -390,5 +390,22 @@
     "fr": "Cu",
     "sa": "Ct",
     "su": "Pa"
+  },
+  "dkt": {
+    "0": "0 ile Çarpmak — Sıfır ile çarpılan her şey her zaman sıfırdır.",
+    "1": "1 ile Çarpmak — Bir ile çarpılan her şey aynı kalır.",
+    "2": "2'ler (×2) — Sadece sayıyı ikiye katla.",
+    "3": "5'ler (×5) — Cevap her zaman 0 veya 5 ile biter.",
+    "4": "9'lar (×9) — Onlar basamağı her zaman sayıdan bir eksiktir.",
+    "5": "10'lar (×10) — Sadece sonuna bir sıfır ekle.",
+    "6": "Kare Sayılar — Bir sayıyı kendisiyle çarpmak (örn. 6×6, 8×8).",
+    "7": "Yer Değiştirme Kuralı — 4×5'in 5×4 ile aynı olduğunu anlamak.",
+    "8": "Zor İşlemler — 6×7, 6×8 ve 7×8 gibi en zor problemler.",
+    "9": "Büyük Onluklar (×20) — 20 veya 25 gibi sayılarla çarpmak.",
+    "10": "İleri Temeller — 10'dan büyük sayılarla çarpmak (örneğin 15×8).",
+    "title": "Öğrenme Profilin",
+    "desc": "Yapay zekamız tüm sprintlerini analiz etti. İşte mükemmel olduğun ve geliştirmen gereken yerler.",
+    "weakest": "Sıradaki Hedef",
+    "strongest": "Uzmanlaşıldı"
   }
 }

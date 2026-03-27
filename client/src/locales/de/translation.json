@@ -390,5 +390,22 @@
     "nextUnlock5": "×7 meistern → ×8 freischalten",
     "nextUnlock6": "×8 meistern → ×9 freischalten",
     "allUnlocked": "Alle Tabellen freigeschaltet! 🎉"
+  },
+  "dkt": {
+    "title": "Deine Lern-Analyse",
+    "desc": "Unsere KI hat alle deine Sprints ausgewertet. Hier siehst du, wo du glänzt und was du direkt üben solltest.",
+    "weakest": "Dein nächstes Ziel",
+    "strongest": "Perfekt gemeistert",
+    "0": "Rechnen mit 0 (×0) — Jede Zahl mal Null ist immer Null.",
+    "1": "Rechnen mit 1 (×1) — Jede Zahl mal Eins bleibt genau sie selbst.",
+    "2": "Zweier-Reihe (×2) — Das ist wie Plusrechnen: einfach verdoppeln.",
+    "3": "Fünfer-Reihe (×5) — Das Ergebnis endet immer auf 0 oder 5.",
+    "4": "Neuner-Reihe (×9) — Der Zehner ist immer eins kleiner als die Zahl.",
+    "5": "Zehner-Reihe (×10) — Einfach eine Null hinten dranhängen.",
+    "6": "Quadratzahlen — Eine Zahl mit sich selbst malnehmen (z.B. 6×6, 8×8).",
+    "7": "Tauschaufgaben — Verstehen, dass 4×5 das Gleiche ist wie 5×4.",
+    "8": "Schwere Kernaufgaben — Die kniffligsten Aufgaben (wie 6×7, 6×8, 7×8).",
+    "9": "Große Zehner (×20) — Multiplizieren mit großen Zehnerzahlen wie 20.",
+    "10": "Große Einmaleins-Basics — Rechnen mit Zahlen über 10 (z.B. 15×8)."
   }
 }
