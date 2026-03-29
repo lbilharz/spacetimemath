@@ -17,6 +17,16 @@ default_platform(:ios)
 
 platform :ios do
 
+  # Shared: load ASC API key from env (works locally + in GitHub Actions)
+  private_lane :asc_api_key do
+    app_store_connect_api_key(
+      key_id:                ENV["ASC_API_KEY_ID"],
+      issuer_id:             ENV["ASC_API_KEY_ISSUER_ID"],
+      key_content:           ENV["ASC_API_KEY_CONTENT"],
+      is_key_content_base64: true
+    )
+  end
+
   desc "Generate App Store screenshots for all 9 languages via headless browser"
   lane :screenshots do
     sh "cd #{File.join(File.dirname(__FILE__), '../../..')} && npm run screenshots"
@@ -43,9 +53,15 @@ platform :ios do
       force:              true,
       submit_for_review:  false
     )
+    match(type: "appstore", readonly: true)
     build_app(
       scheme:        "App",
-      export_method: "app-store"
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "eu.bilharz.oneup" => "match AppStore eu.bilharz.oneup"
+        }
+      }
     )
     deliver(
       skip_binary_upload: false,
@@ -58,11 +74,18 @@ platform :ios do
 
   desc "CI: build archive and upload to TestFlight only"
   lane :beta do
+    key = asc_api_key
+    match(type: "appstore", readonly: true, api_key: key)
     build_app(
       scheme:          "App",
-      export_method:   "app-store"
+      export_method:   "app-store",
+      export_options:  {
+        provisioningProfiles: {
+          "eu.bilharz.oneup" => "match AppStore eu.bilharz.oneup"
+        }
+      }
     )
-    upload_to_testflight(skip_waiting_for_build_processing: true)
+    upload_to_testflight(api_key: key, skip_waiting_for_build_processing: true)
   end
 
 end
