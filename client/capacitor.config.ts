@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.bettermarks.oneup',
+  appId: 'eu.bilharz.oneup',
   appName: '1UP',
   webDir: 'dist',
   ios: {

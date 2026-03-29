@@ -11,10 +11,10 @@ import TapLayout from '../components/TapLayout.js';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 // Haptics fire-and-forget — silently no-ops on web
-const hapticTap  = () => Haptics.impact({ style: ImpactStyle.Light  }).catch(() => {});
-const hapticOk   = () => Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {});
-const hapticGood = () => Haptics.notification({ type: NotificationType.Success }).catch(() => {});
-const hapticBad  = () => Haptics.notification({ type: NotificationType.Error   }).catch(() => {});
+const hapticTap = () => Haptics.impact({ style: ImpactStyle.Light }).catch(() => { });
+const hapticOk = () => Haptics.impact({ style: ImpactStyle.Medium }).catch(() => { });
+const hapticGood = () => Haptics.notification({ type: NotificationType.Success }).catch(() => { });
+const hapticBad = () => Haptics.notification({ type: NotificationType.Error }).catch(() => { });
 
 
 
@@ -35,7 +35,7 @@ function selectDiagnosticProblem(elapsed: number, lastKey: number | undefined): 
   let a: number, b: number;
   if (phase === 3) {
     a = 11 + Math.floor(Math.random() * 10); // 11–20
-    b = 2  + Math.floor(Math.random() * 9);  // 2–10
+    b = 2 + Math.floor(Math.random() * 9);  // 2–10
     if (Math.random() < 0.5) { const tmp = a; a = b; b = tmp; }
   } else {
     const factors = DIAGNOSTIC_PHASES[phase] as number[];
@@ -109,14 +109,14 @@ interface NumpadProps {
   disabled: boolean;     // timeLeft === 0 || !!feedback
   onKey: (key: number | '←' | 'OK') => void;
 }
-const NUMPAD_KEYS = [1,2,3,4,5,6,7,8,9,'←' as const,0,'OK' as const];
+const NUMPAD_KEYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, '←' as const, 0, 'OK' as const];
 
 const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
   return (
     <div className="w-full" style={{
       display: 'grid',
       gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: 8,
+      gap: 'clamp(4px, 1.5vh, 8px)',
       maxWidth: 360,
     }}>
       {NUMPAD_KEYS.map((key) => {
@@ -131,14 +131,13 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
               onKey(key);
             }}
             onClick={(e) => e.preventDefault()} // Suppress ghost clicks
-            className={`select-none transition-all duration-75 active:scale-[0.92] ${
-              isOk 
-                ? 'text-slate-900 active:brightness-75' 
+            className={`select-none transition-all duration-75 active:scale-[0.92] ${isOk
+                ? 'text-slate-900 active:brightness-75'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white active:bg-slate-300 dark:active:bg-slate-600'
-            }`}
+              }`}
             style={{
-              padding: '14px 8px',
-              fontSize: 22,
+              padding: 'clamp(8px, 2vh, 14px) 8px',
+              fontSize: 'clamp(18px, 3vh, 22px)',
               fontWeight: 600,
               background: isOk ? 'var(--color-brand-yellow)' : undefined,
               border: 'none',
@@ -154,7 +153,13 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
               touchAction: 'manipulation', // Disables double-tap zoom delay entirely
             }}
           >
-            {key}
+            {key === '←' ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                <line x1="18" y1="9" x2="12" y2="15"></line>
+                <line x1="12" y1="9" x2="18" y2="15"></line>
+              </svg>
+            ) : key}
           </button>
         );
       })}
@@ -236,7 +241,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   useEffect(() => {
     if (amIFocused && !isComplete && !ending) {
-      syncKeystroke({ currentInput: input }).catch(() => {});
+      syncKeystroke({ currentInput: input }).catch(() => { });
     }
   }, [input, amIFocused, isComplete, ending, syncKeystroke]);
 
@@ -285,7 +290,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     // Pick the newest (highest auto-inc id) to avoid picking up an abandoned sprint
     const mySession = matched.reduce<typeof matched[0] | undefined>((best, s) =>
       !best || (s as Session).id > (best as Session).id ? s : best
-    , undefined);
+      , undefined);
     if (mySession) {
       setSessionId((mySession as Session).id);
       sessionIdRef.current = (mySession as Session).id;
@@ -361,11 +366,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
     // Prevent re-consuming the same problem token on WS reconnect (subscription re-fire)
     if (row.token === lastConsumedTokenRef.current) return;
-    
+
     const newMode = row.promptMode;
     const oldMode = problem?.promptMode;
     const isFirstProblem = problem === null;
-    
+
     if (!isFirstProblem && oldMode !== undefined && newMode !== oldMode) {
       setInterstitial(newMode === 1 ? 'tap' : 'type');
       lastConsumedTokenRef.current = row.token;
@@ -450,7 +455,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       // Wrong answer: show "try again" feedback, keep same problem, NO server submission
       hapticBad();
       setCombo(0);
-      
+
       const isTapMode = problem.promptMode === 1;
       setFeedback({ isCorrect: false, points: 0, correct: correct_answer, isTapPenalty: isTapMode });
       setAttempts(a => a + 1);
@@ -458,7 +463,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         if (inputRef.current) inputRef.current.value = '';
         setInput('');
       }
-      
+
       const penaltyTimeMs = isTapMode ? 1500 : 800; // Longer penalty for guessing in Tap mode
       setTimeout(() => {
         setFeedback(null);
@@ -469,11 +474,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     // SEC-10: Get the current token for this player (source differs by sprint type)
     const tokenRow = isDiagnostic
       ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
-          r => r.owner.toHexString() === myIdentityHex
-        )
+        r => r.owner.toHexString() === myIdentityHex
+      )
       : (nextProblemResults as unknown as NextProblemResultV2[]).find(
-          r => r.owner.toHexString() === myIdentityHex
-        );
+        r => r.owner.toHexString() === myIdentityHex
+      );
     if (!tokenRow) {
       // Token not yet available — queue and retry when it arrives (useEffect below)
       pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts };
@@ -520,8 +525,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, 600);
   }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
-      nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
-      issueProblem, input, SPRINT_DURATION, attempts]);
+    nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
+    issueProblem, input, SPRINT_DURATION, attempts]);
 
   // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
   useEffect(() => {
@@ -529,11 +534,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (!pending) return;
     const tokenRow = isDiagnostic
       ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
-          r => r.owner.toHexString() === myIdentityHex
-        )
+        r => r.owner.toHexString() === myIdentityHex
+      )
       : (nextProblemResults as unknown as NextProblemResultV2[]).find(
-          r => r.owner.toHexString() === myIdentityHex
-        );
+        r => r.owner.toHexString() === myIdentityHex
+      );
     if (!tokenRow) return;
     pendingAnswerRef.current = null;
     submitAnswer({ ...pending, problemToken: tokenRow.token });
@@ -542,7 +547,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   const handleNumpadKey = useCallback((key: number | '←' | 'OK') => {
     if (key === 'OK') { hapticOk(); doSubmit(); return; }
-    
+
     hapticTap();
     if (inputRef.current) {
       let val = inputRef.current.value;
@@ -572,8 +577,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const difficultyTag = useMemo(() => {
     const w = currentStat?.difficultyWeight ?? 1;
     return w >= 1.5 ? { label: t('sprint.tagHard'), cls: 'tag-red' }
-         : w >= 1.0 ? { label: t('sprint.tagMedium'), cls: 'tag-warn' }
-         :             { label: t('sprint.tagEasy'), cls: 'tag-green' };
+      : w >= 1.0 ? { label: t('sprint.tagMedium'), cls: 'tag-warn' }
+        : { label: t('sprint.tagEasy'), cls: 'tag-green' };
   }, [currentStat, t]);
   const mastery = useMemo(
     () => problem ? getMasteryLocal(myAnswers, problem.a, problem.b) : 'untouched' as Mastery,
@@ -596,220 +601,226 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
     return (
       <>
-      {/* ── Fixed top bar ─────────────────────────────────────────── */}
-      <header className="bg-[#2C3E50] dark:bg-slate-950 border-b border-transparent dark:border-slate-800" style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        paddingTop: 'calc(8px + env(safe-area-inset-top))',
-        paddingBottom: 12,
-        paddingLeft: 16,
-        paddingRight: 16,
-        display: 'flex', alignItems: 'center', gap: 16,
-      }}>
-        <button
-          onClick={() => handlersRef.current.handleEnd()} disabled={ending}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.7)', fontSize: 24, lineHeight: 1,
-            padding: '4px', borderRadius: 8,
-            WebkitTapHighlightColor: 'transparent',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-          aria-label={t('sprint.endSprint')}
-        >✕</button>
-
-        <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-          <div style={{ color: 'white', fontWeight: 800, fontSize: 16, lineHeight: 1.2, letterSpacing: '-0.5px' }}>
-            1UP
-            {typeof window !== 'undefined' && window.localStorage.getItem('show_telemetry') === '1' && (
-              <span className="ml-2 font-mono text-[12px] font-black text-emerald-400 bg-emerald-950/80 ring-1 ring-emerald-500/30 px-1.5 py-[1px] rounded shadow-inner drop-shadow-md tracking-tighter align-middle">
-                {hwLatency > 0 ? `${hwLatency.toFixed(0)}ms` : '--ms'}
-              </span>
-            )}
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.2, fontWeight: 500 }}>
-            {isDiagnostic 
-              ? `${t('sprint.phase')} ${Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4`
-              : `✓ ${correct}/${answered} · ${score.toFixed(1)} pts`
-            }
-          </div>
-        </div>
-
-        {/* Circular ring timer — one full rotation per 60 s */}
-        <svg width={44} height={44} style={{ flexShrink: 0, display: 'block' }}>
-          <circle cx={22} cy={22} r={RING_R}
-            fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={4} />
-          <circle cx={22} cy={22} r={RING_R}
-            fill="none"
-            stroke={timerColor === 'var(--accent)' ? '#FBBA00' : timerColor}
-            strokeWidth={4}
-            strokeLinecap="round"
-            strokeDasharray={RING_C}
-            strokeDashoffset={ringOffset}
-            transform="rotate(-90 22 22)"
-            style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
-          />
-          <text x={22} y={26.5} textAnchor="middle"
-            fill="white" fontSize={13} fontWeight="800"
-            style={{ fontVariantNumeric: 'tabular-nums', fontFamily: "'DM Sans', sans-serif" }}>
-            {timeLeft}
-          </text>
-        </svg>
-      </header>
-
-      {/* ── Middle content — Flowing from top down ─────────────────── */}
-      <main style={{
-        position: 'fixed',
-        top: 'calc(64px + env(safe-area-inset-top))', left: 0, right: 0, bottom: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        padding: '32px 24px calc(268px + env(safe-area-inset-bottom))',
-        gap: 24,
-        overflowY: 'auto',
-      }}>
-        {/* Power Meter */}
-        {sprintStarted && !isDiagnostic && (
-          <div className="w-full max-w-[380px] flex items-center justify-between mb-[-8px]">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Streak</span>
-            <div className="flex gap-1.5 object-right">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className={`h-1.5 w-10 sm:w-12 rounded-full transition-all duration-300 ${
-                  combo > i 
-                    ? (i === 4 ? 'bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)]' : 'bg-brand-yellow shadow-[0_0_8px_rgba(251,186,0,0.5)]') 
-                    : 'bg-slate-200 dark:bg-slate-800'
-                }`} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Row: dot grid (left) + difficulty tag (right) */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          width: '100%', maxWidth: 380,
+        {/* ── Fixed top bar ─────────────────────────────────────────── */}
+        <header className="bg-[#2C3E50] dark:bg-slate-950 border-b border-transparent dark:border-slate-800" style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+          paddingTop: 'calc(8px + env(safe-area-inset-top))',
+          paddingBottom: 12,
+          paddingLeft: 16,
+          paddingRight: 16,
+          display: 'flex', alignItems: 'center', gap: 16,
         }}>
-          {problem.a <= 10 && problem.b <= 10
-            ? <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} cellSize={8} />
-            : <div />
-          }
-          <span className={`tag ${difficultyTag.cls}`} style={{ flexShrink: 0, marginTop: 2 }}>
-            {difficultyTag.label}
-          </span>
-        </div>
+          <button
+            onClick={() => handlersRef.current.handleEnd()} disabled={ending}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.7)', fontSize: 24, lineHeight: 1,
+              padding: '4px', borderRadius: 8,
+              WebkitTapHighlightColor: 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            aria-label={t('sprint.endSprint')}
+          >✕</button>
 
-        {/* Equation or feedback */}
-        {interstitial ? (
-          <div className="flex flex-col items-center justify-center min-h-[180px] w-full max-w-[360px] animate-in slide-in-from-bottom-4 fade-in duration-300">
-            <div className={`text-2xl font-black uppercase tracking-widest px-8 py-6 rounded-3xl border-4 shadow-xl flex flex-col items-center gap-3 ${interstitial === 'tap' ? 'bg-indigo-50/90 dark:bg-indigo-900/50 text-indigo-500 border-indigo-200 dark:border-indigo-800' : 'bg-brand-yellow/10 text-amber-600 border-brand-yellow/30'}`}>
-               <span className="text-5xl animate-bounce">{interstitial === 'tap' ? '👆' : '⌨️'}</span>
-               {interstitial === 'tap' ? 'TAP MODE' : 'TYPE MODE'}
+          <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+            <div style={{ color: 'white', fontWeight: 800, fontSize: 16, lineHeight: 1.2, letterSpacing: '-0.5px' }}>
+              1UP
+              {typeof window !== 'undefined' && window.localStorage.getItem('show_telemetry') === '1' && (
+                <span className="ml-2 font-mono text-[12px] font-black text-emerald-400 bg-emerald-950/80 ring-1 ring-emerald-500/30 px-1.5 py-[1px] rounded shadow-inner drop-shadow-md tracking-tighter align-middle">
+                  {hwLatency > 0 ? `${hwLatency.toFixed(0)}ms` : '--ms'}
+                </span>
+              )}
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.2, fontWeight: 500 }}>
+              {isDiagnostic
+                ? `${t('sprint.phase')} ${Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4`
+                : `✓ ${correct}/${answered} · ${score.toFixed(1)} pts`
+              }
             </div>
           </div>
-        ) : feedback && !feedback.isTapPenalty ? (
-          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
-            <div style={{
-              fontSize: 32, fontWeight: 800,
-              color: feedback.isCorrect ? '#5DD23C' : '#E8391D',
-            }}>
-              {feedback.isCorrect
-                ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
-                : t('sprint.feedbackTryAgain')}
-            </div>
-            {!feedback.isCorrect && (
-              <div className="mt-4 px-4 py-2 bg-slate-100 rounded-lg text-sm text-slate-600 font-semibold max-w-[280px]">
-                {getRechenweg(problem.a, problem.b).hint}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 8, fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
-              <div className="text-[#2C3E50] dark:text-white" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
-                {problem.a}&nbsp;×&nbsp;{problem.b}
-              </div>
-            </div>
-            
-            {problem.promptMode === 1 ? (
-              <div className="relative w-full flex justify-center">
-                <TapLayout options={problem.options} onAnswer={ans => handlersRef.current.handleTapAnswer(ans)} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
-                
-                {feedback?.isTapPenalty && (
-                  <div className="absolute inset-x-0 -top-4 -bottom-4 z-10 flex flex-col items-center justify-center bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm rounded-3xl animate-in fade-in zoom-in-95 duration-200">
-                    <div className="bg-red-500 text-white font-black px-6 py-4 rounded-2xl shadow-[0_8px_30px_rgb(239,68,68,0.3)] flex flex-col items-center transform transition-transform">
-                      <span className="text-3xl mb-1">⏱</span>
-                      <span className="text-lg tracking-tight leading-tight text-center">
-                        {t('sprint.tapPenalty', { defaultValue: 'Kurze Pause...' })}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <form onSubmit={e => { e.preventDefault(); handlersRef.current.doSubmit(); }} style={{
-                display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'
-              }}>
-              <input
-                ref={inputRef}
-                className="field bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
-                type="number"
-                inputMode={isTouchDevice ? 'none' : 'numeric'}
-                readOnly={isTouchDevice}
-                defaultValue={""}
-                onInput={e => {
-                  if (!isTouchDevice) setInput(e.currentTarget.value);
-                }}
-                placeholder="?"
-                style={{
-                  flex: 1, maxWidth: 160, textAlign: 'center',
-                  fontSize: 32, fontWeight: 800,
-                  padding: '14px 16px', borderRadius: 16,
-                  caretColor: isTouchDevice ? 'transparent' : undefined,
-                  border: 'none',
-                  outline: 'none',
-                }}
-                autoFocus={!isTouchDevice}
-                disabled={timeLeft === 0}
-              />
-              <button
-                className="btn pressable"
-                type="submit"
-                style={{
-                  fontSize: 24, padding: '0 24px', height: 66, borderRadius: 16,
-                  background: 'var(--color-brand-yellow)',
-                  color: '#1e293b',
-                  border: 'none',
-                  boxShadow: '0 2px 0 rgba(0,0,0,0.05)',
-                  cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                }}
-                disabled={timeLeft === 0 || !input.trim()}
-              >↵</button>
-            </form>
-            )}
-          </div>
-        )}
-      </main>
 
-      {/* ── Fixed bottom numpad ────────────────────────────────────── */}
-      {problem.promptMode === 0 && (
-        <footer style={{
+          {/* Circular ring timer — one full rotation per 60 s */}
+          <svg width={44} height={44} style={{ flexShrink: 0, display: 'block' }}>
+            <circle cx={22} cy={22} r={RING_R}
+              fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={4} />
+            <circle cx={22} cy={22} r={RING_R}
+              fill="none"
+              stroke={timerColor === 'var(--accent)' ? '#FBBA00' : timerColor}
+              strokeWidth={4}
+              strokeLinecap="round"
+              strokeDasharray={RING_C}
+              strokeDashoffset={ringOffset}
+              transform="rotate(-90 22 22)"
+              style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
+            />
+            <text x={22} y={26.5} textAnchor="middle"
+              fill="white" fontSize={13} fontWeight="800"
+              style={{ fontVariantNumeric: 'tabular-nums', fontFamily: "'DM Sans', sans-serif" }}>
+              {timeLeft}
+            </text>
+          </svg>
+        </header>
+
+        {/* ── Middle content — Flowing from top down ─────────────────── */}
+        <main style={{
           position: 'fixed',
-          bottom: 0, left: 0, right: 0, zIndex: 100,
-          background: 'var(--card)',
-          borderTop: '1px solid var(--border)',
-          padding: '10px 16px',
-          paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
-          display: 'flex', justifyContent: 'center',
+          top: 'calc(64px + env(safe-area-inset-top))', left: 0, right: 0, bottom: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          padding: 'clamp(8px, 3vh, 32px) 24px calc(clamp(180px, 35vh, 268px) + env(safe-area-inset-bottom))',
+          gap: 'clamp(8px, 3.5vh, 24px)',
+          overflowY: 'auto',
         }}>
-          <Numpad disabled={timeLeft === 0 || !!feedback} onKey={key => handlersRef.current.handleNumpadKey(key)} />
-        </footer>
-      )}
-    </>
-  );
+          {/* Power Meter */}
+          {sprintStarted && !isDiagnostic && (
+            <div className="w-full max-w-[380px] flex items-center justify-between mb-[-8px]">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Streak</span>
+              <div className="flex gap-1.5 object-right">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className={`h-1.5 w-10 sm:w-12 rounded-full transition-all duration-300 ${combo > i
+                      ? (i === 4 ? 'bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)]' : 'bg-brand-yellow shadow-[0_0_8px_rgba(251,186,0,0.5)]')
+                      : 'bg-slate-200 dark:bg-slate-800'
+                    }`} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Row: dot grid (left) + difficulty tag (right) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            width: '100%', maxWidth: 380,
+          }}>
+            {problem.a <= 10 && problem.b <= 10
+              ? <DotArray a={problem.a} b={problem.b} faded={mastery !== 'untouched'} cellSize={8} />
+              : <div />
+            }
+            <span className={`tag ${difficultyTag.cls}`} style={{ flexShrink: 0, marginTop: 2 }}>
+              {difficultyTag.label}
+            </span>
+          </div>
+
+          {/* Equation or feedback */}
+          {interstitial ? (
+            <div className="flex flex-col items-center justify-center min-h-[180px] w-full max-w-[360px] animate-in slide-in-from-bottom-4 fade-in duration-300">
+              <div className={`text-2xl font-black uppercase tracking-widest px-8 py-6 rounded-3xl border-4 shadow-xl flex flex-col items-center gap-3 ${interstitial === 'tap' ? 'bg-indigo-50/90 dark:bg-indigo-900/50 text-indigo-500 border-indigo-200 dark:border-indigo-800' : 'bg-brand-yellow/10 text-amber-600 border-brand-yellow/30'}`}>
+                <span className="text-5xl animate-bounce">{interstitial === 'tap' ? '👆' : '⌨️'}</span>
+                {interstitial === 'tap' ? 'TAP MODE' : 'TYPE MODE'}
+              </div>
+            </div>
+          ) : feedback && !feedback.isTapPenalty ? (
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
+              <div style={{
+                fontSize: 32, fontWeight: 800,
+                color: feedback.isCorrect ? '#5DD23C' : '#E8391D',
+              }}>
+                {feedback.isCorrect
+                  ? t('sprint.feedbackCorrect', { points: feedback.points.toFixed(1) })
+                  : t('sprint.feedbackTryAgain')}
+              </div>
+              {!feedback.isCorrect && (
+                <div className="mt-4 px-4 py-2 bg-slate-100 rounded-lg text-sm text-slate-600 font-semibold max-w-[280px]">
+                  {getRechenweg(problem.a, problem.b).hint}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ textAlign: 'center', marginBottom: 'clamp(8px, 3vh, 24px)' }}>
+                <div style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 'clamp(0px, 1vh, 8px)', fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
+                <div className="text-[#2C3E50] dark:text-white" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
+                  {problem.a}&nbsp;×&nbsp;{problem.b}
+                </div>
+              </div>
+
+              {problem.promptMode === 1 ? (
+                <div className="relative w-full flex justify-center">
+                  <TapLayout options={problem.options} onAnswer={ans => handlersRef.current.handleTapAnswer(ans)} disabled={timeLeft === 0 || !!feedback} penaltyActive={feedback?.isTapPenalty} />
+
+                  {feedback?.isTapPenalty && (
+                    <div className="absolute inset-x-0 -top-4 -bottom-4 z-10 flex flex-col items-center justify-center bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm rounded-3xl animate-in fade-in zoom-in-95 duration-200">
+                      <div className="bg-red-500 text-white font-black px-6 py-4 rounded-2xl shadow-[0_8px_30px_rgb(239,68,68,0.3)] flex flex-col items-center transform transition-transform">
+                        <span className="text-3xl mb-1">⏱</span>
+                        <span className="text-lg tracking-tight leading-tight text-center">
+                          {t('sprint.tapPenalty', { defaultValue: 'Kurze Pause...' })}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <form onSubmit={e => { e.preventDefault(); handlersRef.current.doSubmit(); }} style={{
+                  display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center'
+                }}>
+                  <input
+                    ref={inputRef}
+                    className="field bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+                    type="number"
+                    inputMode={isTouchDevice ? 'none' : 'numeric'}
+                    readOnly={isTouchDevice}
+                    defaultValue={""}
+                    onInput={e => {
+                      if (!isTouchDevice) setInput(e.currentTarget.value);
+                    }}
+                    placeholder="?"
+                    style={{
+                      flex: 1, maxWidth: 160, textAlign: 'center',
+                      fontSize: 32, fontWeight: 800,
+                      padding: '14px 16px', borderRadius: 16,
+                      caretColor: isTouchDevice ? 'transparent' : undefined,
+                      border: 'none',
+                      outline: 'none',
+                    }}
+                    autoFocus={!isTouchDevice}
+                    disabled={timeLeft === 0}
+                  />
+                  {!isTouchDevice && (
+                    <button
+                      className="btn pressable"
+                      type="submit"
+                      style={{
+                        padding: '0 24px', height: 66, borderRadius: 16,
+                        background: 'var(--color-brand-yellow)',
+                        color: '#1e293b',
+                        border: 'none',
+                        boxShadow: '0 2px 0 rgba(0,0,0,0.05)',
+                        cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                      }}
+                      disabled={timeLeft === 0 || !input.trim()}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 10 4 15 9 20"></polyline>
+                        <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                      </svg>
+                    </button>
+                  )}
+                </form>
+              )}
+            </div>
+          )}
+        </main>
+
+        {/* ── Fixed bottom numpad ────────────────────────────────────── */}
+        {problem.promptMode === 0 && (
+          <footer style={{
+            position: 'fixed',
+            bottom: 0, left: 0, right: 0, zIndex: 100,
+            background: 'var(--card)',
+            borderTop: '1px solid var(--border)',
+            padding: 'clamp(6px, 1.5vh, 10px) 16px',
+            paddingBottom: 'calc(clamp(6px, 1.5vh, 10px) + env(safe-area-inset-bottom))',
+            display: 'flex', justifyContent: 'center',
+          }}>
+            <Numpad disabled={timeLeft === 0 || !!feedback} onKey={key => handlersRef.current.handleNumpadKey(key)} />
+          </footer>
+        )}
+      </>
+    );
   }, [
     // Visual DOM dependencies (primitives or stable refs)
     timeLeft, SPRINT_DURATION,

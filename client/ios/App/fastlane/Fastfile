@@ -1,0 +1,68 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Generate App Store screenshots for all 9 languages via headless browser"
+  lane :screenshots do
+    sh "cd #{File.join(File.dirname(__FILE__), '../../..')} && npm run screenshots"
+  end
+
+  desc "Push metadata and screenshots to App Store Connect (no binary)"
+  lane :metadata do
+    deliver(
+      skip_binary_upload: true,
+      skip_screenshots:   false,
+      skip_metadata:      false,
+      force:              true,
+      submit_for_review:  false
+    )
+  end
+
+  desc "Full release: screenshots → metadata → build → submit for review"
+  lane :release do
+    screenshots
+    deliver(
+      skip_binary_upload: true,
+      skip_screenshots:   false,
+      skip_metadata:      false,
+      force:              true,
+      submit_for_review:  false
+    )
+    build_app(
+      scheme:        "App",
+      export_method: "app-store"
+    )
+    deliver(
+      skip_binary_upload: false,
+      skip_screenshots:   true,
+      skip_metadata:      true,
+      submit_for_review:  true,
+      automatic_release:  false
+    )
+  end
+
+  desc "CI: build archive and upload to TestFlight only"
+  lane :beta do
+    build_app(
+      scheme:          "App",
+      export_method:   "app-store"
+    )
+    upload_to_testflight(skip_waiting_for_build_processing: true)
+  end
+
+end

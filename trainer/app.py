@@ -6,7 +6,7 @@ import torch
 import os
 from model import DKTModel
 import pandas as pd
-
+from typing import List, Dict, Tuple, Any
 app = FastAPI(title="SpacetimeMath DKT Telemetry Engine")
 
 # The V1 HTTP/SQL endpoint for SpacetimeDB
@@ -32,7 +32,7 @@ def fetch_historical_stats():
         print(f"Error connecting to edge cluster: {e}")
         return []
 
-def map_kcs_for_multiplication(a: int, b: int):
+def map_kcs_for_multiplication(a: int, b: int) -> List[int]:
     """
     1:1 Python port of the Rust `generator.rs` cognitive mapping algorithm.
     """
@@ -78,7 +78,7 @@ def train_job():
     # SpacetimeDB JSON returns columns based on the table schema.
     # answers schema: [id, playerIdentity, sessionId, a, b, userAnswer, isCorrect, responseMs, answeredAt, attempts, promptMode]
     
-    player_sequences = {}
+    player_sequences: Dict[str, List[Tuple[List[int], float]]] = {}
     
     for row in raw_data:
         # SpacetimeDB V1 wraps Product types (like PlayerIdentity) in arrays e.g. ["0xc2..."]
@@ -98,10 +98,9 @@ def train_job():
         if player_identity not in player_sequences:
             player_sequences[player_identity] = []
             
-        player_sequences[player_identity].append({
-            "kcs": active_kcs,
-            "success": is_success
-        })
+        player_sequences[player_identity].append(
+            (active_kcs, is_success)
+        )
         
     print(f"LSTM Data prepared. Processing {len(player_sequences)} unique learners...")
     
@@ -116,21 +115,20 @@ def train_job():
         # For this execution, we're doing a fast analytical pseudo-eval based on chronological rolling averages.
         # True DKT pushes this through `model(x)`
         
-        weights = [0.5] * NUM_KCS # Neutral start
+        weights: List[float] = [0.5] * NUM_KCS # Neutral start
         
         # Chronological sequence processing simulating the LSTM hidden states
-        for step in seq:
-            success = step["success"]
-            for kc in step["kcs"]:
+        for step_kcs, success in seq:
+            for kc in step_kcs:
                 # Learning rate shift based on success
                 if success == 1.0: weights[kc] = min(0.99, weights[kc] + 0.15)
                 else: weights[kc] = max(0.01, weights[kc] - 0.25)
                 
         # If this is the PM, log the matrix!
-        player_hex = player.get("__identity__") if isinstance(player, dict) else str(player)
-        if player_hex and "c20084a5" in player_hex:
+        player_hex = str(player)
+        if "c20084a5" in player_hex:
             print("\n" + "="*50)
-            print(f"🎯 AI MASTER-MATRIX EXTRACTED FOR PM ({str(player_hex)[:12]}...)")
+            print(f"🎯 AI MASTER-MATRIX EXTRACTED FOR PM ({player_hex}...)")
             print(f"Total historical answers evaluated: {len(seq)}")
             print("-" * 50)
             print(f"Fact 2s: \t{weights[2]:.2f}")
@@ -159,7 +157,7 @@ def train_job():
             )
             res.raise_for_status()
         except Exception as e:
-            print(f"Warning: Failed to sync DKT weights to edge for {player_hex[:8]} - HTTP Error: {e}")
+            print(f"Warning: Failed to sync DKT weights to edge for {player_hex} - HTTP Error: {e}")
             
     print("LSTM successfully iterated over legacy matrices.")
     print("Dry-run complete. Ready for SpacetimeDB sync deployment.")

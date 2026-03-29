@@ -1,0 +1,20 @@
+Better 1UP, çarpım tablosunu hızlı tempolu bir çok oyunculu oyuna dönüştürür.
+
+Süreye karşı sorulara yanıt ver, 8 aşamalı seviyeyi tırman ve sınıf arkadaşlarınla canlı sınıf sprintlerinde yarış — hesap oluşturmadan ve kişisel veri paylaşmadan.
+
+NASIL ÇALIŞIR
+• Sprint: 60 saniye, arka arkaya sorular. Puan, zorluğa göre ağırlıklandırılır — kolay sorular az, zor sorular çok puan verir.
+• 8 Seviye: Kolay sorularla başla, doğruluk oranın arttıkça daha zor çiftlerin kilidini aç. 7. seviye genişletilmiş modu açar (×11–×20).
+• Sınıf Modu: Öğretmenler grup sprinti başlatır; öğrenciler canlı olarak katılır ve gerçek zamanlı bir liderlik tablosunda yarışır.
+
+AKILLI ZORLUK
+Uygulama tam seviyene uyum sağlar. Sorular yalnızca mevcut seviyenden gelir — asla çok kolay, asla sinir bozucu. Ustalık arka planda sessizce takip edilir.
+
+GİZLİLİK ÖNCELİĞİ
+Hesap gerekmez. Öğrencilerden ad, e-posta veya cihaz kimliği toplanmaz. Öğrenme ilerlemesi cihazda kalır. Reklam yok. Takip yok. GDPR uyumlu.
+
+ÖĞRETMENLER İÇİN
+Saniyeler içinde sınıf oluştur. Tüm sınıf için sprint başlat. Puanları canlı izle. Öğrenciler sınıf koduyla katılır.
+
+8 DİL
+English, Deutsch, Français, Nederlands, Türkçe, Українська, العربية, 中文

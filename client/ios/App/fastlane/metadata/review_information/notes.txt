@@ -1,0 +1,8 @@
+No login or account is required to use this app.
+
+To review the app:
+1. Tap "Register" on the first screen — a session is created instantly with no credentials.
+2. From the lobby, tap "Sprint" to start a 60-second multiplication session.
+3. To see classroom features, tap "Classrooms" and create a classroom. Share the classroom code with a second device to simulate a student joining.
+
+The app uses an anonymous device-bound session (SpaceTimeDB token stored in localStorage). No personal data is collected from users at any point.

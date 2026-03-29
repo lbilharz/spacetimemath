@@ -1,0 +1,6 @@
+app_identifier("eu.bilharz.oneup")
+apple_id("l.bilharz@global-communication.de")
+
+# App Store Connect API key (used in CI — set env vars or key file)
+# itc_team_id("")   # uncomment if you belong to multiple teams
+# team_id("")       # uncomment if you belong to multiple teams

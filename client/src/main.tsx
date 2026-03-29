@@ -72,8 +72,18 @@ function Root() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Root />
-  </React.StrictMode>
-);
+import ScreenshotPage from './pages/ScreenshotPage.js';
+
+if (typeof window !== 'undefined' && import.meta.env.DEV && window.location.pathname === '/screenshot') {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <ScreenshotPage />
+    </React.StrictMode>
+  );
+} else {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <Root />
+    </React.StrictMode>
+  );
+}
