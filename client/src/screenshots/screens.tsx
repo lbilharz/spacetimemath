@@ -74,16 +74,16 @@ export function MasteryGrid({ lang }: { lang: string }) {
   const { t } = useTranslation();
   
   const marketing = {
-    de: { f3_title: "Lernmatrix", f3_desc: "Führt automatisch formative Lernstandserhebungen durch – Sie sehen sofort, ob Kompetenzen automatisiert sind." },
-    fr: { f3_title: "Matrice de Maîtrise", f3_desc: "Opère comme une évaluation formative automatique continue pour observer l'apprentissage." },
-    es: { f3_title: "Matriz de Dominio", f3_desc: "Funciona operativamente como una evaluación formativa automatizada." },
-    nl: { f3_title: "Beheersing Matrix", f3_desc: "Levert real-time formatieve toetsingsdata op. Ontdek onmiddellijk op individueel niveau of kerndoelen behaald zijn." },
-    tr: { f3_title: "Gelişim Matrisi", f3_desc: "Öğretmenler için formatif ölçme aracı. Otomatik analizle zayıf noktaları saptar." },
-    uk: { f3_title: "Діагностична Матриця", f3_desc: "Прозорий зріз знань. Працює як інструмент формувального оцінювання." },
-    ar: { f3_title: "مصفوفة الكفاءة", f3_desc: "شبكة تقييم تكويني فورية للمعلم. ترصد الأتمتة التامة." },
-    zh: { f3_title: "形成性评价矩阵", f3_desc: "充当可视化助教，自动化全维评价机制。" },
-    en: { f3_title: "Mastery Grid", f3_desc: "Automatically performs formative assessment so you instantly see which problems are mastered." }
-  }[lang.split('-')[0] || 'en'] || { f3_title: "Mastery Grid", f3_desc: "Automatically performs formative assessment so you instantly see which problems are mastered." };
+    de: { f3_title: "Lernmatrix", f3_desc: "Führt automatisch formative Lernstandserhebungen durch – Sie sehen sofort, ob Kompetenzen automatisiert sind.", f3_cta: "Auf einen Blick sehen, was bereits beherrscht wird." },
+    fr: { f3_title: "Matrice de Maîtrise", f3_desc: "Opère comme une évaluation formative automatique continue pour observer l'apprentissage.", f3_cta: "Voir exactement ce que vous maîtrisez en un coup d'œil." },
+    es: { f3_title: "Matriz de Dominio", f3_desc: "Funciona operativamente como una evaluación formativa automatizada.", f3_cta: "Ve exactamente qué dominas de un vistazo." },
+    nl: { f3_title: "Beheersing Matrix", f3_desc: "Levert real-time formatieve toetsingsdata op. Ontdek onmiddellijk op individueel niveau of kerndoelen behaald zijn.", f3_cta: "Zie in één oogopslag wat al beheerst wordt." },
+    tr: { f3_title: "Gelişim Matrisi", f3_desc: "Öğretmenler için formatif ölçme aracı. Otomatik analizle zayıf noktaları saptar.", f3_cta: "Bir bakışta tam olarak ne bildiğini gör." },
+    uk: { f3_title: "Діагностична Матриця", f3_desc: "Прозорий зріз знань. Працює як інструмент формувального оцінювання.", f3_cta: "Побач одразу, що вже засвоєно." },
+    ar: { f3_title: "مصفوفة الكفاءة", f3_desc: "شبكة تقييم تكويني فورية للمعلم. ترصد الأتمتة التامة.", f3_cta: "شاهد ما تتقنه بنظرة واحدة." },
+    zh: { f3_title: "形成性评价矩阵", f3_desc: "充当可视化助教，自动化全维评价机制。", f3_cta: "一眼看清掌握了什么。" },
+    en: { f3_title: "Mastery Grid", f3_desc: "Automatically performs formative assessment so you instantly see which problems are mastered.", f3_cta: "See exactly what you know at a glance." }
+  }[lang.split('-')[0] || 'en'] || { f3_title: "Mastery Grid", f3_desc: "Automatically performs formative assessment so you instantly see which problems are mastered.", f3_cta: "See exactly what you know at a glance." };
 
   const getCellColor = (r: number, c: number) => {
     if (r <= 5 && c <= 5) return "var(--color-green)"; // ~30 cells Green
@@ -129,7 +129,7 @@ export function MasteryGrid({ lang }: { lang: string }) {
       
       <div className="w-full text-center border-t border-[#E9E9E9] pt-6 mt-6">
         <div className="text-[#666] text-[13px] font-medium leading-snug">
-          See exactly what you know at a glance.
+          {marketing.f3_cta}
         </div>
       </div>
     </div>
@@ -151,6 +151,18 @@ export const ClassroomLive = ({ lang }: { lang: string }) => {
     en: ['Emma', 'Noah', 'Olivia', 'Liam', 'Ava']
   }[lang.split('-')[0] || 'en'] || ['Emma', 'Noah', 'Olivia', 'Liam', 'Ava'];
 
+  const cl3 = {
+    de: { active: '3a (24/24 aktiv)', join: '+ Klasse beitreten' },
+    fr: { active: '3a (24/24 actifs)', join: '+ Rejoindre la classe' },
+    es: { active: '3a (24/24 activos)', join: '+ Unirse a la clase' },
+    nl: { active: '3a (24/24 actief)', join: '+ Klas aansluiten' },
+    tr: { active: '3a (24/24 aktif)', join: '+ Sınıfa Katıl' },
+    uk: { active: '3a (24/24 активних)', join: '+ Приєднатись до класу' },
+    ar: { active: '٣أ (٢٤/٢٤ نشاط)', join: '+ انضم إلى الفصل' },
+    zh: { active: '三班 (24/24 在线)', join: '+ 加入班级' },
+    en: { active: '3a (24/24 active)', join: '+ Join Class' }
+  }[lang.split('-')[0] || 'en'] || { active: '3a (24/24 active)', join: '+ Join Class' };
+
   return (
     <div className="w-full h-full bg-[var(--color-darkest)] flex flex-col font-[var(--font)] relative px-6 py-16 text-white pb-10">
       <div className="absolute top-0 right-0 left-0 h-[400px] pointer-events-none rounded-b-[150px] bg-[var(--color-blue)] opacity-10 blur-[100px] z-0"></div>
@@ -163,7 +175,7 @@ export const ClassroomLive = ({ lang }: { lang: string }) => {
           </div>
         </div>
         <div className="text-[28px] font-black leading-tight text-white">{t('classSprint.live')}</div>
-        <div className="text-[13px] font-bold text-[var(--color-blue)] mt-1 tracking-wide">3a (24/24 active)</div>
+        <div className="text-[13px] font-bold text-[var(--color-blue)] mt-1 tracking-wide">{cl3.active}</div>
       </div>
 
       <div className="relative z-10 w-full flex-1 flex flex-col gap-3">
@@ -192,7 +204,7 @@ export const ClassroomLive = ({ lang }: { lang: string }) => {
           {t('classSprint.alertStarting')}
         </div>
         <button className="w-full bg-[var(--color-blue)] text-white text-[18px] font-black rounded-3xl py-5 shadow-lg relative overflow-hidden">
-          + Join Class
+          {cl3.join}
           <div className="absolute inset-0 bg-white/20 blur-xl scale-150 rotate-12 -translate-x-full"></div>
         </button>
       </div>
