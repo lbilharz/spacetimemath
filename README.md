@@ -123,6 +123,52 @@ To work around this, four "result" tables are marked `public` instead of private
 
 When SpacetimeDB adds reliable private-table push in a future version, these four tables can be made private again without any other changes.
 
+## iOS release pipeline
+
+The app is published to the App Store as **Better 1UP** (`eu.bilharz.oneup`).
+
+### Releasing a new version
+
+```bash
+git tag v1.0.1 && git push --tags
+```
+
+This triggers the GitHub Actions workflow (`ios-release.yml`) which:
+1. Builds the React app and syncs it to the Xcode project via Capacitor
+2. Fetches the distribution certificate + provisioning profile via **Fastlane Match** (`lbilharz/ios-certificates`)
+3. Archives and signs the app with Xcode
+4. Uploads the build to **TestFlight**
+
+### Manual runs
+
+From the **Actions** tab → **iOS Release** → **Run workflow**, pick a lane:
+
+| Lane | What it does |
+|------|-------------|
+| `beta` | Build + upload to TestFlight only |
+| `metadata` | Push store listing text + screenshots, no binary |
+| `release` | Full: screenshots → metadata → build → submit for review |
+
+### App Store screenshots
+
+90 PNGs (9 languages × 2 device sizes × 5 screens) are generated via Playwright headless browser. The system is config-driven — adding a new screen means adding one entry to `client/src/screenshots/config.ts` and one React component in `client/src/screenshots/screens.tsx`.
+
+```bash
+cd client && npm run screenshots   # regenerate all 90 screenshots locally
+```
+
+### Required GitHub secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `ASC_API_KEY_ID` | App Store Connect API key ID |
+| `ASC_API_KEY_ISSUER_ID` | App Store Connect issuer ID |
+| `ASC_API_KEY_CONTENT` | Base64-encoded `.p8` key file |
+| `MATCH_PASSWORD` | Passphrase to decrypt the certificates repo |
+| `GH_PAT` | Fine-grained PAT with read access to `lbilharz/ios-certificates` |
+
+---
+
 ## Project structure
 
 ```
