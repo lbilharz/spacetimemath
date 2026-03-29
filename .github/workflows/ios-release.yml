@@ -75,6 +75,11 @@ jobs:
           ASC_API_KEY_CONTENT: ${{ secrets.ASC_API_KEY_CONTENT }}
           ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
 
+      # Authenticate git so match can clone the private ios-certificates repo
+      - name: Authenticate git for match
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
+
       - name: Run Fastlane
         run: bundle exec fastlane ${{ github.event_name == 'workflow_dispatch' && inputs.lane || 'beta' }}
         working-directory: client/ios/App
