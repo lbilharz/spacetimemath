@@ -2,16 +2,8 @@ name: iOS Release
 
 on:
   push:
-    branches: [main]
-    paths:
-      # Only trigger when app code or store assets actually change
-      - 'client/src/**'
-      - 'client/public/**'
-      - 'client/ios/**'
-      - 'server/src/**'
-      - 'client/ios/App/fastlane/metadata/**'
-      - 'client/ios/App/fastlane/screenshots/**'
-      - '.github/workflows/ios-release.yml'
+    tags:
+      - 'v*'   # trigger on version tags: git tag v1.0.1 && git push --tags
 
   # Allow manual trigger from GitHub UI with choice of lane
   workflow_dispatch:
