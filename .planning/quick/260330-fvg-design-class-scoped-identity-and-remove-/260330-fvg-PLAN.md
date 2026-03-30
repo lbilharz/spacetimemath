@@ -122,12 +122,22 @@ teacher_identity: Identity,  // wer hat die Klasse erstellt
 
 A Solo player can upgrade to Teacher or Student later — the SpaceTimeDB `Identity` stays the same, only `player_type` and optional fields change.
 
+### Allowed Transitions
+
+| From → To | Allowed | Enforcement |
+|-----------|---------|-------------|
+| Solo → SuS | ✅ | Enter class code + pick name |
+| Solo → LuL | ✅ | Email + two consent checkboxes (see below) |
+| SuS → LuL | ❌ | Server rejects: `player_type == Student` |
+| LuL → SuS | ❌ | No use case |
+
 ### Reducers
 
 ```rust
-upgrade_to_teacher(email: String)
+upgrade_to_teacher(email: String, gdpr_consent: bool, teacher_declaration: bool)
+// → rejects if caller is already Student
+// → rejects if gdpr_consent == false or teacher_declaration == false
 // → sets player_type = Teacher, stores email
-// → requires GDPR consent flag passed from client
 
 join_class(class_code: String, class_username: String)
 // → validates code, checks username unique in class
@@ -137,18 +147,26 @@ join_class(class_code: String, class_username: String)
 
 ### GDPR Compliance for Teacher Email Collection
 
-The email-entry moment is the **consent moment** — must be handled correctly:
+No technical verification required — **Selbstauskunft** (self-declaration) is legally sufficient under DSGVO. Liability shifts to the user if they provide false information. This is standard practice for professional tools.
+
+UI must show two non-pre-ticked checkboxes before storing any data:
+
+```
+☐ Ich bestätige, dass ich Lehrkraft bin und diese Funktion
+  ausschließlich für schulische Zwecke nutze.
+
+☐ Ich stimme der Speicherung meiner E-Mail-Adresse zur
+  Kontowiederherstellung zu. [Datenschutzerklärung ↗]
+```
 
 | Requirement | Implementation |
 |------------|----------------|
-| Explicit consent | Checkbox (not pre-ticked): "Ich stimme der Speicherung meiner E-Mail zur Kontowiederherstellung zu" |
-| Purpose limitation | Visible text: "Nur zur Kontowiederherstellung. Kein Marketing." |
-| Privacy Policy link | Mandatory link before checkbox |
+| Explicit consent | Two checkboxes, neither pre-ticked |
+| Purpose limitation | "Nur zur Kontowiederherstellung. Kein Marketing." visible above form |
+| Privacy Policy link | Mandatory link in second checkbox label |
 | Right to deletion | Account deletion reducer must also wipe email |
 | Data minimization | Only email stored — no name, no phone, nothing else |
-| No PII for minors | Students (SuS) provide zero PII — username is pseudonymous |
-
-The `upgrade_to_teacher` reducer must receive a `gdpr_consent: bool` parameter. Server rejects if `false`.
+| No PII for minors | SuS provide zero PII — username is pseudonymous, no consent needed |
 
 ### SuS: Zero PII Design
 
