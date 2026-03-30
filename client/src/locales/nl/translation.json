@@ -24,7 +24,7 @@
     "tagline": "Ken je niveau."
   },
   "register": {
-    "tagline": "60 seconden. Vermenigvuldigingstabellen. Live ranglijst.",
+    "tagline": "60 seconden. Tafels van vermenigvuldiging. Versla je record.",
     "chooseName": "Kies je naam",
     "usernamePlaceholder": "Kies gebruikersnaam …",
     "usernameError": "Gebruikersnaam moet 1-24 tekens zijn",
@@ -112,7 +112,6 @@
     "weightedScore": "gewogen score",
     "correct": "Goed",
     "accuracy": "Nauwkeurigheid",
-    "rank": "Rang",
     "struggled": "Je had moeite met:",
     "struggledHint": "Deze zullen vaker verschijnen in je volgende sprint.",
     "masteryTitle": "Beheersingsrooster",
@@ -214,18 +213,6 @@
     "noReminders": "Geen actieve herinneringen. Voeg er een toe om je reeks te behouden!",
     "daily": "Elke dag",
     "weekly": "Specifieke dagen"
-  },
-  "leaderboard": {
-    "title": "Ranglijst",
-    "empty": "Nog geen sessies — wees de eerste!",
-    "colHash": "#",
-    "colPlayer": "Speler",
-    "colScore": "Score",
-    "colAccuracy": "Nauw.",
-    "colAnswers": "Antw.",
-    "you": "jij",
-    "footer": "Score = Σ moeilijkheidsgewicht van goede antwoorden · Live via SpaceTimeDB",
-    "tierAll": "Alle"
   },
   "unlock": {
     "tier1Title": "2-Cijferige vermenigvuldiger ontgrendeld!",

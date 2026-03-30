@@ -33,7 +33,7 @@
     "tagline": "Kenn dein Level."
   },
   "register": {
-    "tagline": "60 Sekunden. Einmaleins. Live-Rangliste.",
+    "tagline": "60 Sekunden. Einmaleins. Schlag deinen Rekord.",
     "chooseName": "Wähle deinen Namen",
     "usernamePlaceholder": "Benutzername aussuchen …",
     "usernameError": "Benutzername muss 1–24 Zeichen lang sein",
@@ -122,7 +122,6 @@
     "correct": "Richtig",
     "accuracy": "Genauigkeit",
     "maxStreak": "Max. Streak",
-    "rank": "Rang",
     "struggled": "Schwierigkeiten mit:",
     "struggledHint": "Diese erscheinen beim nächsten Sprint häufiger.",
     "masteryTitle": "Lernübersicht",
@@ -223,18 +222,6 @@
     "noReminders": "Keine aktiven Erinnerungen. Füge eine hinzu, um dranzubleiben!",
     "daily": "Jeden Tag",
     "weekly": "Bestimmte Tage"
-  },
-  "leaderboard": {
-    "title": "Rangliste",
-    "empty": "Noch keine Sprints — sei der Erste!",
-    "colHash": "#",
-    "colPlayer": "Name",
-    "colScore": "Punkte",
-    "colAccuracy": "Gen.",
-    "colAnswers": "Ant.",
-    "you": "du",
-    "footer": "Punkte = Σ Schwierigkeit aller richtigen Antworten · Live via SpaceTimeDB",
-    "tierAll": "Alle"
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",
