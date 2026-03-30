@@ -22,6 +22,7 @@ jobs:
   ios:
     name: ${{ github.event_name == 'workflow_dispatch' && inputs.lane || 'beta' }}
     runs-on: macos-15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -67,10 +68,21 @@ jobs:
           ASC_API_KEY_CONTENT: ${{ secrets.ASC_API_KEY_CONTENT }}
           ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
 
-      # Authenticate git so match can clone the private ios-certificates repo
+      # Cache Swift Package Manager dependencies (avoids re-fetching on every run)
+      - name: Cache SPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
+            ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('client/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      # Authenticate git for match ONLY — scoped to lbilharz/ so SPM public repos are unaffected
       - name: Authenticate git for match
         run: |
-          git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/lbilharz/".insteadOf "https://github.com/lbilharz/"
 
       - name: Run Fastlane
         run: bundle exec fastlane ${{ github.event_name == 'workflow_dispatch' && inputs.lane || 'beta' }}
