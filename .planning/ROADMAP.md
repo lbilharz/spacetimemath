@@ -4,6 +4,7 @@
 
 - ✅ **v1.0 Safe for School Rollout** — Phases 1–8 (shipped 2026-03-15)
 - ✅ **v1.1 Fixed Grid + Extended Tables** — Phases 9–10 (shipped 2026-03-17)
+- 🔄 **v1.2 App Store Submission** — Phases 11–14 (in progress)
 
 ---
 
@@ -26,6 +27,30 @@
 
 </details>
 
+## v1.2 App Store Submission (Phases 11–14)
+
+**Goal:** Get Better 1UP approved in the App Store by fixing privacy dealbreakers, then introduce class-scoped identity for school use.
+
+- [ ] Phase 11: Remove Global Leaderboard UI
+  **Goal:** Remove all global leaderboard surfaces from the app so no child's pseudonym is visible to strangers. Sprint leaderboard scoped to class participants only. Unblocks App Store submission.
+  **Requirements:** APP-01, APP-02
+  **Plans:** 2 plans
+  Plans:
+  - [ ] 11-01-PLAN.md — Remove global leaderboard source code (LobbyPage, ResultsPage, App.tsx, delete Leaderboard.tsx)
+  - [ ] 11-02-PLAN.md — i18n cleanup (remove leaderboard keys, update tagline across 9 locales)
+
+- [ ] Phase 12: Onboarding Weiche (LuL / SuS / Solo)
+  **Goal:** Replace single registration flow with 3-way split: Teacher (email + consent), Student (class code + in-class name), Solo (pseudonym, no PII). SpaceTimeDB Identity remains the cryptographic unique key.
+  **Requirements:** AUTH-01, AUTH-02, AUTH-03, GDPR-01
+
+- [ ] Phase 13: Class-Scoped Username Uniqueness
+  **Goal:** Enforce username uniqueness per class (not globally) server-side. Add player_type, class_id, email fields to players table. Solo → Teacher / Solo → Student transitions via reducers. SuS → Teacher blocked server-side.
+  **Requirements:** AUTH-04, AUTH-05, GDPR-02
+
+- [ ] Phase 14: Friends via Invite Link
+  **Goal:** Replace "who is online" global view with opt-in friends graph. Solo players can invite friends via share link. Friends see each other's online status, sprint scores, and tier progress. Alias support (CRUD).
+  **Requirements:** SOC-01, SOC-02
+
 ---
 
 ## Progress
@@ -35,3 +60,7 @@
 | 1–8. v1.0 phases | v1.0 | 31/31 | Complete | 2026-03-15 |
 | 9. Fixed Grid Visualization | v1.1 | 1/1 | Complete | 2026-03-16 |
 | 10. Extended Tables Opt-In | v1.1 | 1/1 | Complete | 2026-03-17 |
+| 11. Remove Global Leaderboard UI | 1/2 | In Progress|  | — |
+| 12. Onboarding Weiche | v1.2 | 0/? | Pending | — |
+| 13. Class-Scoped Username Uniqueness | v1.2 | 0/? | Pending | — |
+| 14. Friends via Invite Link | v1.2 | 0/? | Pending | — |

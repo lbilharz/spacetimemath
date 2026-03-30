@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Fixed Grid + Extended Tables
-status: complete
-last_updated: "2026-03-17"
-last_activity: "2026-03-17 - Completed v1.1 milestone"
+milestone: v1.2
+milestone_name: App Store Submission
+status: in_progress
+last_updated: "2026-03-30"
+last_activity: "2026-03-30 - Completed Phase 11 Plan 01: Remove global leaderboard UI"
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_phases: 4
+  completed_phases: 0
+  total_plans: 1
+  completed_plans: 1
+  percent: 5
 ---
 
 # Project State
@@ -20,16 +20,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17 after v1.1 milestone)
 
 **Core value:** Students practice multiplication facts in a fair, safe, adaptive environment — and the score they see reflects genuine mastery.
-**Current focus:** v1.1 complete — planning next milestone
+**Current focus:** v1.2 — App Store Submission (Phase 11 in progress)
 
 ## Current Position
 
-Milestone v1.1 complete and archived (2 phases, 2 plans).
-Status: Ready for `/gsd:new-milestone` to start v1.2
+Phase 11 (remove-global-leaderboard-ui): Plan 01 complete.
+Phase 11 Plan 01 (11-01) complete — global leaderboard UI removed, COPPA/DSGVO surfaces eliminated.
 
-Last activity: 2026-03-21 — Completed quick task 260321-c6m: WebSocket reconnection stability (no splash on reconnect, sprint state preserved, no repeated questions)
+Last activity: 2026-03-30 — Completed 11-01: Deleted Leaderboard.tsx, removed Live Players table from LobbyPage, removed global rank stat from ResultsPage, dropped best_scores/online_players subscriptions from App.tsx
 
-Progress: [██████████] 100% (2/2 phases complete)
+Progress: [█░░░░░░░░░] 5% (1/1 plans complete in v1.2)
+
+## Decisions
+
+- (11-01) Deleted Leaderboard.tsx entirely rather than hiding it to prevent accidental re-import
+- (11-01) Dropped best_scores and online_players subscriptions at App.tsx root — client no longer fetches global player data at all
+- (11-01) Kept sessions subscription in ResultsPage (still needed for session.isComplete and mastery grid)
 
 ## Quick Tasks Completed
 
@@ -47,6 +53,6 @@ Progress: [██████████] 100% (2/2 phases complete)
 
 ## Session Continuity
 
-Last session: 2026-03-21
-Stopped at: Completed quick-260321-c6m (WebSocket reconnection stability: wasEverConnected guard, lastConsumedTokenRef, isActive guard)
+Last session: 2026-03-30
+Stopped at: Completed 11-01-PLAN.md (Remove global leaderboard UI — Leaderboard.tsx deleted, Live Players removed, global rank removed, subscriptions dropped)
 Resume file: None
