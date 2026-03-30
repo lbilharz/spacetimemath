@@ -214,6 +214,76 @@ Students never provide personal data:
 
 ---
 
+## Solo Social: Friends via Invite Link
+
+Replaces global leaderboard and "who is online" for Solo players with a private, opt-in friends graph.
+
+### Why
+- No global username uniqueness → "who is online" is meaningless (who is "Dino7"?)
+- Privacy-safe: social graph is opt-in, not broadcast
+- Works with pseudonymous identities — no real names needed
+
+### Invite Link Flow
+
+```
+Solo Player A → "Freund einladen" → Share Sheet
+    → Link: https://better-1up.vercel.app/friend/<one-time-token>
+
+Empfänger öffnet Link:
+    ├── Neuer User  → Name wählen → automatisch Friend von A
+    └── Existing User → Friend-Request → zu A's Liste hinzugefügt
+```
+
+### Friends List (CRUD)
+
+| Operation | Action |
+|-----------|--------|
+| Add | Via Invite Link (one-time token, expires after use or 48h) |
+| Read | Online status + Sprint scores + Progress/tier |
+| Update | Alias vergeben ("Jonas aus Klasse 7" statt "Dino7") |
+| Delete | Freund entfernen (beide Seiten) |
+
+### SpaceTimeDB Schema
+
+```rust
+// friendships table
+initiator_identity: Identity,
+recipient_identity: Identity,
+alias_by_initiator: Option<String>,  // custom label
+alias_by_recipient: Option<String>,
+created_at: Timestamp,
+
+// friend_invites table (short-lived)
+token: String,          // random, one-time
+creator_identity: Identity,
+expires_at: Timestamp,
+used: bool,
+```
+
+### What Friends See
+- Online status (last seen)
+- Sprint scores (recent results)
+- Current tier / progress
+
+### GDPR
+- No PII — only SpaceTimeDB Identities stored
+- Invite token contains no personal data
+- "Delete friend" removes both sides of the relationship
+
+---
+
+## v2 Vision: Battle Mode
+
+Friend sprints and 1v1 duels — think Brawl Stars for multiplication.
+
+- **Friend Sprint:** invite a friend to a real-time sprint, see live leaderboard (2-player)
+- **Battle Mode:** 1v1 duel — same problem, first correct answer scores a point, first to N wins
+- Matchmaking: friends only (v2.0) → open matchmaking by tier (v2.1)
+
+Not planned for v1. Capture here as product direction.
+
+---
+
 ## Recommended Submission Strategy
 
 **For v1.0 submission: do Phase 1 only.**
