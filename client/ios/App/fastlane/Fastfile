@@ -76,17 +76,24 @@ platform :ios do
   lane :beta do
     key = asc_api_key
 
-    # Project uses automatic signing — pass -allowProvisioningUpdates so
-    # xcodebuild can fetch/create the profile via the ASC API key automatically.
-    # No need for match on CI; automatic signing handles it all.
+    # xcodebuild's -allowProvisioningUpdates needs the .p8 key on disk.
+    # CI writes it via the workflow step; locally we decode it from the env var.
+    require 'base64'
+    key_id   = ENV['ASC_API_KEY_ID']
+    key_path = File.expand_path("~/.private_keys/AuthKey_#{key_id}.p8")
+    unless File.exist?(key_path)
+      require 'fileutils'
+      FileUtils.mkdir_p(File.dirname(key_path))
+      File.write(key_path, Base64.decode64(ENV['ASC_API_KEY_CONTENT']))
+    end
+
     build_app(
-      scheme:          "App",
-      export_method:   "app-store",
-      xcargs:          "-allowProvisioningUpdates -disableAutomaticPackageResolution",
-      export_options:  {
-        signingStyle:         "automatic",
-        provisioningProfiles: { "eu.bilharz.oneup" => "" }
-      }
+      scheme:        "App",
+      export_method: "app-store",
+      xcargs:        "-allowProvisioningUpdates -disableAutomaticPackageResolution" \
+                     " -authenticationKeyID #{key_id}" \
+                     " -authenticationKeyIssuerID #{ENV['ASC_API_KEY_ISSUER_ID']}" \
+                     " -authenticationKeyPath #{key_path}"
     )
 
     upload_to_testflight(api_key: key, skip_waiting_for_build_processing: true)
