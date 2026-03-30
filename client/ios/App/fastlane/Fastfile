@@ -76,24 +76,50 @@ platform :ios do
   lane :beta do
     key = asc_api_key
 
-    # xcodebuild's -allowProvisioningUpdates needs the .p8 key on disk.
-    # CI writes it via the workflow step; locally we decode it from the env var.
-    require 'base64'
-    key_id   = ENV['ASC_API_KEY_ID']
-    key_path = File.expand_path("~/.private_keys/AuthKey_#{key_id}.p8")
-    unless File.exist?(key_path)
-      require 'fileutils'
-      FileUtils.mkdir_p(File.dirname(key_path))
-      File.write(key_path, Base64.decode64(ENV['ASC_API_KEY_CONTENT']))
+    # On CI: create a dedicated keychain so match can set cert ACLs
+    # without triggering a UI permission popup (login.keychain is locked).
+    if ENV['CI']
+      keychain_name     = "ci_build.keychain"
+      keychain_password = "ci_keychain_pass"
+      create_keychain(
+        name:               keychain_name,
+        password:           keychain_password,
+        default_keychain:   true,
+        unlock:             true,
+        timeout:            3600,
+        add_to_search_list: true
+      )
+      match(
+        type:              "appstore",
+        readonly:          true,
+        api_key:           key,
+        keychain_name:     keychain_name,
+        keychain_password: keychain_password
+      )
+    else
+      match(type: "appstore", readonly: true, api_key: key)
     end
 
+    # Switch project from Automatic → Manual signing so xcodebuild uses the
+    # match profile instead of trying to contact Apple servers at build time.
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path:                  "App.xcodeproj",
+      team_id:               "2S2J86M3T6",
+      bundle_identifier:     "eu.bilharz.oneup",
+      code_sign_identity:    "Apple Distribution",
+      profile_name:          "match AppStore eu.bilharz.oneup"
+    )
+
     build_app(
-      scheme:        "App",
-      export_method: "app-store",
-      xcargs:        "-allowProvisioningUpdates -disableAutomaticPackageResolution" \
-                     " -authenticationKeyID #{key_id}" \
-                     " -authenticationKeyIssuerID #{ENV['ASC_API_KEY_ISSUER_ID']}" \
-                     " -authenticationKeyPath #{key_path}"
+      scheme:          "App",
+      export_method:   "app-store",
+      xcargs:          "-disableAutomaticPackageResolution",
+      export_options:  {
+        provisioningProfiles: {
+          "eu.bilharz.oneup" => "match AppStore eu.bilharz.oneup"
+        }
+      }
     )
 
     upload_to_testflight(api_key: key, skip_waiting_for_build_processing: true)
