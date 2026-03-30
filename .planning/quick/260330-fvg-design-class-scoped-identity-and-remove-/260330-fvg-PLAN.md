@@ -118,13 +118,57 @@ teacher_identity: Identity,  // wer hat die Klasse erstellt
 
 ---
 
+## Solo → LuL/SuS Transition (Account Upgrade)
+
+A Solo player can upgrade to Teacher or Student later — the SpaceTimeDB `Identity` stays the same, only `player_type` and optional fields change.
+
+### Reducers
+
+```rust
+upgrade_to_teacher(email: String)
+// → sets player_type = Teacher, stores email
+// → requires GDPR consent flag passed from client
+
+join_class(class_code: String, class_username: String)
+// → validates code, checks username unique in class
+// → sets player_type = Student, class_id, username
+// → existing solo progress: kept but no longer shown in class context
+```
+
+### GDPR Compliance for Teacher Email Collection
+
+The email-entry moment is the **consent moment** — must be handled correctly:
+
+| Requirement | Implementation |
+|------------|----------------|
+| Explicit consent | Checkbox (not pre-ticked): "Ich stimme der Speicherung meiner E-Mail zur Kontowiederherstellung zu" |
+| Purpose limitation | Visible text: "Nur zur Kontowiederherstellung. Kein Marketing." |
+| Privacy Policy link | Mandatory link before checkbox |
+| Right to deletion | Account deletion reducer must also wipe email |
+| Data minimization | Only email stored — no name, no phone, nothing else |
+| No PII for minors | Students (SuS) provide zero PII — username is pseudonymous |
+
+The `upgrade_to_teacher` reducer must receive a `gdpr_consent: bool` parameter. Server rejects if `false`.
+
+### SuS: Zero PII Design
+
+Students never provide personal data:
+- Username = pseudonym (could be "Dino7", "Lars7", anything)
+- No email, no real name, no age
+- SpaceTimeDB Identity is pseudonymous (random key, not linked to person)
+- Recovery Key = optional, device-local
+
+→ COPPA-safe, DSGVO-safe, no parental consent flow needed.
+
+---
+
 ## Open Questions (for implementation planning)
 
 1. **Recovery Key UX for students:** How prominently should we show it? Many kids will skip it. Options: mandatory acknowledgment, or skip-able with warning.
 2. **Teacher email verification:** Do we send a verification email? Or just store unverified (simpler for v1)?
 3. **Student in multiple classes:** One student = one class? Or allow joining multiple? (v1: one class per device/identity)
 4. **Class code generation:** Teacher-defined or auto-generated? (Auto is safer — avoids `NAZIS` etc.)
-5. **Solo → Student upgrade path:** Can a solo player join a class later?
+5. **Solo progress migration on class join:** Do we show solo sprint history in the class context, or keep it separate?
 
 ---
 
