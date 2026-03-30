@@ -68,16 +68,21 @@ jobs:
           ASC_API_KEY_CONTENT: ${{ secrets.ASC_API_KEY_CONTENT }}
           ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
 
-      # Cache Swift Package Manager dependencies (avoids re-fetching on every run)
+      # Cache SPM checkouts — keyed on Package.resolved so cache invalidates on version bumps
       - name: Cache SPM
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
-            ~/Library/Caches/org.swift.swiftpm
+          path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
           key: ${{ runner.os }}-spm-${{ hashFiles('client/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-
+          restore-keys: ${{ runner.os }}-spm-
+
+      # Pre-resolve SPM packages as a separate visible step before Fastlane.
+      # capacitor-swift-pm contains binary XCFrameworks that can be slow to download;
+      # doing this here gives us a clear failure point and its own timeout.
+      - name: Resolve SPM packages
+        run: xcodebuild -resolvePackageDependencies -scheme App -project App.xcodeproj
+        working-directory: client/ios/App
+        timeout-minutes: 15
 
       # Authenticate git for match ONLY — scoped to lbilharz/ so SPM public repos are unaffected
       - name: Authenticate git for match
