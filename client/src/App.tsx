@@ -41,9 +41,6 @@ export default function App() {
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [classSprints] = useTable(tables.class_sprints);
-  // Elevate Lobby data to prevent leaderboard flashing on page switch
-  useTable(tables.best_scores);
-  useTable(tables.online_players);
   useTable(tables.problem_stats);
   // recovery_keys is now a private table (SEC-01) — App.tsx fetches via getMyRecoveryCode once per session (UX-05)
   const { page, setPage, navigate, myPlayerRef } = useAppNavigation('register');
