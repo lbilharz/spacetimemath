@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: App Store Submission
-status: in_progress
-last_updated: "2026-03-30"
-last_activity: "2026-03-30 - Completed Phase 11 Plan 01: Remove global leaderboard UI"
+status: unknown
+stopped_at: "Completed 11-02-PLAN.md (Remove global leaderboard i18n keys — all 9 locale files cleaned, lint:i18n passing)"
+last_updated: "2026-03-30T20:43:36.919Z"
+last_activity: "2026-03-30 — Completed 11-01: Deleted Leaderboard.tsx, removed Live Players table from LobbyPage, removed global rank stat from ResultsPage, dropped best_scores/online_players subscriptions from App.tsx"
 progress:
-  total_phases: 4
-  completed_phases: 0
-  total_plans: 1
-  completed_plans: 1
+  total_phases: 11
+  completed_phases: 11
+  total_plans: 35
+  completed_plans: 35
   percent: 5
 ---
 
@@ -36,6 +37,8 @@ Progress: [█░░░░░░░░░] 5% (1/1 plans complete in v1.2)
 - (11-01) Deleted Leaderboard.tsx entirely rather than hiding it to prevent accidental re-import
 - (11-01) Dropped best_scores and online_players subscriptions at App.tsx root — client no longer fetches global player data at all
 - (11-01) Kept sessions subscription in ResultsPage (still needed for session.isComplete and mastery grid)
+- [Phase 11]: Removed 10-key global leaderboard i18n namespace from all 9 locale files to complete UI removal
+- [Phase 11]: Updated register.tagline with language-idiomatic beat-your-best phrasing per locale
 
 ## Quick Tasks Completed
 
@@ -53,6 +56,6 @@ Progress: [█░░░░░░░░░] 5% (1/1 plans complete in v1.2)
 
 ## Session Continuity
 
-Last session: 2026-03-30
-Stopped at: Completed 11-01-PLAN.md (Remove global leaderboard UI — Leaderboard.tsx deleted, Live Players removed, global rank removed, subscriptions dropped)
+Last session: 2026-03-30T20:43:36.916Z
+Stopped at: Completed 11-02-PLAN.md (Remove global leaderboard i18n keys — all 9 locale files cleaned, lint:i18n passing)
 Resume file: None

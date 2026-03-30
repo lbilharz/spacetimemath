@@ -31,7 +31,7 @@
 
 **Goal:** Get Better 1UP approved in the App Store by fixing privacy dealbreakers, then introduce class-scoped identity for school use.
 
-- [ ] Phase 11: Remove Global Leaderboard UI
+- [x] Phase 11: Remove Global Leaderboard UI (completed 2026-03-30)
   **Goal:** Remove all global leaderboard surfaces from the app so no child's pseudonym is visible to strangers. Sprint leaderboard scoped to class participants only. Unblocks App Store submission.
   **Requirements:** APP-01, APP-02
   **Plans:** 2 plans
@@ -60,7 +60,7 @@
 | 1–8. v1.0 phases | v1.0 | 31/31 | Complete | 2026-03-15 |
 | 9. Fixed Grid Visualization | v1.1 | 1/1 | Complete | 2026-03-16 |
 | 10. Extended Tables Opt-In | v1.1 | 1/1 | Complete | 2026-03-17 |
-| 11. Remove Global Leaderboard UI | 1/2 | In Progress|  | — |
+| 11. Remove Global Leaderboard UI | 2/2 | Complete   | 2026-03-30 | — |
 | 12. Onboarding Weiche | v1.2 | 0/? | Pending | — |
 | 13. Class-Scoped Username Uniqueness | v1.2 | 0/? | Pending | — |
 | 14. Friends via Invite Link | v1.2 | 0/? | Pending | — |
