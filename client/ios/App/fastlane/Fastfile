@@ -74,38 +74,18 @@ platform :ios do
 
   desc "CI: build archive and upload to TestFlight only"
   lane :beta do
-    # Create an unlocked keychain with a known password so match can set ACLs
-    # on the imported certificate — prevents the UI permission popup that hangs CI
-    keychain_name     = "ci_build.keychain"
-    keychain_password = "ci_keychain_pass"
-
-    create_keychain(
-      name:             keychain_name,
-      password:         keychain_password,
-      default_keychain: true,
-      unlock:           true,
-      timeout:          3600,
-      add_to_search_list: true
-    )
-
     key = asc_api_key
 
-    match(
-      type:              "appstore",
-      readonly:          true,
-      api_key:           key,
-      keychain_name:     keychain_name,
-      keychain_password: keychain_password
-    )
-
+    # Project uses automatic signing — pass -allowProvisioningUpdates so
+    # xcodebuild can fetch/create the profile via the ASC API key automatically.
+    # No need for match on CI; automatic signing handles it all.
     build_app(
       scheme:          "App",
       export_method:   "app-store",
-      xcargs:          "-disableAutomaticPackageResolution",
+      xcargs:          "-allowProvisioningUpdates -disableAutomaticPackageResolution",
       export_options:  {
-        provisioningProfiles: {
-          "eu.bilharz.oneup" => "match AppStore eu.bilharz.oneup"
-        }
+        signingStyle:         "automatic",
+        provisioningProfiles: { "eu.bilharz.oneup" => "" }
       }
     )
 
