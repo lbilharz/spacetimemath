@@ -49,11 +49,6 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex);
   const sessionAnswers = myAnswers.filter(a => a.sessionId === sessionId);
 
-  // Rank in leaderboard
-  const completedSessions = sessions.filter(s => s.isComplete);
-  const sorted = [...completedSessions].sort((a, b) => b.weightedScore - a.weightedScore);
-  const myRank = sorted.findIndex(s => s.id === sessionId) + 1;
-
   // Top 3 hardest pairs this session (wrong answers by difficulty weight)
   const wrongPairs = sessionAnswers
     .filter(ans => !ans.isCorrect)
@@ -129,10 +124,9 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
               {t('results.scoringExplained')} &rarr;
             </a>
 
-            <div className="grid grid-cols-3 gap-4 md:gap-8 mt-8 py-6 border-t border-b border-slate-100 dark:border-slate-700/50">
+            <div className="grid grid-cols-2 gap-4 md:gap-8 mt-8 py-6 border-t border-b border-slate-100 dark:border-slate-700/50">
               <Stat label={t('results.correct')} value={`${session!.rawScore} / ${session!.totalAnswered}`} />
               <Stat label={t('results.maxStreak')} value={`${maxStreak} 🔥`} />
-              <Stat label={t('results.rank')} value={myRank ? `#${myRank}` : '—'} accent />
             </div>
 
             {uniqueHard.length > 0 && (

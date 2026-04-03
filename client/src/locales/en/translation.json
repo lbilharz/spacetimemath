@@ -33,7 +33,7 @@
     "tagline": "Know your level."
   },
   "register": {
-    "tagline": "60 seconds. Multiplication tables. Live leaderboard.",
+    "tagline": "60 seconds. Multiplication tables. Beat your best.",
     "chooseName": "Choose your name",
     "usernamePlaceholder": "Choose username …",
     "usernameError": "Username must be 1–24 characters",
@@ -50,6 +50,16 @@
     "newAccount": "New account",
     "restoreError": "Key not found — check your 12-character recovery key",
     "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB"
+  },
+  "register_split": {
+    "teacher_btn": "Teacher",
+    "student_btn": "Join a Class",
+    "solo_btn": "Practice on your own",
+    "email_label": "Email Address",
+    "class_code_label": "Class Code",
+    "consent_1": "I confirm I am a teacher using this for school purposes.",
+    "consent_2": "I consent to store my email for account recovery.",
+    "recovery_nag_student": "Make sure to copy your Recovery Key! Otherwise you will lose your progress!"
   },
   "lobby": {
     "online": "online",
@@ -122,7 +132,6 @@
     "correct": "Correct",
     "accuracy": "Accuracy",
     "maxStreak": "Max Streak",
-    "rank": "Rank",
     "struggled": "You struggled with:",
     "struggledHint": "These will appear more often in your next sprint.",
     "masteryTitle": "Mastery Grid",
@@ -223,18 +232,6 @@
     "noReminders": "No active reminders. Add one to keep your streak alive!",
     "daily": "Every day",
     "weekly": "Specific days"
-  },
-  "leaderboard": {
-    "title": "Leaderboard",
-    "empty": "No sessions yet — be the first!",
-    "colHash": "#",
-    "colPlayer": "Player",
-    "colScore": "Score",
-    "colAccuracy": "Acc.",
-    "colAnswers": "Ans.",
-    "you": "you",
-    "footer": "Score = Σ difficulty weight of correct answers · Updates live via SpaceTimeDB",
-    "tierAll": "All"
   },
   "unlock": {
     "tier1Title": "2-Digit Multiplier Unlocked!",

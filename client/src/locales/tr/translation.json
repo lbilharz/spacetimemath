@@ -24,7 +24,7 @@
     "tagline": "Seviyeni bil."
   },
   "register": {
-    "tagline": "60 saniye. Çarpım tablosu. Canlı liderlik tablosu.",
+    "tagline": "60 saniye. Carpim tablolari. Rekorunu kir.",
     "chooseName": "Adını seç",
     "usernamePlaceholder": "Kullanıcı adı seç …",
     "usernameError": "Kullanıcı adı 1-24 karakter arası olmalıdır",
@@ -112,7 +112,6 @@
     "weightedScore": "ağırlıklı skor",
     "correct": "Doğru",
     "accuracy": "Doğruluk",
-    "rank": "Sıralama",
     "struggled": "Zorlandığın işlemler:",
     "struggledHint": "Bunlar bir sonraki sprintinde daha sık görünecek.",
     "masteryTitle": "Ustalık Tablosu",
@@ -214,18 +213,6 @@
     "noReminders": "Aktif hatırlatıcı yok. Serini sürdürmek için bir tane ekle!",
     "daily": "Her gün",
     "weekly": "Belirli günler"
-  },
-  "leaderboard": {
-    "title": "Liderlik Tablosu",
-    "empty": "Henüz oturum yok — ilk sen ol!",
-    "colHash": "#",
-    "colPlayer": "Oyuncu",
-    "colScore": "Skor",
-    "colAccuracy": "Doğ.",
-    "colAnswers": "Cvp.",
-    "you": "sen",
-    "footer": "Skor = Doğru cevapların Σ zorluk ağırlığı · SpaceTimeDB üzerinden canlı güncellenir",
-    "tierAll": "Hepsi"
   },
   "unlock": {
     "tier1Title": "2 Basamaklı Çarpan Açıldı!",

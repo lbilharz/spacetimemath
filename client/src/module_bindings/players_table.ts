@@ -9,9 +9,18 @@ import {
   type AlgebraicTypeType as __AlgebraicTypeType,
   type Infer as __Infer,
 } from "spacetimedb";
+import {
+  PlayerType,
+} from "./types";
+
 
 export default __t.row({
   identity: __t.identity().primaryKey(),
+  get playerType() {
+    return PlayerType.name("player_type");
+  },
+  classId: __t.option(__t.u64()).name("class_id"),
+  email: __t.option(__t.string()),
   username: __t.string(),
   bestScore: __t.f32().name("best_score"),
   totalSessions: __t.u32().name("total_sessions"),

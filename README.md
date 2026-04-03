@@ -6,8 +6,8 @@
   <h1>Better 1UP </h1>
   <p><b>Real-time multiplayer multiplication trainer. Adaptive problem selection, difficulty-weighted scoring, live sync via SpaceTimeDB.</b></p>
 
-  <a href="https://better-1up.vercel.app"><img src="https://img.shields.io/badge/Play_the_Game-%23FBBA00?style=for-the-badge&logoColor=white" alt="Play Now" /></a>
-  <a href="https://better1up.vercel.app"><img src="https://img.shields.io/badge/Visit_Website-%232C3E50?style=for-the-badge&logoColor=white" alt="Website" /></a>
+  <a href="https://up.bilharz.eu"><img src="https://img.shields.io/badge/Play_the_Game-%23FBBA00?style=for-the-badge&logoColor=white" alt="Play Now" /></a>
+  <a href="https://one.up.bilharz.eu"><img src="https://img.shields.io/badge/Visit_Website-%232C3E50?style=for-the-badge&logoColor=white" alt="Website" /></a>
   <br/><br/>
 
 

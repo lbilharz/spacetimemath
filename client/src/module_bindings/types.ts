@@ -77,6 +77,24 @@ export const EndSprintSchedule = __t.object("EndSprintSchedule", {
 });
 export type EndSprintSchedule = __Infer<typeof EndSprintSchedule>;
 
+export const FriendInvite = __t.object("FriendInvite", {
+  token: __t.string(),
+  creatorIdentity: __t.identity(),
+  expiresAt: __t.timestamp(),
+  used: __t.bool(),
+});
+export type FriendInvite = __Infer<typeof FriendInvite>;
+
+export const Friendship = __t.object("Friendship", {
+  id: __t.u64(),
+  initiatorIdentity: __t.identity(),
+  recipientIdentity: __t.identity(),
+  aliasByInitiator: __t.option(__t.string()),
+  aliasByRecipient: __t.option(__t.string()),
+  createdAt: __t.timestamp(),
+});
+export type Friendship = __Infer<typeof Friendship>;
+
 export const IssuedProblem = __t.object("IssuedProblem", {
   id: __t.u64(),
   sessionId: __t.u64(),
@@ -162,6 +180,11 @@ export type OnlinePlayer = __Infer<typeof OnlinePlayer>;
 
 export const Player = __t.object("Player", {
   identity: __t.identity(),
+  get playerType() {
+    return PlayerType;
+  },
+  classId: __t.option(__t.u64()),
+  email: __t.option(__t.string()),
   username: __t.string(),
   bestScore: __t.f32(),
   totalSessions: __t.u32(),
@@ -181,6 +204,14 @@ export const PlayerDktWeights = __t.object("PlayerDktWeights", {
   lastUpdatedTimestamp: __t.u64(),
 });
 export type PlayerDktWeights = __Infer<typeof PlayerDktWeights>;
+
+// The tagged union or sum type for the algebraic type `PlayerType`.
+export const PlayerType = __t.enum("PlayerType", {
+  Teacher: __t.unit(),
+  Student: __t.unit(),
+  Solo: __t.unit(),
+});
+export type PlayerType = __Infer<typeof PlayerType>;
 
 export const ProblemStat = __t.object("ProblemStat", {
   problemKey: __t.u16(),

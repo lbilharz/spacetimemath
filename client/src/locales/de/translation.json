@@ -33,7 +33,7 @@
     "tagline": "Kenn dein Level."
   },
   "register": {
-    "tagline": "60 Sekunden. Einmaleins. Live-Rangliste.",
+    "tagline": "60 Sekunden. Einmaleins. Schlag deinen Rekord.",
     "chooseName": "Wähle deinen Namen",
     "usernamePlaceholder": "Benutzername aussuchen …",
     "usernameError": "Benutzername muss 1–24 Zeichen lang sein",
@@ -50,6 +50,16 @@
     "newAccount": "Neues Konto",
     "restoreError": "Schlüssel nicht gefunden – überprüfe deinen 12-stelligen Wiederherstellungsschlüssel",
     "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB"
+  },
+  "register_split": {
+    "teacher_btn": "Lehrkraft",
+    "student_btn": "Klasse beitreten",
+    "solo_btn": "Solo üben",
+    "email_label": "E-Mail-Adresse",
+    "class_code_label": "Klassencode",
+    "consent_1": "Ich bestätige, dass ich Lehrkraft bin und diese Funktion ausschließlich für schulische Zwecke nutze.",
+    "consent_2": "Ich stimme der Speicherung meiner E-Mail-Adresse zur Kontowiederherstellung zu.",
+    "recovery_nag_student": "Denk daran, deinen Recovery Key (Wiederherstellungsschlüssel) zu speichern! Sonst verlierst du deinen Fortschritt."
   },
   "lobby": {
     "online": "online",
@@ -122,7 +132,6 @@
     "correct": "Richtig",
     "accuracy": "Genauigkeit",
     "maxStreak": "Max. Streak",
-    "rank": "Rang",
     "struggled": "Schwierigkeiten mit:",
     "struggledHint": "Diese erscheinen beim nächsten Sprint häufiger.",
     "masteryTitle": "Lernübersicht",
@@ -223,18 +232,6 @@
     "noReminders": "Keine aktiven Erinnerungen. Füge eine hinzu, um dranzubleiben!",
     "daily": "Jeden Tag",
     "weekly": "Bestimmte Tage"
-  },
-  "leaderboard": {
-    "title": "Rangliste",
-    "empty": "Noch keine Sprints — sei der Erste!",
-    "colHash": "#",
-    "colPlayer": "Name",
-    "colScore": "Punkte",
-    "colAccuracy": "Gen.",
-    "colAnswers": "Ant.",
-    "you": "du",
-    "footer": "Punkte = Σ Schwierigkeit aller richtigen Antworten · Live via SpaceTimeDB",
-    "tierAll": "Alle"
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",

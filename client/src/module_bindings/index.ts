@@ -34,9 +34,11 @@ import {
 } from "spacetimedb";
 
 // Import all reducer arg schemas
+import AcceptFriendInviteReducer from "./accept_friend_invite_reducer";
 import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "./consume_restore_result_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
+import CreateFriendInviteReducer from "./create_friend_invite_reducer";
 import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import DeletePlayerReducer from "./delete_player_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
@@ -45,6 +47,7 @@ import FocusStudentReducer from "./focus_student_reducer";
 import GetClassRecoveryCodesReducer from "./get_class_recovery_codes_reducer";
 import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
 import IssueProblemReducer from "./issue_problem_reducer";
+import JoinClassAsStudentReducer from "./join_class_as_student_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
@@ -59,6 +62,7 @@ import MigrateV3EconomyTriplerReducer from "./migrate_v_3_economy_tripler_reduce
 import NextProblemReducer from "./next_problem_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
+import RemoveFriendReducer from "./remove_friend_reducer";
 import RestoreAccountReducer from "./restore_account_reducer";
 import RestoreAnswerReducer from "./restore_answer_reducer";
 import RestoreBestScoreReducer from "./restore_best_score_reducer";
@@ -67,6 +71,7 @@ import RestoreClassroomMemberReducer from "./restore_classroom_member_reducer";
 import RestorePlayerFullReducer from "./restore_player_full_reducer";
 import RestoreRecoveryKeyReducer from "./restore_recovery_key_reducer";
 import RestoreSessionReducer from "./restore_session_reducer";
+import RevokeFriendInviteReducer from "./revoke_friend_invite_reducer";
 import SetExtendedModeReducer from "./set_extended_mode_reducer";
 import SetLearningTierReducer from "./set_learning_tier_reducer";
 import SetUsernameReducer from "./set_username_reducer";
@@ -76,6 +81,8 @@ import SubmitAnswerReducer from "./submit_answer_reducer";
 import SyncKeystrokeReducer from "./sync_keystroke_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
 import UpdateDktWeightsReducer from "./update_dkt_weights_reducer";
+import UpdateFriendAliasReducer from "./update_friend_alias_reducer";
+import UpgradeToTeacherReducer from "./upgrade_to_teacher_reducer";
 
 // Import all procedure arg schemas
 
@@ -86,6 +93,8 @@ import ClassRecoveryResultsRow from "./class_recovery_results_table";
 import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
+import FriendInvitesRow from "./friend_invites_table";
+import FriendshipsRow from "./friendships_table";
 import IssuedProblemResultsRow from "./issued_problem_results_table";
 import IssuedProblemResultsV2Row from "./issued_problem_results_v_2_table";
 import LegacyScoreBackupsRow from "./legacy_score_backups_table";
@@ -193,6 +202,37 @@ const tablesSchema = __schema({
       { name: 'classrooms_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, ClassroomsRow),
+  friend_invites: __table({
+    name: 'friend_invites',
+    indexes: [
+      { name: 'creator_identity', algorithm: 'btree', columns: [
+        'creatorIdentity',
+      ] },
+      { name: 'token', algorithm: 'btree', columns: [
+        'token',
+      ] },
+    ],
+    constraints: [
+      { name: 'friend_invites_token_key', constraint: 'unique', columns: ['token'] },
+    ],
+  }, FriendInvitesRow),
+  friendships: __table({
+    name: 'friendships',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'initiator_identity', algorithm: 'btree', columns: [
+        'initiatorIdentity',
+      ] },
+      { name: 'recipient_identity', algorithm: 'btree', columns: [
+        'recipientIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'friendships_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, FriendshipsRow),
   issued_problem_results: __table({
     name: 'issued_problem_results',
     indexes: [
@@ -371,9 +411,11 @@ const tablesSchema = __schema({
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
+  __reducerSchema("accept_friend_invite", AcceptFriendInviteReducer),
   __reducerSchema("complete_onboarding", CompleteOnboardingReducer),
   __reducerSchema("consume_restore_result", ConsumeRestoreResultReducer),
   __reducerSchema("create_classroom", CreateClassroomReducer),
+  __reducerSchema("create_friend_invite", CreateFriendInviteReducer),
   __reducerSchema("create_recovery_key", CreateRecoveryKeyReducer),
   __reducerSchema("delete_player", DeletePlayerReducer),
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
@@ -382,6 +424,7 @@ const reducersSchema = __reducers(
   __reducerSchema("get_class_recovery_codes", GetClassRecoveryCodesReducer),
   __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
   __reducerSchema("issue_problem", IssueProblemReducer),
+  __reducerSchema("join_class_as_student", JoinClassAsStudentReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
@@ -396,6 +439,7 @@ const reducersSchema = __reducers(
   __reducerSchema("next_problem", NextProblemReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
+  __reducerSchema("remove_friend", RemoveFriendReducer),
   __reducerSchema("restore_account", RestoreAccountReducer),
   __reducerSchema("restore_answer", RestoreAnswerReducer),
   __reducerSchema("restore_best_score", RestoreBestScoreReducer),
@@ -404,6 +448,7 @@ const reducersSchema = __reducers(
   __reducerSchema("restore_player_full", RestorePlayerFullReducer),
   __reducerSchema("restore_recovery_key", RestoreRecoveryKeyReducer),
   __reducerSchema("restore_session", RestoreSessionReducer),
+  __reducerSchema("revoke_friend_invite", RevokeFriendInviteReducer),
   __reducerSchema("set_extended_mode", SetExtendedModeReducer),
   __reducerSchema("set_learning_tier", SetLearningTierReducer),
   __reducerSchema("set_username", SetUsernameReducer),
@@ -413,6 +458,8 @@ const reducersSchema = __reducers(
   __reducerSchema("sync_keystroke", SyncKeystrokeReducer),
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
   __reducerSchema("update_dkt_weights", UpdateDktWeightsReducer),
+  __reducerSchema("update_friend_alias", UpdateFriendAliasReducer),
+  __reducerSchema("upgrade_to_teacher", UpgradeToTeacherReducer),
 );
 
 /** The schema information for all procedures in this module. This is defined the same way as the procedures would have been defined in the server. */

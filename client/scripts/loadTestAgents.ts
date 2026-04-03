@@ -1,10 +1,14 @@
 import { connect, waitFor, type ConnectedClient } from '../src/__tests__/helpers.js';
 import fs from 'node:fs';
 
-const code = process.argv[2];
-if (!code) {
-  console.error("Usage: TEST_STDB_URI=... npx tsx client/scripts/loadTestAgents.ts <CODE>");
-  process.exit(1);
+// Fallback environment settings so the test suite can connect naturally
+process.env.TEST_STDB_URI = process.env.TEST_STDB_URI || 'wss://maincloud.spacetimedb.com';
+process.env.TEST_STDB_DB = process.env.TEST_STDB_DB || 'spacetimemath-test';
+
+let targetCode = process.argv[2];
+const isAutoMode = !targetCode;
+if (!targetCode) {
+  console.log("No classroom code provided. Engaging AUTOPILOT MODE (Virtual Teacher + Sprint).");
 }
 
 const AGENT_COUNT = 10;
@@ -42,7 +46,30 @@ function selectDiagnosticProblem(): { a: number; b: number } {
   return { a, b };
 }
 
-async function startAgent(index: number, existingToken?: string) {
+async function startVirtualTeacher(): Promise<{ client: ConnectedClient, code: string, classroomId: bigint }> {
+  console.log(`Teacher Agent connecting...`);
+  const client = await connect();
+  const hex = client.identity.toHexString();
+  
+  console.log(`Teacher Agent connected (${hex.slice(0, 6)}). Registering...`);
+  await client.conn.reducers.register({ username: "Automated Teacher", playerType: { tag: "Teacher" }, email: "automated@test.com" });
+  
+  console.log(`Teacher Agent creating classroom...`);
+  await client.conn.reducers.createClassroom({ name: "Automated Test Class" });
+  
+  const room = await waitFor(() => {
+    for (const r of client.conn.db.classrooms.iter()) {
+      if (r.teacher.toHexString() === hex) return r;
+    }
+  }, 10_000);
+  
+  if (!room) throw new Error("Teacher failed to create classroom");
+  console.log(`Teacher Agent created classroom: ${room.code} (ID: ${room.id})`);
+  
+  return { client, code: room.code, classroomId: room.id };
+}
+
+async function startAgent(index: number, existingToken: string | undefined, code: string) {
   console.log(`Agent ${index} connecting...`);
   const client = await connect(existingToken);
   const hex = client.identity.toHexString();
@@ -53,7 +80,7 @@ async function startAgent(index: number, existingToken?: string) {
   
   if (!existingToken) {
     console.log(`Agent ${index} connected fresh (${hex.slice(0, 6)}). Registering as ${botName}...`);
-    await client.conn.reducers.register({ username: botName });
+    await client.conn.reducers.register({ username: botName, playerType: { tag: "Student" }, email: undefined });
   } else {
     console.log(`Agent ${index} reconnected via token (${hex.slice(0, 6)}) as ${botName}.`);
   }
@@ -64,7 +91,7 @@ async function startAgent(index: number, existingToken?: string) {
   } catch (e: any) {
     if (e.message?.includes('register')) {
       console.log(`Agent ${index} orphaned by DB wipe! Re-registering as ${botName}...`);
-      await client.conn.reducers.register({ username: botName });
+      await client.conn.reducers.register({ username: botName, playerType: { tag: "Student" }, email: undefined });
       await client.conn.reducers.joinClassroom({ code });
     } else {
       throw e;
@@ -108,20 +135,24 @@ async function startAgent(index: number, existingToken?: string) {
         
         await client.conn.reducers.issueProblem({ sessionId: session.id, a, b });
         const problemRow = await waitFor(() => {
-          for (const r of client.conn.db.issued_problem_results.iter()) {
+          const s = [...client.conn.db.sessions.iter()].find(s => s.id === session.id);
+          if (s?.isComplete) return 'COMPLETED';
+          for (const r of client.conn.db.issued_problem_results_v2.iter()) {
             if (r.owner.toHexString() === hex && !seenTokens.has(r.token)) return r;
           }
         }, 30_000);
-        if (!problemRow) break;
+        if (problemRow === 'COMPLETED' || !problemRow) break;
         problemToken = problemRow.token;
       } else {
         // Normal Flow: Wait for Server nextProblem
         const problemRow = await waitFor(() => {
-          for (const r of client.conn.db.next_problem_results.iter()) {
+          const s = [...client.conn.db.sessions.iter()].find(s => s.id === session.id);
+          if (s?.isComplete) return 'COMPLETED';
+          for (const r of client.conn.db.next_problem_results_v2.iter()) {
             if (r.owner.toHexString() === hex && !seenTokens.has(r.token)) return r;
           }
         }, 30_000);
-        if (!problemRow) break;
+        if (problemRow === 'COMPLETED' || !problemRow) break;
         a = problemRow.a;
         b = problemRow.b;
         problemToken = problemRow.token;
@@ -199,14 +230,42 @@ async function startAgent(index: number, existingToken?: string) {
 }
 
 async function run() {
-  const promises = [];
-  for (let i = 0; i < AGENT_COUNT; i++) {
-    promises.push(startAgent(i + 1, globalTokens[i]));
-    await new Promise(r => setTimeout(r, 200)); 
+  if (isAutoMode) {
+    console.log(">>> Initiating Virtual Teacher Setup <<<");
+    const teacherData = await startVirtualTeacher();
+    targetCode = teacherData.code;
+    
+    const promises = [];
+    for (let i = 0; i < AGENT_COUNT; i++) {
+      promises.push(startAgent(i + 1, globalTokens[i], targetCode!));
+      await new Promise(r => setTimeout(r, 200)); 
+    }
+    console.log(`\n>>> All 10 agents spawned. Waiting for them to join ${targetCode} <<<\n`);
+    
+    await waitFor(() => {
+      let count = 0;
+      for (const m of teacherData.client.conn.db.classroom_members.iter()) {
+         if (m.classroomId === teacherData.classroomId) count++;
+      }
+      if (count >= AGENT_COUNT) return true;
+    }, 60_000);
+    
+    console.log("\n>>> Teacher: All agents joined. Starting Sprint! <<<\n");
+    await teacherData.client.conn.reducers.startClassSprint({ classroomId: teacherData.classroomId, isDiagnostic: false });
+    
+    await Promise.all(promises);
+    console.log("All agents finished.");
+  } else {
+    // Normal targeted run
+    const promises = [];
+    for (let i = 0; i < AGENT_COUNT; i++) {
+        promises.push(startAgent(i + 1, globalTokens[i], targetCode!));
+        await new Promise(r => setTimeout(r, 200)); 
+    }
+    console.log("\n>>> All 10 agents spawned! <<<\n");
+    await Promise.all(promises);
+    console.log("All agents finished.");
   }
-  console.log("\n>>> All 10 agents spawned! <<<\n");
-  await Promise.all(promises);
-  console.log("All agents finished.");
   process.exit(0);
 }
 

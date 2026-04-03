@@ -10,6 +10,7 @@ import AccountPage from '../pages/AccountPage.js';
 import ClassroomPage from '../pages/ClassroomPage.js';
 import ClassroomsPage from '../pages/ClassroomsPage.js';
 import ClassSprintResultsPage from '../pages/ClassSprintResultsPage.js';
+import FriendsPage from '../pages/FriendsPage.js';
 
 
 
@@ -74,6 +75,9 @@ export default function PageRenderer({
           myIdentityHex={myIdentityHex}
           onEnterClassroom={onEnterClassroom}
         />
+      )}
+      {page === 'friends' && (
+        <FriendsPage />
       )}
       {page === 'progress' && myIdentityHex && (
         <ProgressPage

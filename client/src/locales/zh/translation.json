@@ -24,7 +24,7 @@
     "tagline": "了解你的水平。"
   },
   "register": {
-    "tagline": "60 秒。乘法表。实时排行榜。",
+    "tagline": "60秒。乘法表。打破你的纪录。",
     "chooseName": "选择你的名字",
     "usernamePlaceholder": "选择用户名 …",
     "usernameError": "用户名必须为 1-24 个字符",
@@ -112,7 +112,6 @@
     "weightedScore": "加权得分",
     "correct": "正确数",
     "accuracy": "正确率",
-    "rank": "排名",
     "struggled": "你的薄弱环节：",
     "struggledHint": "这些题目会在下次冲刺中更频繁出现。",
     "masteryTitle": "掌握矩阵",
@@ -214,18 +213,6 @@
     "noReminders": "没有活动的提醒。添加一个来保持你的连胜！",
     "daily": "每天",
     "weekly": "特定日期"
-  },
-  "leaderboard": {
-    "title": "排行榜",
-    "empty": "暂无练习 — 成为第一名吧！",
-    "colHash": "#",
-    "colPlayer": "玩家",
-    "colScore": "得分",
-    "colAccuracy": "正确率",
-    "colAnswers": "回答数",
-    "you": "你",
-    "footer": "得分 = 正确回答的难度权重之和 · 通过 SpaceTimeDB 实时更新",
-    "tierAll": "全部"
   },
   "unlock": {
     "tier1Title": "已解锁两位数乘法！",

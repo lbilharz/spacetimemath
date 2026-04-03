@@ -2,8 +2,6 @@ import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReducer as useSTDBReducer, useTable, useSpacetimeDB } from 'spacetimedb/react';
 import { reducers, tables } from '../module_bindings/index.js';
-// transfer_codes and recovery_keys are now private tables (SEC-01/SEC-02).
-// Account restore via code entry is temporarily broken — requires a server-side restore reducer.
 import { capturedToken } from '../auth.js';
 import SplashGrid from '../components/SplashGrid.js';
 import LanguagePicker from '../components/LanguagePicker.js';
@@ -15,11 +13,27 @@ interface Props {
 
 export default function RegisterPage({ onRegistered }: Props) {
   const { t } = useTranslation();
+  
+  // Split flow states
+  const [flowType, setFlowType] = useState<'teacher' | 'student' | 'solo' | null>(null);
+  const [hasFriendInvite, setHasFriendInvite] = useState(false);
+  
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [classCode, setClassCode] = useState('');
+  const [consent1, setConsent1] = useState(false);
+  const [consent2, setConsent2] = useState(false);
+  
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const register = useSTDBReducer(reducers.register);
+  const joinClassAsStudent = useSTDBReducer(reducers.joinClassAsStudent); // The new reducer
+  const verifyTeacherUpgrade = useSTDBReducer(reducers.verifyTeacherUpgrade);
   const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+
+  const [verifyStep, setVerifyStep] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verifyLoading, setVerifyLoading] = useState(false);
 
   const [showRestore, setShowRestore] = useState(false);
   const [code, setCode] = useState('');
@@ -32,12 +46,18 @@ export default function RegisterPage({ onRegistered }: Props) {
     const restore = params.get('restore');
     if (restore && restore.trim().length >= 6) {
       const upper = restore.trim().toUpperCase();
-      window.history.replaceState({}, '', '/'); // clean URL immediately
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      window.history.replaceState({}, '', '/');
       setCode(upper);
       setShowRestore(true);
       setAutoRestoreCode(upper);
     }
+    
+    try {
+      if (localStorage.getItem('_pendingFriendToken')) {
+        setHasFriendInvite(true);
+        setFlowType('solo');
+      }
+    } catch { /* ignore */ }
   }, []);
 
   const { identity } = useSpacetimeDB();
@@ -48,7 +68,6 @@ export default function RegisterPage({ onRegistered }: Props) {
       ? tables.restore_results.where(r => r.caller.eq(identity))
       : tables.restore_results
   );
-  // Ref so the async polling loop always reads the latest rows (avoids stale closure)
   const restoreResultsRef = useRef<typeof restoreResults>([]);
   useEffect(() => { restoreResultsRef.current = restoreResults; }, [restoreResults]);
 
@@ -59,10 +78,81 @@ export default function RegisterPage({ onRegistered }: Props) {
       setError(t('register.usernameError'));
       return;
     }
+    
     setLoading(true);
     setError('');
+
     try {
-      await register({ username: name });
+      if (flowType === 'teacher') {
+         if (!email || !consent1 || !consent2) {
+            setError(t('register_split.consent_1'));
+            setLoading(false);
+            return;
+         }
+         
+         const hex = identity?.toHexString();
+         if (!hex) {
+            setError("Connection not established");
+            setLoading(false);
+            return;
+         }
+         
+         // Register natively as Solo
+         await register({ 
+             username: name, 
+             playerType: { tag: 'Solo' }, 
+             email: undefined 
+         });
+         
+         // Trigger verification email via Vercel Admin API
+         const res = await fetch('/api/send-teacher-verif', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ email: email.trim(), identityHex: hex })
+         });
+         
+         if (!res.ok) {
+           const errData = await res.json();
+           setError(errData.error || "Failed to send verification email.");
+           setLoading(false);
+           return;
+         }
+         
+         setVerifyStep(true);
+         setLoading(false);
+         return; // Wait for verification before finishing!
+         
+      } else if (flowType === 'student') {
+         if (!classCode) {
+            setError(t('register_split.class_code_label'));
+            setLoading(false);
+            return;
+         }
+         // First register as solo/base identity so we have a Player. 
+         // Or use the dedicated join_class_as_student reducer natively via normal STDB if we don't have an identity yet.
+         // Actually, wait, `joinClassAsStudent` assumes player exists in auth.rs!
+         // We should just register as Student directly, passing class_id? 
+         // No, according to our backend changes we added `joinClassAsStudent(class_code, username)`.
+         // Wait! We changed `register` to take `playerType` and `email`!
+         // If we just register { playerType: { student: {} } }, it sets class_id to None in backend!
+         // We must register as base (or Solo) and then immediately call joinClassAsStudent!
+         await register({ username: name, playerType: { tag: 'Student' }, email: undefined });
+         // We need to wait for the registration sequence to complete usually...
+         await joinClassAsStudent({ classCode: classCode.trim(), classUsername: name });
+         
+      } else {
+         // Solo
+         try {
+             await Promise.race([
+                 register({ username: name, playerType: { tag: 'Solo' }, email: undefined }),
+                 new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 5000))
+             ]);
+         } catch (e) {
+             console.error('Registration error:', e);
+             throw e;
+         }
+      }
+
       // Auto-generate a recovery key so the teacher can immediately create a QR card
       if (capturedToken) {
         await createRecoveryKey({ token: capturedToken });
@@ -71,6 +161,27 @@ export default function RegisterPage({ onRegistered }: Props) {
     } catch (err: unknown) {
       setError((err as Error)?.message ?? t('register.usernameError'));
       setLoading(false);
+    }
+  };
+
+  const handleVerify = async (e: FormEvent) => {
+    e.preventDefault();
+    if (verificationCode.trim().length !== 6) return;
+    setVerifyLoading(true);
+    setError('');
+    try {
+      await verifyTeacherUpgrade({ 
+          code: verificationCode.trim(), 
+          gdprConsent: true, 
+          teacherDeclaration: true 
+      });
+      if (capturedToken) {
+        await createRecoveryKey({ token: capturedToken });
+      }
+      setTimeout(onRegistered, 300);
+    } catch (err: unknown) {
+      setError((err as Error)?.message ?? "Invalid verification code");
+      setVerifyLoading(false);
     }
   };
 
@@ -85,7 +196,6 @@ export default function RegisterPage({ onRegistered }: Props) {
     setRestoreError('');
     try {
       await restoreAccount({ code: upper });
-      // Poll for result row (private table rows arrive automatically to our identity)
       const POLL_INTERVAL = 50;
       const TIMEOUT = 5_000;
       const deadline = Date.now() + TIMEOUT;
@@ -104,7 +214,6 @@ export default function RegisterPage({ onRegistered }: Props) {
       }
       const CREDS_KEY = 'spacetimemath_credentials';
       localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: '', token: row.token }));
-      // Consume the restore result row (best-effort; identity_disconnected is the backstop)
       try { await consumeRestoreResult(); } catch { /* ignore */ }
       window.location.reload();
     } catch (err: unknown) {
@@ -114,23 +223,19 @@ export default function RegisterPage({ onRegistered }: Props) {
     }
   };
 
-  // Auto-trigger restore when code is pre-populated from URL
   useEffect(() => {
     if (autoRestoreCode && !restoring) {
       const synth = { preventDefault: () => { } } as unknown as FormEvent;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleRestore(synth);
     }
-  }, [autoRestoreCode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoRestoreCode]);
 
   return (
     <PageContainer maxWidth="none" className="relative min-h-[100vh] items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950">
-      {/* Decorative Background Elements */}
       <div className="absolute -top-24 -start-24 h-96 w-96 rounded-full bg-brand-yellow/10 blur-[100px] dark:bg-brand-yellow/5" />
       <div className="absolute top-1/2 -end-24 h-96 w-96 -translate-y-1/2 rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-500/5" />
       <div className="absolute -bottom-24 start-1/2 h-96 w-96 -translate-x-1/2 rtl:translate-x-1/2 rounded-full bg-purple-500/10 blur-[120px] dark:bg-purple-500/5" />
 
-      {/* Language Switcher */}
       <div className="absolute top-6 end-6 lg:top-10 lg:end-10 overflow-visible">
         <LanguagePicker />
       </div>
@@ -159,45 +264,179 @@ export default function RegisterPage({ onRegistered }: Props) {
       <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
         {!showRestore ? (
           <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
-            <h2 className="mb-2 flex items-center gap-3 text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              <span>{t('register.chooseName')}</span>
-              <span className="animate-bounce text-3xl">👋</span>
-            </h2>
-            <p className="mb-8 animate-in fade-in ltr:slide-in-from-left-4 rtl:slide-in-from-right-4 duration-1000 delay-500 text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
-              {t('register.createAccountDesc')}
-            </p>
-            <form onSubmit={handleSubmit} className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700 flex flex-col gap-4">
-              <input
-                className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 text-lg font-semibold text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-yellow/10 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 lg:text-xl placeholder:text-slate-400"
-                type="text"
-                placeholder={t('register.usernamePlaceholder')}
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                maxLength={24}
-                autoFocus
-                disabled={loading}
-              />
-              {error && (
-                <p className="flex items-center gap-2 font-medium text-red-500">
-                  <span className="text-xl">⚠</span> {error}
-                </p>
-              )}
-              <button
-                className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-                type="submit"
-                disabled={loading || !username.trim()}
-              >
-                <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
-                <span className="relative flex items-center justify-center gap-2 text-lg font-black uppercase tracking-wider text-slate-900">
-                  {loading ? t('register.registering') : (
-                    <>
-                      {t('register.joinSprint')}
-                      <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span>
-                    </>
+             
+             {!flowType ? (
+                 <>
+                  <h2 className="mb-6 flex items-center justify-center gap-3 text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                    <span>{t('register.chooseName')}</span>
+                    <span className="animate-bounce text-3xl">👋</span>
+                  </h2>
+                  <div className="flex flex-col gap-4">
+                     <button
+                        onClick={() => setFlowType('teacher')}
+                        className="h-14 w-full rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors"
+                     >
+                        {t('register_split.teacher_btn')}
+                     </button>
+                     <button
+                        onClick={() => setFlowType('student')}
+                        className="h-14 w-full rounded-2xl bg-brand-yellow text-slate-900 font-bold hover:bg-yellow-400 transition-colors"
+                     >
+                        {t('register_split.student_btn')}
+                     </button>
+                     <button
+                        onClick={() => setFlowType('solo')}
+                        className="h-14 w-full rounded-2xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                     >
+                        {t('register_split.solo_btn')}
+                     </button>
+                  </div>
+                 </>
+             ) : verifyStep ? (
+                <>
+                  <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+                    Verify Your Email
+                  </h2>
+                  <p className="mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                    We just sent a 6-digit verification code to <strong className="text-slate-700 dark:text-slate-300">{email}</strong>. Entering this code upgrades your account to Teacher.
+                  </p>
+                  <form onSubmit={handleVerify} className="flex flex-col gap-4">
+                     <input
+                        className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 text-center"
+                        type="text"
+                        placeholder="123456"
+                        value={verificationCode}
+                        onChange={e => setVerificationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                        maxLength={6}
+                        autoFocus
+                        disabled={verifyLoading}
+                        required
+                     />
+                     {error && (
+                        <p className="flex items-center gap-2 font-medium text-red-500">
+                           <span className="text-xl">⚠</span> {error}
+                        </p>
+                     )}
+                     <button
+                        className="group flex h-16 w-full items-center justify-center gap-2 rounded-[20px] bg-[#10B981] px-8 text-lg font-black uppercase tracking-wider text-white transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+                        type="submit"
+                        disabled={verifyLoading || verificationCode.length !== 6}
+                     >
+                        {verifyLoading ? 'Verifying...' : 'Verify Code'}
+                     </button>
+                     <div className="mt-4 flex flex-col gap-2 w-full text-center items-center justify-center">
+                         <span className="text-xs text-slate-400">Didn't receive it? Check your spam folder.</span>
+                         <button type="button" onClick={() => onRegistered()} className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">Skip and register as Solo</button>
+                     </div>
+                  </form>
+                </>
+             ) : (
+                <>
+                  <button onClick={() => setFlowType(null)} className="mb-4 text-sm font-bold text-slate-400 hover:text-slate-600">
+                     ← {t('common.back')}
+                  </button>
+                  {hasFriendInvite && flowType === 'solo' && (
+                     <div className="mb-6 flex gap-3 rounded-xl border-[1.5px] border-brand-yellow bg-brand-yellow/10 p-4 text-sm font-bold text-slate-800 shadow-sm shadow-brand-yellow/10 dark:text-slate-200">
+                        <span className="text-xl">🤝</span>
+                        <p>{t('register.friendInviteBanner', 'You\'ve been invited! Choose a name to connect with your friend and start racing.')}</p>
+                     </div>
                   )}
-                </span>
-              </button>
-            </form>
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                     
+                     {flowType === 'teacher' && (
+                        <>
+                           <input
+                              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
+                              type="email"
+                              placeholder={t('register_split.email_label')}
+                              value={email}
+                              onChange={e => setEmail(e.target.value)}
+                              disabled={loading}
+                              required
+                           />
+                           <input
+                              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
+                              type="text"
+                              placeholder={t('register.usernamePlaceholder')}
+                              value={username}
+                              onChange={e => setUsername(e.target.value)}
+                              maxLength={24}
+                              disabled={loading}
+                              required
+                           />
+                           <label className="flex items-start gap-2 text-sm text-slate-600">
+                              <input type="checkbox" checked={consent1} onChange={(e) => setConsent1(e.target.checked)} className="mt-1" required />
+                              {t('register_split.consent_1')}
+                           </label>
+                           <label className="flex items-start gap-2 text-sm text-slate-600">
+                              <input type="checkbox" checked={consent2} onChange={(e) => setConsent2(e.target.checked)} className="mt-1" required />
+                              {t('register_split.consent_2')}
+                           </label>
+                        </>
+                     )}
+
+                     {flowType === 'student' && (
+                        <>
+                           <input
+                              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold tracking-widest text-slate-900 uppercase transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
+                              type="text"
+                              placeholder={t('register_split.class_code_label')}
+                              value={classCode}
+                              onChange={e => setClassCode(e.target.value.toUpperCase())}
+                              maxLength={6}
+                              disabled={loading}
+                              required
+                           />
+                           <input
+                              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
+                              type="text"
+                              placeholder={t('register.usernamePlaceholder')}
+                              value={username}
+                              onChange={e => setUsername(e.target.value)}
+                              maxLength={24}
+                              disabled={loading}
+                              required
+                           />
+                           <p className="text-xs text-brand-yellow font-bold bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                              {t('register_split.recovery_nag_student')}
+                           </p>
+                        </>
+                     )}
+
+                     {flowType === 'solo' && (
+                        <>
+                           <p className="mb-4 text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+                              {t('register.createAccountDesc')}
+                           </p>
+                           <input
+                              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
+                              type="text"
+                              placeholder={t('register.usernamePlaceholder')}
+                              value={username}
+                              onChange={e => setUsername(e.target.value)}
+                              maxLength={24}
+                              autoFocus
+                              disabled={loading}
+                              required
+                           />
+                        </>
+                     )}
+
+                     {error && (
+                        <p className="flex items-center gap-2 font-medium text-red-500">
+                           <span className="text-xl">⚠</span> {error}
+                        </p>
+                     )}
+                     <button
+                        className="group flex h-16 w-full items-center justify-center gap-2 rounded-[20px] bg-brand-yellow px-8 text-lg font-black uppercase tracking-wider text-slate-900 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+                        type="submit"
+                        disabled={loading || !username.trim()}
+                     >
+                        {loading ? t('register.registering') : t('register.joinSprint')}
+                     </button>
+                  </form>
+                </>
+             )}
 
             <div className="my-8 flex items-center gap-4 text-slate-300 dark:text-slate-700">
               <div className="h-px flex-1 bg-current" />
@@ -215,6 +454,7 @@ export default function RegisterPage({ onRegistered }: Props) {
           </div>
         ) : (
           <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
+            {/* Same restore UI */}
             <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
               {t('register.restoreHeading')}
             </h2>
@@ -231,7 +471,7 @@ export default function RegisterPage({ onRegistered }: Props) {
             ) : (
               <form onSubmit={handleRestore} className="flex flex-col gap-6">
                 <input
-                  className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-yellow/10 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 lg:text-3xl placeholder:text-slate-300 placeholder:tracking-normal"
+                  className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 text-center"
                   type="text"
                   placeholder={t('register.restorePlaceholder')}
                   value={code}
@@ -239,7 +479,6 @@ export default function RegisterPage({ onRegistered }: Props) {
                   maxLength={12}
                   autoFocus
                   disabled={restoring}
-                  style={{ textAlign: 'center' }}
                 />
                 {restoreError && (
                   <p className="flex items-center gap-2 font-medium text-red-500">
@@ -247,35 +486,28 @@ export default function RegisterPage({ onRegistered }: Props) {
                   </p>
                 )}
                 <button
-                  className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center uppercase font-black"
                   type="submit"
                   disabled={restoring || (code.trim().length !== 6 && code.trim().length !== 12)}
                 >
-                  <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
-                  <span className="relative flex items-center justify-center gap-2 text-lg font-black uppercase tracking-wider text-slate-900">
-                    {restoring ? t('register.restoring') : (
-                      <>
-                        {t('register.restore')}
-                        <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span>
-                      </>
-                    )}
-                  </span>
+                  {restoring ? t('register.restoring') : (
+                     <>{t('register.restore')} <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span></>
+                  )}
                 </button>
               </form>
             )}
 
             <button
               onClick={() => { setShowRestore(false); setCode(''); setRestoreError(''); setAutoRestoreCode(null); }}
-              className="group mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-brand-yellow dark:text-slate-400 dark:hover:text-brand-yellow"
+              className="group mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-brand-yellow dark:text-slate-400"
             >
-              <span className="transition-transform ltr:group-hover:-translate-x-1 rtl:group-hover:translate-x-1 rtl:rotate-180">←</span>
-              <span>{t('register.newAccount')}</span>
+              ← <span>{t('register.newAccount')}</span>
             </button>
           </div>
         )}
       </div>
 
-      <p className="mt-12 max-w-xs text-center text-sm font-medium leading-relaxed text-slate-400 dark:text-slate-500 animate-in fade-in duration-1000 delay-500">
+      <p className="mt-12 max-w-xs text-center text-sm font-medium leading-relaxed text-slate-400 dark:text-slate-500 pb-12">
         {t('register.footer')}
       </p>
     </PageContainer>

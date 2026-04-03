@@ -33,7 +33,7 @@
     "tagline": "Conoce tu nivel."
   },
   "register": {
-    "tagline": "60 segundos. Tablas de multiplicar. Clasificación en vivo.",
+    "tagline": "60 segundos. Tablas de multiplicar. Supera tu mejor marca.",
     "chooseName": "Elige tu nombre",
     "usernamePlaceholder": "Elige un nombre de usuario...",
     "usernameError": "El nombre debe tener entre 1 y 24 caracteres",
@@ -122,7 +122,6 @@
     "correct": "Correctas",
     "accuracy": "Precisión",
     "maxStreak": "Racha Máxima",
-    "rank": "Rango",
     "struggled": "Tuviste problemas con:",
     "struggledHint": "Estas aparecerán más a menudo en tu próximo sprint.",
     "masteryTitle": "Matriz de dominio",
@@ -223,18 +222,6 @@
     "noReminders": "Sin recordatorios.",
     "daily": "Cada día",
     "weekly": "Días concretos"
-  },
-  "leaderboard": {
-    "title": "Clasificación",
-    "empty": "Sin sesiones aún. ¡Sé el primero!",
-    "colHash": "#",
-    "colPlayer": "Jugador",
-    "colScore": "Pts.",
-    "colAccuracy": "Prc.",
-    "colAnswers": "Rsp.",
-    "you": "tú",
-    "footer": "Actualizado en tiempo real por SpaceTimeDB",
-    "tierAll": "Todos"
   },
   "unlock": {
     "tier1Title": "¡Multiplicador de 10 abierto!",

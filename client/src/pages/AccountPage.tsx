@@ -64,8 +64,30 @@ export default function AccountPage({ myPlayer }: Props) {
     setTimeout(() => setKeyCopied(false), 2000);
   };
 
-  // Email recovery UI variables removed
+  const [emailInput, setEmailInput] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
+  const handleEmailKey = async () => {
+    if (!myRecoveryKey || !emailInput.trim()) return;
+    setEmailSending(true);
+    setEmailError('');
+    try {
+      const res = await fetch('/api/send-recovery-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
+      });
+      if (!res.ok) throw new Error();
+      await markRecoveryEmailed();
+      setEmailSent(true);
+    } catch {
+      setEmailError(t('account.emailKeyError'));
+    } finally {
+      setEmailSending(false);
+    }
+  };
   const handleRename = async () => {
     const name = newName.trim();
     if (!name || name === myPlayer.username) { setNameEditing(false); return; }
@@ -272,14 +294,37 @@ export default function AccountPage({ myPlayer }: Props) {
               </div>
             )}
 
-            {/* Email recovery disabled until domain is purchased */}
+            {/* Email recovery */}
             {!myPlayer.recoveryEmailed && (
               <div className="mt-3 pt-5 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
+                  {t('account.emailKeyDesc')}
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={emailInput}
+                    onChange={e => setEmailInput(e.target.value)}
+                    placeholder={t('account.emailKeyPlaceholder')}
+                    className="w-full flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
+                    onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
+                  />
+                  <button
+                    className="shrink-0 rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition-transform active:scale-95 disabled:opacity-50"
+                    onClick={handleEmailKey}
+                    disabled={emailSending || !emailInput.trim()}
+                  >
+                    {emailSending ? '…' : t('account.emailKeySend')}
+                  </button>
+                </div>
+                {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">✓ {t('account.emailKeySent')}</p>}
+                {emailError && <p className="mt-2 text-xs font-bold text-red-500">{emailError}</p>}
+                
                 <button
-                  className="w-full rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-4 py-3 text-sm font-bold text-slate-800 dark:text-slate-100 transition-colors active:scale-[0.98]"
+                  className="w-full mt-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-3 text-xs font-bold text-slate-500 dark:text-slate-400 transition-colors border border-slate-200 dark:border-slate-700"
                   onClick={() => markRecoveryEmailed()}
                 >
-                  ✓ {t('account.keySaved')}
+                  {t('account.keySaved')}
                 </button>
               </div>
             )}
@@ -341,8 +386,8 @@ export default function AccountPage({ myPlayer }: Props) {
 
       <div className="mt-4 flex flex-wrap items-center justify-center gap-6 pb-2">
         {[
-          { key: 'account.imprint', href: 'https://better1up.vercel.app/impressum' },
-          { key: 'account.privacy', href: 'https://better1up.vercel.app/datenschutz' },
+          { key: 'account.imprint', href: 'https://one.up.bilharz.eu/impressum' },
+          { key: 'account.privacy', href: 'https://one.up.bilharz.eu/datenschutz' },
         ].map(({ key, href }) => (
           <a
             key={key}

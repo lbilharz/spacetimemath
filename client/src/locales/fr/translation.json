@@ -24,7 +24,7 @@
     "tagline": "Connais ton niveau."
   },
   "register": {
-    "tagline": "60 secondes. Tables de multiplication. Classement en direct.",
+    "tagline": "60 secondes. Tables de multiplication. Bats ton record.",
     "chooseName": "Choisis ton nom",
     "usernamePlaceholder": "Choisis un nom d'utilisateur …",
     "usernameError": "Le nom d'utilisateur doit faire entre 1 et 24 caractères",
@@ -112,7 +112,6 @@
     "weightedScore": "score pondéré",
     "correct": "Correct",
     "accuracy": "Précision",
-    "rank": "Rang",
     "struggled": "Tu as eu du mal avec :",
     "struggledHint": "Ceux-ci apparaîtront plus souvent lors de ton prochain sprint.",
     "masteryTitle": "Grille de maîtrise",
@@ -214,18 +213,6 @@
     "noReminders": "Aucun rappel actif. Ajoutez-en un pour garder votre série !",
     "daily": "Tous les jours",
     "weekly": "Jours spécifiques"
-  },
-  "leaderboard": {
-    "title": "Classement",
-    "empty": "Pas encore de sessions — sois le premier !",
-    "colHash": "#",
-    "colPlayer": "Joueur",
-    "colScore": "Score",
-    "colAccuracy": "Préc.",
-    "colAnswers": "Rép.",
-    "you": "toi",
-    "footer": "Score = Σ poids de difficulté des réponses correctes · En direct via SpaceTimeDB",
-    "tierAll": "Tout"
   },
   "unlock": {
     "tier1Title": "Multiplicateur à 2 chiffres débloqué !",
