@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
-import type { ClassroomMember, Friendship, BestScore, Player } from '../module_bindings/types.js';
+import type { ClassroomMember, Friendship, Player } from '../module_bindings/types.js';
 
 interface Props {
   myIdentityHex: string;

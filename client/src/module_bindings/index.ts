@@ -35,6 +35,7 @@ import {
 
 // Import all reducer arg schemas
 import AcceptFriendInviteReducer from "./accept_friend_invite_reducer";
+import AdminSetTeacherCodeReducer from "./admin_set_teacher_code_reducer";
 import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "./consume_restore_result_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
@@ -46,6 +47,7 @@ import EndSessionReducer from "./end_session_reducer";
 import FocusStudentReducer from "./focus_student_reducer";
 import GetClassRecoveryCodesReducer from "./get_class_recovery_codes_reducer";
 import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
+import GrantAdminToReducer from "./grant_admin_to_reducer";
 import IssueProblemReducer from "./issue_problem_reducer";
 import JoinClassAsStudentReducer from "./join_class_as_student_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
@@ -82,7 +84,7 @@ import SyncKeystrokeReducer from "./sync_keystroke_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
 import UpdateDktWeightsReducer from "./update_dkt_weights_reducer";
 import UpdateFriendAliasReducer from "./update_friend_alias_reducer";
-import UpgradeToTeacherReducer from "./upgrade_to_teacher_reducer";
+import VerifyTeacherUpgradeReducer from "./verify_teacher_upgrade_reducer";
 
 // Import all procedure arg schemas
 
@@ -412,6 +414,7 @@ const tablesSchema = __schema({
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
   __reducerSchema("accept_friend_invite", AcceptFriendInviteReducer),
+  __reducerSchema("admin_set_teacher_code", AdminSetTeacherCodeReducer),
   __reducerSchema("complete_onboarding", CompleteOnboardingReducer),
   __reducerSchema("consume_restore_result", ConsumeRestoreResultReducer),
   __reducerSchema("create_classroom", CreateClassroomReducer),
@@ -423,6 +426,7 @@ const reducersSchema = __reducers(
   __reducerSchema("focus_student", FocusStudentReducer),
   __reducerSchema("get_class_recovery_codes", GetClassRecoveryCodesReducer),
   __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
+  __reducerSchema("grant_admin_to", GrantAdminToReducer),
   __reducerSchema("issue_problem", IssueProblemReducer),
   __reducerSchema("join_class_as_student", JoinClassAsStudentReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
@@ -459,7 +463,7 @@ const reducersSchema = __reducers(
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
   __reducerSchema("update_dkt_weights", UpdateDktWeightsReducer),
   __reducerSchema("update_friend_alias", UpdateFriendAliasReducer),
-  __reducerSchema("upgrade_to_teacher", UpgradeToTeacherReducer),
+  __reducerSchema("verify_teacher_upgrade", VerifyTeacherUpgradeReducer),
 );
 
 /** The schema information for all procedures in this module. This is defined the same way as the procedures would have been defined in the server. */

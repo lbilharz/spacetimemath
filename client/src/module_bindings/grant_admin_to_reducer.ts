@@ -11,7 +11,5 @@ import {
 } from "spacetimedb";
 
 export default {
-  email: __t.string(),
-  gdprConsent: __t.bool(),
-  teacherDeclaration: __t.bool(),
+  target: __t.identity(),
 };

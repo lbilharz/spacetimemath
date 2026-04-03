@@ -16,11 +16,6 @@ import {
 
 export default __t.row({
   identity: __t.identity().primaryKey(),
-  get playerType() {
-    return PlayerType.name("player_type");
-  },
-  classId: __t.option(__t.u64()).name("class_id"),
-  email: __t.option(__t.string()),
   username: __t.string(),
   bestScore: __t.f32().name("best_score"),
   totalSessions: __t.u32().name("total_sessions"),
@@ -31,4 +26,9 @@ export default __t.row({
   recoveryEmailed: __t.bool().name("recovery_emailed"),
   extendedMode: __t.bool().name("extended_mode"),
   extendedLevel: __t.u8().name("extended_level"),
+  get playerType() {
+    return PlayerType.name("player_type");
+  },
+  classId: __t.option(__t.u64()).name("class_id"),
+  email: __t.option(__t.string()),
 });

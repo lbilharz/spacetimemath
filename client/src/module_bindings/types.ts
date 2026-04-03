@@ -180,11 +180,6 @@ export type OnlinePlayer = __Infer<typeof OnlinePlayer>;
 
 export const Player = __t.object("Player", {
   identity: __t.identity(),
-  get playerType() {
-    return PlayerType;
-  },
-  classId: __t.option(__t.u64()),
-  email: __t.option(__t.string()),
   username: __t.string(),
   bestScore: __t.f32(),
   totalSessions: __t.u32(),
@@ -195,6 +190,11 @@ export const Player = __t.object("Player", {
   recoveryEmailed: __t.bool(),
   extendedMode: __t.bool(),
   extendedLevel: __t.u8(),
+  get playerType() {
+    return PlayerType;
+  },
+  classId: __t.option(__t.u64()),
+  email: __t.option(__t.string()),
 });
 export type Player = __Infer<typeof Player>;
 
@@ -244,6 +244,11 @@ export const RestoreResult = __t.object("RestoreResult", {
 });
 export type RestoreResult = __Infer<typeof RestoreResult>;
 
+export const ServerAdmin = __t.object("ServerAdmin", {
+  identity: __t.identity(),
+});
+export type ServerAdmin = __Infer<typeof ServerAdmin>;
+
 export const Session = __t.object("Session", {
   id: __t.u64(),
   playerIdentity: __t.identity(),
@@ -279,6 +284,13 @@ export const TeacherFocus = __t.object("TeacherFocus", {
   focusedStudentId: __t.identity(),
 });
 export type TeacherFocus = __Infer<typeof TeacherFocus>;
+
+export const TeacherVerificationCode = __t.object("TeacherVerificationCode", {
+  identity: __t.identity(),
+  email: __t.string(),
+  code: __t.string(),
+});
+export type TeacherVerificationCode = __Infer<typeof TeacherVerificationCode>;
 
 export const UnlockLog = __t.object("UnlockLog", {
   id: __t.u64(),
