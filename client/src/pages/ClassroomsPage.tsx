@@ -22,7 +22,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const [players] = useTable(tables.players);
   const createClassroom = useSTDBReducer(reducers.createClassroom);
   const joinClassroom = useSTDBReducer(reducers.joinClassroom);
-  const upgradeToTeacher = useSTDBReducer(reducers.upgradeToTeacher);
+  const verifyTeacherUpgrade = useSTDBReducer(reducers.verifyTeacherUpgrade);
 
   const [panel, setPanel] = useState<Panel>('none');
   const [className, setClassName] = useState('');
@@ -32,6 +32,8 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const [consent2, setConsent2] = useState(false);
   const [classError, setClassError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [verifyStep, setVerifyStep] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
 
   const myPlayer = myIdentityHex ? (players as unknown as Player[]).find(p => p.identity.toHexString() === myIdentityHex) : undefined;
   const isTeacher = myPlayer?.playerType?.tag === 'Teacher';
@@ -52,7 +54,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   ];
 
   const openPanel = (p: Panel) => {
-    setPanel(p); setClassError(''); setClassName(''); setJoinCode(''); setEmail(''); setConsent1(false); setConsent2(false);
+    setPanel(p); setClassError(''); setClassName(''); setJoinCode(''); setEmail(''); setConsent1(false); setConsent2(false); setVerifyStep(false); setVerificationCode('');
   };
 
   const handleCreate = async (e: FormEvent) => {
@@ -97,11 +99,38 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
     }
     setSubmitting(true); setClassError('');
     try {
-      await upgradeToTeacher({ email: email.trim(), gdprConsent: true, teacherDeclaration: true });
-      setPanel('none');
+      const res = await fetch('/api/send-teacher-verif', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), identityHex: myIdentityHex })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to send verification email");
+      }
+      setVerifyStep(true);
       setSubmitting(false);
     } catch (err: unknown) {
       setClassError((err as Error)?.message ?? t('register.usernameError'));
+      setSubmitting(false);
+    }
+  };
+
+  const handleVerify = async (e: FormEvent) => {
+    e.preventDefault();
+    if (verificationCode.trim().length !== 6) return;
+    setSubmitting(true); setClassError('');
+    try {
+      await verifyTeacherUpgrade({ 
+          code: verificationCode.trim(), 
+          gdprConsent: true, 
+          teacherDeclaration: true 
+      });
+      setPanel('none');
+      setVerifyStep(false);
+      setSubmitting(false);
+    } catch (err: unknown) {
+      setClassError((err as Error)?.message ?? "Invalid verification code");
       setSubmitting(false);
     }
   };
@@ -256,35 +285,73 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       {/* Upgrade form */}
       {panel === 'upgrade' && (
         <div className="flex flex-col rounded-3xl border border-brand-yellow/30 bg-brand-yellow/5 p-6 dark:bg-brand-yellow/5 dark:border-brand-yellow/20 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-sm mt-2 max-w-lg mx-auto">
-          <h2 className="mb-2 text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">{t('register_split.teacher_btn')}</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">{t('classes.upgradeDesc', 'Upgrade your account for free to start managing students and running class sprints.')}</p>
-          <form onSubmit={handleUpgrade} className="flex flex-col gap-4">
-            <input
-              className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3.5 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 shadow-inner"
-              type="email"
-              placeholder={t('register_split.email_label')}
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              disabled={submitting}
-              required
-            />
-            <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
-              <input type="checkbox" checked={consent1} onChange={(e) => setConsent1(e.target.checked)} className="mt-1 h-4 w-4 bg-white border-brand-yellow rounded-md checked:bg-brand-yellow checked:border-brand-yellow focus:ring-brand-yellow focus:ring-offset-0 dark:bg-slate-900" required />
-              <span className="leading-snug relative top-[2px]">{t('register_split.consent_1')}</span>
-            </label>
-            <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
-              <input type="checkbox" checked={consent2} onChange={(e) => setConsent2(e.target.checked)} className="mt-1 h-4 w-4 bg-white border-brand-yellow rounded-md checked:bg-brand-yellow checked:border-brand-yellow focus:ring-brand-yellow focus:ring-offset-0 dark:bg-slate-900" required />
-              <span className="leading-snug relative top-[2px]">{t('register_split.consent_2')}</span>
-            </label>
-            <div className="flex gap-2 mt-2">
-              <button className="flex-1 rounded-2xl bg-brand-yellow px-6 py-4 text-[15px] font-black text-slate-900 uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50 shadow-sm shadow-brand-yellow/20" type="submit" disabled={submitting || !email.trim() || !consent1 || !consent2}>
-                {submitting ? t('common.saving') : t('common.save')}
-              </button>
-              <button className="flex-none rounded-2xl bg-slate-200 dark:bg-slate-800 px-5 py-4 text-[15px] font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-300 dark:border-slate-700/50" type="button" onClick={() => openPanel('none')} disabled={submitting}>
-                ✕
-              </button>
-            </div>
-          </form>
+          {!verifyStep ? (
+             <>
+                <h2 className="mb-2 text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">{t('register_split.teacher_btn')}</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">{t('classes.upgradeDesc', 'Upgrade your account for free to start managing students and running class sprints.')}</p>
+                <form onSubmit={handleUpgrade} className="flex flex-col gap-4">
+                  <input
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3.5 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 shadow-inner"
+                    type="email"
+                    placeholder={t('register_split.email_label')}
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    disabled={submitting}
+                    required
+                  />
+                  <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                    <input type="checkbox" checked={consent1} onChange={(e) => setConsent1(e.target.checked)} className="mt-1 h-4 w-4 bg-white border-brand-yellow rounded-md checked:bg-brand-yellow checked:border-brand-yellow focus:ring-brand-yellow focus:ring-offset-0 dark:bg-slate-900" required />
+                    <span className="leading-snug relative top-[2px]">{t('register_split.consent_1')}</span>
+                  </label>
+                  <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                    <input type="checkbox" checked={consent2} onChange={(e) => setConsent2(e.target.checked)} className="mt-1 h-4 w-4 bg-white border-brand-yellow rounded-md checked:bg-brand-yellow checked:border-brand-yellow focus:ring-brand-yellow focus:ring-offset-0 dark:bg-slate-900" required />
+                    <span className="leading-snug relative top-[2px]">{t('register_split.consent_2')}</span>
+                  </label>
+                  <div className="flex gap-2 mt-2">
+                    <button className="flex-1 rounded-2xl bg-brand-yellow px-6 py-4 text-[15px] font-black text-slate-900 uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50 shadow-sm shadow-brand-yellow/20" type="submit" disabled={submitting || !email.trim() || !consent1 || !consent2}>
+                      {submitting ? 'Sending Code...' : t('common.save')}
+                    </button>
+                    <button className="flex-none rounded-2xl bg-slate-200 dark:bg-slate-800 px-5 py-4 text-[15px] font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-300 dark:border-slate-700/50" type="button" onClick={() => openPanel('none')} disabled={submitting}>
+                      ✕
+                    </button>
+                  </div>
+                </form>
+             </>
+          ) : (
+             <>
+                <h2 className="mb-2 text-lg font-bold text-slate-900 dark:text-white">
+                  Verify Your Email
+                </h2>
+                <p className="mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  We just sent a 6-digit verification code to <strong className="text-slate-700 dark:text-slate-300">{email}</strong>.
+                </p>
+                <form onSubmit={handleVerify} className="flex flex-col gap-4">
+                   <input
+                      className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:text-white dark:focus:border-brand-yellow text-center shadow-inner"
+                      type="text"
+                      placeholder="123456"
+                      value={verificationCode}
+                      onChange={e => setVerificationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                      maxLength={6}
+                      autoFocus
+                      disabled={submitting}
+                      required
+                   />
+                   <div className="flex gap-2 mt-2">
+                     <button
+                        className="flex-1 rounded-2xl bg-[#10B981] px-6 py-4 text-[15px] font-black text-white uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50 shadow-sm"
+                        type="submit"
+                        disabled={submitting || verificationCode.length !== 6}
+                     >
+                        {submitting ? 'Verifying...' : 'Verify'}
+                     </button>
+                     <button className="flex-none rounded-2xl bg-slate-200 dark:bg-slate-800 px-5 py-4 text-[15px] font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-300 dark:border-slate-700/50" type="button" onClick={() => openPanel('none')} disabled={submitting}>
+                        ✕
+                     </button>
+                   </div>
+                </form>
+             </>
+          )}
           {classError && <p className="text-red-600 dark:text-red-400 font-bold text-xs mt-4 bg-red-50 dark:bg-red-900/20 py-2.5 px-3.5 rounded-lg border border-red-100 dark:border-red-900/50">⚠ {classError}</p>}
         </div>
       )}

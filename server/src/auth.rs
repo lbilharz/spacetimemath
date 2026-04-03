@@ -1,4 +1,4 @@
-use spacetimedb::{reducer, ReducerContext, Table};
+use spacetimedb::{table, reducer, ReducerContext, Table};
 use crate::{Player, OnlinePlayer, BestScore, get_player, MAX_TIER, PlayerType};
 use crate::{players, online_players, best_scores, classrooms};
 
@@ -21,8 +21,9 @@ pub fn register(ctx: &ReducerContext, username: String, player_type: PlayerType,
     validate_username(&name)?;
     
     // If Teacher, ensure email is provided. (Note: DSGVO consent is verified frontend side, but could send boolean here)
-    if player_type == PlayerType::Teacher && email.is_none() {
-        return Err("Teacher must provide an email address".into());
+    // Block Teacher registration. Must go through verification flow.
+    if player_type == PlayerType::Teacher {
+        return Err("Teachers must verify their email via the upgrade flow.".into());
     }
     
     let sender = ctx.sender();
@@ -151,21 +152,77 @@ pub fn mark_recovery_emailed(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
-/// Upgrade a Solo player to a Teacher.
+#[table(accessor = server_admins)]
+pub struct ServerAdmin {
+    #[primary_key]
+    pub identity: spacetimedb::Identity,
+}
+
 #[reducer]
-pub fn upgrade_to_teacher(ctx: &ReducerContext, email: String, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
+pub fn grant_admin_to(ctx: &ReducerContext, target: spacetimedb::Identity) -> Result<(), String> {
+    // If the table is entirely empty, anyone can bootstrap the first admin.
+    // Otherwise, you must already be an admin to grant admin.
+    if ctx.db.server_admins().iter().count() > 0 && ctx.db.server_admins().identity().find(ctx.sender()).is_none() {
+        return Err("Not authorized".into());
+    }
+    ctx.db.server_admins().insert(ServerAdmin { identity: target });
+    Ok(())
+}
+
+#[table(accessor = teacher_verification_codes)]
+pub struct TeacherVerificationCode {
+    #[primary_key]
+    pub identity: spacetimedb::Identity,
+    pub email: String,
+    pub code: String,
+}
+
+#[reducer]
+pub fn admin_set_teacher_code(ctx: &ReducerContext, target: spacetimedb::Identity, email: String, code: String) -> Result<(), String> {
+    if ctx.db.server_admins().identity().find(ctx.sender()).is_none() {
+        return Err("Not authorized".into());
+    }
+    if code.len() != 6 {
+        return Err("Code must be 6 characters".into());
+    }
+    
+    // Clear any existing verification code for this user before inserting new one
+    ctx.db.teacher_verification_codes().identity().delete(target);
+    ctx.db.teacher_verification_codes().insert(TeacherVerificationCode {
+        identity: target,
+        email,
+        code,
+    });
+    Ok(())
+}
+
+/// Upgrade a Solo player to a Teacher using an emailed verification code.
+#[reducer]
+pub fn verify_teacher_upgrade(ctx: &ReducerContext, code: String, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
     if !gdpr_consent || !teacher_declaration {
         return Err("Must provide all required consents.".into());
     }
+    
     let player = get_player(ctx)?;
     if player.player_type == PlayerType::Student {
         return Err("Students cannot upgrade to Teachers.".into());
     }
+    
+    let record = ctx.db.teacher_verification_codes().identity().find(ctx.sender())
+        .ok_or("No verification code requested.")?;
+        
+    if record.code != code.trim() {
+        return Err("Invalid verification code".into());
+    }
+    
     ctx.db.players().identity().update(Player {
         player_type: PlayerType::Teacher,
-        email: Some(email),
+        email: Some(record.email.clone()),
         ..player
     });
+    
+    ctx.db.teacher_verification_codes().identity().delete(ctx.sender());
+    
     Ok(())
 }
 

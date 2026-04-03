@@ -28,8 +28,12 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [loading, setLoading] = useState(false);
   const register = useSTDBReducer(reducers.register);
   const joinClassAsStudent = useSTDBReducer(reducers.joinClassAsStudent); // The new reducer
-  const upgradeToTeacher = useSTDBReducer(reducers.upgradeToTeacher);
+  const verifyTeacherUpgrade = useSTDBReducer(reducers.verifyTeacherUpgrade);
   const createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
+
+  const [verifyStep, setVerifyStep] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verifyLoading, setVerifyLoading] = useState(false);
 
   const [showRestore, setShowRestore] = useState(false);
   const [code, setCode] = useState('');
@@ -85,12 +89,38 @@ export default function RegisterPage({ onRegistered }: Props) {
             setLoading(false);
             return;
          }
-         // Register as teacher
+         
+         const hex = identity?.toHexString();
+         if (!hex) {
+            setError("Connection not established");
+            setLoading(false);
+            return;
+         }
+         
+         // Register natively as Solo
          await register({ 
              username: name, 
-             playerType: { tag: 'Teacher' }, 
-             email: email.trim() 
+             playerType: { tag: 'Solo' }, 
+             email: undefined 
          });
+         
+         // Trigger verification email via Vercel Admin API
+         const res = await fetch('/api/send-teacher-verif', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ email: email.trim(), identityHex: hex })
+         });
+         
+         if (!res.ok) {
+           const errData = await res.json();
+           setError(errData.error || "Failed to send verification email.");
+           setLoading(false);
+           return;
+         }
+         
+         setVerifyStep(true);
+         setLoading(false);
+         return; // Wait for verification before finishing!
          
       } else if (flowType === 'student') {
          if (!classCode) {
@@ -131,6 +161,27 @@ export default function RegisterPage({ onRegistered }: Props) {
     } catch (err: unknown) {
       setError((err as Error)?.message ?? t('register.usernameError'));
       setLoading(false);
+    }
+  };
+
+  const handleVerify = async (e: FormEvent) => {
+    e.preventDefault();
+    if (verificationCode.trim().length !== 6) return;
+    setVerifyLoading(true);
+    setError('');
+    try {
+      await verifyTeacherUpgrade({ 
+          code: verificationCode.trim(), 
+          gdprConsent: true, 
+          teacherDeclaration: true 
+      });
+      if (capturedToken) {
+        await createRecoveryKey({ token: capturedToken });
+      }
+      setTimeout(onRegistered, 300);
+    } catch (err: unknown) {
+      setError((err as Error)?.message ?? "Invalid verification code");
+      setVerifyLoading(false);
     }
   };
 
@@ -241,6 +292,44 @@ export default function RegisterPage({ onRegistered }: Props) {
                      </button>
                   </div>
                  </>
+             ) : verifyStep ? (
+                <>
+                  <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+                    Verify Your Email
+                  </h2>
+                  <p className="mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                    We just sent a 6-digit verification code to <strong className="text-slate-700 dark:text-slate-300">{email}</strong>. Entering this code upgrades your account to Teacher.
+                  </p>
+                  <form onSubmit={handleVerify} className="flex flex-col gap-4">
+                     <input
+                        className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 text-center"
+                        type="text"
+                        placeholder="123456"
+                        value={verificationCode}
+                        onChange={e => setVerificationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                        maxLength={6}
+                        autoFocus
+                        disabled={verifyLoading}
+                        required
+                     />
+                     {error && (
+                        <p className="flex items-center gap-2 font-medium text-red-500">
+                           <span className="text-xl">⚠</span> {error}
+                        </p>
+                     )}
+                     <button
+                        className="group flex h-16 w-full items-center justify-center gap-2 rounded-[20px] bg-[#10B981] px-8 text-lg font-black uppercase tracking-wider text-white transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+                        type="submit"
+                        disabled={verifyLoading || verificationCode.length !== 6}
+                     >
+                        {verifyLoading ? 'Verifying...' : 'Verify Code'}
+                     </button>
+                     <div className="mt-4 flex flex-col gap-2 w-full text-center items-center justify-center">
+                         <span className="text-xs text-slate-400">Didn't receive it? Check your spam folder.</span>
+                         <button type="button" onClick={() => onRegistered()} className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">Skip and register as Solo</button>
+                     </div>
+                  </form>
+                </>
              ) : (
                 <>
                   <button onClick={() => setFlowType(null)} className="mb-4 text-sm font-bold text-slate-400 hover:text-slate-600">

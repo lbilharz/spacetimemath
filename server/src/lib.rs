@@ -23,10 +23,11 @@ pub(crate) const MAX_RESPONSE_MS: u32 = 120_000;
 // TABLES
 // ============================================================
 
-#[derive(spacetimedb::SpacetimeType, Clone, PartialEq, Debug)]
+#[derive(spacetimedb::SpacetimeType, Clone, PartialEq, Debug, Default)]
 pub enum PlayerType {
     Teacher,
     Student,
+    #[default]
     Solo,
 }
 
@@ -34,9 +35,6 @@ pub enum PlayerType {
 pub struct Player {
     #[primary_key]
     pub identity: Identity,
-    pub player_type: PlayerType,
-    pub class_id: Option<u64>,
-    pub email: Option<String>,
     pub username: String,
     pub best_score: f32,
     pub total_sessions: u32,
@@ -53,6 +51,12 @@ pub struct Player {
     pub extended_mode: bool,
     #[default(0)]
     pub extended_level: u8,
+    #[default(PlayerType::Solo)]
+    pub player_type: PlayerType,
+    #[default(None::<u64>)]
+    pub class_id: Option<u64>,
+    #[default(None::<String>)]
+    pub email: Option<String>,
 }
 
 #[table(accessor = friendships, public)]
