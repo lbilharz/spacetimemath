@@ -6,6 +6,7 @@ mod auth;
 mod security;
 mod gdpr;
 pub mod generator;
+mod friends;
 
 // Re-export scheduled reducers so the `scheduled(...)` macro in #[table] attributes can find them.
 pub use classroom::auto_end_class_sprint;
@@ -22,10 +23,20 @@ pub(crate) const MAX_RESPONSE_MS: u32 = 120_000;
 // TABLES
 // ============================================================
 
+#[derive(spacetimedb::SpacetimeType, Clone, PartialEq, Debug)]
+pub enum PlayerType {
+    Teacher,
+    Student,
+    Solo,
+}
+
 #[table(accessor = players, public)]
 pub struct Player {
     #[primary_key]
     pub identity: Identity,
+    pub player_type: PlayerType,
+    pub class_id: Option<u64>,
+    pub email: Option<String>,
     pub username: String,
     pub best_score: f32,
     pub total_sessions: u32,
@@ -42,6 +53,31 @@ pub struct Player {
     pub extended_mode: bool,
     #[default(0)]
     pub extended_level: u8,
+}
+
+#[table(accessor = friendships, public)]
+pub struct Friendship {
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    #[index(btree)]
+    pub initiator_identity: Identity,
+    #[index(btree)]
+    pub recipient_identity: Identity,
+    pub alias_by_initiator: Option<String>,
+    pub alias_by_recipient: Option<String>,
+    pub created_at: Timestamp,
+}
+
+#[table(accessor = friend_invites, public)]
+pub struct FriendInvite {
+    #[primary_key]
+    pub token: String,
+    #[index(btree)]
+    pub creator_identity: Identity,
+    pub expires_at: Timestamp,
+    #[default(false)]
+    pub used: bool,
 }
 
 #[table(accessor = sessions, public)]

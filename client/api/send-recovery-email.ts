@@ -11,11 +11,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'email and code required' });
   }
 
-  const appUrl = process.env.APP_URL ?? 'https://better-1up.vercel.app';
+  const appUrl = process.env.APP_URL ?? 'https://up.bilharz.eu';
   const restoreUrl = `${appUrl}/?restore=${encodeURIComponent(code)}`;
 
   const { error } = await resend.emails.send({
-    from: '1UP <onboarding@resend.dev>',
+    from: 'better 1UP <no-reply@up.bilharz.eu>',
     to: email,
     subject: 'Your 1UP recovery key',
     html: `

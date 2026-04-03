@@ -7,6 +7,7 @@ import type { Classroom, ClassroomMember, Player, ProblemStat } from '../module_
 import ScoringGuide from '../components/ScoringGuide.js';
 import PageContainer from '../components/PageContainer.js';
 import { PlayIcon } from '../components/Icons.js';
+import NetworkLeaderboard from '../components/NetworkLeaderboard.js';
 
 const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
 
@@ -117,6 +118,13 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEn
           {starting ? t('lobby.starting') : t('lobby.startSprint')}
         </button>
       </div>
+
+      {/* Dynamic Network Leaderboard */}
+      {myIdentityHex && (
+        <div className="mt-6">
+          <NetworkLeaderboard myIdentityHex={myIdentityHex} />
+        </div>
+      )}
 
       {/* Scoring Guide */}
       <ScoringGuide

@@ -1,18 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import type { Page } from '../navigation.js';
-import { LobbyIcon, ClassesIcon, ProgressIcon, AccountIcon } from './Icons.js';
+import { LobbyIcon, ClassesIcon, ProgressIcon, AccountIcon, FriendsIcon } from './Icons.js';
 
-export type NavTab = 'lobby' | 'classrooms' | 'progress' | 'account';
+export type NavTab = 'lobby' | 'classrooms' | 'friends' | 'progress' | 'account';
 
 interface Props {
   active: Page;
   onNavigate: (tab: NavTab) => void;
 }
 
-const tabs: { id: NavTab; labelKey: ParseKeys }[] = [
+const tabs: { id: NavTab; labelKey: ParseKeys | string }[] = [
   { id: 'lobby',      labelKey: 'nav.home'     },
   { id: 'classrooms', labelKey: 'nav.classes'  },
+  { id: 'friends',    labelKey: 'Friends'      },
   { id: 'progress',   labelKey: 'nav.progress' },
   { id: 'account',    labelKey: 'nav.account'  },
 ];
@@ -28,6 +29,8 @@ const renderIcon = (tabId: NavTab, isActive: boolean) => {
       return <LobbyIcon className={svgClass} customBackground={<rect width="100" height="100" rx="18" className="fill-slate-800 dark:fill-white/10 transition-colors duration-200"/>} />;
     case 'classrooms':
       return <ClassesIcon className={svgClass} />;
+    case 'friends':
+      return <FriendsIcon className={svgClass} />;
     case 'progress':
       return <ProgressIcon className={svgClass} />;
     case 'account':
@@ -62,7 +65,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
             </div>
             
               <span className="font-semibold text-[10px] tracking-tight uppercase">
-                {tab.id === 'lobby' ? '1UP' : t(tab.labelKey)}
+                {tab.id === 'lobby' ? '1UP' : tab.labelKey.includes('nav.') ? t(tab.labelKey as ParseKeys) : tab.labelKey}
               </span>
             </button>
           );

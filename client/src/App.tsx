@@ -41,6 +41,7 @@ export default function App() {
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
   const [classSprints] = useTable(tables.class_sprints);
+  useTable(tables.friend_invites);
   useTable(tables.problem_stats);
   // recovery_keys is now a private table (SEC-01) — App.tsx fetches via getMyRecoveryCode once per session (UX-05)
   const { page, setPage, navigate, myPlayerRef } = useAppNavigation('register');
@@ -75,9 +76,15 @@ export default function App() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     const urlListener = CapApp.addListener('appUrlOpen', (event) => {
-      // event.url looks like: https://better-1up.vercel.app/classrooms?join=123
-      const slug = event.url.split('.app').pop();
-      if (!slug) return;
+      // event.url looks like: https://up.bilharz.eu/classrooms?join=123
+      let slug = '';
+      try {
+        const urlObj = new URL(event.url);
+        slug = urlObj.pathname + urlObj.search;
+      } catch {
+        return;
+      }
+      if (!slug || slug === '/') return;
       
       if (slug.includes('join=')) {
         try { localStorage.setItem('_joinedViaClassroom', '1'); } catch { /* noop */ }
@@ -97,17 +104,21 @@ export default function App() {
   }, [navigate]);
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
+  const acceptFriendInvite = useSTDBReducer(reducers.acceptFriendInvite);
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
-  // Persist "joined via classroom link" flag early — ?join= disappears once LobbyPage processes it.
-  // Cleared as soon as onboarding completes (see OnboardingOverlay render below).
+  // Persist "joined via classroom link" or friend link early
   useEffect(() => {
     if (window.location.search.includes('join=')) {
       localStorage.setItem('_joinedViaClassroom', '1');
+    }
+    if (window.location.pathname.startsWith('/friend/')) {
+      const token = window.location.pathname.split('/').pop();
+      if (token) localStorage.setItem('_pendingFriendToken', token);
     }
   }, []);
 
@@ -135,6 +146,16 @@ export default function App() {
     if (myPlayer && isActive && !hasFetchedRecoveryCodeRef.current) {
       hasFetchedRecoveryCodeRef.current = true;
       getMyRecoveryCode();
+    }
+    
+    // Check for pending friend tokens
+    if (myPlayer && isActive) {
+       const token = localStorage.getItem('_pendingFriendToken');
+       if (token) {
+           acceptFriendInvite({ token }).then(() => {
+               localStorage.removeItem('_pendingFriendToken');
+           }).catch(console.error);
+       }
     }
   }, [myPlayer?.identity?.toHexString(), isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 

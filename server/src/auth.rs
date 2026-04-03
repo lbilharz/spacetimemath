@@ -1,6 +1,6 @@
 use spacetimedb::{reducer, ReducerContext, Table};
-use crate::{Player, OnlinePlayer, BestScore, get_player, MAX_TIER};
-use crate::{players, online_players, best_scores};
+use crate::{Player, OnlinePlayer, BestScore, get_player, MAX_TIER, PlayerType};
+use crate::{players, online_players, best_scores, classrooms};
 
 /// Validate a username for length, control characters, and Unicode script (SEC-08).
 /// Allows Latin, Latin-1 Supplement, Latin Extended-A/B (covers EU languages).
@@ -16,15 +16,24 @@ fn validate_username(name: &str) -> Result<(), String> {
 }
 
 #[reducer]
-pub fn register(ctx: &ReducerContext, username: String) -> Result<(), String> {
+pub fn register(ctx: &ReducerContext, username: String, player_type: PlayerType, email: Option<String>) -> Result<(), String> {
     let name = username.trim().to_string();
     validate_username(&name)?;
+    
+    // If Teacher, ensure email is provided. (Note: DSGVO consent is verified frontend side, but could send boolean here)
+    if player_type == PlayerType::Teacher && email.is_none() {
+        return Err("Teacher must provide an email address".into());
+    }
+    
     let sender = ctx.sender();
     if let Some(existing) = ctx.db.players().identity().find(sender) {
-        ctx.db.players().identity().update(Player { username: name.clone(), ..existing });
+        ctx.db.players().identity().update(Player { username: name.clone(), player_type: player_type.clone(), email: email.clone(), ..existing });
     } else {
         ctx.db.players().insert(Player {
             identity: sender,
+            player_type: player_type.clone(),
+            class_id: None,
+            email: email.clone(),
             username: name.clone(),
             best_score: 0.0,
             total_sessions: 0,
@@ -110,6 +119,9 @@ pub fn restore_player_full(
     let player = Player {
         identity: ctx.sender(),
         username: username.clone(),
+        player_type: PlayerType::Solo,
+        class_id: None,
+        email: None,
         best_score,
         total_sessions,
         total_correct,
@@ -136,5 +148,60 @@ pub fn restore_player_full(
 pub fn mark_recovery_emailed(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
     ctx.db.players().identity().update(Player { recovery_emailed: true, ..player });
+    Ok(())
+}
+
+/// Upgrade a Solo player to a Teacher.
+#[reducer]
+pub fn upgrade_to_teacher(ctx: &ReducerContext, email: String, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
+    if !gdpr_consent || !teacher_declaration {
+        return Err("Must provide all required consents.".into());
+    }
+    let player = get_player(ctx)?;
+    if player.player_type == PlayerType::Student {
+        return Err("Students cannot upgrade to Teachers.".into());
+    }
+    ctx.db.players().identity().update(Player {
+        player_type: PlayerType::Teacher,
+        email: Some(email),
+        ..player
+    });
+    Ok(())
+}
+
+/// Join a class as a student (Solo -> Student transition).
+#[reducer]
+pub fn join_class_as_student(ctx: &ReducerContext, class_code: String, class_username: String) -> Result<(), String> {
+    let name = class_username.trim().to_string();
+    validate_username(&name)?;
+    
+    // Validate class code exists
+    let class_code_upper = class_code.trim().to_uppercase();
+    let class = ctx.db.classrooms().iter().find(|c| c.code == class_code_upper)
+        .ok_or("Classroom not found")?;
+        
+    // Check manual uniqueness in this class
+    let all_players = ctx.db.players().iter();
+    for p in all_players {
+        if p.class_id == Some(class.id) && p.username.eq_ignore_ascii_case(&name) && p.identity != ctx.sender() {
+            return Err("Username already taken in this class.".into());
+        }
+    }
+    
+    let player = get_player(ctx)?;
+    ctx.db.players().identity().update(Player {
+        player_type: PlayerType::Student,
+        class_id: Some(class.id),
+        username: name.clone(),
+        ..player
+    });
+    
+    // Also update display names in connected tables
+    if let Some(bs) = ctx.db.best_scores().player_identity().find(ctx.sender()) {
+        ctx.db.best_scores().player_identity().update(BestScore { username: name.clone(), ..bs });
+    }
+    if let Some(op) = ctx.db.online_players().identity().find(ctx.sender()) {
+        ctx.db.online_players().identity().update(OnlinePlayer { username: name, ..op });
+    }
     Ok(())
 }

@@ -51,6 +51,16 @@
     "restoreError": "Schlüssel nicht gefunden – überprüfe deinen 12-stelligen Wiederherstellungsschlüssel",
     "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB"
   },
+  "register_split": {
+    "teacher_btn": "Lehrkraft",
+    "student_btn": "Klasse beitreten",
+    "solo_btn": "Solo üben",
+    "email_label": "E-Mail-Adresse",
+    "class_code_label": "Klassencode",
+    "consent_1": "Ich bestätige, dass ich Lehrkraft bin und diese Funktion ausschließlich für schulische Zwecke nutze.",
+    "consent_2": "Ich stimme der Speicherung meiner E-Mail-Adresse zur Kontowiederherstellung zu.",
+    "recovery_nag_student": "Denk daran, deinen Recovery Key (Wiederherstellungsschlüssel) zu speichern! Sonst verlierst du deinen Fortschritt."
+  },
   "lobby": {
     "online": "online",
     "onlineCount_one": "{{count}} Person online",

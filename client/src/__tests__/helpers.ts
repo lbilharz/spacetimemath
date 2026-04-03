@@ -15,8 +15,8 @@ const ALL_TABLES = [
   'SELECT * FROM class_sprints',
   'SELECT * FROM problem_stats',
   'SELECT * FROM online_players',
-  'SELECT * FROM issued_problem_results',
-  'SELECT * FROM next_problem_results',
+  'SELECT * FROM issued_problem_results_v_2',
+  'SELECT * FROM next_problem_results_v_2',
   'SELECT * FROM teacher_focus',
 ];
 

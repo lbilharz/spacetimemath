@@ -51,6 +51,16 @@
     "restoreError": "Key not found — check your 12-character recovery key",
     "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB"
   },
+  "register_split": {
+    "teacher_btn": "Teacher",
+    "student_btn": "Join a Class",
+    "solo_btn": "Practice on your own",
+    "email_label": "Email Address",
+    "class_code_label": "Class Code",
+    "consent_1": "I confirm I am a teacher using this for school purposes.",
+    "consent_2": "I consent to store my email for account recovery.",
+    "recovery_nag_student": "Make sure to copy your Recovery Key! Otherwise you will lose your progress!"
+  },
   "lobby": {
     "online": "online",
     "onlineCount_one": "{{count}} player online",

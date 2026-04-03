@@ -18,9 +18,9 @@ function findIncompleteSession(client: ConnectedClient) {
 /** Find the NextProblemResult row for the connected client. */
 function findNextProblemResult(client: ConnectedClient) {
   const idHex = client.identity.toHexString();
-  for (const r of (client.conn.db as any).next_problem_results.iter()) {
-    if (r.owner.toHexString() === idHex) return r;
-  }
+    for (const r of (client.conn.db as any).next_problem_results_v2.iter()) {
+      if (r.owner.toHexString() === idHex) return r;
+    }
 }
 
 /**

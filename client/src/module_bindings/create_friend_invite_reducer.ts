@@ -10,14 +10,4 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
-import {
-  PlayerType,
-} from "./types";
-
-export default {
-  username: __t.string(),
-  get playerType() {
-    return PlayerType;
-  },
-  email: __t.option(__t.string()),
-};
+export default {};

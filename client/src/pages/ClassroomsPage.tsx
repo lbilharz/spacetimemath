@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Classroom, ClassroomMember } from '../module_bindings/types.js';
+import type { Classroom, ClassroomMember, Player } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
 import { AddIcon, JoinIcon, ViewArrowIcon, EmptyClassroomIcon, ClassesIcon } from '../components/Icons.js';
 
@@ -11,7 +11,7 @@ interface Props {
   onEnterClassroom: (id: bigint) => void;
 }
 
-type Panel = 'none' | 'create' | 'join';
+type Panel = 'none' | 'create' | 'join' | 'upgrade';
 
 
 
@@ -19,14 +19,22 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const { t } = useTranslation();
   const [classrooms] = useTable(tables.classrooms);
   const [classroomMembers] = useTable(tables.classroom_members);
+  const [players] = useTable(tables.players);
   const createClassroom = useSTDBReducer(reducers.createClassroom);
   const joinClassroom = useSTDBReducer(reducers.joinClassroom);
+  const upgradeToTeacher = useSTDBReducer(reducers.upgradeToTeacher);
 
   const [panel, setPanel] = useState<Panel>('none');
   const [className, setClassName] = useState('');
   const [joinCode, setJoinCode] = useState('');
+  const [email, setEmail] = useState('');
+  const [consent1, setConsent1] = useState(false);
+  const [consent2, setConsent2] = useState(false);
   const [classError, setClassError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const myPlayer = myIdentityHex ? (players as unknown as Player[]).find(p => p.identity.toHexString() === myIdentityHex) : undefined;
+  const isTeacher = myPlayer?.playerType?.tag === 'Teacher';
 
   const myMemberships = myIdentityHex
     ? (classroomMembers as unknown as ClassroomMember[]).filter(m => m.playerIdentity.toHexString() === myIdentityHex)
@@ -44,7 +52,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   ];
 
   const openPanel = (p: Panel) => {
-    setPanel(p); setClassError(''); setClassName(''); setJoinCode('');
+    setPanel(p); setClassError(''); setClassName(''); setJoinCode(''); setEmail(''); setConsent1(false); setConsent2(false);
   };
 
   const handleCreate = async (e: FormEvent) => {
@@ -77,6 +85,23 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
       else { setPanel('none'); setJoinCode(''); }
     } catch (err: unknown) {
       setClassError((err as Error)?.message ?? t('classes.joinError'));
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpgrade = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!email || !consent1 || !consent2) {
+      setClassError(t('register_split.consent_1'));
+      return;
+    }
+    setSubmitting(true); setClassError('');
+    try {
+      await upgradeToTeacher({ email: email.trim(), gdprConsent: true, teacherDeclaration: true });
+      setPanel('none');
+      setSubmitting(false);
+    } catch (err: unknown) {
+      setClassError((err as Error)?.message ?? t('register.usernameError'));
       setSubmitting(false);
     }
   };
@@ -140,18 +165,34 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
 
       {/* Action buttons */}
       {panel === 'none' && (
-        <div className="flex flex-col sm:flex-row gap-3 mt-2">
-          <button className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm" onClick={() => openPanel('create')}>
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
-              <AddIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
-            </div>
-            {t('lobby.createClass')}
-          </button>
+        <div className={`flex flex-col sm:flex-row gap-3 mt-2 ${!isTeacher ? 'justify-center max-w-sm mx-auto' : ''}`}>
+          {isTeacher && (
+            <button className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm" onClick={() => openPanel('create')}>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
+                <AddIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
+              </div>
+              {t('lobby.createClass')}
+            </button>
+          )}
           <button className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm" onClick={() => openPanel('join')}>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
               <JoinIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
             </div>
             {t('lobby.joinClass')}
+          </button>
+        </div>
+      )}
+
+      {panel === 'none' && !isTeacher && (
+        <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-2 duration-500 delay-150">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
+            {t('classes.areYouTeacher', 'Are you a teacher?')}
+          </p>
+          <button 
+            onClick={() => openPanel('upgrade')}
+            className="text-sm font-bold text-brand-yellow hover:text-amber-500 transition-colors underline decoration-brand-yellow/30 underline-offset-4"
+          >
+            {t('classes.upgradePrompt', 'Upgrade your account to create classrooms')}
           </button>
         </div>
       )}
@@ -204,6 +245,42 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
                 {submitting ? t('lobby.joining') : t('lobby.join')}
               </button>
               <button className="flex-1 sm:flex-none rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 py-3.5 text-[15px] font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95" type="button" onClick={() => openPanel('none')} disabled={submitting}>
+                ✕
+              </button>
+            </div>
+          </form>
+          {classError && <p className="text-red-600 dark:text-red-400 font-bold text-xs mt-4 bg-red-50 dark:bg-red-900/20 py-2.5 px-3.5 rounded-lg border border-red-100 dark:border-red-900/50">⚠ {classError}</p>}
+        </div>
+      )}
+
+      {/* Upgrade form */}
+      {panel === 'upgrade' && (
+        <div className="flex flex-col rounded-3xl border border-brand-yellow/30 bg-brand-yellow/5 p-6 dark:bg-brand-yellow/5 dark:border-brand-yellow/20 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-sm mt-2 max-w-lg mx-auto">
+          <h2 className="mb-2 text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">{t('register_split.teacher_btn')}</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">{t('classes.upgradeDesc', 'Upgrade your account for free to start managing students and running class sprints.')}</p>
+          <form onSubmit={handleUpgrade} className="flex flex-col gap-4">
+            <input
+              className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3.5 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 shadow-inner"
+              type="email"
+              placeholder={t('register_split.email_label')}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              disabled={submitting}
+              required
+            />
+            <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+              <input type="checkbox" checked={consent1} onChange={(e) => setConsent1(e.target.checked)} className="mt-1 h-4 w-4 bg-white border-brand-yellow rounded-md checked:bg-brand-yellow checked:border-brand-yellow focus:ring-brand-yellow focus:ring-offset-0 dark:bg-slate-900" required />
+              <span className="leading-snug relative top-[2px]">{t('register_split.consent_1')}</span>
+            </label>
+            <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+              <input type="checkbox" checked={consent2} onChange={(e) => setConsent2(e.target.checked)} className="mt-1 h-4 w-4 bg-white border-brand-yellow rounded-md checked:bg-brand-yellow checked:border-brand-yellow focus:ring-brand-yellow focus:ring-offset-0 dark:bg-slate-900" required />
+              <span className="leading-snug relative top-[2px]">{t('register_split.consent_2')}</span>
+            </label>
+            <div className="flex gap-2 mt-2">
+              <button className="flex-1 rounded-2xl bg-brand-yellow px-6 py-4 text-[15px] font-black text-slate-900 uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50 shadow-sm shadow-brand-yellow/20" type="submit" disabled={submitting || !email.trim() || !consent1 || !consent2}>
+                {submitting ? t('common.saving') : t('common.save')}
+              </button>
+              <button className="flex-none rounded-2xl bg-slate-200 dark:bg-slate-800 px-5 py-4 text-[15px] font-bold text-slate-600 dark:text-slate-300 transition-transform active:scale-95 border border-slate-300 dark:border-slate-700/50" type="button" onClick={() => openPanel('none')} disabled={submitting}>
                 ✕
               </button>
             </div>

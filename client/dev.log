@@ -1,0 +1,17 @@
+
+> spacetimemath-client@0.0.1 dev
+> vite
+
+Port 5173 is in use, trying another one...
+
+  VITE v6.4.1  ready in 260 ms
+
+  ➜  Local:   http://localhost:5174/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+11:03:44 PM [vite] (client) hmr update /src/components/Icons.tsx, /src/index.css
+11:03:44 PM [vite] (client) hmr invalidate /src/components/Icons.tsx Could not Fast Refresh (new export)
+11:03:44 PM [vite] (client) hmr update /src/components/BottomNav.tsx, /src/index.css, /src/pages/LobbyPage.tsx, /src/pages/ProgressPage.tsx, /src/pages/AccountPage.tsx, /src/pages/ClassroomsPage.tsx, /src/pages/ClassSprintResultsPage.tsx, /src/components/classroom/ClassroomStartSprintModal.tsx, /src/components/classroom/ClassroomLiveSprintView.tsx, /src/components/classroom/ClassroomLobbyView.tsx, /src/components/classroom/ClassroomSettingsModal.tsx
+11:03:46 PM [vite] (client) hmr update /src/pages/FriendsPage.tsx, /src/index.css
+11:03:48 PM [vite] (client) hmr update /src/App.tsx, /src/index.css
+11:04:03 PM [vite] (client) hmr update /src/pages/FriendsPage.tsx, /src/index.css
