@@ -34,6 +34,8 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   const [submitting, setSubmitting] = useState(false);
   const [verifyStep, setVerifyStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
+  const [hmacSignature, setHmacSignature] = useState('');
+  const [expiresAtMs, setExpiresAtMs] = useState<number>(0);
 
   const myPlayer = myIdentityHex ? (players as unknown as Player[]).find(p => p.identity.toHexString() === myIdentityHex) : undefined;
   const isTeacher = myPlayer?.playerType?.tag === 'Teacher';
@@ -119,6 +121,11 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
         }
         throw new Error(errorMsg);
       }
+      
+      const data = await res.json();
+      setHmacSignature(data.signature);
+      setExpiresAtMs(data.expiresAt);
+      
       setVerifyStep(true);
       setSubmitting(false);
     } catch (err: unknown) {
@@ -133,7 +140,10 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
     setSubmitting(true); setClassError('');
     try {
       await verifyTeacherUpgrade({ 
+          email: email.trim(),
           code: verificationCode.trim(), 
+          signature: hmacSignature,
+          expiresAtMs: BigInt(expiresAtMs),
           gdprConsent: true, 
           teacherDeclaration: true 
       });

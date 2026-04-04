@@ -6,11 +6,11 @@ export interface ScreenConfig {
 }
 
 export const SCREENS: ScreenConfig[] = [
-  { id: 1, component: 'SprintScreen',     label: '60s Sprint',        background: 'dark'     },
-  { id: 2, component: 'MasteryGrid',      label: 'Mastery Grid',      background: 'light'    },
-  { id: 3, component: 'ClassroomLive',    label: 'Classroom Live',    background: 'dark'     },
-  { id: 4, component: 'AdaptiveTiers',    label: 'Adaptive Tiers',    background: 'gradient' },
-  { id: 5, component: 'PrivacyScreen',    label: 'Privacy / No Auth', background: 'light'    },
+  { id: 1, component: 'SprintScreen',       label: 'JTBD 1: Sprint',      background: 'light' },
+  { id: 2, component: 'FriendsLeaderboard', label: 'JTBD 2: Friends',     background: 'light' },
+  { id: 3, component: 'AdaptiveTiers',      label: 'JTBD 3: Pacing',      background: 'light' },
+  { id: 4, component: 'MasteryGrid',        label: 'JTBD 4: Assessment',  background: 'light' },
+  { id: 5, component: 'ClassroomLive',      label: 'JTBD 5: Spot Help',   background: 'light' },
 ]
 
 export const LOCALES = [
@@ -28,4 +28,5 @@ export const LOCALES = [
 export const DEVICES = [
   { name: 'iPhone69', width: 440, height: 956, scale: 3 },  // → 1320×2868
   { name: 'iPhone65', width: 414, height: 896, scale: 3 },  // → 1242×2688
+  { name: 'iPadPro129', width: 1024, height: 1366, scale: 2 }, // → 2048x2732 (Portrait, required for 13-inch iPad display)
 ]

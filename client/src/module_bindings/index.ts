@@ -35,7 +35,7 @@ import {
 
 // Import all reducer arg schemas
 import AcceptFriendInviteReducer from "./accept_friend_invite_reducer";
-import AdminSetTeacherCodeReducer from "./admin_set_teacher_code_reducer";
+import AdminSetHmacSecretReducer from "./admin_set_hmac_secret_reducer";
 import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "./consume_restore_result_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
@@ -414,7 +414,7 @@ const tablesSchema = __schema({
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
   __reducerSchema("accept_friend_invite", AcceptFriendInviteReducer),
-  __reducerSchema("admin_set_teacher_code", AdminSetTeacherCodeReducer),
+  __reducerSchema("admin_set_hmac_secret", AdminSetHmacSecretReducer),
   __reducerSchema("complete_onboarding", CompleteOnboardingReducer),
   __reducerSchema("consume_restore_result", ConsumeRestoreResultReducer),
   __reducerSchema("create_classroom", CreateClassroomReducer),

@@ -1,143 +1,482 @@
 import { useTranslation } from 'react-i18next';
 
+const getMarketingInfo = (lang: string) => {
+  const dict: any = {
+    de: {
+      s_title: 'Mathe ohne Frust', s_desc: '60-Sekunden Sprints, die sich wie Spiele anfühlen.',
+      f_title: 'Mit Freunden messen', f_desc: 'Mitschüler hinzufügen und die Rangliste erklimmen.',
+      a_title: 'Im perfekten Tempo lernen', a_desc: 'Unsere adaptive Engine passt sich deinem Niveau an.',
+      m_title: 'Formative Tests automatisieren', m_desc: 'Sofort sehen, welche Konzepte sitzen.',
+      c_title: 'Sofort sehen, wer Hilfe braucht', c_desc: 'Echtzeit-Fortschritt der Klasse überwachen.'
+    },
+    en: {
+      s_title: 'Master Math Without Frustration', s_desc: '60-second sprints that feel like a game.',
+      f_title: 'Compete With Friends', f_desc: 'Add peers and climb the weekly leaderboard.',
+      a_title: 'Learn At Your Perfect Pace', a_desc: 'Our adaptive engine matches your exact skill level.',
+      m_title: 'Automate Formative Assessments', m_desc: 'Instantly see which concepts are mastered.',
+      c_title: 'Spot Who Needs Help Instantly', c_desc: "Monitor your classroom's live progress."
+    },
+    es: {
+      s_title: 'Domina las Mates sin Frustración', s_desc: 'Sprints de 60 segundos que parecen un juego.',
+      f_title: 'Compite con Amigos', f_desc: 'Sube en la clasificación semanal.',
+      a_title: 'Aprende a tu Ritmo', a_desc: 'Nuestro motor se adapta a tu nivel exacto.',
+      m_title: 'Automatiza la Evaluación', m_desc: 'Ve al instante qué conceptos dominan.',
+      c_title: 'Descubre Quién Necesita Ayuda', c_desc: 'Sigue el progreso de tu clase en vivo.'
+    },
+    fr: {
+      s_title: 'Maîtrisez les Maths sans Frustration', s_desc: 'Des sprints de 60s sous forme de jeu.',
+      f_title: 'Affrontez vos Amis', f_desc: 'Gravissez le classement hebdomadaire.',
+      a_title: 'Apprenez à votre Rythme', a_desc: 'Notre moteur adaptatif cible votre niveau.',
+      m_title: 'Automatisez vos Évaluations', m_desc: 'Voyez instantanément les acquis.',
+      c_title: 'Repérez Qui a Besoin d\'Aide', c_desc: 'Suivez la progression de la classe en direct.'
+    },
+    nl: {
+      s_title: 'Beheers Rekenen Zonder Frustratie', s_desc: '60-seconden sprints als een spel.',
+      f_title: 'Speel Tegen Vrienden', f_desc: 'Klim in het wekelijkse klassement.',
+      a_title: 'Leer op Jouw Ideale Tempo', a_desc: 'Onze adaptieve engine past zich aan jouw niveau aan.',
+      m_title: 'Automatiseer Formatief Toetsen', m_desc: 'Zie direct welke doelen bereikt zijn.',
+      c_title: 'Zie Direct Wie Hulp Nodig Heeft', c_desc: 'Monitor de voortgang van je klas live.'
+    },
+    tr: {
+      s_title: 'Matematiği Eğlenerek Öğren', s_desc: 'Oyun hissi veren 60 saniyelik sprintler.',
+      f_title: 'Arkadaşlarınla Yarış', f_desc: 'Haftalık liderlik tablosunda yüksel.',
+      a_title: 'Kendi Hızında Öğren', a_desc: 'Yapay zeka tam senin seviyene göre uyarlanır.',
+      m_title: 'Değerlendirmeyi Otomatikleştir', m_desc: 'Hangi konuların anlaşıldığını anında gör.',
+      c_title: 'Kim Yardıma Muhtaç Anında Gör', c_desc: 'Sınıfın canlı ilerlemesini izle.'
+    },
+    uk: {
+      s_title: 'Математика Без Сліз', s_desc: '60-секундні спринти, що відчуваються як гра.',
+      f_title: 'Змагайся з Друзями', f_desc: 'Додавай друзів і піднімайся в рейтингу.',
+      a_title: 'Вчись у Своєму Темпі', a_desc: 'Наш двигун адаптується до твого рівня.',
+      m_title: 'Автоматизуй Оцінювання', m_desc: 'Миттєво бач, що вже засвоєно.',
+      c_title: 'Одразу Бач Кому Потрібна Допомога', c_desc: 'Слідкуй за прогресом класу наживо.'
+    },
+    ar: {
+      s_title: 'إتقان الرياضيات بدون إحباط', s_desc: 'اختبارات ٦٠ ثانية تشبه اللعبة.',
+      f_title: 'تنافس مع الأصدقاء', f_desc: 'ارتق في لوحة الصدارة الأسبوعية.',
+      a_title: 'تعلم بالسرعة التي تناسبك', a_desc: 'محركنا يتكيف مع مستوى مهارتك الدقيق.',
+      m_title: 'أتمتة التقييم التكويني', m_desc: 'شاهد على الفور المفاهيم المتقنة.',
+      c_title: 'حدد من يحتاج المساعدة فوراً', c_desc: 'راقب تقدم فصلك المباشر.'
+    },
+    zh: {
+      s_title: '告别数学挫折感', s_desc: '游戏般有趣的60秒速算。',
+      f_title: '同伴PK与激励', f_desc: '加入好友，登顶周榜。',
+      a_title: '专属节奏学习', a_desc: '智能算法贴合你的真实水平。',
+      m_title: '自动化形成性评价', m_desc: '即时掌握学情与短板。',
+      c_title: '一秒定位卡壳学生', c_desc: '实时全景监控课堂进度。'
+    }
+  };
+  return dict[lang.split('-')[0] || 'en'] || dict['en'];
+};
+
+const HeaderText = ({ title, desc }: { title: string, desc: string }) => (
+  <div className="w-full mb-10 text-left px-4 flex flex-col gap-2">
+    <div className="flex flex-row items-center gap-3">
+      <div className="shrink-0 inline-block bg-white p-1.5 rounded-[12px] shadow-sm border border-slate-200/60 flex items-center justify-center">
+        <svg width="28" height="28" viewBox="0 0 190 190">
+          <rect x="5" y="5" width="56" height="56" rx="10" fill="var(--color-green)" />
+          <rect x="67" y="5" width="56" height="56" rx="10" fill="var(--color-green)" />
+          <rect x="129" y="5" width="56" height="56" rx="10" fill="var(--color-yellow)" />
+          <rect x="5" y="67" width="56" height="56" rx="10" fill="var(--color-green)" />
+          <rect x="67" y="67" width="56" height="56" rx="10" fill="var(--color-yellow)" />
+          <rect x="129" y="67" width="56" height="56" rx="10" fill="var(--color-blue)" />
+          <rect x="5" y="129" width="56" height="56" rx="10" fill="var(--color-blue)" />
+          <rect x="67" y="129" width="56" height="56" rx="10" fill="var(--color-red)" />
+          <rect x="129" y="129" width="56" height="56" rx="10" fill="#cbd5e1" />
+        </svg>
+      </div>
+      <h1 className="text-[26px] font-black text-[#0f172a] leading-tight tracking-tight">
+        {title}
+      </h1>
+    </div>
+    <p className="text-[#64748b] text-[15px] font-medium leading-snug line-clamp-2 w-[90%]">
+      {desc}
+    </p>
+  </div>
+);
+
+// JTBD 1
 export function SprintScreen({ lang }: { lang: string }) {
   const { t } = useTranslation();
-  
-  const marketing = {
-    de: { was_ist: "WAS IST", f1_title: "60-Sekunden Sprints", f1_desc: "Pädagogisch wertvoll. Wahnsinnig motivierend." },
-    fr: { was_ist: "QUEL EST", f1_title: "Sprints de 60 secondes", f1_desc: "Pédagogiquement précieux. Incroyablement motivant." },
-    es: { was_ist: "CUÁL ES", f1_title: "Sprints de 60 segundos", f1_desc: "Pedagógicamente valioso. Increíblemente motivador." },
-    nl: { was_ist: "WAT IS", f1_title: "Sprints van 60 seconden", f1_desc: "Pedagogisch verantwoord. Waanzinnig motiverend." },
-    tr: { was_ist: "NEDİR", f1_title: "60 Saniyelik Sprint'ler", f1_desc: "Eğitici ve inanılmaz motive edici." },
-    uk: { was_ist: "СКАЖИ", f1_title: "60-секундні спринти", f1_desc: "Педагогічно цінно. Неймовірно мотивує." },
-    ar: { was_ist: "ما هو", f1_title: "اختبارات مدتها ٦٠ ثانية", f1_desc: "قيمة تعليمياً. محفزة بشكل لا يصدق." },
-    zh: { was_ist: "解答", f1_title: "60秒高强度冲刺", f1_desc: "极具教育价值，令人难以置信的动力。" },
-    en: { was_ist: "WHAT IS", f1_title: "60-Second Sprints", f1_desc: "Educationally valuable. Insanely motivating." }
-  }[lang.split('-')[0] || 'en'] || { was_ist: "WHAT IS", f1_title: "60-Second Sprints", f1_desc: "Educationally valuable. Insanely motivating." };
+  const texts = getMarketingInfo(lang);
 
   return (
-    <div className="w-full h-full bg-[var(--color-darkest)] flex flex-col font-[var(--font)] text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-white opacity-[0.02]" style={{ 
-        backgroundImage: 'radial-gradient(circle, var(--color-green) 2px, transparent 2px)',
-        backgroundSize: '40px 40px',
-        backgroundPosition: '0 0'
-      }}></div>
+    <div className="w-full h-full bg-[#f8fafc] flex flex-col font-[var(--font)] relative pt-16">
+      <div className="flex-1 flex flex-col md:flex-row items-stretch w-full px-4 md:px-12 gap-8 md:gap-14 overflow-hidden mb-12">
+        {/* Left Column: Essential Mobile UI */}
+        <div className="flex-1 flex flex-col items-center bg-white rounded-[40px] shadow-[0_10px_40px_rgba(0,0,0,0.05)] pt-10 px-6 border border-slate-200">
+          <div className="text-slate-400 text-[12px] uppercase tracking-[0.2em] font-bold mb-4">
+            1UP
+          </div>
+          <div className="text-slate-800 text-[88px] font-[900] leading-none text-center mb-10 w-full" dir="ltr">
+            7 × 8
+          </div>
+          <div className="bg-[var(--color-green)] bg-opacity-10 border-4 border-[var(--color-green)] rounded-[16px] px-14 py-4 flex items-center justify-center shadow-sm mb-14" dir="ltr">
+            <span className="text-[var(--color-green)] text-[48px] font-bold leading-none">= 56</span>
+          </div>
+          <div className="relative w-[72px] h-[72px] mb-8 flex items-center justify-center" dir="ltr">
+            <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+              <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth="8" />
+              <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-yellow)" strokeWidth="8" strokeDasharray="289" strokeDashoffset="96" strokeLinecap="round" transform="rotate(-90 50 50)" />
+            </svg>
+            <span className="text-slate-800 text-[18px] font-bold z-10">42</span>
+          </div>
+          <div className="flex items-center text-slate-500 text-[14px] font-medium tracking-wide">
+            <span>{t('results.score', 'Score')} &nbsp; <span className="text-slate-800 font-bold">340</span></span>
+            <span className="mx-4 text-[20px] leading-none mb-1 text-slate-300">·</span>
+            <span>{t('results.accuracy', 'Accuracy')} &nbsp; <span className="text-slate-800 font-bold">94%</span></span>
+          </div>
+        </div>
 
-      <div className="flex justify-between items-center px-10 pt-12 pb-4 text-[14px] font-bold text-white relative z-10 w-full" dir="ltr">
-        <span>9:41</span>
-        <div className="flex items-center tracking-tighter">
-          ●●●▷ 100%
-        </div>
-      </div>
-
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-10">
-        <div className="text-[#888] text-[12px] uppercase tracking-[0.2em] font-bold mb-4">
-          {marketing.was_ist}
-        </div>
-        
-        <div className="text-white text-[88px] font-[900] leading-none text-center mb-10 w-full" dir="ltr">
-          7 × 8
-        </div>
-        
-        <div className="bg-[var(--color-green)] bg-opacity-10 border-4 border-[var(--color-green)] rounded-[16px] px-14 py-4 flex items-center justify-center shadow-[0_0_80px_rgba(93,210,60,0.2)] mb-14" dir="ltr">
-          <span className="text-[var(--color-green)] text-[48px] font-bold leading-none">= 56</span>
-        </div>
-        
-        <div className="relative w-[72px] h-[72px] mb-8 flex items-center justify-center" dir="ltr">
-          <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-            <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-yellow)" strokeWidth="8" strokeDasharray="289" strokeDashoffset="96" strokeLinecap="round" transform="rotate(-90 50 50)" />
-          </svg>
-          <span className="text-white text-[18px] font-bold z-10">42</span>
-        </div>
-        
-        <div className="flex items-center text-[#888] text-[14px] font-medium tracking-wide">
-          <span>{t('results.score', 'Score')} &nbsp; <span className="text-white font-bold">340</span></span>
-          <span className="mx-4 text-[20px] leading-none mb-1">·</span>
-          <span>{t('results.accuracy', 'Accuracy')} &nbsp; <span className="text-white font-bold">94%</span></span>
-        </div>
-      </div>
-      
-      <div className="w-full bg-gradient-to-t from-black/80 to-transparent pt-12 pb-8 px-10 flex flex-col items-center z-10 border-t border-white/10 mt-auto">
-        <div className="text-white text-[16px] font-bold mb-1 tracking-wide">
-          {marketing.f1_title}
-        </div>
-        <div className="text-[#888] text-[13px] font-medium text-center">
-          {marketing.f1_desc}
+        {/* Right Column: iPad Dashboard Enhancements */}
+        <div className="hidden md:flex flex-col justify-start w-1/2">
+          <HeaderText title={texts.s_title} desc={texts.s_desc} />
+          
+          <div className="bg-white rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col mt-4">
+            <h3 className="text-[14px] uppercase tracking-widest font-bold text-slate-400 mb-6 w-full flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Smart Analytics
+            </h3>
+            <div className="flex gap-4 mb-8">
+              <div className="flex-1 bg-slate-50 rounded-[20px] p-5 border border-slate-100">
+                <div className="text-[32px] font-black text-slate-800 mb-1">5</div>
+                <div className="text-[13px] font-bold text-slate-500 uppercase tracking-wide">Day Streak 🔥</div>
+              </div>
+              <div className="flex-1 bg-slate-50 rounded-[20px] p-5 border border-slate-100">
+                <div className="text-[32px] font-black text-[var(--color-green)] mb-1">94%</div>
+                <div className="text-[13px] font-bold text-slate-500 uppercase tracking-wide">Avg. Accuracy</div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-blue)]/10 flex items-center justify-center text-[var(--color-blue)]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <div>
+                  <div className="font-bold text-slate-800 text-[16px]">Spaced Repetition</div>
+                  <div className="text-slate-500 text-[14px] mt-0.5">Optimized memory retention</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-yellow)]/10 flex items-center justify-center text-[var(--color-yellow)]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div>
+                  <div className="font-bold text-slate-800 text-[16px]">Bite-sized Learning</div>
+                  <div className="text-slate-500 text-[14px] mt-0.5">60 seconds per session</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
+// JTBD 2
+export function FriendsLeaderboard({ lang }: { lang: string }) {
+  const { t } = useTranslation();
+  const texts = getMarketingInfo(lang);
+
+  const friendsNames = {
+    de: ['Alex', 'Lukas', 'Jonas'],
+    fr: ['Alex', 'Léo', 'Arthur'],
+    es: ['Alex', 'Mateo', 'Lucas'],
+    nl: ['Alex', 'Milan', 'Luuk'],
+    tr: ['Can', 'Deniz', 'Ali'],
+    uk: ['Саша', 'Олег', 'Максим'],
+    ar: ['نور', 'زين', 'علي'],
+    zh: ['张伟', '李娜', '王强'],
+    en: ['Alex', 'Sam', 'Jordan']
+  }[lang.split('-')[0] || 'en'] || ['Alex', 'Sam', 'Jordan'];
+
+  const friends = [
+    { rank: 1, name: friendsNames[0], score: 1450, badge: 'var(--color-yellow)' },
+    { rank: 2, name: t('common.you', 'You'), score: 1200, badge: 'var(--color-blue)', isCurrent: true },
+    { rank: 3, name: friendsNames[1], score: 950, badge: 'var(--color-green)' },
+    { rank: 4, name: friendsNames[2], score: 820, badge: 'var(--color-red)' },
+  ];
+
+  const localizedFriendsTitle = {
+    de: 'FREUNDE', fr: 'AMIS', es: 'AMIGOS', nl: 'VRIENDEN',
+    tr: 'ARKADAŞLAR', uk: 'ДРУЗІ', ar: 'الأصدقاء', zh: '好友',
+    en: 'FRIENDS'
+  }[lang.split('-')[0] || 'en'] || 'FRIENDS';
+
+  const localizedInviteBtn = {
+    de: 'Freund einladen', fr: 'Inviter un ami', es: 'Invitar a un amigo',
+    nl: 'Vriend uitnodigen', tr: 'Arkadaş Davet Et', uk: 'Запросити друга',
+    ar: 'دعوة صديق', zh: '邀请朋友', en: 'Invite Friend'
+  }[lang.split('-')[0] || 'en'] || 'Invite Friend';
+
+  return (
+    <div className="w-full h-full bg-[#f8fafc] flex flex-col font-[var(--font)] relative pt-16">
+      <div className="flex-1 flex flex-col md:flex-row items-stretch w-full px-4 md:px-12 gap-8 md:gap-14 overflow-hidden mb-12">
+        {/* Left Column: Essential Mobile UI */}
+        <div className="flex-1 flex flex-col items-center bg-white rounded-[40px] shadow-[0_10px_40px_rgba(0,0,0,0.05)] pt-10 px-6 border border-slate-200">
+          <h2 className="text-[20px] font-black text-slate-800 mb-6 uppercase tracking-widest text-center w-full">🏆 {localizedFriendsTitle}</h2>
+          
+          <div className="w-full flex-1 flex flex-col gap-3">
+            {friends.map((f, i) => (
+              <div key={i} className={`flex items-center justify-between px-5 py-4 rounded-3xl border ${f.isCurrent ? 'bg-[var(--color-blue)]/5 border-[var(--color-blue)]/30 ring-1 ring-[var(--color-blue)]/10' : 'bg-slate-50 border-slate-100'}`}>
+                <div className="flex items-center">
+                  <span className={`text-[16px] font-black w-6 ${f.rank === 1 ? 'text-[var(--color-yellow)]' : 'text-slate-400'}`}>#{f.rank}</span>
+                  <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center font-bold text-white text-[16px] ml-1 mr-3 shadow-sm" style={{ backgroundColor: f.badge }}>
+                    {f.name.charAt(0)}
+                  </div>
+                  <span className={`text-[18px] font-bold ${f.isCurrent ? 'text-[var(--color-blue)]' : f.rank===1 ? 'text-[var(--color-yellow)]' : 'text-slate-700'}`}>{f.name}</span>
+                </div>
+                <div className={`text-[20px] font-black tracking-wide ${f.isCurrent ? 'text-[var(--color-blue)]' : f.rank===1 ? 'text-[var(--color-yellow)]' : 'text-slate-700'}`}>{f.score}</div>
+              </div>
+            ))}
+            
+            <button className="mt-4 w-full bg-[var(--color-yellow)] text-slate-900 text-[16px] font-black py-4 rounded-2xl flex items-center justify-center gap-2 shadow-sm">
+              <span className="text-xl">+</span> {localizedInviteBtn}
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: iPad Dashboard Enhancements */}
+        <div className="hidden md:flex flex-col justify-start w-1/2">
+          <HeaderText title={texts.f_title} desc={texts.f_desc} />
+          
+          <div className="bg-white rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col mt-4">
+            <h3 className="text-[14px] uppercase tracking-widest font-bold text-slate-400 mb-6 w-full flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Recent Activity
+            </h3>
+
+            <div className="flex flex-col gap-6 relative before:absolute before:inset-0 before:ml-[19px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+              <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-[var(--color-yellow)] text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 font-bold text-sm z-10">
+                  {friendsNames[0].charAt(0)}
+                </div>
+                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="font-bold text-slate-800 text-sm">{friendsNames[0]}</div>
+                    <time className="text-xs font-medium text-slate-400">10 min ago</time>
+                  </div>
+                  <div className="text-slate-600 text-sm">Crushed a new high score of <span className="font-bold text-[var(--color-yellow)]">1450</span>! 🚀</div>
+                </div>
+              </div>
+
+              <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-[var(--color-green)] text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 font-bold text-sm z-10">
+                  {friendsNames[1].charAt(0)}
+                </div>
+                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="font-bold text-slate-800 text-sm">{friendsNames[1]}</div>
+                    <time className="text-xs font-medium text-slate-400">Yesterday</time>
+                  </div>
+                  <div className="text-slate-600 text-sm">Passed the elusive <span className="font-bold text-slate-800">Boss Facts</span> tier! 👑</div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// JTBD 3
+export function AdaptiveTiers({ lang }: { lang: string }) {
+  const texts = getMarketingInfo(lang);
+  
+  const localizedTiers = {
+    de: ["Einfach", "Quadratzahlen", "×6 ×7", "Schwer", "Boss", "Meister", "Zusatz ×11–×20"],
+    fr: ["Facile", "Carrés", "×6 ×7", "Difficile", "Boss", "Maître", "Extension ×11–×20"],
+    es: ["Fácil", "Cuadrados", "×6 ×7", "Difícil", "Jefe", "Maestro", "Extensión ×11–×20"],
+    nl: ["Makkelijk", "Kwadraten", "×6 ×7", "Moeilijk", "Baas", "Meester", "Uitbreiding ×11–×20"],
+    tr: ["Kolay", "Kare Sayılar", "×6 ×7", "Zor", "Patron", "Usta", "Ekstra ×11–×20"],
+    uk: ["Легко", "Квадрати", "×6 ×7", "Складно", "Бос", "Майстер", "Розширені ×11–×20"],
+    ar: ["سهل", "مربعات الأرقام", "×6 ×7", "صعب", "الزعيم", "سيد", "إضافي ×11–×20"],
+    zh: ["基础乘法", "平方数", "×6 ×7", "高阶挑战", "首领关卡", "大师", "延展 ×11–×20"],
+    en: ["Easy Facts", "Square Numbers", "×6 ×7", "Hard Facts", "Boss Facts", "Master", "Extended ×11–×20"]
+  }[lang.split('-')[0] || 'en'] || ["Easy Facts", "Square Numbers", "×6 ×7", "Hard Facts", "Boss Facts", "Master", "Extended ×11–×20"];
+
+  const tiers = [
+    { title: localizedTiers[0], status: "unlocked" },
+    { title: localizedTiers[1], status: "unlocked" },
+    { title: localizedTiers[2], status: "unlocked" },
+    { title: localizedTiers[3], status: "unlocked" },
+    { title: localizedTiers[4], status: "current" },
+    { title: localizedTiers[5], status: "locked" },
+    { title: localizedTiers[6], status: "locked" }
+  ];
+
+  return (
+    <div className="w-full h-full bg-[#f8fafc] flex flex-col font-[var(--font)] relative pt-16">
+      <div className="flex-1 flex flex-col md:flex-row items-stretch w-full px-4 md:px-12 gap-8 md:gap-14 overflow-hidden mb-12">
+        {/* Left Column: Essential Mobile UI */}
+        <div className="flex-1 flex flex-col items-center bg-white rounded-[40px] shadow-[0_10px_40px_rgba(0,0,0,0.05)] pt-8 px-5 border border-slate-200">
+          <div className="w-full flex-1 flex flex-col gap-2.5">
+            {tiers.map((tier, i) => (
+              <div key={i} className={`relative flex items-center justify-between px-5 py-[16px] rounded-2xl w-full border overflow-hidden ${tier.status === 'current' ? 'border-[var(--color-green)] bg-[var(--color-green)]/5 ring-1 ring-[var(--color-green)]/20 shadow-sm' : tier.status === 'unlocked' ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-100 opacity-60'}`}>
+                {tier.status === 'current' && (
+                  <div className="absolute bottom-0 left-0 h-1 bg-[var(--color-green)]" style={{ width: '60%' }}></div>
+                )}
+                <div className="flex items-center w-full z-10">
+                  <span className={`text-[12px] font-black mr-4 uppercase tracking-widest ${tier.status === 'current' ? 'text-[var(--color-green)]' : tier.status === 'unlocked' ? 'text-slate-400' : 'text-slate-300'}`}>T{i + 1}</span>
+                  <span className={`text-[17px] font-bold tracking-tight ${tier.status === 'current' ? 'text-slate-900' : tier.status === 'unlocked' ? 'text-slate-700' : 'text-slate-400'}`}>{tier.title}</span>
+                </div>
+                <div className="shrink-0 flex items-center justify-end w-8 ml-2 z-10">
+                  {tier.status === 'unlocked' && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  )}
+                  {tier.status === 'current' && (
+                    <span className="text-[var(--color-green)] text-[12px] font-black tracking-widest">60%</span>
+                  )}
+                  {tier.status === 'locked' && (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Column: iPad Dashboard Enhancements */}
+        <div className="hidden md:flex flex-col justify-start w-1/2">
+          <HeaderText title={texts.a_title} desc={texts.a_desc} />
+          
+          <div className="bg-[var(--color-green)]/5 rounded-[32px] p-8 border border-[var(--color-green)]/20 shadow-sm flex flex-col mt-4">
+            <h3 className="text-[14px] uppercase tracking-widest font-black text-[var(--color-green)] mb-6 flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              {localizedTiers[4]} Insight
+            </h3>
+
+            <div className="flex flex-col gap-6">
+              <div>
+                <div className="flex justify-between text-[14px] font-bold text-slate-700 mb-2">
+                  <span>9 × 6</span>
+                  <span className="text-[var(--color-green)]">100%</span>
+                </div>
+                <div className="w-full bg-[var(--color-green)]/10 rounded-full h-2">
+                  <div className="bg-[var(--color-green)] h-2 rounded-full" style={{ width: '100%' }}></div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-[14px] font-bold text-slate-700 mb-2">
+                  <span>7 × 8</span>
+                  <span className="text-[var(--color-blue)]">60%</span>
+                </div>
+                <div className="w-full bg-[var(--color-blue)]/10 rounded-full h-2">
+                  <div className="bg-[var(--color-blue)] h-2 rounded-full" style={{ width: '60%' }}></div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-[14px] font-bold text-slate-700 mb-2">
+                  <span>Reversed Factors (8×7)</span>
+                  <span className="text-[var(--color-red)]">20%</span>
+                </div>
+                <div className="w-full bg-[var(--color-red)]/10 rounded-full h-2">
+                  <div className="bg-[var(--color-red)] h-2 rounded-full" style={{ width: '20%' }}></div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8 bg-white/60 p-4 rounded-xl border border-white flex items-center gap-4">
+              <div className="text-2xl">💡</div>
+              <div className="text-sm font-medium text-slate-700">The engine is currently prioritizing reversed factors to solidify your mastery of {localizedTiers[4]}.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// JTBD 4
 export function MasteryGrid({ lang }: { lang: string }) {
   const { t } = useTranslation();
-  
-  const marketing = {
-    de: { f3_title: "Lernmatrix", f3_desc: "Führt automatisch formative Lernstandserhebungen durch – Sie sehen sofort, ob Kompetenzen automatisiert sind.", f3_cta: "Auf einen Blick sehen, was bereits beherrscht wird." },
-    fr: { f3_title: "Matrice de Maîtrise", f3_desc: "Opère comme une évaluation formative automatique continue pour observer l'apprentissage.", f3_cta: "Voir exactement ce que vous maîtrisez en un coup d'œil." },
-    es: { f3_title: "Matriz de Dominio", f3_desc: "Funciona operativamente como una evaluación formativa automatizada.", f3_cta: "Ve exactamente qué dominas de un vistazo." },
-    nl: { f3_title: "Beheersing Matrix", f3_desc: "Levert real-time formatieve toetsingsdata op. Ontdek onmiddellijk op individueel niveau of kerndoelen behaald zijn.", f3_cta: "Zie in één oogopslag wat al beheerst wordt." },
-    tr: { f3_title: "Gelişim Matrisi", f3_desc: "Öğretmenler için formatif ölçme aracı. Otomatik analizle zayıf noktaları saptar.", f3_cta: "Bir bakışta tam olarak ne bildiğini gör." },
-    uk: { f3_title: "Діагностична Матриця", f3_desc: "Прозорий зріз знань. Працює як інструмент формувального оцінювання.", f3_cta: "Побач одразу, що вже засвоєно." },
-    ar: { f3_title: "مصفوفة الكفاءة", f3_desc: "شبكة تقييم تكويني فورية للمعلم. ترصد الأتمتة التامة.", f3_cta: "شاهد ما تتقنه بنظرة واحدة." },
-    zh: { f3_title: "形成性评价矩阵", f3_desc: "充当可视化助教，自动化全维评价机制。", f3_cta: "一眼看清掌握了什么。" },
-    en: { f3_title: "Mastery Grid", f3_desc: "Automatically performs formative assessment so you instantly see which problems are mastered.", f3_cta: "See exactly what you know at a glance." }
-  }[lang.split('-')[0] || 'en'] || { f3_title: "Mastery Grid", f3_desc: "Automatically performs formative assessment so you instantly see which problems are mastered.", f3_cta: "See exactly what you know at a glance." };
+  const texts = getMarketingInfo(lang);
 
   const getCellColor = (r: number, c: number) => {
-    if (r <= 5 && c <= 5) return "var(--color-green)"; // ~30 cells Green
-    if (r === 6 || c === 6 || r === 7 || c === 7) return "var(--color-yellow)"; // ~20 Yellow
-    if (r === 8 || c === 8) return "var(--color-red)"; // ~10 Red
-    return "var(--color-gray)";
+    if (r <= 5 && c <= 5) return "var(--color-green)"; // Mastered
+    if (r === 6 || c === 6 || r === 7 || c === 7) return "var(--color-yellow)"; // Learning
+    if (r === 8 || c === 8) return "var(--color-red)"; // Hard
+    return "#e2e8f0"; // slate-200 untouched
   };
 
   return (
-    <div className="w-full h-full bg-[#f8fafc] flex flex-col font-[var(--font)] relative px-6 pt-16 pb-12">
-      <div className="w-full mb-10 text-left">
-        <h1 className="text-[28px] font-bold text-[#1c1c1e] leading-tight mb-2 tracking-tight">
-          {marketing.f3_title}
-        </h1>
-        <p className="text-[#555] text-[15px] font-medium leading-snug line-clamp-2 max-w-[85%]">
-          {marketing.f3_desc}
-        </p>
-      </div>
-
-      <div className="w-full aspect-square bg-white border border-[#E9E9E9] rounded-3xl p-4 shadow-sm mb-8 flex flex-col justify-center">
-        <div className="grid grid-cols-10 grid-rows-10 gap-1 w-full h-full">
-          {[...Array(10)].map((_, r) => (
-            [...Array(10)].map((_, c) => (
-              <div key={`${r}-${c}`} className="rounded-[4px] w-full h-full" style={{ backgroundColor: getCellColor(r + 1, c + 1) }}></div>
-            ))
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full flex flex-col justify-center items-start gap-4 mb-auto px-2">
-        {[
-          { color: 'var(--color-green)', label: t('mastery.mastered') },
-          { color: 'var(--color-yellow)', label: t('mastery.learning') },
-          { color: 'var(--color-red)', label: t('mastery.hardDiff') },
-          { color: 'var(--color-gray)', label: t('mastery.untouched') }
-        ].map((leg, i) => (
-          <div key={i} className="flex items-center gap-3">
-            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: leg.color }}></div>
-            <span className="text-[#1c1c1e] font-bold text-[14px] uppercase tracking-wider">{leg.label}</span>
+    <div className="w-full h-full bg-[#f8fafc] flex flex-col font-[var(--font)] relative pt-16">
+      <div className="flex-1 flex flex-col md:flex-row items-stretch w-full px-4 md:px-12 gap-8 md:gap-14 overflow-hidden mb-12">
+        {/* Left Column: Essential Mobile UI */}
+        <div className="flex-1 flex flex-col justify-center items-center bg-white rounded-[40px] shadow-[0_10px_40px_rgba(0,0,0,0.05)] py-10 border border-slate-200">
+          <div className="w-full aspect-square bg-slate-50 border border-slate-100 rounded-3xl p-4 mb-10 flex flex-col justify-center mx-auto" style={{ maxWidth: '85%' }}>
+            <div className="grid grid-cols-10 grid-rows-10 gap-1 w-full h-full">
+              {[...Array(10)].map((_, r) => (
+                [...Array(10)].map((_, c) => (
+                  <div key={`${r}-${c}`} className="rounded-[4px] w-full h-full" style={{ backgroundColor: getCellColor(r + 1, c + 1) }}></div>
+                ))
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
-      
-      <div className="w-full text-center border-t border-[#E9E9E9] pt-6 mt-6">
-        <div className="text-[#666] text-[13px] font-medium leading-snug">
-          {marketing.f3_cta}
+
+          <div className="w-full flex justify-center items-center gap-6 px-4 flex-wrap">
+            {[
+              { color: 'var(--color-green)', label: t('mastery.mastered', 'Mastered') },
+              { color: 'var(--color-yellow)', label: t('mastery.learning', 'Learning') },
+              { color: 'var(--color-red)', label: t('mastery.hardDiff', 'Struggling') },
+              { color: '#cbd5e1', label: t('mastery.untouched', 'Untouched') }
+            ].map((leg, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: leg.color }}></div>
+                <span className="text-slate-600 font-bold text-[12px] uppercase tracking-wider">{leg.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Column: iPad Dashboard Enhancements */}
+        <div className="hidden md:flex flex-col justify-start w-1/2">
+          <HeaderText title={texts.m_title} desc={texts.m_desc} />
+          
+          <div className="bg-white rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col mt-4">
+            <h3 className="text-[14px] uppercase tracking-widest font-bold text-slate-400 mb-6 flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Intervention Report
+            </h3>
+
+            <div className="flex flex-col gap-4">
+              <div className="p-4 rounded-2xl bg-[var(--color-red)]/5 border border-[var(--color-red)]/20 flex gap-4 items-start">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-red)]/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-2.5 h-2.5 bg-[var(--color-red)] rounded-full"></div>
+                </div>
+                <div>
+                  <div className="font-bold text-[var(--color-red)] text-sm mb-1">Targeted Review Needed</div>
+                  <div className="text-slate-700 text-sm">4 students are continuously struggling with the <strong>8×</strong> and <strong>9×</strong> tables.</div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[var(--color-green)]/5 border border-[var(--color-green)]/20 flex gap-4 items-start">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-green)]/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-2.5 h-2.5 bg-[var(--color-green)] rounded-full"></div>
+                </div>
+                <div>
+                  <div className="font-bold text-[var(--color-green)] text-sm mb-1">Milestone Achieved</div>
+                  <div className="text-slate-700 text-sm"><strong>85%</strong> of the class has achieved automaticity on Square Numbers.</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
+// JTBD 5
 export const ClassroomLive = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
+  const texts = getMarketingInfo(lang);
   
   const names = {
     de: ['Emma', 'Leon', 'Anna', 'Paul', 'Mia'],
@@ -151,209 +490,80 @@ export const ClassroomLive = ({ lang }: { lang: string }) => {
     en: ['Emma', 'Noah', 'Olivia', 'Liam', 'Ava']
   }[lang.split('-')[0] || 'en'] || ['Emma', 'Noah', 'Olivia', 'Liam', 'Ava'];
 
-  const cl3 = {
-    de: { active: '3a (24/24 aktiv)', join: '+ Klasse beitreten' },
-    fr: { active: '3a (24/24 actifs)', join: '+ Rejoindre la classe' },
-    es: { active: '3a (24/24 activos)', join: '+ Unirse a la clase' },
-    nl: { active: '3a (24/24 actief)', join: '+ Klas aansluiten' },
-    tr: { active: '3a (24/24 aktif)', join: '+ Sınıfa Katıl' },
-    uk: { active: '3a (24/24 активних)', join: '+ Приєднатись до класу' },
-    ar: { active: '٣أ (٢٤/٢٤ نشاط)', join: '+ انضم إلى الفصل' },
-    zh: { active: '三班 (24/24 在线)', join: '+ 加入班级' },
-    en: { active: '3a (24/24 active)', join: '+ Join Class' }
-  }[lang.split('-')[0] || 'en'] || { active: '3a (24/24 active)', join: '+ Join Class' };
-
   return (
-    <div className="w-full h-full bg-[var(--color-darkest)] flex flex-col font-[var(--font)] relative px-6 py-16 text-white pb-10">
-      <div className="absolute top-0 right-0 left-0 h-[400px] pointer-events-none rounded-b-[150px] bg-[var(--color-blue)] opacity-10 blur-[100px] z-0"></div>
-      
-      <div className="relative z-10 w-full mb-10">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="text-[20px] font-bold text-white tracking-widest uppercase flex items-center gap-2">
-            <div className="w-3 h-3 bg-[var(--color-red)] rounded-full animate-pulse shadow-[0_0_10px_var(--color-red)] mr-1"></div>
-            LIVE
+    <div className="w-full h-full bg-[#f8fafc] flex flex-col font-[var(--font)] relative pt-16">
+      <div className="flex-1 flex flex-col md:flex-row items-stretch w-full px-4 md:px-12 gap-8 md:gap-14 overflow-hidden mb-12">
+        {/* Left Column: Essential Mobile UI */}
+        <div className="flex-1 flex flex-col items-center bg-white rounded-[40px] shadow-[0_10px_40px_rgba(0,0,0,0.05)] pt-8 px-6 border border-slate-200 relative">
+          <div className="flex items-center gap-2 mb-6 w-full justify-center">
+            <div className="text-[14px] font-black text-slate-800 tracking-widest uppercase flex items-center gap-2 bg-slate-100 rounded-full px-4 py-1">
+              <div className="w-2.5 h-2.5 bg-[var(--color-red)] rounded-full animate-pulse shadow-[0_0_10px_rgba(232,57,29,0.4)] mr-1"></div>
+              {t('classSprint.live', 'CLASSROOM LIVE')}
+            </div>
           </div>
-        </div>
-        <div className="text-[28px] font-black leading-tight text-white">{t('classSprint.live')}</div>
-        <div className="text-[13px] font-bold text-[var(--color-blue)] mt-1 tracking-wide">{cl3.active}</div>
-      </div>
 
-      <div className="relative z-10 w-full flex-1 flex flex-col gap-3">
-        {[
-          { rank: 1, name: names[0], score: 480, badge: 'var(--color-yellow)' },
-          { rank: 2, name: names[1], score: 420, badge: 'var(--color-blue)' },
-          { rank: 3, name: names[2], score: 390, badge: 'var(--color-green)' },
-          { rank: 4, name: names[3], score: 310, badge: 'var(--color-red)' },
-          { rank: 5, name: names[4], score: 280, badge: '#fff' }
-        ].map((p, i) => (
-          <div key={i} className={`flex items-center justify-between px-5 py-4 rounded-3xl ${i === 0 ? 'bg-[var(--color-yellow)]/15 border border-[var(--color-yellow)]/30 shadow-lg' : 'bg-[var(--color-dark)] border border-transparent'}`}>
-            <div className="flex items-center">
-              <span className={`text-[18px] font-black w-7 ${i === 0 ? 'text-[var(--color-yellow)]' : 'text-gray-500'}`}>#{p.rank}</span>
-              <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center font-bold text-[#1c1c1e] text-[16px] ml-1 mr-4" style={{ backgroundColor: p.badge }}>
-                {p.name.charAt(0)}
+          <div className="w-full flex-1 flex flex-col gap-3">
+            {[
+              { rank: 1, name: names[0], score: 480, badge: 'var(--color-green)' },
+              { rank: 2, name: names[1], score: 420, badge: 'var(--color-blue)' },
+              { rank: 3, name: names[2], score: 390, badge: 'var(--color-yellow)' },
+              { rank: 4, name: names[3], score: 310, badge: 'var(--color-red)', alert: true },
+              { rank: 5, name: names[4], score: 280, badge: 'var(--color-red)', alert: true }
+            ].map((p, i) => (
+              <div key={i} className={`flex items-center justify-between px-5 py-4 rounded-3xl border ${p.alert ? 'bg-[var(--color-red)]/5 border-[var(--color-red)]/20 shadow-sm relative overflow-hidden' : 'bg-slate-50 border-slate-100'}`}>
+                {p.alert && <div className="absolute top-0 left-0 h-full w-1.5 bg-[var(--color-red)]"></div>}
+                <div className="flex items-center">
+                  <span className={`text-[16px] font-black w-6 text-slate-400`}>#{p.rank}</span>
+                  <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center font-bold text-white text-[16px] ml-1 mr-3 shadow-sm" style={{ backgroundColor: p.badge }}>
+                    {p.name.charAt(0)}
+                  </div>
+                  <span className={`text-[18px] font-bold ${p.alert ? 'text-[var(--color-red)]' : 'text-slate-800'}`}>{p.name}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  {p.alert && <span className="text-[16px] animate-bounce">⚠️</span>}
+                  <div className={`text-[20px] font-black tracking-wide ${p.alert ? 'text-[var(--color-red)]' : 'text-slate-800'}`}>{p.score}</div>
+                </div>
               </div>
-              <span className={`text-[20px] font-bold ${i === 0 ? 'text-[var(--color-yellow)]' : 'text-white'}`}>{p.name}</span>
-            </div>
-            <div className={`text-[22px] font-black tracking-wide ${i === 0 ? 'text-[var(--color-yellow)]' : 'text-white'}`}>{p.score}</div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <div className="w-full flex flex-col items-center mt-auto z-10 pt-4 gap-6">
-        <div className="bg-[var(--color-red)]/10 text-[var(--color-red)] border border-[var(--color-red)]/30 rounded-full px-5 py-1.5 text-[14px] font-bold tracking-wide">
-          {t('classSprint.alertStarting')}
         </div>
-        <button className="w-full bg-[var(--color-blue)] text-white text-[18px] font-black rounded-3xl py-5 shadow-lg relative overflow-hidden">
-          {cl3.join}
-          <div className="absolute inset-0 bg-white/20 blur-xl scale-150 rotate-12 -translate-x-full"></div>
-        </button>
-      </div>
-    </div>
-  );
-}
 
-export function AdaptiveTiers({ lang }: { lang: string }) {
-  
-  const marketing = {
-    de: { f4_title: "Adaptive Engine", f4_desc: "Passt den Schwierigkeitsgrad dynamisch und in Echtzeit an die Geschwindigkeit an." },
-    fr: { f4_title: "Moteur Algorithmique", f4_desc: "Modifie la difficulté à la volée en jaugeant la fluidité cognitive." },
-    es: { f4_title: "Algoritmo Adaptativo", f4_desc: "Ajusta dinámicamente el índice de dificultad en la Zona de Desarrollo Próximo." },
-    nl: { f4_title: "Adaptieve Techniek", f4_desc: "Schat de vloeiendheid van het kind dynamisch in richting de zone van naaste ontwikkeling." },
-    tr: { f4_title: "Akıllı Adaptif Motor", f4_desc: "Öğrencilere tam olarak 'Yakınsal Gelişim Alanlarında' test senaryoları sunar." },
-    uk: { f4_title: "Адаптивний Двигун (AI)", f4_desc: "Підлаштовує рівень складності так, щоб дитина завжди працювала у своїй Зоні." },
-    ar: { f4_title: "الخوارزمية المتكيفة", f4_desc: "يقوم الذكاء بتعديل التعقيد اللحظي باستمرار ضمن منطقة النمو الوشيك." },
-    zh: { f4_title: "阻力降维引擎", f4_desc: "毫秒级刷新难度，锁定维果茨基最近发展区（ZPD）。" },
-    en: { f4_title: "Adaptive Engine", f4_desc: "Dynamically matches problem difficulty to the student's speed and accuracy in real-time." }
-  }[lang.split('-')[0] || 'en'] || { f4_title: "Adaptive Engine", f4_desc: "Dynamically matches problem difficulty to the student's speed and accuracy in real-time." };
-
-  const tiers = [
-    { title: "Easy Facts", status: "unlocked" },
-    { title: "Square Numbers", status: "unlocked" },
-    { title: "×6 ×7", status: "unlocked" },
-    { title: "Hard Facts", status: "unlocked" },
-    { title: "Boss Facts", status: "current" },
-    { title: "Master", status: "locked" },
-    { title: "Extended ×11–×20", status: "locked" },
-    { title: "Champion", status: "locked" }
-  ];
-
-  return (
-    <div className="w-full h-full flex flex-col font-[var(--font)] relative px-6 pt-16" style={{ background: 'linear-gradient(to bottom, var(--color-darkest) 0%, #1a1a2e 100%)' }}>
-      <div className="w-full mb-8">
-        <h1 className="text-[24px] font-bold text-white leading-tight mb-2 tracking-tight">
-          {marketing.f4_title}
-        </h1>
-        <p className="text-[#888] text-[13px] font-semibold leading-snug line-clamp-2 max-w-[90%]">
-          {marketing.f4_desc}
-        </p>
-      </div>
-
-      <div className="flex-1 flex flex-col justify-start gap-2.5 pb-20 w-full">
-        {tiers.map((tier, i) => (
-          <div key={i} className={`relative flex items-center justify-between px-5 py-[16px] rounded-2xl w-full border ${tier.status === 'current' ? 'border-[var(--color-yellow)] bg-[var(--color-dark)] shadow-[0_4px_30px_rgba(250,204,21,0.15)] ring-1 ring-[var(--color-yellow)]/50' : tier.status === 'unlocked' ? 'bg-[var(--color-green)]/10 border-[var(--color-green)]/20' : 'bg-black/30 border-white/5 opacity-60'}`}>
+        {/* Right Column: iPad Dashboard Enhancements */}
+        <div className="hidden md:flex flex-col justify-start w-1/2">
+          <HeaderText title={texts.c_title} desc={texts.c_desc} />
+          
+          <div className="bg-slate-800 rounded-[32px] p-8 shadow-xl flex flex-col mt-4 relative overflow-hidden">
+            <svg className="absolute top-0 right-0 opacity-10" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             
-            {tier.status === 'current' && (
-              <div className="absolute bottom-0 left-0 h-1.5 bg-[var(--color-yellow)] rounded-bl-2xl" style={{ width: '60%' }}></div>
-            )}
+            <h3 className="text-[14px] uppercase tracking-widest font-bold text-slate-400 mb-8 flex items-center gap-2 relative z-10">
+              <span className="w-2.5 h-2.5 bg-green-400 rounded-full inline-block blink"></span>
+              Live Metrics
+            </h3>
+
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 relative z-10 mb-8">
+              <div>
+                <div className="text-[36px] font-black text-white leading-none mb-1">24<span className="text-xl text-slate-500 font-bold">/25</span></div>
+                <div className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">Active</div>
+              </div>
+              <div>
+                <div className="text-[36px] font-black text-green-400 leading-none mb-1">92%</div>
+                <div className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">Global Avg.</div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 rounded-2xl p-5 backdrop-blur-md border border-white/5 relative z-10 w-full mb-4">
+              <div className="text-[12px] font-bold text-slate-300 uppercase tracking-widest mb-1.5 flex items-center justify-between">
+                <span>{names[3]} is struggling</span>
+                <span className="text-white bg-[var(--color-red)] px-2 py-0.5 rounded text-[10px]">Current</span>
+              </div>
+              <div className="text-white text-sm">Failed <strong>9×4</strong> consecutively 3 times. Requires immediate check-in.</div>
+            </div>
             
-            <div className="flex items-center w-full">
-              <span className={`text-[12px] font-black mr-4 uppercase tracking-widest ${tier.status === 'current' ? 'text-[var(--color-yellow)]' : tier.status === 'unlocked' ? 'text-[var(--color-green)]' : 'text-gray-500'}`}>T{i + 1}</span>
-              <span className={`text-[18px] font-bold tracking-tight ${tier.status === 'current' ? 'text-white' : tier.status === 'unlocked' ? 'text-[var(--color-green)]' : 'text-gray-400'}`}>{tier.title}</span>
-            </div>
-
-            <div className="shrink-0 flex items-center justify-end w-8 ml-2">
-              {tier.status === 'unlocked' && (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-              )}
-              {tier.status === 'current' && (
-                <span className="text-[var(--color-yellow)] text-[12px] font-black tracking-widest">60%</span>
-              )}
-              {tier.status === 'locked' && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export const PrivacyScreen = ({ lang }: { lang: string }) => {
-
-  const marketing = {
-    de: { hero: "100% kostenlos. Keine Schüler-Accounts erforderlich.", f6_title: "Absolute Privatsphäre", f6_desc: "Keine Datensammlung.", ads: "Keine Werbung.", gdpr: "DSGVO-konform", desc_ads: "Keine Werbung im Unterricht.", desc_gdpr: "Es werden keine Schüler-Accounts erstellt oder benötigt." },
-    fr: { hero: "100% gratuit. Aucun compte élève obligatoire.", f6_title: "Confidentialité Absolue (RGPD)", f6_desc: "Zéro collecte PII.", ads: "Zéro pub.", gdpr: "Conforme RGPD", desc_ads: "Jamais.", desc_gdpr: "Zéro compte." },
-    es: { hero: "100% gratis. No requiere cuentas.", f6_title: "Privacidad Absoluta", f6_desc: "Cero recopilación PII.", ads: "Sin anuncios.", gdpr: "Conforme al RGPD", desc_ads: "Totalmente libre de estrés.", desc_gdpr: "Totalmente conforme." },
-    nl: { hero: "100% gratis. Geen leerling-accounts vereist.", f6_title: "Absolute Data Privacy", f6_desc: "Geen schimmige PII-verzameling.", ads: "Geen reclame.", gdpr: "AVG-conform", desc_ads: "Geen afleidingen.", desc_gdpr: "Geen accounts." },
-    tr: { hero: "%100 Ücretsiz. Öğrenci verisi toplanmaz.", f6_title: "Mutlak Gizlilik", f6_desc: "Zehirli veri politikası barındırmaz.", ads: "Reklam yok.", gdpr: "GDPR uyumlu", desc_ads: "Sadece öğrenme.", desc_gdpr: "Hesaba gerek yok." },
-    uk: { hero: "Безкоштовно. Не потребує створення дитячих акаунтів.", f6_title: "100% Приватність", f6_desc: "Жодних персональних даних.", ads: "Без реклами.", gdpr: "GDPR-сумісний", desc_ads: "Без банерів.", desc_gdpr: "Без реєстрації." },
-    ar: { hero: "مجاني بالكامل للقطاع التعليمي. لا يتطلب تفاصيل.", f6_title: "حماية الطفل", f6_desc: "لا بيانات.", ads: "بدون إعلانات.", gdpr: "متوافق مع GDPR", desc_ads: "تركيز تام.", desc_gdpr: "لا للحسابات." },
-    zh: { hero: "100% 免费工具。不提取低龄身份。", f6_title: "保密安全", f6_desc: "纯离线存储，零收集识别信息。", ads: "无广告。", gdpr: "符合GDPR", desc_ads: "无商业推播。", desc_gdpr: "无强制机制。" },
-    en: { hero: "100% free. No student accounts required.", f6_title: "Absolute Privacy", f6_desc: "No PII collection.", ads: "No Ads. Ever.", gdpr: "GDPR Compliant", desc_ads: "Fully ad-free and distraction free.", desc_gdpr: "Fully compliant with the strict data minimization protocol." }
-  }[lang.split('-')[0] || 'en'] || { hero: "100% free. No student accounts required.", f6_title: "Absolute Privacy", f6_desc: "No PII collection.", ads: "No Ads. Ever.", gdpr: "GDPR Compliant", desc_ads: "Fully ad-free and distraction free.", desc_gdpr: "Fully compliant with the strict data minimization protocol." };
-
-  return (
-    <div className="w-full h-full bg-white flex flex-col font-[var(--font)] relative px-8 pt-16 pb-16 overflow-hidden z-0">
-      <div className="flex justify-center items-center gap-3 mb-12">
-        <svg width="48" height="48" viewBox="0 0 190 190">
-          <rect x="5" y="5" width="56" height="56" rx="10" fill="var(--color-green)" />
-          <rect x="67" y="5" width="56" height="56" rx="10" fill="var(--color-green)" />
-          <rect x="129" y="5" width="56" height="56" rx="10" fill="var(--color-yellow)" />
-          <rect x="5" y="67" width="56" height="56" rx="10" fill="var(--color-green)" />
-          <rect x="67" y="67" width="56" height="56" rx="10" fill="var(--color-yellow)" />
-          <rect x="129" y="67" width="56" height="56" rx="10" fill="var(--color-blue)" />
-          <rect x="5" y="129" width="56" height="56" rx="10" fill="var(--color-blue)" />
-          <rect x="67" y="129" width="56" height="56" rx="10" fill="var(--color-red)" />
-          <rect x="129" y="129" width="56" height="56" rx="10" fill="var(--color-gray)" />
-        </svg>
-        <div className="text-[24px] font-black text-[#1c1c1e] tracking-tight">Better 1UP</div>
-      </div>
-
-      <div className="text-[32px] font-black text-[#1c1c1e] text-center leading-[1.1] mb-16 px-4 relative z-10">
-        {marketing.hero.split('.').map((sentence, i: number, arr: string[]) => (
-          <span key={i}>{sentence}{i < arr.length - 1 ? '.' : ''}<br /></span>
-        ))}
-      </div>
-
-      <div className="w-full border-t border-slate-100 flex flex-col gap-0 w-[95%] mx-auto relative z-10">
-        <div className="flex gap-5 items-start py-6 border-b border-slate-100">
-          <div className="text-4xl shrink-0">🚫</div>
-          <div className="pt-1">
-            <div className="text-[17px] font-black text-[#1c1c1e] mb-1 leading-none tracking-tight">{marketing.f6_title}</div>
-            <div className="text-[13px] font-medium text-[#555] leading-snug pr-4">{marketing.f6_desc}</div>
+            <button className="relative z-10 w-full bg-[var(--color-blue)] hover:bg-blue-600 transition-colors text-white text-[15px] font-bold py-3.5 rounded-xl shadow-sm">
+              Pause Class Session
+            </button>
           </div>
         </div>
-
-        <div className="flex gap-5 items-start py-6 border-b border-slate-100">
-          <div className="text-4xl shrink-0">📵</div>
-          <div className="pt-1">
-            <div className="text-[17px] font-black text-[#1c1c1e] mb-1 leading-none tracking-tight">{marketing.ads}</div>
-            <div className="text-[13px] font-medium text-[#555] leading-snug pr-4">{marketing.desc_ads}</div>
-          </div>
-        </div>
-
-        <div className="flex gap-5 items-start py-6">
-          <div className="text-4xl shrink-0">🇪🇺</div>
-          <div className="pt-1">
-            <div className="text-[17px] font-black text-[#1c1c1e] mb-1 leading-none tracking-tight">{marketing.gdpr}</div>
-            <div className="text-[13px] font-medium text-[#555] leading-snug pr-4">{marketing.desc_gdpr}</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute left-1/2 -translate-x-1/2 -bottom-20 z-0 opacity-40">
-        <svg width="240" height="240" viewBox="0 0 190 190" style={{ transform: 'rotate(8deg)' }}>
-          <rect x="5" y="5" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="67" y="5" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="129" y="5" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="5" y="67" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="67" y="67" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="129" y="67" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="5" y="129" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="67" y="129" width="56" height="56" rx="10" fill="var(--color-gray)" />
-          <rect x="129" y="129" width="56" height="56" rx="10" fill="var(--color-gray)" />
-        </svg>
       </div>
     </div>
   );
@@ -361,8 +571,8 @@ export const PrivacyScreen = ({ lang }: { lang: string }) => {
 
 export const SCREENS_MAP: Record<string, any> = {
   SprintScreen,
-  MasteryGrid,
-  ClassroomLive,
+  FriendsLeaderboard,
   AdaptiveTiers,
-  PrivacyScreen
+  MasteryGrid,
+  ClassroomLive
 };

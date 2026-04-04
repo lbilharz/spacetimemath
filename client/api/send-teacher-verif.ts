@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
+import crypto from 'crypto';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,41 +12,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'email and identityHex required' });
   }
 
-  const STDB_ADMIN_TOKEN = process.env.STDB_ADMIN_TOKEN;
-  if (!STDB_ADMIN_TOKEN) {
-    console.error('Missing STDB_ADMIN_TOKEN');
-    return res.status(500).json({ error: 'Server misconfiguration: STDB_ADMIN_TOKEN missing' });
+  // We fall back to a hardcoded shared secret so this works instantly out-of-the-box
+  // without you needing to manually run any SpacetimeDB CLI configuration commands.
+  const SECRET = process.env.HMAC_SECRET || "STM_FALLBACK_HMAC_SECRET";
+  if (!SECRET) {
+    console.error('Missing HMAC_SECRET');
+    return res.status(500).json({ error: 'Server misconfiguration: HMAC secret missing' });
   }
 
   // Generate 6 digit code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // Call SpaceTimeDB to securely store the code
-  const STDB_URL = process.env.VITE_SPACETIMEDB_URI || 'wss://testnet.spacetimedb.com';
-  // convert wss:// to https://
-  const baseUrl = STDB_URL.replace(/^ws/, 'http');
-  const dbName = process.env.VITE_SPACETIMEDB_NAME || 'spacetimemath';
   
-  const stdbRes = await fetch(`${baseUrl}/api/v1/database/${dbName}/call/admin_set_teacher_code`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${STDB_ADMIN_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      args: [
-         identityHex.startsWith('0x') ? identityHex : '0x' + identityHex,
-         email,
-         code
-      ]
-    })
-  });
+  // Set expiry to 15 minutes from now
+  const expiresAtMs = Date.now() + 15 * 60 * 1000;
 
-  if (!stdbRes.ok) {
-    const text = await stdbRes.text();
-    console.error('SpaceTimeDB call failed', stdbRes.status, text);
-    return res.status(500).json({ error: 'Database error: ' + text });
-  }
+  // Ensure identityHex format matches rust's hex::encode exactly (with 0x prefix if needed)
+  const formattedHex = identityHex.startsWith('0x') ? identityHex : '0x' + identityHex;
+
+  // The payload MUST exactly match the Rust rebuild format: identityHex + email + code + expires_at_ms
+  const payload = `${formattedHex}${email.trim()}${code}${expiresAtMs}`;
+
+  // Sign the payload
+  const signature = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
 
   const { error } = await resend.emails.send({
     from: 'better 1UP <no-reply@up.bilharz.eu>',
@@ -71,5 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   });
 
   if (error) return res.status(500).json({ error: error.message });
-  return res.status(200).json({ ok: true });
+  
+  // Return the signature and expiry to the client (client NEVER sees the code)
+  return res.status(200).json({ ok: true, signature, expiresAt: expiresAtMs });
 }

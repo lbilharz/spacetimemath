@@ -285,6 +285,12 @@ export const TeacherFocus = __t.object("TeacherFocus", {
 });
 export type TeacherFocus = __Infer<typeof TeacherFocus>;
 
+export const TeacherSecret = __t.object("TeacherSecret", {
+  id: __t.u32(),
+  secret: __t.string(),
+});
+export type TeacherSecret = __Infer<typeof TeacherSecret>;
+
 export const TeacherVerificationCode = __t.object("TeacherVerificationCode", {
   identity: __t.identity(),
   email: __t.string(),
