@@ -13,7 +13,12 @@
     "student": "Student",
     "you": "jij",
     "code": "code",
-    "or": "of"
+    "or": "of",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "app": {
     "brand": "1UP",
@@ -40,7 +45,8 @@
     "restoreTimeout": "Time-out bij wachten op serverreactie — probeer het opnieuw",
     "newAccount": "Nieuw account",
     "restoreError": "Sleutel niet gevonden — controleer je 12-cijferige herstelsleutel",
-    "footer": "Problemen zijn gewogen op basis van de moeilijkheidsgraad van de gemeenschap · aangedreven door SpaceTimeDB"
+    "footer": "Problemen zijn gewogen op basis van de moeilijkheidsgraad van de gemeenschap · aangedreven door SpaceTimeDB",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "online",
@@ -69,7 +75,9 @@
     "joining": "Lid worden…",
     "join": "Lid worden →",
     "masteryTitle": "Mijn Beheersingsrooster",
-    "masteryDesc": "Je 1×1 tabel in één oogopslag — tik op een product om te zien hoe je het kunt uitrekenen."
+    "masteryDesc": "Je 1×1 tabel in één oogopslag — tik op een product om te zien hoe je het kunt uitrekenen.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 seconden op de klok",
@@ -121,7 +129,8 @@
     "scoringExplained": "Hoe wordt dit gescoord?",
     "viewProgress": "Bekijk je voortgang",
     "problemsTitle": "Sommen in deze sprint",
-    "maxStreak": "Max. reeks"
+    "maxStreak": "Max. reeks",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Klas niet gevonden",
@@ -163,7 +172,14 @@
     "printPopupBlocked": "Popup geblokkeerd — sta popups toe voor deze site en probeer het opnieuw.",
     "printNoKeys": "Geen inlogkaarten beschikbaar — sommige leerlingen hebben misschien nog geen herstelsleutels.",
     "showLoginCard": "Toon inlog QR-kaart",
-    "studentLoginHint": "Scan om in te loggen op elk apparaat — geen wachtwoord nodig."
+    "studentLoginHint": "Scan om in te loggen op elk apparaat — geen wachtwoord nodig.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} sessie",
@@ -212,7 +228,8 @@
     "remindersHeading": "Push Herinneringen",
     "noReminders": "Geen actieve herinneringen. Voeg er een toe om je reeks te behouden!",
     "daily": "Elke dag",
-    "weekly": "Specifieke dagen"
+    "weekly": "Specifieke dagen",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "2-Cijferige vermenigvuldiger ontgrendeld!",
@@ -243,13 +260,17 @@
     "home": "Home",
     "classes": "Klassen",
     "progress": "Voortgang",
-    "account": "Account"
+    "account": "Account",
+    "friends": "Vrienden"
   },
   "classes": {
     "empty": "Nog geen klassen",
     "emptyHint": "Word lid van een bestaande klas of maak er zelf een aan.",
     "createError": "Klas aanmaken mislukt",
-    "joinError": "Klas niet gevonden"
+    "joinError": "Klas niet gevonden",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "Uitgebreide Tafels",
@@ -268,7 +289,10 @@
   },
   "history": {
     "title": "📋 Sprintgeschiedenis",
-    "noAnswers": "Geen antwoorden geregistreerd."
+    "noAnswers": "Geen antwoorden geregistreerd.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  moeilijkheid: {{difficulty}}",
@@ -276,7 +300,8 @@
     "learning": "lerend",
     "struggling": "moeilijk",
     "untouched": "niet geprobeerd",
-    "hardDiff": "hard (≥1.5×)"
+    "hardDiff": "hard (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Start klassprint",
@@ -317,7 +342,9 @@
       "slowest": "Langzaamste Paar",
       "leaderboard": "Sprint Podium",
       "correctShort": "KLAAR"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "Kies je startniveau",
@@ -394,5 +421,32 @@
     "desc": "Onze AI heeft al je sprints geanalyseerd. Hier zie je waar je in uitblinkt en wat je nu moet oefenen.",
     "weakest": "Volgende Doel",
     "strongest": "Beheerst"
+  },
+  "register_split": {
+    "teacher_btn": "Leraar",
+    "student_btn": "Deelnemen aan een klas",
+    "solo_btn": "Zelf oefenen",
+    "email_label": "E-mailadres",
+    "class_code_label": "Klascode",
+    "consent_1": "Ik bevestig dat ik een leraar ben en dit voor schooldoeleinden gebruik.",
+    "consent_2": "Ik geef toestemming om mijn e-mail op te slaan voor accountherstel.",
+    "recovery_nag_student": "Zorg ervoor dat u uw herstelsleutel kopieert! Anders verliest u uw voortgang!"
+  },
+  "friends": {
+    "haveCode": "Heb je een vriendencode?",
+    "add": "Toevoegen",
+    "adding": "Toevoegen...",
+    "invalidCode": "Ongeldige code",
+    "levelUp": "Samen naar een hoger niveau! 🚀",
+    "levelUpDesc": "Spelen is leuker met vrienden. Nodig iemand uit om hun live voortgang te zien, moedig ze aan en race tegen ze in het klassement!",
+    "empty": "Nog geen vrienden",
+    "inviteActive": "Uitnodiging actief",
+    "createInvite": "Maak uitnodigingslink",
+    "yourLink": "JOUW UITNODIGING",
+    "inviteHelp": "Code verloopt over 48 uur. Toon QR of deel code/link.",
+    "remove": "Verwijderen",
+    "confirm": "Bevestigen",
+    "score": "Score",
+    "unknownPlayer": "Onbekende Speler"
   }
 }

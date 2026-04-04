@@ -13,7 +13,12 @@
     "student": "学生",
     "you": "你",
     "code": "代码",
-    "or": "或"
+    "or": "或",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "app": {
     "brand": "1UP",
@@ -40,7 +45,8 @@
     "restoreTimeout": "等待服务器响应超时 — 请重试",
     "newAccount": "新账户",
     "restoreError": "未找到密钥 — 请检查你的 12 位恢复密钥",
-    "footer": "题目按社区难度加权 · 由 SpaceTimeDB 驱动"
+    "footer": "题目按社区难度加权 · 由 SpaceTimeDB 驱动",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "在线",
@@ -69,7 +75,9 @@
     "joining": "正在加入…",
     "join": "加入 →",
     "masteryTitle": "我的掌握矩阵",
-    "masteryDesc": "你的 1×1 乘法表概览 — 点击任何乘积查看解题思路。"
+    "masteryDesc": "你的 1×1 乘法表概览 — 点击任何乘积查看解题思路。",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 秒计时",
@@ -121,7 +129,8 @@
     "scoringExplained": "如何计分？",
     "viewProgress": "查看你的进度",
     "problemsTitle": "本次冲刺题目",
-    "maxStreak": "最高连胜"
+    "maxStreak": "最高连胜",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "未找到班级",
@@ -163,7 +172,14 @@
     "printPopupBlocked": "弹出窗口被拦截 — 请允许此站点的弹出窗口并重试。",
     "printNoKeys": "暂无登录卡片 — 部分学生可能还没有恢复密钥。",
     "showLoginCard": "显示登录二维码卡片",
-    "studentLoginHint": "在任何设备上扫描即可登录 — 无需密码。"
+    "studentLoginHint": "在任何设备上扫描即可登录 — 无需密码。",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} 次练习",
@@ -212,7 +228,8 @@
     "remindersHeading": "推送提醒",
     "noReminders": "没有活动的提醒。添加一个来保持你的连胜！",
     "daily": "每天",
-    "weekly": "特定日期"
+    "weekly": "特定日期",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "已解锁两位数乘法！",
@@ -243,13 +260,17 @@
     "home": "首页",
     "classes": "班级",
     "progress": "进度",
-    "account": "账户"
+    "account": "账户",
+    "friends": "朋友"
   },
   "classes": {
     "empty": "暂无班级",
     "emptyHint": "加入现有班级或创建自己的班级。",
     "createError": "创建班级失败",
-    "joinError": "未找到班级"
+    "joinError": "未找到班级",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "扩展乘法表",
@@ -268,7 +289,10 @@
   },
   "history": {
     "title": "📋 冲刺历史",
-    "noAnswers": "暂无回答记录。"
+    "noAnswers": "暂无回答记录。",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  难度：{{difficulty}}",
@@ -276,7 +300,8 @@
     "learning": "学习中",
     "struggling": "较吃力",
     "untouched": "未涉及",
-    "hardDiff": "困难 (≥1.5×)"
+    "hardDiff": "困难 (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "开始班级冲刺",
@@ -317,7 +342,9 @@
       "slowest": "最慢配对",
       "leaderboard": "冲刺领奖台",
       "correctShort": "完成"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "选择你的起始等级",
@@ -394,5 +421,32 @@
     "desc": "我们的AI分析了你过去的所有冲刺。这是你的强项以及接下来需要专注的地方。",
     "weakest": "下一个目标",
     "strongest": "已掌握"
+  },
+  "register_split": {
+    "teacher_btn": "老师",
+    "student_btn": "加入班级",
+    "solo_btn": "自己练习",
+    "email_label": "电子邮件地址",
+    "class_code_label": "班级代码",
+    "consent_1": "我确认我是一名老师并将其用于学校目的。",
+    "consent_2": "我同意保存我的电子邮件地址以恢复帐户。",
+    "recovery_nag_student": "确保复制您的恢复密钥！否则您将失去进度！"
+  },
+  "friends": {
+    "haveCode": "有朋友代码吗？",
+    "add": "添加",
+    "adding": "添加中...",
+    "invalidCode": "无效代码",
+    "levelUp": "一起升级！🚀",
+    "levelUpDesc": "和朋友一起玩更有趣。邀请别人实时查看他们的进度，为他们加油并在排行榜上与他们竞争！",
+    "empty": "还没有朋友",
+    "inviteActive": "邀请已激活",
+    "createInvite": "创建邀请链接",
+    "yourLink": "您的专属邀请",
+    "inviteHelp": "代码在48小时内过期。出示二维码或分享代码/链接。",
+    "remove": "移除",
+    "confirm": "确认",
+    "score": "分数",
+    "unknownPlayer": "未知玩家"
   }
 }

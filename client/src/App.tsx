@@ -6,7 +6,7 @@ import type { ClassSprint, Classroom, ClassroomMember } from './module_bindings/
 // capturedToken import removed (SEC-01): recovery key auto-gen no longer needed here
 import BottomNav from './components/BottomNav.js';
 import OnboardingOverlay from './components/OnboardingOverlay.js';
-import MigrationOverlay from './components/MigrationOverlay.js';
+
 import SplashGrid from './components/SplashGrid.js';
 import PageRenderer from './components/PageRenderer.js';
 import { useAppNavigation } from './hooks/useAppNavigation.js';
@@ -56,12 +56,8 @@ export default function App() {
   // Track first-ever connection so we never re-show splash on WS reconnect.
   // Must be state (not ref) because it's read during render for the splash guard.
   const [wasEverConnected, setWasEverConnected] = useState(false);
-  useEffect(() => { if (isActive) setWasEverConnected(true); }, [isActive]); // eslint-disable-line react-hooks/set-state-in-effect
+  useEffect(() => { if (isActive) setWasEverConnected(true); }, [isActive]);  
 
-  // Phase 6 Rollout guard for returning users:
-  const [migrationAcked, setMigrationAcked] = useState(() => {
-    try { return !!localStorage.getItem('seen_3x_migration'); } catch { return false; }
-  });
 
   // Deeplink Intent State (Notification Taps)
   const [pendingIntent, setPendingIntent] = useState<string | null>(() => {
@@ -136,7 +132,7 @@ export default function App() {
   // When the WebSocket drops (background), isActive flips to false and the
   // subscription clears — but we know who the user is and can skip the spinner.
   const [cachedPlayer, setCachedPlayer] = useState(myPlayer);
-  useEffect(() => { if (myPlayer) setCachedPlayer(myPlayer); }, [myPlayer]); // eslint-disable-line react-hooks/set-state-in-effect
+  useEffect(() => { if (myPlayer) setCachedPlayer(myPlayer); }, [myPlayer]);  
   const effectivePlayer = myPlayer ?? cachedPlayer;
 
   useEffect(() => { myPlayerRef.current = effectivePlayer; }, [effectivePlayer]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -382,7 +378,6 @@ export default function App() {
             
             // Brand new user explicitly skips the legacy patch-notes
             try { localStorage.setItem('seen_3x_migration', '1'); } catch (e) { console.warn(e); }
-            setMigrationAcked(true);
 
             tierAtSprintStartRef.current = effectivePlayer.learningTier ?? 0;
             goToSprint(0n, 'lobby');
@@ -391,14 +386,7 @@ export default function App() {
         />
       )}
 
-      {effectivePlayer && effectivePlayer.onboardingDone && effectivePlayer.totalSessions > 0 && !migrationAcked && (
-        <MigrationOverlay 
-          onDone={() => {
-            try { localStorage.setItem('seen_3x_migration', '1'); } catch (e) { console.warn(e); }
-            setMigrationAcked(true);
-          }}
-        />
-      )}
+
 
       {/* Class sprint alert — shown to enrolled students when teacher fires a sprint */}
       {incomingClassSprint && (
@@ -446,7 +434,11 @@ export default function App() {
         navigate={navigate}
       />
 
-      {showBottomNav && <BottomNav active={(page === 'classroom' ? 'classrooms' : page) as any} onNavigate={(tab) => navigate(tab as any)} />}
+      {showBottomNav && (
+        <BottomNav 
+          active={TABBED_PAGES.includes(page) ? page : 'lobby'} 
+        />
+      )}
     </>
   );
 }

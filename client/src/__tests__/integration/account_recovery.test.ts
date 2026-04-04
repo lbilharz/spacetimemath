@@ -29,7 +29,7 @@ describe('ACCT-03: restore_account via recovery code', () => {
 
   beforeAll(async () => {
     original = await connect();
-    await original.conn.reducers.register({ username: 'acct_03_owner' });
+    await original.conn.reducers.register({ username: 'acct_03_owner', playerType: { tag: 'Solo' }, email: undefined });
     await original.conn.reducers.createRecoveryKey({ token: original.token });
 
     // Wait for recovery code to be available in recovery_code_results
@@ -112,9 +112,9 @@ describe('ACCT-04: get_class_recovery_codes for teacher download', () => {
       connect(),
     ]);
 
-    await teacher.conn.reducers.register({ username: 'acct_04_teacher' });
-    await student.conn.reducers.register({ username: 'acct_04_student' });
-    await outsider.conn.reducers.register({ username: 'acct_04_outsider' });
+    await teacher.conn.reducers.register({ username: 'acct_04_teacher', playerType: { tag: 'Solo' }, email: undefined });
+    await student.conn.reducers.register({ username: 'acct_04_student', playerType: { tag: 'Solo' }, email: undefined });
+    await outsider.conn.reducers.register({ username: 'acct_04_outsider', playerType: { tag: 'Solo' }, email: undefined });
 
     // Teacher creates a classroom
     await teacher.conn.reducers.createClassroom({ name: 'ACCT04 Class' });

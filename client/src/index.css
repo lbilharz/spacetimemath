@@ -64,6 +64,28 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+
+  /* Accessibility & UX Overrides */
+  button, 
+  [role="button"], 
+  a {
+    cursor: pointer;
+  }
+  
+  button:disabled, 
+  [role="button"]:disabled,
+  a.disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* Ensure keyboard users see clear focus rings, but touch/mouse users do not */
+  :focus-visible {
+    outline: 3px solid var(--icon-blue);
+    outline-offset: 2px;
+    border-radius: 4px;
+    transition: outline-color 0s;
+  }
 }
 
 .pressable {

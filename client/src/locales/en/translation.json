@@ -13,7 +13,12 @@
     "student": "Student",
     "you": "you",
     "code": "code",
-    "or": "or"
+    "or": "or",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "days": {
     "mo": "Mo",
@@ -49,7 +54,8 @@
     "restoreTimeout": "Timeout waiting for server response — try again",
     "newAccount": "New account",
     "restoreError": "Key not found — check your 12-character recovery key",
-    "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB"
+    "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB",
+    "friendInviteBanner": "Friend Invite"
   },
   "register_split": {
     "teacher_btn": "Teacher",
@@ -88,7 +94,9 @@
     "joining": "Joining…",
     "join": "Join →",
     "masteryTitle": "My Mastery Grid",
-    "masteryDesc": "Your 1×1 table at a glance — tap any product to see how to think it through."
+    "masteryDesc": "Your 1×1 table at a glance — tap any product to see how to think it through.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 Seconds on the Clock",
@@ -140,7 +148,8 @@
     "backToLobby": "Back to Lobby",
     "scoringExplained": "How is this scored?",
     "viewProgress": "View your progress",
-    "problemsTitle": "Problems this sprint"
+    "problemsTitle": "Problems this sprint",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Classroom not found",
@@ -182,7 +191,14 @@
     "printPopupBlocked": "Popup blocked — allow popups for this site and try again.",
     "printNoKeys": "No login cards available — some students may not have recovery keys yet.",
     "showLoginCard": "Show login QR card",
-    "studentLoginHint": "Scan to log in on any device — no password needed."
+    "studentLoginHint": "Scan to log in on any device — no password needed.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} session",
@@ -231,7 +247,8 @@
     "remindersHeading": "Push Reminders",
     "noReminders": "No active reminders. Add one to keep your streak alive!",
     "daily": "Every day",
-    "weekly": "Specific days"
+    "weekly": "Specific days",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "2-Digit Multiplier Unlocked!",
@@ -262,13 +279,17 @@
     "home": "Home",
     "classes": "Classes",
     "progress": "Progress",
-    "account": "Account"
+    "account": "Account",
+    "friends": "Friends"
   },
   "classes": {
     "empty": "No classes yet",
     "emptyHint": "Join an existing class or create your own.",
     "createError": "Failed to create classroom",
-    "joinError": "Classroom not found"
+    "joinError": "Classroom not found",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "Extended Tables",
@@ -287,7 +308,10 @@
   },
   "history": {
     "title": "📋 Sprint History",
-    "noAnswers": "No answers recorded."
+    "noAnswers": "No answers recorded.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  difficulty: {{difficulty}}",
@@ -295,7 +319,8 @@
     "learning": "learning",
     "struggling": "struggling",
     "untouched": "untouched",
-    "hardDiff": "hard (≥1.5×)"
+    "hardDiff": "hard (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Start class sprint",
@@ -336,7 +361,9 @@
       "slowest": "Slowest Pair",
       "leaderboard": "Sprint Podium",
       "correctShort": "DONE"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "Pick Your Starting Level",
@@ -389,10 +416,6 @@
     "allUnlocked": "All tables unlocked! 🎉"
   },
   "dkt": {
-    "title": "Your Learning Profile",
-    "desc": "Our AI analyzed all your past sprints. Here is where you shine and what you should focus on next.",
-    "weakest": "Next Goal",
-    "strongest": "Mastered",
     "0": "Multiplying by 0 — Anything times zero is always zero.",
     "1": "Multiplying by 1 — Anything times one stays exactly the same.",
     "2": "The 2s (×2) — Just double the other number.",
@@ -403,6 +426,27 @@
     "7": "Swap Rule — Understanding that 4×5 is the same as 5×4.",
     "8": "Hard Core Facts — The trickiest problems like 6×7, 6×8, and 7×8.",
     "9": "Big Tens (×20) — Multiplying by numbers like 20 or 25.",
-    "10": "Advanced Basics — Multiplying with numbers above 10 (like 15×8)."
+    "10": "Advanced Basics — Multiplying with numbers above 10 (like 15×8).",
+    "title": "Your Learning Profile",
+    "desc": "Our AI analyzed all your past sprints. Here is where you shine and what you should focus on next.",
+    "weakest": "Next Goal",
+    "strongest": "Mastered"
+  },
+  "friends": {
+    "haveCode": "Have a friend's code?",
+    "add": "Add",
+    "adding": "Adding...",
+    "invalidCode": "Invalid code",
+    "levelUp": "Level up together! 🚀",
+    "levelUpDesc": "Playing is more fun with friends. Invite someone to see their live progress, cheer them on, and race them on the leaderboards!",
+    "empty": "No friends yet",
+    "inviteActive": "Invite Active",
+    "createInvite": "Create Invite Link",
+    "yourLink": "YOUR UNIQUE INVITE",
+    "inviteHelp": "Code expires in 48 hours. Show QR or share code/link.",
+    "remove": "Remove",
+    "confirm": "Confirm",
+    "score": "Score",
+    "unknownPlayer": "Unknown Player"
   }
 }

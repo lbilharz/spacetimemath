@@ -49,8 +49,8 @@ export default function FriendsPage() {
       })
     : undefined;
     
-  // Format numeric code to XX-XX-XX-XX
-  const inviteLink = activeInvite ? `${window.location.origin}/friend/${activeInvite.token}` : '';
+  // ALWAYS use up.bilharz.eu so iOS Universal Links intercept it, even if generated locally
+  const inviteLink = activeInvite ? `https://up.bilharz.eu/friend/${activeInvite.token}` : '';
   const displayCode = activeInvite?.token ? activeInvite.token.replace(/(..)(..)(..)(..)/, "$1-$2-$3-$4") : '';
 
   const handleCreateInvite = async () => {
@@ -106,14 +106,14 @@ export default function FriendsPage() {
           disabled={loading || !!activeInvite}
           className="rounded-2xl bg-brand-yellow px-5 py-3 text-[15px] font-bold text-slate-900 shadow-sm transition-transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50"
         >
-          {loading ? t('common.generating', { defaultValue: 'Generating...' }) : !!activeInvite ? t('friends.inviteActive', { defaultValue: 'Invite Active' }) : '+ ' + t('friends.createInvite', { defaultValue: 'Create Invite Link' })}
+          {loading ? t('common.generating') : activeInvite ? t('friends.inviteActive') : '+ ' + t('friends.createInvite')}
         </button>
       </div>
 
       <div className="flex flex-col gap-6 mt-6">
         {/* Accept form */}
         <div className="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-slate-800/80 dark:border-slate-800">
-          <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">Have a friend's code?</h2>
+          <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">{t('friends.haveCode')}</h2>
           <form onSubmit={handleJoin} className="flex flex-col sm:flex-row gap-3">
             <input
               className="flex-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3.5 text-center text-xl tracking-widest font-bold text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 shadow-inner"
@@ -130,10 +130,10 @@ export default function FriendsPage() {
               disabled={joining}
             />
             <button className="flex-1 sm:flex-none rounded-2xl bg-brand-yellow px-6 py-3.5 text-[15px] font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50" type="submit" disabled={joining || joinCode.replace(/-/g, '').length !== 8}>
-              {joining ? 'Adding...' : 'Add'}
+              {joining ? t('friends.adding') : t('friends.add')}
             </button>
           </form>
-          {joinError && <p className="text-red-500 text-sm font-bold mt-2">⚠ {joinError}</p>}
+          {joinError && <p className="text-red-500 text-sm font-bold mt-2">⚠ {t('friends.invalidCode')}</p>}
         </div>
 
         {activeInvite && (
@@ -142,7 +142,7 @@ export default function FriendsPage() {
                <QRCodeCanvas value={inviteLink} size={120} level={"M"} fgColor={"#0f172a"} />
             </div>
             <div className="flex-1 flex flex-col w-full text-center md:text-left">
-               <div className="text-sm font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-widest">{t('friends.yourLink', { defaultValue: 'YOUR UNIQUE INVITE' })}</div>
+               <div className="text-sm font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-widest">{t('friends.yourLink')}</div>
                <div className="text-4xl font-black font-mono tracking-wider text-slate-900 dark:text-brand-yellow mb-4 drop-shadow-sm">
                  {displayCode}
                </div>
@@ -168,7 +168,7 @@ export default function FriendsPage() {
                  </button>
                </div>
                <div className="text-xs text-slate-500 mt-3 font-medium">
-                  {t('friends.inviteHelp', { defaultValue: 'Code expires in 48 hours. Show QR or share code/link.' })}
+                  {t('friends.inviteHelp')}
                </div>
             </div>
           </div>
@@ -176,11 +176,11 @@ export default function FriendsPage() {
         {myFriends.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white dark:bg-slate-800/50 dark:border-slate-800 p-8 text-center shadow-sm relative overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-yellow via-brand-yellow to-brand-yellow animate-pulse" />
-             <h3 className="text-xl font-black text-slate-900 dark:text-white mb-3 mt-2">Level up together! 🚀</h3>
+             <h3 className="text-xl font-black text-slate-900 dark:text-white mb-3 mt-2">{t('friends.levelUp')}</h3>
              <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-sm mx-auto mb-6">
-                Playing is more fun with friends. Invite someone to see their live progress, cheer them on, and race them on the leaderboards!
+                {t('friends.levelUpDesc')}
              </p>
-             <div className="text-sm font-bold text-slate-400 uppercase tracking-wider">— {t('friends.empty', { defaultValue: "No friends yet" })} —</div>
+             <div className="text-sm font-bold text-slate-400 uppercase tracking-wider">— {t('friends.empty')} —</div>
           </div>
         ) : (
           myFriends.map(f => {
@@ -195,10 +195,10 @@ export default function FriendsPage() {
                   <div className={`h-3 w-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600'}`} />
                   <div>
                     <div className="font-bold text-slate-900 dark:text-white">
-                      {friendPlayer?.username || 'Unknown Player'}
+                      {friendPlayer?.username || t('friends.unknownPlayer')}
                     </div>
                     <div className="text-xs text-slate-500">
-                      Score: {Math.floor(friendPlayer?.bestScore ?? 0)}
+                      {t('friends.score')}: {Math.floor(friendPlayer?.bestScore ?? 0)}
                     </div>
                   </div>
                 </div>
@@ -211,7 +211,7 @@ export default function FriendsPage() {
                       }}
                       className="rounded-lg bg-red-100 dark:bg-red-900/40 px-3 py-1.5 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors"
                     >
-                      {t('friends.confirm', { defaultValue: 'Confirm' })}
+                      {t('friends.confirm')}
                     </button>
                     <button 
                       onClick={() => setConfirmRemoveId(null)}
@@ -225,7 +225,7 @@ export default function FriendsPage() {
                     onClick={() => setConfirmRemoveId(f.id.toString())}
                     className="text-red-500 text-sm font-bold hover:text-red-600 transition-colors"
                   >
-                    {t('friends.remove', { defaultValue: 'Remove' })}
+                    {t('friends.remove')}
                   </button>
                 )}
               </div>

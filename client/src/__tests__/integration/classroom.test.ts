@@ -10,8 +10,8 @@ describe('classroom lifecycle', () => {
   beforeAll(async () => {
     [teacher, student] = await Promise.all([connect(), connect()]);
     await Promise.all([
-      teacher.conn.reducers.register({ username: 'teacher_a' }),
-      student.conn.reducers.register({ username: 'student_a' }),
+      teacher.conn.reducers.register({ username: 'teacher_a', playerType: { tag: 'Solo' }, email: undefined }),
+      student.conn.reducers.register({ username: 'student_a', playerType: { tag: 'Solo' }, email: undefined }),
     ]);
   }, 20_000);
 
@@ -106,14 +106,14 @@ describe.skip('transfer code', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'transfer_user' });
+    await client.conn.reducers.register({ username: 'transfer_user', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));
 
-  it('createTransferCode creates a 6-char code', async () => {
+  it('createRecoveryKey creates a 6-char code', async () => {
     const idHex = client.identity.toHexString();
-    await client.conn.reducers.createTransferCode({ token: 'dummy-token-abc' });
+    await client.conn.reducers.createRecoveryKey({ token: 'dummy-token-abc' });
 
     const code = await waitFor(() => {
       for (const tc of client.conn.db.transfer_codes.iter()) {
@@ -125,13 +125,13 @@ describe.skip('transfer code', () => {
     expect(code.code).toMatch(/^[A-Z0-9]+$/);
   });
 
-  it('useTransferCode removes the code from the table', async () => {
+  it('restoreAccount removes the code from the table', async () => {
     const idHex = client.identity.toHexString();
     const tc = [...client.conn.db.transfer_codes.iter()].find(
       c => c.owner.toHexString() === idHex
     )!;
 
-    await client.conn.reducers.useTransferCode({ code: tc.code });
+    await client.conn.reducers.restoreAccount({ code: tc.code });
 
     // After use the row should be gone
     const gone = await waitFor(() => {
@@ -150,7 +150,7 @@ describe.skip('recovery key', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'recovery_user' });
+    await client.conn.reducers.register({ username: 'recovery_user', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));

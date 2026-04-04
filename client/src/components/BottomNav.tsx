@@ -7,13 +7,12 @@ export type NavTab = 'lobby' | 'classrooms' | 'friends' | 'progress' | 'account'
 
 interface Props {
   active: Page;
-  onNavigate: (tab: NavTab) => void;
 }
 
 const tabs: { id: NavTab; labelKey: ParseKeys | string }[] = [
   { id: 'lobby',      labelKey: 'nav.home'     },
   { id: 'classrooms', labelKey: 'nav.classes'  },
-  { id: 'friends',    labelKey: 'Friends'      },
+  { id: 'friends',    labelKey: 'nav.friends'  },
   { id: 'progress',   labelKey: 'nav.progress' },
   { id: 'account',    labelKey: 'nav.account'  },
 ];
@@ -38,7 +37,7 @@ const renderIcon = (tabId: NavTab, isActive: boolean) => {
   }
 };
 
-export default function BottomNav({ active, onNavigate }: Props) {
+export default function BottomNav({ active }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -47,9 +46,9 @@ export default function BottomNav({ active, onNavigate }: Props) {
         {tabs.map(tab => {
           const isActive = active === tab.id;
           return (
-            <button
+            <a
               key={tab.id}
-              onClick={() => onNavigate(tab.id)}
+              href={tab.id === 'lobby' ? '/' : `/${tab.id}`}
               className={`group relative flex flex-1 flex-col items-center justify-end sm:justify-center gap-1.5 p-2 pt-3.5 sm:pt-2.5 sm:pb-2.5 transition-all duration-300 ease-out ${
                 isActive 
                   ? 'cursor-default text-slate-900 dark:text-white font-bold translate-y-[-2px]' 
@@ -67,7 +66,7 @@ export default function BottomNav({ active, onNavigate }: Props) {
               <span className="font-semibold text-[10px] tracking-tight uppercase">
                 {tab.id === 'lobby' ? '1UP' : tab.labelKey.includes('nav.') ? t(tab.labelKey as ParseKeys) : tab.labelKey}
               </span>
-            </button>
+            </a>
           );
         })}
       </div>

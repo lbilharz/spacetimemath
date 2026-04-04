@@ -13,7 +13,12 @@
     "student": "طالب",
     "you": "أنت",
     "code": "رمز",
-    "or": "أو"
+    "or": "أو",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "app": {
     "brand": "1UP",
@@ -40,7 +45,8 @@
     "restoreTimeout": "انتهت مهلة انتظار رد الخادم — حاول مرة أخرى",
     "newAccount": "حساب جديد",
     "restoreError": "المفتاح غير موجود - تحقق من مفتاح الاسترداد المكون من 12 حرفًا",
-    "footer": "SpaceTimeDB المهام موزونة حسب صعوبة المجتمع · مدعوم من"
+    "footer": "SpaceTimeDB المهام موزونة حسب صعوبة المجتمع · مدعوم من",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "متصل",
@@ -69,7 +75,9 @@
     "joining": "... جاري الانضمام",
     "join": "انضم ←",
     "masteryTitle": "شبكة الإتقان الخاصة بي",
-    "masteryDesc": "جدول الضرب الخاص بك في لمحة — اضغط على أي نتيجة لترى التفكير الصحيح لحلها."
+    "masteryDesc": "جدول الضرب الخاص بك في لمحة — اضغط على أي نتيجة لترى التفكير الصحيح لحلها.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 ثانية على الساعة",
@@ -121,7 +129,8 @@
     "scoringExplained": "كيف يتم حساب النقاط؟",
     "viewProgress": "عرض تقدمك",
     "problemsTitle": "المسائل في هذا السبرينت",
-    "maxStreak": "أقصى سلسلة"
+    "maxStreak": "أقصى سلسلة",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "الفصل الدراسي غير موجود",
@@ -163,7 +172,14 @@
     "printPopupBlocked": ".المنبثقة محجوزة — اسمح بالمنبثقات لهذا الموقع وحاول مرة أخرى",
     "printNoKeys": ".لا توجد بطاقات دخول متاحة — ربما لا يملك بعض الطلاب مفاتيح استرداد بعد",
     "showLoginCard": "QR عرض بطاقة دخول",
-    "studentLoginHint": ".مسح لتسجيل الدخول على أي جهاز — لا حاجة لكلمة مرور"
+    "studentLoginHint": ".مسح لتسجيل الدخول على أي جهاز — لا حاجة لكلمة مرور",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "جلسة {{count}}",
@@ -212,7 +228,8 @@
     "remindersHeading": "تذكيرات",
     "noReminders": "لا توجد تذكيرات نشطة. أضف واحداً للحفاظ على سلسلتك!",
     "daily": "كل يوم",
-    "weekly": "أيام محددة"
+    "weekly": "أيام محددة",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "!تم فتح مضاعف الرقمين",
@@ -243,13 +260,17 @@
     "home": "الرئيسية",
     "classes": "الفصول",
     "progress": "التقدم",
-    "account": "الحساب"
+    "account": "الحساب",
+    "friends": "الأصدقاء"
   },
   "classes": {
     "empty": "لا توجد فصول دراسية بعد",
     "emptyHint": ".انضم إلى فصل موجود أو أنشئ فصلاً خاصًا بك",
     "createError": "فشل إنشاء الفصل الدراسي",
-    "joinError": "الفصل الدراسي غير موجود"
+    "joinError": "الفصل الدراسي غير موجود",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "الجداول الموسعة",
@@ -268,7 +289,10 @@
   },
   "history": {
     "title": "📋 سجل السبرينت",
-    "noAnswers": ".لا توجد إجابات مسجلة"
+    "noAnswers": ".لا توجد إجابات مسجلة",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{difficulty}} :الصعوبة  {{answer}}={{b}}×{{a}}",
@@ -276,7 +300,8 @@
     "learning": "جاري التعلم",
     "struggling": "صعب",
     "untouched": "لم تتم تجربته",
-    "hardDiff": "صعب (أكبر من أو يساوي 1.5×)"
+    "hardDiff": "صعب (أكبر من أو يساوي 1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "ابدأ سبرينت الفصل",
@@ -317,7 +342,9 @@
       "slowest": "الزوج الأبطأ",
       "leaderboard": "منصة تتويج السبرينت",
       "correctShort": "تم"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "اختر مستوى البداية",
@@ -394,5 +421,32 @@
     "desc": "قام الذكاء الاصطناعي بتحليل جولاتك السريعة. إليك نقاط قوتك وما يجب أن تركز عليه لاحقًا.",
     "weakest": "الهدف التالي",
     "strongest": "أُتقنت"
+  },
+  "register_split": {
+    "teacher_btn": "معلم",
+    "student_btn": "الانضمام إلى فصل",
+    "solo_btn": "تدرب بمفردك",
+    "email_label": "البريد الإلكتروني",
+    "class_code_label": "رمز الفصل",
+    "consent_1": "أؤكد أنني معلم وأستخدم هذا لأغراض مدرسية.",
+    "consent_2": "أوافق على تخزين بريدي الإلكتروني لاسترداد الحساب.",
+    "recovery_nag_student": "تأكد من نسخ مفتاح الاسترداد الخاص بك! وإلا ستفقد تقدمك!"
+  },
+  "friends": {
+    "haveCode": "هل لديك رمز صديق؟",
+    "add": "إضافة",
+    "adding": "يتم الإضافة...",
+    "invalidCode": "رمز غير صالح",
+    "levelUp": "ارتقوا معاً! 🚀",
+    "levelUpDesc": "اللعب أكثر متعة مع الأصدقاء. قم بدعوة شخص ما لرؤية تقدمه المباشر، وشجعه، وسابقه على لوحة المتصدرين!",
+    "empty": "لا يوجد أصدقاء بعد",
+    "inviteActive": "الدعوة نشطة",
+    "createInvite": "إنشاء رابط دعوة",
+    "yourLink": "دعوتك المميزة",
+    "inviteHelp": "ينتهي الرمز خلال 48 ساعة. اعرض رمز الاستجابة أو شارك الرمز/الرابط.",
+    "remove": "إزالة",
+    "confirm": "تأكيد",
+    "score": "النقاط",
+    "unknownPlayer": "لاعب غير معروف"
   }
 }

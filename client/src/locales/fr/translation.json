@@ -13,7 +13,12 @@
     "student": "Élève",
     "you": "toi",
     "code": "code",
-    "or": "ou"
+    "or": "ou",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "app": {
     "brand": "1UP",
@@ -40,7 +45,8 @@
     "restoreTimeout": "Délai d'attente dépassé pour la réponse du serveur — réessaie",
     "newAccount": "Nouveau compte",
     "restoreError": "Clé introuvable — vérifie ta clé de récupération à 12 caractères",
-    "footer": "Les problèmes sont pondérés par la difficulté communautaire · propulsé par SpaceTimeDB"
+    "footer": "Les problèmes sont pondérés par la difficulté communautaire · propulsé par SpaceTimeDB",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "en ligne",
@@ -69,7 +75,9 @@
     "joining": "Jonction…",
     "join": "Rejoindre →",
     "masteryTitle": "Ma grille de maîtrise",
-    "masteryDesc": "Ta table de 1×1 en un coup d'œil — appuie sur un produit pour voir comment le calculer."
+    "masteryDesc": "Ta table de 1×1 en un coup d'œil — appuie sur un produit pour voir comment le calculer.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 secondes au compteur",
@@ -121,7 +129,8 @@
     "scoringExplained": "Comment est-ce noté ?",
     "viewProgress": "Voir ta progression",
     "problemsTitle": "Problèmes de ce sprint",
-    "maxStreak": "Série max"
+    "maxStreak": "Série max",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Classe introuvable",
@@ -163,7 +172,14 @@
     "printPopupBlocked": "Fenêtre bloquée — autorise les pop-ups pour ce site et réessaie.",
     "printNoKeys": "Aucune carte disponible — certains élèves n'ont peut-être pas encore de clé.",
     "showLoginCard": "Afficher la carte QR de connexion",
-    "studentLoginHint": "Scanne pour te connecter sur n'importe quel appareil — pas de mot de passe requis."
+    "studentLoginHint": "Scanne pour te connecter sur n'importe quel appareil — pas de mot de passe requis.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} session",
@@ -212,7 +228,8 @@
     "remindersHeading": "Rappels Push",
     "noReminders": "Aucun rappel actif. Ajoutez-en un pour garder votre série !",
     "daily": "Tous les jours",
-    "weekly": "Jours spécifiques"
+    "weekly": "Jours spécifiques",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "Multiplicateur à 2 chiffres débloqué !",
@@ -243,13 +260,17 @@
     "home": "Home",
     "classes": "Classes",
     "progress": "Progrès",
-    "account": "Compte"
+    "account": "Compte",
+    "friends": "Amis"
   },
   "classes": {
     "empty": "Pas encore de classes",
     "emptyHint": "Rejoins une classe existante ou crée la tienne.",
     "createError": "Échec de la création de la classe",
-    "joinError": "Classe introuvable"
+    "joinError": "Classe introuvable",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "Tables étendues",
@@ -268,7 +289,10 @@
   },
   "history": {
     "title": "📋 Historique des sprints",
-    "noAnswers": "Aucune réponse enregistrée."
+    "noAnswers": "Aucune réponse enregistrée.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  difficulté : {{difficulty}}",
@@ -276,7 +300,8 @@
     "learning": "en cours",
     "struggling": "difficile",
     "untouched": "non tenté",
-    "hardDiff": "dur (≥1.5×)"
+    "hardDiff": "dur (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Démarrer le sprint de classe",
@@ -317,7 +342,9 @@
       "slowest": "Paire la Plus Lente",
       "leaderboard": "Podium du Sprint",
       "correctShort": "FAIT"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "Choisis ton niveau de départ",
@@ -394,5 +421,32 @@
     "desc": "Notre IA a analysé tes sprints. Voici tes points forts et ce que tu devrais réviser.",
     "weakest": "Prochain Objectif",
     "strongest": "Maîtrisé"
+  },
+  "register_split": {
+    "teacher_btn": "Enseignant",
+    "student_btn": "Rejoindre une classe",
+    "solo_btn": "S'entraîner seul",
+    "email_label": "Adresse e-mail",
+    "class_code_label": "Code de classe",
+    "consent_1": "Je confirme être un enseignant et utiliser ceci à des fins scolaires.",
+    "consent_2": "Je consens à enregistrer mon e-mail pour la récupération de compte.",
+    "recovery_nag_student": "Assurez-vous de copier votre clé de récupération ! Sinon vous perdrez votre progression !"
+  },
+  "friends": {
+    "haveCode": "Avez-vous un code d'ami ?",
+    "add": "Ajouter",
+    "adding": "Ajout...",
+    "invalidCode": "Code invalide",
+    "levelUp": "Niveaux ensemble ! 🚀",
+    "levelUpDesc": "Jouer est plus amusant avec des amis. Invitez quelqu'un pour voir sa progression en direct, l'encourager et faites la course dans les classements !",
+    "empty": "Pas encore d'amis",
+    "inviteActive": "Invitation active",
+    "createInvite": "Créer un lien d'invitation",
+    "yourLink": "VOTRE INVITATION",
+    "inviteHelp": "Le code expire dans 48 heures. Montrez le QR ou partagez le code/lien.",
+    "remove": "Supprimer",
+    "confirm": "Confirmer",
+    "score": "Score",
+    "unknownPlayer": "Joueur inconnu"
   }
 }

@@ -53,7 +53,7 @@ describe('server-side sprint sequencing', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'seqtester' });
+    await client.conn.reducers.register({ username: 'seqtester', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));
@@ -102,7 +102,7 @@ describe('server-side sprint sequencing', () => {
         a: row.a,
         b: row.b,
         userAnswer: row.a * row.b,
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
         problemToken: row.token,
       });
     }
@@ -128,7 +128,7 @@ describe('server-side sprint sequencing', () => {
         a: row.a,
         b: row.b,
         userAnswer: row.a * row.b,
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
         problemToken: row.token,
       });
     }
@@ -185,7 +185,7 @@ describe('server-side sprint sequencing', () => {
       a: row.a,
       b: row.b,
       userAnswer: row.a * row.b,
-      responseMs: 800,
+      attempts: 1, responseMs: 800,
       problemToken: row.token,
     });
 
@@ -206,7 +206,7 @@ describe('server-side sprint sequencing', () => {
         a: row2.a,
         b: row2.b,
         userAnswer: row2.a * row2.b,
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
         problemToken: 'BADTOK',
       });
       await new Promise(r => setTimeout(r, 1_000));

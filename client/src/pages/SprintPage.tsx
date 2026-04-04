@@ -112,6 +112,7 @@ interface NumpadProps {
 const NUMPAD_KEYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, '←' as const, 0, 'OK' as const];
 
 const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
+  const { t } = useTranslation();
   return (
     <div className="w-full" style={{
       display: 'grid',
@@ -131,6 +132,7 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
               onKey(key);
             }}
             onClick={(e) => e.preventDefault()} // Suppress ghost clicks
+            aria-label={key === 'OK' ? t('common.submit', { defaultValue: 'Submit Answer' }) : key === '←' ? t('common.backspace', { defaultValue: 'Backspace' }) : `Number ${key}`}
             className={`select-none transition-all duration-75 active:scale-[0.92] ${isOk
                 ? 'text-slate-900 active:brightness-75'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white active:bg-slate-300 dark:active:bg-slate-600'
@@ -713,7 +715,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
               </div>
             </div>
           ) : feedback && !feedback.isTapPenalty ? (
-            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
+            <div aria-live="polite" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
               <div style={{
                 fontSize: 32, fontWeight: 800,
                 color: feedback.isCorrect ? '#5DD23C' : '#E8391D',
@@ -731,9 +733,17 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
           ) : (
             <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ textAlign: 'center', marginBottom: 'clamp(8px, 3vh, 24px)' }}>
-                <div style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 'clamp(0px, 1vh, 8px)', fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
-                <div className="text-[#2C3E50] dark:text-white" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
+                <div aria-hidden="true" style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 'clamp(0px, 1vh, 8px)', fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
+                <div aria-hidden="true" className="text-[#2C3E50] dark:text-white" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
                   {problem.a}&nbsp;×&nbsp;{problem.b}
+                </div>
+                {/* Immediate Screen Reader notification for new problem */}
+                <div aria-live="assertive" className="sr-only">
+                  {problem.a} × {problem.b}
+                </div>
+                {/* 10 seconds remaining polite warning */}
+                <div aria-live="polite" className="sr-only">
+                  {timeLeft === 10 ? '10 seconds left!' : ''}
                 </div>
               </div>
 
@@ -782,6 +792,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
                     <button
                       className="btn pressable"
                       type="submit"
+                      aria-label={t('common.submit', { defaultValue: 'Submit Answer' })}
                       style={{
                         padding: '0 24px', height: 66, borderRadius: 16,
                         background: 'var(--color-brand-yellow)',
@@ -847,10 +858,16 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
         alignItems: 'center', justifyContent: 'center',
         minHeight: '80vh', gap: 20, textAlign: 'center',
       }}>
-        <div className="text-sm text-muted fw-semibold" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        <div aria-hidden="true" className="text-sm text-muted fw-semibold" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           {t('sprint.getReady')}
         </div>
-        <div style={{
+        
+        {/* Screen Reader Only: Initial descriptive context before rapid sprint */}
+        <div className="sr-only" aria-live="polite">
+          {preCountdown === 0 ? t('sprint.go', { defaultValue: 'Go!' }) : t('sprint.getReady', { defaultValue: 'Get ready!' }) + ' ' + preCountdown}
+        </div>
+
+        <div aria-hidden="true" style={{
           fontSize: preCountdown === 0 ? 80 : 108,
           fontWeight: 900,
           color: preCountdown === 0 ? 'var(--accent)' : 'var(--text)',

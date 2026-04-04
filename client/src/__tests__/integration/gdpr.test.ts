@@ -10,7 +10,7 @@ describe('delete_player', () => {
 
     beforeAll(async () => {
       client = await connect();
-      await client.conn.reducers.register({ username: 'deleteme-1' });
+      await client.conn.reducers.register({ username: 'deleteme-1', playerType: { tag: 'Solo' }, email: undefined });
     }, 15_000);
 
     afterAll(() => {
@@ -47,7 +47,7 @@ describe('delete_player', () => {
 
     beforeAll(async () => {
       client = await connect();
-      await client.conn.reducers.register({ username: 'deleteme-2' });
+      await client.conn.reducers.register({ username: 'deleteme-2', playerType: { tag: 'Solo' }, email: undefined });
     }, 15_000);
 
     afterAll(() => {
@@ -94,7 +94,7 @@ describe('delete_player', () => {
 
     beforeAll(async () => {
       seqClient = await connect();
-      await seqClient.conn.reducers.register({ username: 'deleteme-seq' });
+      await seqClient.conn.reducers.register({ username: 'deleteme-seq', playerType: { tag: 'Solo' }, email: undefined });
     }, 15_000);
 
     afterAll(() => {
