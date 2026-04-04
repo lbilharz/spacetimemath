@@ -105,8 +105,19 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
         body: JSON.stringify({ email: email.trim(), identityHex: myIdentityHex })
       });
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Failed to send verification email");
+        let errorMsg = "Failed to send verification email";
+        try {
+          const errData = await res.json();
+          errorMsg = errData.error || errorMsg;
+        } catch {
+          if (res.status === 404) {
+            errorMsg = "API endpoint not found. On localhost, please use 'vercel dev' instead of 'npm run dev' to test email features.";
+          } else {
+            const text = await res.text().catch(() => '');
+            errorMsg = `Server returned ${res.status}: ${text || 'Unknown Error'}`;
+          }
+        }
+        throw new Error(errorMsg);
       }
       setVerifyStep(true);
       setSubmitting(false);

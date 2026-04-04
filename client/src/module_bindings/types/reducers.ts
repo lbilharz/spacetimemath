@@ -7,6 +7,7 @@ import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
 import AcceptFriendInviteReducer from "../accept_friend_invite_reducer";
+import AdminSetTeacherCodeReducer from "../admin_set_teacher_code_reducer";
 import CompleteOnboardingReducer from "../complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "../consume_restore_result_reducer";
 import CreateClassroomReducer from "../create_classroom_reducer";
@@ -18,6 +19,7 @@ import EndSessionReducer from "../end_session_reducer";
 import FocusStudentReducer from "../focus_student_reducer";
 import GetClassRecoveryCodesReducer from "../get_class_recovery_codes_reducer";
 import GetMyRecoveryCodeReducer from "../get_my_recovery_code_reducer";
+import GrantAdminToReducer from "../grant_admin_to_reducer";
 import IssueProblemReducer from "../issue_problem_reducer";
 import JoinClassAsStudentReducer from "../join_class_as_student_reducer";
 import JoinClassroomReducer from "../join_classroom_reducer";
@@ -54,9 +56,10 @@ import SyncKeystrokeReducer from "../sync_keystroke_reducer";
 import ToggleClassroomVisibilityReducer from "../toggle_classroom_visibility_reducer";
 import UpdateDktWeightsReducer from "../update_dkt_weights_reducer";
 import UpdateFriendAliasReducer from "../update_friend_alias_reducer";
-import UpgradeToTeacherReducer from "../upgrade_to_teacher_reducer";
+import VerifyTeacherUpgradeReducer from "../verify_teacher_upgrade_reducer";
 
 export type AcceptFriendInviteParams = __Infer<typeof AcceptFriendInviteReducer>;
+export type AdminSetTeacherCodeParams = __Infer<typeof AdminSetTeacherCodeReducer>;
 export type CompleteOnboardingParams = __Infer<typeof CompleteOnboardingReducer>;
 export type ConsumeRestoreResultParams = __Infer<typeof ConsumeRestoreResultReducer>;
 export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;
@@ -68,6 +71,7 @@ export type EndSessionParams = __Infer<typeof EndSessionReducer>;
 export type FocusStudentParams = __Infer<typeof FocusStudentReducer>;
 export type GetClassRecoveryCodesParams = __Infer<typeof GetClassRecoveryCodesReducer>;
 export type GetMyRecoveryCodeParams = __Infer<typeof GetMyRecoveryCodeReducer>;
+export type GrantAdminToParams = __Infer<typeof GrantAdminToReducer>;
 export type IssueProblemParams = __Infer<typeof IssueProblemReducer>;
 export type JoinClassAsStudentParams = __Infer<typeof JoinClassAsStudentReducer>;
 export type JoinClassroomParams = __Infer<typeof JoinClassroomReducer>;
@@ -104,5 +108,5 @@ export type SyncKeystrokeParams = __Infer<typeof SyncKeystrokeReducer>;
 export type ToggleClassroomVisibilityParams = __Infer<typeof ToggleClassroomVisibilityReducer>;
 export type UpdateDktWeightsParams = __Infer<typeof UpdateDktWeightsReducer>;
 export type UpdateFriendAliasParams = __Infer<typeof UpdateFriendAliasReducer>;
-export type UpgradeToTeacherParams = __Infer<typeof UpgradeToTeacherReducer>;
+export type VerifyTeacherUpgradeParams = __Infer<typeof VerifyTeacherUpgradeReducer>;
 
