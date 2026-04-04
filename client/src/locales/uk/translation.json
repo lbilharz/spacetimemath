@@ -13,7 +13,12 @@
     "student": "Учень",
     "you": "ти",
     "code": "код",
-    "or": "або"
+    "or": "або",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "app": {
     "brand": "1UP",
@@ -40,7 +45,8 @@
     "restoreTimeout": "Перевищено час очікування відповіді сервера — спробуй ще раз",
     "newAccount": "Новий акаунт",
     "restoreError": "Ключ не знайдено — перевір свій 12-значний ключ відновлення",
-    "footer": "Завдання зважені за складністю спільноти · працює на SpaceTimeDB"
+    "footer": "Завдання зважені за складністю спільноти · працює на SpaceTimeDB",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "онлайн",
@@ -69,7 +75,9 @@
     "joining": "Приєднання…",
     "join": "Приєднатися →",
     "masteryTitle": "Моя таблиця знань",
-    "masteryDesc": "Ваша таблиця множення як на долоні — натисніть на будь-який результат, щоб дізнатися логіку обчислення."
+    "masteryDesc": "Ваша таблиця множення як на долоні — натисніть на будь-який результат, щоб дізнатися логіку обчислення.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 секунд на годиннику",
@@ -121,7 +129,8 @@
     "scoringExplained": "Як нараховуються бали?",
     "viewProgress": "Переглянути прогрес",
     "problemsTitle": "Приклади цього спринту",
-    "maxStreak": "Макс. серія"
+    "maxStreak": "Макс. серія",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Клас не знайдено",
@@ -163,7 +172,14 @@
     "printPopupBlocked": "Спливаюче вікно заблоковано — дозвольте спливаючі вікна для цього сайту та спробуйте ще раз.",
     "printNoKeys": "Картки входу недоступні — можливо, деякі учні ще не мають ключів відновлення.",
     "showLoginCard": "Показати QR-картку входу",
-    "studentLoginHint": "Відскануйте, щоб увійти на будь-якому пристрої — пароль не потрібен."
+    "studentLoginHint": "Відскануйте, щоб увійти на будь-якому пристрої — пароль не потрібен.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} сесія",
@@ -212,7 +228,8 @@
     "remindersHeading": "Нагадування",
     "noReminders": "Немає активних нагадувань. Додайте одне, щоб зберегти свою серію!",
     "daily": "Кожен день",
-    "weekly": "Окремі дні"
+    "weekly": "Окремі дні",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "Розблоковано 2-значний множник!",
@@ -243,13 +260,17 @@
     "home": "Головна",
     "classes": "Класи",
     "progress": "Прогрес",
-    "account": "Акаунт"
+    "account": "Акаунт",
+    "friends": "Друзі"
   },
   "classes": {
     "empty": "Класи поки відсутні",
     "emptyHint": "Приєднуйся до існуючого класу або створи власний.",
     "createError": "Не вдалося створити клас",
-    "joinError": "Клас не знайдено"
+    "joinError": "Клас не знайдено",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "Розширена таблиця",
@@ -268,7 +289,10 @@
   },
   "history": {
     "title": "📋 Історія спринтів",
-    "noAnswers": "Відповідей не записано."
+    "noAnswers": "Відповідей не записано.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  складність: {{difficulty}}",
@@ -276,7 +300,8 @@
     "learning": "вивчаю",
     "struggling": "важко",
     "untouched": "не пробував",
-    "hardDiff": "важко (≥1.5×)"
+    "hardDiff": "важко (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Почати спринт класу",
@@ -317,7 +342,9 @@
       "slowest": "Найповільніша Пара",
       "leaderboard": "Спринт Подіум",
       "correctShort": "ГОТОВО"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "Обери свій стартовий рівень",
@@ -394,5 +421,32 @@
     "desc": "Наш ШІ проаналізував твої спринти. Ось де ти на висоті, і над чим варто попрацювати далі.",
     "weakest": "Наступна Ціль",
     "strongest": "Опановано"
+  },
+  "register_split": {
+    "teacher_btn": "Вчитель",
+    "student_btn": "Приєднатися до класу",
+    "solo_btn": "Попрактикуватися самостійно",
+    "email_label": "Електронна адреса",
+    "class_code_label": "Код класу",
+    "consent_1": "Я підтверджую, що є вчителем і використовую це для шкільних цілей.",
+    "consent_2": "Я даю згоду на збереження електронної пошти для відновлення облікового запису.",
+    "recovery_nag_student": "Обов'язково скопіюйте ваш ключ відновлення! Інакше ви втратите свій прогрес!"
+  },
+  "friends": {
+    "haveCode": "Є код друга?",
+    "add": "Додати",
+    "adding": "Додавання...",
+    "invalidCode": "Недійсний код",
+    "levelUp": "Рівні разом! 🚀",
+    "levelUpDesc": "Грати веселіше з друзями. Запросіть когось, щоб побачити їх прогрес, підтримайте їх та змагайтеся в таблиці лідерів!",
+    "empty": "Ще немає друзів",
+    "inviteActive": "Запрошення активне",
+    "createInvite": "Створити посилання",
+    "yourLink": "ВАШЕ ЗАПРОШЕННЯ",
+    "inviteHelp": "Код діє 48 годин. Покажіть QR або поділіться кодом/посиланням.",
+    "remove": "Видалити",
+    "confirm": "Підтвердити",
+    "score": "Рахунок",
+    "unknownPlayer": "Невідомий Гравець"
   }
 }

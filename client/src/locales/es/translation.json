@@ -13,7 +13,12 @@
     "student": "Estudiante",
     "you": "tú",
     "code": "código",
-    "or": "o"
+    "or": "o",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "days": {
     "mo": "Lu",
@@ -49,7 +54,8 @@
     "restoreTimeout": "Tiempo de espera del servidor agotado, inténtalo de nuevo",
     "newAccount": "Cuenta nueva",
     "restoreError": "Clave no encontrada, comprueba la clave de 12 caracteres",
-    "footer": "Problemas ponderados por la dificultad de la comunidad · Desarrollado por SpaceTimeDB"
+    "footer": "Problemas ponderados por la dificultad de la comunidad · Desarrollado por SpaceTimeDB",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "en línea",
@@ -78,7 +84,9 @@
     "joining": "Uniéndose...",
     "join": "Unirse →",
     "masteryTitle": "Mi matriz de dominio",
-    "masteryDesc": "Tus tablas de multiplicar de un vistazo: toca cualquier problema para ver cómo calcular el resultado."
+    "masteryDesc": "Tus tablas de multiplicar de un vistazo: toca cualquier problema para ver cómo calcular el resultado.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "El reloj es de 60 segundos",
@@ -130,7 +138,8 @@
     "backToLobby": "Volver al Lobby",
     "scoringExplained": "¿Cómo se puntúa esto?",
     "viewProgress": "Ver progreso",
-    "problemsTitle": "Problemas en este sprint"
+    "problemsTitle": "Problemas en este sprint",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Clase no encontrada",
@@ -172,7 +181,14 @@
     "printPopupBlocked": "Ventana emergente bloqueada: permite las ventanas.",
     "printNoKeys": "No hay tarjetas de entrada disponibles.",
     "showLoginCard": "Mostrar tarjeta QR de entrada",
-    "studentLoginHint": "Escanéala para iniciar sesión sin contraseñas."
+    "studentLoginHint": "Escanéala para iniciar sesión sin contraseñas.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} sesión",
@@ -221,7 +237,8 @@
     "remindersHeading": "Recordatorios Push",
     "noReminders": "Sin recordatorios.",
     "daily": "Cada día",
-    "weekly": "Días concretos"
+    "weekly": "Días concretos",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "¡Multiplicador de 10 abierto!",
@@ -252,13 +269,17 @@
     "home": "Inicio",
     "classes": "Clases",
     "progress": "Progreso",
-    "account": "Cuenta"
+    "account": "Cuenta",
+    "friends": "Amigos"
   },
   "classes": {
     "empty": "Ninguna clase aún",
     "emptyHint": "Únete a una clase existente.",
     "createError": "Fallo al crear la clase",
-    "joinError": "Clase no encontrada"
+    "joinError": "Clase no encontrada",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "Tablas extendidas",
@@ -277,7 +298,10 @@
   },
   "history": {
     "title": "📋 Historial",
-    "noAnswers": "No se registraron respuestas."
+    "noAnswers": "No se registraron respuestas.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "dificultad: {{difficulty}}",
@@ -285,7 +309,8 @@
     "learning": "aprendiendo",
     "struggling": "con dificultad",
     "untouched": "no tocado",
-    "hardDiff": "difícil"
+    "hardDiff": "difícil",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Iniciar sprint de clase",
@@ -327,7 +352,8 @@
       "slowest": "Operación Lenta",
       "leaderboard": "Podio del Sprint",
       "correctShort": "OK"
-    }
+    },
+    "stillRunning": "Still Running"
   },
   "tierPicker": {
     "cardTitle": "Selecciona tu Nivel",
@@ -395,5 +421,32 @@
     "desc": "Nuestra IA ha analizado tus sprints. Aquí ves dónde destacas y en qué debes enfocarte.",
     "weakest": "Próximo Objetivo",
     "strongest": "Dominado"
+  },
+  "register_split": {
+    "teacher_btn": "Profesor",
+    "student_btn": "Unirse a una clase",
+    "solo_btn": "Practicar por mi cuenta",
+    "email_label": "Correo electrónico",
+    "class_code_label": "Código de clase",
+    "consent_1": "Confirmo que soy profesor y utilizo esto con fines escolares.",
+    "consent_2": "Doy mi consentimiento para guardar mi correo electrónico para la recuperación de la cuenta.",
+    "recovery_nag_student": "¡Asegúrate de copiar tu Clave de Recuperación! ¡De lo contrario perderás tu progreso!"
+  },
+  "friends": {
+    "haveCode": "¿Tienes un código de un amigo?",
+    "add": "Agregar",
+    "adding": "Agregando...",
+    "invalidCode": "Código inválido",
+    "levelUp": "¡Subir de nivel juntos! 🚀",
+    "levelUpDesc": "Jugar es más divertido con amigos. ¡Invita a alguien para ver su progreso en vivo, animalo y compite en las tablas de clasificación!",
+    "empty": "Aún no hay amigos",
+    "inviteActive": "Invitación activa",
+    "createInvite": "Crear enlace de invitación",
+    "yourLink": "TU INVITACIÓN",
+    "inviteHelp": "El código caduca en 48 horas. Muestra el QR o comparte el código/enlace.",
+    "remove": "Eliminar",
+    "confirm": "Confirmar",
+    "score": "Puntos",
+    "unknownPlayer": "Jugador Desconocido"
   }
 }

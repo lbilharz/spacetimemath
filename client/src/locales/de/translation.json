@@ -13,7 +13,12 @@
     "student": "Lernende",
     "you": "du",
     "code": "Code",
-    "or": "oder"
+    "or": "oder",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "days": {
     "mo": "Mo",
@@ -49,7 +54,8 @@
     "restoreTimeout": "Zeitüberschreitung – bitte erneut versuchen",
     "newAccount": "Neues Konto",
     "restoreError": "Schlüssel nicht gefunden – überprüfe deinen 12-stelligen Wiederherstellungsschlüssel",
-    "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB"
+    "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB",
+    "friendInviteBanner": "Friend Invite"
   },
   "register_split": {
     "teacher_btn": "Lehrkraft",
@@ -88,7 +94,9 @@
     "joining": "Tritt bei…",
     "join": "Beitreten →",
     "masteryTitle": "Meine Lernübersicht",
-    "masteryDesc": "Dein Einmaleins auf einen Blick — tippe ein Ergebnis, um den Rechenweg zu sehen."
+    "masteryDesc": "Dein Einmaleins auf einen Blick — tippe ein Ergebnis, um den Rechenweg zu sehen.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "60 Sekunden auf der Uhr",
@@ -140,7 +148,8 @@
     "backToLobby": "Zurück zur Lobby",
     "scoringExplained": "Wie wird gewertet?",
     "viewProgress": "Fortschritt ansehen",
-    "problemsTitle": "Aufgaben in diesem Sprint"
+    "problemsTitle": "Aufgaben in diesem Sprint",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Klasse nicht gefunden",
@@ -182,7 +191,14 @@
     "printPopupBlocked": "Popup blockiert – erlauben Sie Popups für diese Seite und versuchen Sie es erneut.",
     "printNoKeys": "Keine Login-Karten verfügbar – womöglich haben noch nicht alle einen Wiederherstellungsschlüssel.",
     "showLoginCard": "Login-QR-Karte zeigen",
-    "studentLoginHint": "Scannen zum Einloggen auf jedem Gerät — kein Passwort nötig."
+    "studentLoginHint": "Scannen zum Einloggen auf jedem Gerät — kein Passwort nötig.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} Sprint",
@@ -231,7 +247,8 @@
     "remindersHeading": "Push-Erinnerungen",
     "noReminders": "Keine aktiven Erinnerungen. Füge eine hinzu, um dranzubleiben!",
     "daily": "Jeden Tag",
-    "weekly": "Bestimmte Tage"
+    "weekly": "Bestimmte Tage",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",
@@ -262,13 +279,17 @@
     "home": "Home",
     "classes": "Klassen",
     "progress": "Fortschritt",
-    "account": "Konto"
+    "account": "Konto",
+    "friends": "Freunde"
   },
   "classes": {
     "empty": "Noch keine Klassen",
     "emptyHint": "Tritt einer bestehenden Klasse bei oder erstelle eine eigene.",
     "createError": "Klassenraum konnte nicht erstellt werden",
-    "joinError": "Klassenraum nicht gefunden"
+    "joinError": "Klassenraum nicht gefunden",
+    "areYouTeacher": "Bist du Lehrer/in?",
+    "upgradePrompt": "Upgrade dein Konto, um Klassenräume zu erstellen",
+    "upgradeDesc": "Führe ein kostenloses Upgrade für dein Konto durch, um Schüler zu verwalten und Klassensprints zu starten."
   },
   "extendedTables": {
     "title": "Erweiterte Tabellen",
@@ -287,7 +308,10 @@
   },
   "history": {
     "title": "📋 Sprint-Verlauf",
-    "noAnswers": "Keine Antworten aufgezeichnet."
+    "noAnswers": "Keine Antworten aufgezeichnet.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  Schwierigkeit: {{difficulty}}",
@@ -295,7 +319,8 @@
     "learning": "lernend",
     "struggling": "schwierig",
     "untouched": "unversucht",
-    "hardDiff": "schwer (≥1.5×)"
+    "hardDiff": "schwer (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Klassen-Sprint starten",
@@ -336,7 +361,9 @@
       "slowest": "Langsamstes Paar",
       "leaderboard": "Sprint-Podium",
       "correctShort": "FERTIG"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "Wähle dein Startlevel",
@@ -389,10 +416,6 @@
     "allUnlocked": "Alle Tabellen freigeschaltet! 🎉"
   },
   "dkt": {
-    "title": "Deine Lern-Analyse",
-    "desc": "Unsere KI hat alle deine Sprints ausgewertet. Hier siehst du, wo du glänzt und was du direkt üben solltest.",
-    "weakest": "Dein nächstes Ziel",
-    "strongest": "Perfekt gemeistert",
     "0": "Rechnen mit 0 (×0) — Jede Zahl mal Null ist immer Null.",
     "1": "Rechnen mit 1 (×1) — Jede Zahl mal Eins bleibt genau sie selbst.",
     "2": "Zweier-Reihe (×2) — Das ist wie Plusrechnen: einfach verdoppeln.",
@@ -403,6 +426,27 @@
     "7": "Tauschaufgaben — Verstehen, dass 4×5 das Gleiche ist wie 5×4.",
     "8": "Schwere Kernaufgaben — Die kniffligsten Aufgaben (wie 6×7, 6×8, 7×8).",
     "9": "Große Zehner (×20) — Multiplizieren mit großen Zehnerzahlen wie 20.",
-    "10": "Große Einmaleins-Basics — Rechnen mit Zahlen über 10 (z.B. 15×8)."
+    "10": "Große Einmaleins-Basics — Rechnen mit Zahlen über 10 (z.B. 15×8).",
+    "title": "Deine Lern-Analyse",
+    "desc": "Unsere KI hat alle deine Sprints ausgewertet. Hier siehst du, wo du glänzt und was du direkt üben solltest.",
+    "weakest": "Dein nächstes Ziel",
+    "strongest": "Perfekt gemeistert"
+  },
+  "friends": {
+    "haveCode": "Hast du den Code eines Freundes?",
+    "add": "Hinzufügen",
+    "adding": "Wird hinzugefügt...",
+    "invalidCode": "Ungültiger Code",
+    "levelUp": "Gemeinsam aufsteigen! 🚀",
+    "levelUpDesc": "Es macht mehr Spaß, mit Freunden zu spielen. Lade jemanden ein, um seinen Live-Fortschritt zu sehen, feuere ihn an und trete auf der Bestenliste gegen ihn an!",
+    "empty": "Noch keine Freunde",
+    "inviteActive": "Einladung aktiv",
+    "createInvite": "Einladungslink erstellen",
+    "yourLink": "DEIN PERSÖNLICHER LINK",
+    "inviteHelp": "Code läuft in 48 Stunden ab. QR-Code zeigen oder Code/Link teilen.",
+    "remove": "Entfernen",
+    "confirm": "Bestätigen",
+    "score": "Punkte",
+    "unknownPlayer": "Unbekannter Spieler"
   }
 }

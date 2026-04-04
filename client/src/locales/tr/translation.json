@@ -13,7 +13,12 @@
     "student": "Öğrenci",
     "you": "sen",
     "code": "kod",
-    "or": "veya"
+    "or": "veya",
+    "add": "Add",
+    "return": "Return",
+    "heat": "Heat",
+    "submit": "Submit",
+    "backspace": "Backspace"
   },
   "app": {
     "brand": "1UP",
@@ -40,7 +45,8 @@
     "restoreTimeout": "Sunucu yanıtı için zaman aşımı — tekrar dene",
     "newAccount": "Yeni hesap",
     "restoreError": "Anahtar bulunamadı — 12 karakterlik kurtarma anahtarını kontrol et",
-    "footer": "Problemler topluluk zorluğuna göre ağırlıklandırılmıştır · SpaceTimeDB tarafından desteklenmektedir"
+    "footer": "Problemler topluluk zorluğuna göre ağırlıklandırılmıştır · SpaceTimeDB tarafından desteklenmektedir",
+    "friendInviteBanner": "Friend Invite"
   },
   "lobby": {
     "online": "çevrimiçi",
@@ -69,7 +75,9 @@
     "joining": "Katılınıyor…",
     "join": "Katıl →",
     "masteryTitle": "Ustalık Tablom",
-    "masteryDesc": "1×1 tablon bir bakışta — sonucunu nasıl düşüneceğini görmek için herhangi bir işleme dokun."
+    "masteryDesc": "1×1 tablon bir bakışta — sonucunu nasıl düşüneceğini görmek için herhangi bir işleme dokun.",
+    "networkLeaderboard": "Network Leaderboard",
+    "sessions": "Sessions"
   },
   "onboarding": {
     "card1Title": "Saat 60 saniye",
@@ -121,7 +129,8 @@
     "scoringExplained": "Bu nasıl puanlanıyor?",
     "viewProgress": "Gelişimini gör",
     "problemsTitle": "Bu sprintteki problemler",
-    "maxStreak": "Maks. Seri"
+    "maxStreak": "Maks. Seri",
+    "score": "Score"
   },
   "classroom": {
     "notFound": "Sınıf bulunamadı",
@@ -163,7 +172,14 @@
     "printPopupBlocked": "Açılır pencere engellendi — bu site için açılır pencerelere izin verip tekrar dene.",
     "printNoKeys": "Giriş kartı mevcut değil — bazı öğrencilerin henüz kurtarma anahtarı olmayabilir.",
     "showLoginCard": "Giriş QR kartını göster",
-    "studentLoginHint": "Herhangi bir cihazda giriş yapmak için okut — şifre gerekmez."
+    "studentLoginHint": "Herhangi bir cihazda giriş yapmak için okut — şifre gerekmez.",
+    "members": "Members",
+    "classMasteryDesc": "Class Mastery",
+    "waitingForStudentState": "Waiting for Student State",
+    "liveObserver": "Live Observer",
+    "actionLog": "Action Log",
+    "noActionsYet": "No Actions Yet",
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} oturum",
@@ -212,7 +228,8 @@
     "remindersHeading": "Bildirimler",
     "noReminders": "Aktif hatırlatıcı yok. Serini sürdürmek için bir tane ekle!",
     "daily": "Her gün",
-    "weekly": "Belirli günler"
+    "weekly": "Belirli günler",
+    "sessions": "Sessions"
   },
   "unlock": {
     "tier1Title": "2 Basamaklı Çarpan Açıldı!",
@@ -243,13 +260,17 @@
     "home": "Ana Sayfa",
     "classes": "Sınıflar",
     "progress": "Gelişim",
-    "account": "Hesap"
+    "account": "Hesap",
+    "friends": "Arkadaşlar"
   },
   "classes": {
     "empty": "Henüz sınıf yok",
     "emptyHint": "Mevcut bir sınıfa katıl veya kendi sınıfını oluştur.",
     "createError": "Sınıf oluşturulamadı",
-    "joinError": "Sınıf bulunamadı"
+    "joinError": "Sınıf bulunamadı",
+    "areYouTeacher": "Are you a teacher?",
+    "upgradePrompt": "Upgrade your account to create classrooms",
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
   },
   "extendedTables": {
     "title": "Genişletilmiş Tablolar",
@@ -268,7 +289,10 @@
   },
   "history": {
     "title": "📋 Sprint Geçmişi",
-    "noAnswers": "Kayıtlı cevap yok."
+    "noAnswers": "Kayıtlı cevap yok.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "streak": "Streak"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  zorluk: {{difficulty}}",
@@ -276,7 +300,8 @@
     "learning": "öğreniyor",
     "struggling": "zorlanıyor",
     "untouched": "denenmedi",
-    "hardDiff": "zor (≥1.5×)"
+    "hardDiff": "zor (≥1.5×)",
+    "correctOfLast": "Correct of Last"
   },
   "classSprint": {
     "start": "Sınıf sprinti başlat",
@@ -317,7 +342,9 @@
       "slowest": "En Yavaş Çift",
       "leaderboard": "Sprint Podyumu",
       "correctShort": "TAMAM"
-    }
+    },
+    "stillRunning": "Still Running",
+    "colStreak": "Streak"
   },
   "tierPicker": {
     "cardTitle": "Başlangıç Seviyeni Seç",
@@ -394,5 +421,32 @@
     "desc": "Yapay zekamız tüm sprintlerini analiz etti. İşte mükemmel olduğun ve geliştirmen gereken yerler.",
     "weakest": "Sıradaki Hedef",
     "strongest": "Uzmanlaşıldı"
+  },
+  "register_split": {
+    "teacher_btn": "Öğretmen",
+    "student_btn": "Bir Sınıfa Katıl",
+    "solo_btn": "Kendi Başına Pratik Yap",
+    "email_label": "E-posta Adresi",
+    "class_code_label": "Sınıf Kodu",
+    "consent_1": "Öğretmen olduğumu ve bunu okul amaçlı kullandığımı onaylıyorum.",
+    "consent_2": "Hesap kurtarma için e-postamın saklanmasını kabul ediyorum.",
+    "recovery_nag_student": "Kurtarma Anahtarınızı kopyaladığınızdan emin olun! Aksi takdirde ilerlemenizi kaybedersiniz!"
+  },
+  "friends": {
+    "haveCode": "Arkadaşının kodu mu var?",
+    "add": "Ekle",
+    "adding": "Ekleniyor...",
+    "invalidCode": "Geçersiz kod",
+    "levelUp": "Birlikte seviye atlayın! 🚀",
+    "levelUpDesc": "Oynamak arkadaşlarla daha eğlenceli. Birini canlı ilerlemesini görmek için davet edin, tezahürat yapın ve onlarla liderlik panosunda yarışın!",
+    "empty": "Henüz arkadaş yok",
+    "inviteActive": "Davet Aktif",
+    "createInvite": "Davet Linki Oluştur",
+    "yourLink": "SENİN DAVETİYEN",
+    "inviteHelp": "Kod 48 saat içinde sona erer. QR göster ya da kod/link paylaş.",
+    "remove": "Sil",
+    "confirm": "Onayla",
+    "score": "Skor",
+    "unknownPlayer": "Bilinmeyen Oyuncu"
   }
 }
