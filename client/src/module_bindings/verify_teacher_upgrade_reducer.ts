@@ -11,7 +11,10 @@ import {
 } from "spacetimedb";
 
 export default {
+  email: __t.string(),
   code: __t.string(),
+  signature: __t.string(),
+  expiresAtMs: __t.u64(),
   gdprConsent: __t.bool(),
   teacherDeclaration: __t.bool(),
 };

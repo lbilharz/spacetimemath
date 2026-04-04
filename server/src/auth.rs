@@ -1,4 +1,7 @@
 use spacetimedb::{table, reducer, ReducerContext, Table};
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
+type HmacSha256 = Hmac<Sha256>;
 use crate::{Player, OnlinePlayer, BestScore, get_player, MAX_TIER, PlayerType};
 use crate::{players, online_players, best_scores, classrooms};
 
@@ -169,6 +172,13 @@ pub fn grant_admin_to(ctx: &ReducerContext, target: spacetimedb::Identity) -> Re
     Ok(())
 }
 
+#[table(accessor = teacher_secrets)]
+pub struct TeacherSecret {
+    #[primary_key]
+    pub id: u32,
+    pub secret: String,
+}
+
 #[table(accessor = teacher_verification_codes)]
 pub struct TeacherVerificationCode {
     #[primary_key]
@@ -178,50 +188,64 @@ pub struct TeacherVerificationCode {
 }
 
 #[reducer]
-pub fn admin_set_teacher_code(ctx: &ReducerContext, target: spacetimedb::Identity, email: String, code: String) -> Result<(), String> {
+pub fn admin_set_hmac_secret(ctx: &ReducerContext, secret: String) -> Result<(), String> {
     if ctx.db.server_admins().identity().find(ctx.sender()).is_none() {
         return Err("Not authorized".into());
     }
-    if code.len() != 6 {
-        return Err("Code must be 6 characters".into());
+    // Only id 0 will be used to store the single active secret
+    match ctx.db.teacher_secrets().id().find(0) {
+        Some(_) => { ctx.db.teacher_secrets().id().update(TeacherSecret { id: 0, secret }); }
+        None => { ctx.db.teacher_secrets().insert(TeacherSecret { id: 0, secret }); }
     }
-    
-    // Clear any existing verification code for this user before inserting new one
-    ctx.db.teacher_verification_codes().identity().delete(target);
-    ctx.db.teacher_verification_codes().insert(TeacherVerificationCode {
-        identity: target,
-        email,
-        code,
-    });
     Ok(())
 }
 
-/// Upgrade a Solo player to a Teacher using an emailed verification code.
+/// Upgrade a Solo player to a Teacher using a signed verification code.
 #[reducer]
-pub fn verify_teacher_upgrade(ctx: &ReducerContext, code: String, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
+pub fn verify_teacher_upgrade(ctx: &ReducerContext, email: String, code: String, signature: String, expires_at_ms: u64, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
     if !gdpr_consent || !teacher_declaration {
         return Err("Must provide all required consents.".into());
     }
     
+    // 1. Replay & expiration protection
+    let now_ms = (ctx.timestamp.to_micros_since_unix_epoch() / 1000) as u64;
+    if now_ms > expires_at_ms {
+        return Err("Verification code has expired. Please request a new one.".into());
+    }
+
     let player = get_player(ctx)?;
     if player.player_type == PlayerType::Student {
         return Err("Students cannot upgrade to Teachers.".into());
     }
     
-    let record = ctx.db.teacher_verification_codes().identity().find(ctx.sender())
-        .ok_or("No verification code requested.")?;
-        
-    if record.code != code.trim() {
-        return Err("Invalid verification code".into());
+    // 2. Fetch shared secret (with fallback)
+    let secret_str = ctx.db.teacher_secrets().id().find(0)
+        .map(|s| s.secret)
+        .unwrap_or_else(|| "STM_FALLBACK_HMAC_SECRET".to_string());
+    
+    // 3. Reconstruct payload exactly as Vercel signed it: identity + email + code + expires_at_ms
+    let mut identity_hex = ctx.sender().to_hex().to_string();
+    if !identity_hex.starts_with("0x") {
+        identity_hex = format!("0x{}", identity_hex);
+    }
+    let payload = format!("{}{}{}{}", identity_hex, email.trim(), code.trim(), expires_at_ms);
+
+    // 4. Verify HMAC
+    let mut mac = HmacSha256::new_from_slice(secret_str.as_bytes())
+        .map_err(|_| "Invalid HMAC key representation".to_string())?;
+    mac.update(payload.as_bytes());
+    let expected_sig = hex::encode(mac.finalize().into_bytes());
+
+    if signature.trim().to_lowercase() != expected_sig.to_lowercase() {
+        return Err("Invalid or tampered verification code signature.".into());
     }
     
+    // 5. Apply Upgrade
     ctx.db.players().identity().update(Player {
         player_type: PlayerType::Teacher,
-        email: Some(record.email.clone()),
+        email: Some(email),
         ..player
     });
-    
-    ctx.db.teacher_verification_codes().identity().delete(ctx.sender());
     
     Ok(())
 }

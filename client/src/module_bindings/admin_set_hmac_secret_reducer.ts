@@ -11,7 +11,5 @@ import {
 } from "spacetimedb";
 
 export default {
-  target: __t.identity(),
-  email: __t.string(),
-  code: __t.string(),
+  secret: __t.string(),
 };

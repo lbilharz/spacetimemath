@@ -34,6 +34,8 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [verifyStep, setVerifyStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
+  const [hmacSignature, setHmacSignature] = useState('');
+  const [expiresAtMs, setExpiresAtMs] = useState<number>(0);
 
   const [showRestore, setShowRestore] = useState(false);
   const [code, setCode] = useState('');
@@ -129,6 +131,10 @@ export default function RegisterPage({ onRegistered }: Props) {
            return;
          }
          
+         const data = await res.json();
+         setHmacSignature(data.signature);
+         setExpiresAtMs(data.expiresAt);
+         
          setVerifyStep(true);
          setLoading(false);
          return; // Wait for verification before finishing!
@@ -182,7 +188,10 @@ export default function RegisterPage({ onRegistered }: Props) {
     setError('');
     try {
       await verifyTeacherUpgrade({ 
+          email: email.trim(),
           code: verificationCode.trim(), 
+          signature: hmacSignature,
+          expiresAtMs: BigInt(expiresAtMs),
           gdprConsent: true, 
           teacherDeclaration: true 
       });

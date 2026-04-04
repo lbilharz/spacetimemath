@@ -37,6 +37,7 @@ platform :ios do
     deliver(
       skip_binary_upload: true,
       skip_screenshots:   false,
+      overwrite_screenshots: true,
       skip_metadata:      false,
       force:              true,
       submit_for_review:  false
@@ -49,6 +50,7 @@ platform :ios do
     deliver(
       skip_binary_upload: true,
       skip_screenshots:   false,
+      overwrite_screenshots: true,
       skip_metadata:      false,
       force:              true,
       submit_for_review:  false
