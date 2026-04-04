@@ -6,7 +6,7 @@ describe('online_players presence', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'presence_tester' });
+    await client.conn.reducers.register({ username: 'presence_tester', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));

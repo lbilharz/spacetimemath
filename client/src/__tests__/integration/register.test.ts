@@ -6,7 +6,7 @@ describe('register reducer', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'reg_tester' });
+    await client.conn.reducers.register({ username: 'reg_tester', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));
@@ -35,7 +35,7 @@ describe('register reducer', () => {
   });
 
   it('calling register again updates the username (idempotent identity)', async () => {
-    await client.conn.reducers.register({ username: 'reg_tester_v2' });
+    await client.conn.reducers.register({ username: 'reg_tester_v2', playerType: { tag: 'Solo' }, email: undefined });
 
     const idHex = client.identity.toHexString();
     const player = await waitFor(() => {

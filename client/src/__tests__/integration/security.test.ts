@@ -20,9 +20,9 @@ describe('SEC-01 & SEC-02: recovery_keys and transfer_codes are private tables',
   beforeAll(async () => {
     // clientA registers and creates sensitive rows
     [clientA, clientB] = await Promise.all([connect(), connect()]);
-    await clientA.conn.reducers.register({ username: 'sec_01_owner' });
+    await clientA.conn.reducers.register({ username: 'sec_01_owner', playerType: { tag: 'Solo' }, email: undefined });
     await clientA.conn.reducers.createRecoveryKey({ token: 'test-token-sec01' });
-    await clientA.conn.reducers.createTransferCode({ token: 'test-token-sec02' });
+    await clientA.conn.reducers.createRecoveryKey({ token: 'test-token-sec02' });
     // Give the server a moment to process before clientB snapshot is checked
     await new Promise(r => setTimeout(r, 500));
   }, 30_000);
@@ -68,7 +68,7 @@ describe('SEC-03: getMyRecoveryCode reducer returns own code via result table', 
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'sec_03_player' });
+    await client.conn.reducers.register({ username: 'sec_03_player', playerType: { tag: 'Solo' }, email: undefined });
     await client.conn.reducers.createRecoveryKey({ token: 'test-token-sec03' });
   }, 20_000);
 
@@ -98,7 +98,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'sec_04_player' });
+    await client.conn.reducers.register({ username: 'sec_04_player', playerType: { tag: 'Solo' }, email: undefined });
     await client.conn.reducers.startSession({});
 
     // Wait for the session row to appear
@@ -131,7 +131,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
           a,
           b,
           userAnswer: a * b,
-          responseMs: 800,
+          attempts: 1, responseMs: 800,
         });
       } catch {
         // Some submissions may fail before cap is implemented — that's fine
@@ -145,12 +145,12 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
         a: 2,
         b: 3,
         userAnswer: 6,
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
       })
     ).rejects.toThrow();
   });
 
-  it('SEC-05: submit_answer with responseMs=100 (below 200ms floor) is rejected', async () => {
+  it('SEC-05: submit_answer with attempts: 1, responseMs=100 (below 200ms floor) is rejected', async () => {
     // Start a fresh session for this test to avoid interference from SEC-04
     await client.conn.reducers.startSession({});
     const idHex = client.identity.toHexString();
@@ -167,7 +167,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
         a: 2,
         b: 3,
         userAnswer: 6,
-        responseMs: 100, // below MIN_RESPONSE_MS = 200
+        attempts: 1, responseMs: 100, // below MIN_RESPONSE_MS = 200
       })
     ).rejects.toThrow();
   });
@@ -190,7 +190,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
         a: 7,
         b: 8,
         userAnswer: 56,
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
       })
     ).rejects.toThrow();
   });
@@ -203,7 +203,7 @@ describe('SEC-07: use_transfer_code with a non-existent code returns an error', 
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'sec_07_player' });
+    await client.conn.reducers.register({ username: 'sec_07_player', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));
@@ -211,7 +211,7 @@ describe('SEC-07: use_transfer_code with a non-existent code returns an error', 
   it('SEC-07: using a non-existent transfer code string returns an error', async () => {
     // 'XXXXXX' is an invalid code — should not silently no-op after Plan 04 ships.
     await expect(
-      client.conn.reducers.useTransferCode({ code: 'XXXXXX' })
+      client.conn.reducers.restoreAccount({ code: 'XXXXXX' })
     ).rejects.toThrow();
   });
 });
@@ -230,7 +230,7 @@ describe('SEC-08: register rejects usernames with invalid characters', () => {
   it('SEC-08: register with a username containing a null byte is rejected', async () => {
      
     await expect(
-      client.conn.reducers.register({ username: 'bad\u0000name' })
+      client.conn.reducers.register({ username: 'bad\u0000name', playerType: { tag: 'Solo' }, email: undefined })
     ).rejects.toThrow();
   });
 });
@@ -242,7 +242,7 @@ describe('SEC-09: transfer code TTL expiry', () => {
     'SEC-09: transfer code TTL expiry — manual verification only',
     () => {
       // Scheduled reducer fires after 10 minutes. Verify manually:
-      // 1. Create a transfer code via AccountPage or createTransferCode reducer.
+      // 1. Create a transfer code via AccountPage or createRecoveryKey reducer.
       // 2. Wait 10+ minutes.
       // 3. Confirm the row is absent in the SpacetimeDB dashboard (spacetimemath DB).
       // Automated testing of a time-based TTL requires time injection which is not
@@ -261,7 +261,7 @@ describe('SEC-10: submit_answer requires a valid problem token', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'sec_10_player' });
+    await client.conn.reducers.register({ username: 'sec_10_player', playerType: { tag: 'Solo' }, email: undefined });
     await client.conn.reducers.startSession({});
 
     const idHex = client.identity.toHexString();
@@ -286,7 +286,7 @@ describe('SEC-10: submit_answer requires a valid problem token', () => {
         a: 2,
         b: 3,
         userAnswer: 6,
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
         problemToken: 'INVALID', // not a server-issued token
       })
     ).rejects.toThrow();

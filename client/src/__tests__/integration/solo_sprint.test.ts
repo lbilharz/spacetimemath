@@ -8,10 +8,10 @@ import { connect, waitFor, disconnect, type ConnectedClient } from '../helpers.j
  * 4 correct answers, 0 wrong answers.
  */
 const ANSWERS = [
-  { a: 2, b: 2,  userAnswer: 4,  responseMs: 800 },
-  { a: 1, b: 2,  userAnswer: 2,  responseMs: 750 },
-  { a: 1, b: 10, userAnswer: 10, responseMs: 900 },
-  { a: 2, b: 10, userAnswer: 20, responseMs: 850 },
+  { a: 2, b: 2,  userAnswer: 4,  attempts: 1, responseMs: 800 },
+  { a: 1, b: 2,  userAnswer: 2,  attempts: 1, responseMs: 750 },
+  { a: 1, b: 10, userAnswer: 10, attempts: 1, responseMs: 900 },
+  { a: 2, b: 10, userAnswer: 20, attempts: 1, responseMs: 850 },
 ];
 
 /**
@@ -24,7 +24,7 @@ async function getNextProblemToken(
 ): Promise<{ a: number; b: number; token: string }> {
   // Capture current token to detect when a fresh result arrives
   let before: string | undefined;
-  for (const r of (client.conn.db as any).next_problem_results.iter()) {
+  for (const r of (client.conn.db as any).next_problem_results_v2.iter()) {
     if (r.owner.toHexString() === client.identity.toHexString()) {
       before = r.token;
       break;
@@ -34,7 +34,7 @@ async function getNextProblemToken(
   await client.conn.reducers.nextProblem({ sessionId });
 
   const result = await waitFor(() => {
-    for (const r of (client.conn.db as any).next_problem_results.iter()) {
+    for (const r of (client.conn.db as any).next_problem_results_v2.iter()) {
       if (r.owner.toHexString() === client.identity.toHexString()) {
         if (r.token !== before) return r; // fresh result
       }
@@ -49,7 +49,7 @@ describe('solo sprint (start → submit → end)', () => {
 
   beforeAll(async () => {
     client = await connect();
-    await client.conn.reducers.register({ username: 'sprinter' });
+    await client.conn.reducers.register({ username: 'sprinter', playerType: { tag: 'Solo' }, email: undefined });
   }, 15_000);
 
   afterAll(() => disconnect(client.conn));
@@ -84,7 +84,7 @@ describe('solo sprint (start → submit → end)', () => {
         a,
         b,
         userAnswer: a * b, // always correct
-        responseMs: 800,
+        attempts: 1, responseMs: 800,
         problemToken: token,
       });
     }
@@ -107,7 +107,7 @@ describe('solo sprint (start → submit → end)', () => {
     // Normal sprint path: get a server-picked pair and submit the wrong answer
     const { a, b, token } = await getNextProblemToken(client, sessionId);
     const wrongAnswer = (a * b) + 1; // definitely wrong
-    await client.conn.reducers.submitAnswer({ sessionId, a, b, userAnswer: wrongAnswer, responseMs: 1000, problemToken: token });
+    await client.conn.reducers.submitAnswer({ sessionId, a, b, userAnswer: wrongAnswer, attempts: 1, responseMs: 1000, problemToken: token });
 
     const wrong = await waitFor(() => {
       for (const ans of client.conn.db.answers.iter()) {

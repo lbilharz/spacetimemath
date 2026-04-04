@@ -33,7 +33,7 @@ async function issueAndSubmit(
 ): Promise<void> {
   await client.conn.reducers.issueProblem({ sessionId, a, b });
   const result = await waitFor(() => {
-    for (const r of client.conn.db.issued_problem_results.iter()) {
+    for (const r of client.conn.db.issued_problem_results_v2.iter()) {
       if (r.owner.toHexString() === client.identity.toHexString()) return r;
     }
   }, 5_000);
@@ -42,6 +42,7 @@ async function issueAndSubmit(
     a,
     b,
     userAnswer: a * b,
+    attempts: 1,
     responseMs,
     problemToken: result.token,
   });
@@ -55,8 +56,8 @@ describe('class sprint scoring', () => {
   beforeAll(async () => {
     [teacher, student] = await Promise.all([connect(), connect()]);
     await Promise.all([
-      teacher.conn.reducers.register({ username: 'scoring_teacher' }),
-      student.conn.reducers.register({ username: 'scoring_student' }),
+      teacher.conn.reducers.register({ username: 'scoring_teacher', playerType: { tag: 'Solo' }, email: undefined }),
+      student.conn.reducers.register({ username: 'scoring_student', playerType: { tag: 'Solo' }, email: undefined }),
     ]);
 
     // Teacher creates classroom
