@@ -108,6 +108,16 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
     );
     for (let b = 1; b <= 10; b++) {
       let mastery = getMasteryFromTensor(dktWeights, a, b);
+      
+      // Fallback: If DKT is missing/uncomputed (often the case locally or on first sprint), evaluate answers manually
+      if (mastery === 'untouched' && answers && answers.length > 0) {
+        const pairAns = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
+        if (pairAns.length > 0) {
+          const override = getSessionMastery(pairAns[pairAns.length - 1]);
+          if (override) mastery = override;
+        }
+      }
+
       const key = a * 100 + b;
       const isHighlighted = sessionKeys.has(key);
       const isSelected = selected?.a === a && selected?.b === b;
@@ -175,6 +185,15 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
       );
       for (let b = 1; b <= 10; b++) {
         let mastery = getMasteryFromTensor(dktWeights, a, b);
+
+        if (mastery === 'untouched' && answers && answers.length > 0) {
+          const pairAns = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
+          if (pairAns.length > 0) {
+            const override = getSessionMastery(pairAns[pairAns.length - 1]);
+            if (override) mastery = override;
+          }
+        }
+
         const key = a * 100 + b;
         const isHighlighted = sessionKeys.has(key);
         const isSelected = selected?.a === a && selected?.b === b;
