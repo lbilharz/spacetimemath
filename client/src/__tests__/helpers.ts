@@ -26,6 +26,8 @@ const ALL_TABLES = [
   'SELECT * FROM my_player_dkt_weights',
   'SELECT * FROM my_recovery_code_results',
   'SELECT * FROM my_restore_results',
+  'SELECT * FROM my_friendships',
+  'SELECT * FROM my_friend_invites',
   'SELECT * FROM my_class_recovery_results',
   'SELECT * FROM my_classroom_sessions',
   'SELECT * FROM my_classroom_answers',
