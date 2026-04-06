@@ -161,6 +161,35 @@ export const ResultsIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+export const InviteLinkIcon = ({ className }: { className?: string }) => (
+  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+    {/* Left ring */}
+    <rect x="6"  y="6"  width="26" height="26" rx="6" fill="var(--icon-blue)" opacity="0.5"/>
+    <rect x="6"  y="37" width="26" height="26" rx="6" fill="var(--icon-blue)"/>
+    <rect x="6"  y="68" width="26" height="26" rx="6" fill="var(--icon-blue)" opacity="0.5"/>
+    {/* Chain bridge */}
+    <rect x="37" y="37" width="26" height="26" rx="6" fill="var(--icon-yellow)"/>
+    {/* Right ring */}
+    <rect x="68" y="6"  width="26" height="26" rx="6" fill="var(--icon-green)" opacity="0.5"/>
+    <rect x="68" y="37" width="26" height="26" rx="6" fill="var(--icon-green)"/>
+    <rect x="68" y="68" width="26" height="26" rx="6" fill="var(--icon-green)" opacity="0.5"/>
+  </svg>
+);
+
+export const CodeIcon = ({ className }: { className?: string }) => (
+  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+    {/* 3×2 keypad grid */}
+    <rect x="6"  y="20" width="26" height="26" rx="6" fill="var(--icon-blue)"/>
+    <rect x="37" y="20" width="26" height="26" rx="6" fill="var(--icon-red)"/>
+    <rect x="68" y="20" width="26" height="26" rx="6" fill="var(--icon-yellow)"/>
+    <rect x="6"  y="54" width="26" height="26" rx="6" fill="var(--icon-green)"/>
+    <rect x="37" y="54" width="26" height="26" rx="6" fill="var(--icon-blue)"/>
+    <rect x="68" y="54" width="26" height="26" rx="6" fill="var(--icon-red)"/>
+  </svg>
+);
+
 export const FriendsIcon = ({ className }: { className?: string }) => (
   <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
     <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
