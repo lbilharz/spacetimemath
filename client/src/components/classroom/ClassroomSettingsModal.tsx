@@ -50,6 +50,13 @@ export default function ClassroomSettingsModal({
   const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
   const getClassRecoveryCodes = useSTDBReducer(reducers.getClassRecoveryCodes);
 
+  // Always fetch fresh recovery codes when the settings modal opens.
+  // class_recovery_results is a point-in-time snapshot that can go stale
+  // if a student regenerates their key between teacher views.
+  useEffect(() => {
+    getClassRecoveryCodes({ classroomId }).catch(() => {/* ignore — non-teachers will 403 */});
+  }, [classroomId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [togglingVis, setTogglingVis] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
