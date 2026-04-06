@@ -16,8 +16,8 @@ interface Props {
 
 export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }: Props) {
   const { t } = useTranslation();
-  const [sessions]      = useTable(tables.sessions);
-  const [answers]       = useTable(tables.answers);
+  const [sessions]      = useTable(tables.my_classroom_sessions);
+  const [answers]       = useTable(tables.my_classroom_answers);
   const [classSprints]  = useTable(tables.class_sprints);
   const [classrooms]    = useTable(tables.classrooms);
   const [players]       = useTable(tables.players);

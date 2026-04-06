@@ -86,7 +86,9 @@ export default function App() {
         try { localStorage.setItem('_joinedViaClassroom', '1'); } catch { /* noop */ }
       }
       
-      if (slug.startsWith('/classrooms') || slug.startsWith('/classroom')) {
+      if (slug.includes('restore=')) {
+        navigate('register' as Page, undefined, slug);
+      } else if (slug.startsWith('/classrooms') || slug.startsWith('/classroom')) {
         navigate('classrooms' as Page, undefined, slug);
       } else if (slug.startsWith('/account')) {
         navigate('account' as Page, undefined, slug);

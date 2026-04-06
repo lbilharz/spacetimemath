@@ -149,6 +149,12 @@ export const LegacyScoreBackup = __t.object("LegacyScoreBackup", {
 });
 export type LegacyScoreBackup = __Infer<typeof LegacyScoreBackup>;
 
+export const MyEmailResult = __t.object("MyEmailResult", {
+  owner: __t.identity(),
+  email: __t.option(__t.string()),
+});
+export type MyEmailResult = __Infer<typeof MyEmailResult>;
+
 export const NextProblemResult = __t.object("NextProblemResult", {
   owner: __t.identity(),
   sessionId: __t.u64(),
@@ -204,6 +210,13 @@ export const PlayerDktWeights = __t.object("PlayerDktWeights", {
   lastUpdatedTimestamp: __t.u64(),
 });
 export type PlayerDktWeights = __Infer<typeof PlayerDktWeights>;
+
+export const PlayerSecret = __t.object("PlayerSecret", {
+  identity: __t.identity(),
+  email: __t.option(__t.string()),
+  recoveryEmailed: __t.bool(),
+});
+export type PlayerSecret = __Infer<typeof PlayerSecret>;
 
 // The tagged union or sum type for the algebraic type `PlayerType`.
 export const PlayerType = __t.enum("PlayerType", {

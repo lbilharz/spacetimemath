@@ -27,7 +27,7 @@ export default function StudentObserverModal({
   isDiagnostic
 }: Props) {
   const { t } = useTranslation();
-  const [studentKeystrokes] = useTable(tables.student_keystrokes);
+  const [studentKeystrokes] = useTable(tables.my_classroom_keystrokes);
   const focusStudent = useSTDBReducer(reducers.focusStudent);
   const [lastPressedKey, setLastPressedKey] = useState<string | null>(null);
 

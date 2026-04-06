@@ -173,8 +173,8 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const { t } = useTranslation();
   const { isActive } = useSpacetimeDB();
   const hwLatency = useInteractionLatency();
-  const [sessions] = useTable(tables.sessions);
-  const [allAnswers] = useTable(tables.answers);
+  const [sessions] = useTable(tables.my_sessions);
+  const [allAnswers] = useTable(tables.my_answers);
   const [problemStats] = useTable(tables.problem_stats);
   const [players] = useTable(tables.players);
   const [classSprints] = useTable(tables.class_sprints);
@@ -201,9 +201,9 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const nextProblem = useSTDBReducer(reducers.nextProblem);
 
   // SEC-10: Read back the server-issued problem token (diagnostic sprint)
-  const [issuedProblemResults] = useTable(tables.issued_problem_results_v2);
+  const [issuedProblemResults] = useTable(tables.my_issued_problem_results_v2);
   // Server-driven problem delivery (normal sprint)
-  const [nextProblemResults] = useTable(tables.next_problem_results_v2);
+  const [nextProblemResults] = useTable(tables.my_next_problem_results_v2);
 
   // My answers (all-time — used for mastery-based problem selection)
   const myAnswers = useMemo(
@@ -235,7 +235,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // Track last consumed problem token to prevent re-consuming same problem on WS reconnect
   const lastConsumedTokenRef = useRef<string | null>(null);
 
-  const [teacherFocus] = useTable(tables.teacher_focus);
+  const [teacherFocus] = useTable(tables.my_teacher_focus);
   const syncKeystroke = useSTDBReducer(reducers.syncKeystroke);
 
   const amIFocused = Array.from(teacherFocus as unknown as any[]).some(f => f.focusedStudentId.toHexString() === myIdentityHex);

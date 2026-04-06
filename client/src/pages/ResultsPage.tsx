@@ -42,8 +42,8 @@ function TierUnlockCelebration({ tier, onContinue }: { tier: number, onContinue:
 export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTier = 0, extendedMode = false, newlyUnlockedTier, onNextSprint }: Props) {
   const { t } = useTranslation();
   const [showCelebration, setShowCelebration] = useState(newlyUnlockedTier !== undefined);
-  const [sessions] = useTable(tables.sessions);
-  const [allAnswers] = useTable(tables.answers);
+  const [sessions] = useTable(tables.my_sessions);
+  const [allAnswers] = useTable(tables.my_answers);
   const [problemStats] = useTable(tables.problem_stats);
   const session = sessions.find(s => s.id === sessionId);
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex);

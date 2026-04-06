@@ -11,7 +11,7 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  owner: __t.identity().primaryKey(),
-  token: __t.string(),
-  promptMode: __t.u8().name("prompt_mode"),
+  playerIdentity: __t.identity().name("player_identity"),
+  kcMastery: __t.array(__t.f32()).name("kc_mastery"),
+  lastUpdatedTimestamp: __t.u64().name("last_updated_timestamp"),
 });

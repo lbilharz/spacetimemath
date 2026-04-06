@@ -1,0 +1,158 @@
+use spacetimedb::{Table, ViewContext};
+use crate::*;
+
+/// =========================================
+/// PLAYER VIEWS
+/// Explicitly scoped to the caller's Identity
+/// =========================================
+
+#[spacetimedb::view(accessor = my_sessions, public)]
+pub fn my_sessions(ctx: &ViewContext) -> Vec<Session> {
+    let sender = ctx.sender();
+    ctx.db.sessions().player_identity().filter(&sender).collect()
+}
+
+#[spacetimedb::view(accessor = my_answers, public)]
+pub fn my_answers(ctx: &ViewContext) -> Vec<Answer> {
+    let sender = ctx.sender();
+    ctx.db.answers().player_identity().filter(&sender).collect()
+}
+
+#[spacetimedb::view(accessor = my_student_keystrokes, public)]
+pub fn my_student_keystrokes(ctx: &ViewContext) -> Vec<StudentKeystroke> {
+    ctx.db.student_keystrokes().student_id().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_email_results, public)]
+pub fn my_email_results(ctx: &ViewContext) -> Vec<MyEmailResult> {
+    ctx.db.email_results().owner().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_teacher_focus, public)]
+pub fn my_teacher_focus(ctx: &ViewContext) -> Vec<TeacherFocus> {
+    let mut results = Vec::new();
+    let sender = ctx.sender();
+    if let Some(tf) = ctx.db.teacher_focus().teacher_id().find(sender) {
+        results.push(tf);
+    }
+    results.extend(ctx.db.teacher_focus().focused_student_id().filter(&sender));
+    // Remove duplicates if the teacher somehow focused themselves
+    results.dedup_by_key(|tf| tf.teacher_id);
+    results
+}
+
+#[spacetimedb::view(accessor = my_recovery_code_results, public)]
+pub fn my_recovery_code_results(ctx: &ViewContext) -> Vec<RecoveryCodeResult> {
+    ctx.db.recovery_code_results().owner().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_restore_results, public)]
+pub fn my_restore_results(ctx: &ViewContext) -> Vec<RestoreResult> {
+    ctx.db.restore_results().caller().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_issued_problem_results, public)]
+pub fn my_issued_problem_results(ctx: &ViewContext) -> Vec<IssuedProblemResult> {
+    ctx.db.issued_problem_results().owner().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_issued_problem_results_v2, public)]
+pub fn my_issued_problem_results_v2(ctx: &ViewContext) -> Vec<IssuedProblemResultV2> {
+    ctx.db.issued_problem_results_v2().owner().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_next_problem_results, public)]
+pub fn my_next_problem_results(ctx: &ViewContext) -> Vec<NextProblemResult> {
+    ctx.db.next_problem_results().owner().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_next_problem_results_v2, public)]
+pub fn my_next_problem_results_v2(ctx: &ViewContext) -> Vec<NextProblemResultV2> {
+    ctx.db.next_problem_results_v2().owner().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_unlock_logs, public)]
+pub fn my_unlock_logs(ctx: &ViewContext) -> Vec<UnlockLog> {
+    let sender = ctx.sender();
+    ctx.db.unlock_logs().player_identity().filter(&sender).collect()
+}
+
+#[spacetimedb::view(accessor = my_player_dkt_weights, public)]
+pub fn my_player_dkt_weights(ctx: &ViewContext) -> Vec<PlayerDktWeights> {
+    ctx.db.player_dkt_weights().player_identity().find(ctx.sender()).into_iter().collect()
+}
+
+#[spacetimedb::view(accessor = my_class_recovery_results, public)]
+pub fn my_class_recovery_results(ctx: &ViewContext) -> Vec<ClassRecoveryResult> {
+    let sender = ctx.sender();
+    ctx.db.class_recovery_results().teacher_identity().filter(&sender).collect()
+}
+
+/// =========================================
+/// TEACHER DASHBOARD VIEWS
+/// 3-hop joins resolving: Teacher -> ClassSprint -> Session -> Data
+/// =========================================
+
+#[spacetimedb::view(accessor = my_classroom_sessions, public)]
+pub fn my_classroom_sessions(ctx: &ViewContext) -> Vec<Session> {
+    let mut visible_sessions = Vec::new();
+    let sender = ctx.sender();
+    
+    // Authorization: ALL sprints owned by the caller (active and historical)
+    // Security Acceptance Note: Exposing full historical sprint data to the teacher 
+    // is an intentional, accepted educational boundary (Finding 4). It is required 
+    // for post-sprint and all-time student trend analytics.
+    let owned_sprints = ctx.db.class_sprints().teacher().filter(&sender);
+
+    for sprint in owned_sprints {
+        // Defense in depth: Solo sessions have class_sprint_id = 0
+        if sprint.id == 0 { continue; } 
+        
+        visible_sessions.extend(
+             ctx.db.sessions().class_sprint_id().filter(&sprint.id)
+        );
+    }
+    visible_sessions
+}
+
+#[spacetimedb::view(accessor = my_classroom_answers, public)]
+pub fn my_classroom_answers(ctx: &ViewContext) -> Vec<Answer> {
+    let mut visible_answers = Vec::new();
+    let sender = ctx.sender();
+    // Security Acceptance Note: This view queries ALL answers across ALL historical sprints.
+    // While a live sprint causes this to re-evaluate frequently, BTree indexing and filter() arrays
+    // constrain execution. Performance bounds are documented as accepted risk (Finding 3), mitigating 
+    // the complexity of maintaining separate historical and live scopes.
+    let owned_sprints = ctx.db.class_sprints().teacher().filter(&sender);
+
+    for sprint in owned_sprints {
+        if sprint.id == 0 { continue; }
+        for session in ctx.db.sessions().class_sprint_id().filter(&sprint.id) {
+            visible_answers.extend(
+                ctx.db.answers().session_id().filter(&session.id)
+            );
+        }
+    }
+    visible_answers
+}
+
+#[spacetimedb::view(accessor = my_classroom_keystrokes, public)]
+pub fn my_classroom_keystrokes(ctx: &ViewContext) -> Vec<StudentKeystroke> {
+    let mut visible_keystrokes = Vec::new();
+    let sender = ctx.sender();
+    
+    // Keystrokes are highly transient; we strictly limit iteration to active sprints
+    // to prevent unnecessary scans over historical rosters.
+    let active_sprints = ctx.db.class_sprints().teacher().filter(&sender)
+         .filter(|s| s.is_active); 
+
+    for sprint in active_sprints {
+        if sprint.id == 0 { continue; }
+        for session in ctx.db.sessions().class_sprint_id().filter(&sprint.id) {
+            if let Some(keystroke) = ctx.db.student_keystrokes().student_id().find(session.player_identity) {
+                visible_keystrokes.push(keystroke);
+            }
+        }
+    }
+    visible_keystrokes
+}

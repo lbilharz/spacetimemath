@@ -2,8 +2,8 @@ use spacetimedb::{table, reducer, ReducerContext, Table};
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 type HmacSha256 = Hmac<Sha256>;
-use crate::{Player, OnlinePlayer, BestScore, get_player, MAX_TIER, PlayerType};
-use crate::{players, online_players, best_scores, classrooms};
+use crate::{Player, PlayerSecret, OnlinePlayer, BestScore, get_player, MAX_TIER, PlayerType};
+use crate::{players, player_secrets, online_players, best_scores, classrooms};
 
 /// Validate a username for length, control characters, and Unicode script (SEC-08).
 /// Allows Latin, Latin-1 Supplement, Latin Extended-A/B (covers EU languages).
@@ -31,13 +31,13 @@ pub fn register(ctx: &ReducerContext, username: String, player_type: PlayerType,
     
     let sender = ctx.sender();
     if let Some(existing) = ctx.db.players().identity().find(sender) {
-        ctx.db.players().identity().update(Player { username: name.clone(), player_type: player_type.clone(), email: email.clone(), ..existing });
+        ctx.db.players().identity().update(Player { username: name.clone(), player_type: player_type.clone(), email: None, ..existing });
     } else {
         ctx.db.players().insert(Player {
             identity: sender,
             player_type: player_type.clone(),
             class_id: None,
-            email: email.clone(),
+            email: None,
             username: name.clone(),
             best_score: 0.0,
             total_sessions: 0,
@@ -49,6 +49,14 @@ pub fn register(ctx: &ReducerContext, username: String, player_type: PlayerType,
             extended_mode: false,
             extended_level: 0,
         });
+    }
+    
+    // Store email securely in the isolated private table
+    if let Some(e) = email {
+        match ctx.db.player_secrets().identity().find(sender) {
+            Some(existing) => { ctx.db.player_secrets().identity().update(PlayerSecret { email: Some(e), ..existing }); }
+            None => { ctx.db.player_secrets().insert(PlayerSecret { identity: sender, email: Some(e), recovery_emailed: false }); }
+        }
     }
     // Keep online_players in sync (user may have connected before registering)
     if let Some(op) = ctx.db.online_players().identity().find(sender) {
@@ -151,6 +159,10 @@ pub fn restore_player_full(
 #[reducer]
 pub fn mark_recovery_emailed(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
+    match ctx.db.player_secrets().identity().find(ctx.sender()) {
+        Some(existing) => { ctx.db.player_secrets().identity().update(PlayerSecret { recovery_emailed: true, ..existing }); }
+        None => { ctx.db.player_secrets().insert(PlayerSecret { identity: ctx.sender(), email: None, recovery_emailed: true }); }
+    }
     ctx.db.players().identity().update(Player { recovery_emailed: true, ..player });
     Ok(())
 }
@@ -189,7 +201,10 @@ pub struct TeacherVerificationCode {
 
 #[reducer]
 pub fn admin_set_hmac_secret(ctx: &ReducerContext, secret: String) -> Result<(), String> {
-    if ctx.db.server_admins().identity().find(ctx.sender()).is_none() {
+    // Allow bootstrap: if no secret is set yet, anyone can set it once.
+    // After that, only server admins can update it.
+    let secret_exists = ctx.db.teacher_secrets().id().find(0).is_some();
+    if secret_exists && ctx.db.server_admins().identity().find(ctx.sender()).is_none() {
         return Err("Not authorized".into());
     }
     // Only id 0 will be used to store the single active secret
@@ -243,9 +258,15 @@ pub fn verify_teacher_upgrade(ctx: &ReducerContext, email: String, code: String,
     // 5. Apply Upgrade
     ctx.db.players().identity().update(Player {
         player_type: PlayerType::Teacher,
-        email: Some(email),
+        email: None,
         ..player
     });
+    
+    // Store email privately
+    match ctx.db.player_secrets().identity().find(ctx.sender()) {
+        Some(existing) => { ctx.db.player_secrets().identity().update(PlayerSecret { email: Some(email), ..existing }); }
+        None => { ctx.db.player_secrets().insert(PlayerSecret { identity: ctx.sender(), email: Some(email), recovery_emailed: false }); }
+    }
     
     Ok(())
 }

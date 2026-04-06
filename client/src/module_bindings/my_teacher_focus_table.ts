@@ -11,9 +11,6 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  memberIdentity: __t.identity().primaryKey().name("member_identity"),
-  teacherIdentity: __t.identity().name("teacher_identity"),
-  classroomId: __t.u64().name("classroom_id"),
-  username: __t.string(),
-  code: __t.string(),
+  teacherId: __t.identity().name("teacher_id"),
+  focusedStudentId: __t.identity().name("focused_student_id"),
 });

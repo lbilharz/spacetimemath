@@ -7,6 +7,7 @@ mod security;
 mod gdpr;
 pub mod generator;
 mod friends;
+mod views;
 
 // Re-export scheduled reducers so the `scheduled(...)` macro in #[table] attributes can find them.
 pub use classroom::auto_end_class_sprint;
@@ -59,6 +60,26 @@ pub struct Player {
     pub email: Option<String>,
 }
 
+/// PRIVATE table holding sensitive PII (emails).
+/// This prevents emails from syncing to clients connected to the workspace.
+#[table(accessor = player_secrets)]
+pub struct PlayerSecret {
+    #[primary_key]
+    pub identity: Identity,
+    #[default(None::<String>)]
+    pub email: Option<String>,
+    #[default(false)]
+    pub recovery_emailed: bool,
+}
+
+/// Exception to View-Based Access: Renamed from my_email_results. Now private.
+#[table(accessor = email_results)]
+pub struct MyEmailResult {
+    #[primary_key]
+    pub owner: Identity,
+    pub email: Option<String>,
+}
+
 #[table(accessor = friendships, public)]
 pub struct Friendship {
     #[primary_key]
@@ -84,12 +105,13 @@ pub struct FriendInvite {
     pub used: bool,
 }
 
-#[table(accessor = sessions, public)]
+#[table(accessor = sessions)]
 #[derive(Clone)]
 pub struct Session {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
+    #[index(btree)]
     pub player_identity: Identity,  // foreign key via Identity
     pub username: String,
     pub weighted_score: f32,
@@ -99,12 +121,13 @@ pub struct Session {
     pub is_complete: bool,
     pub started_at: Timestamp,
     #[default(0u64)]
+    #[index(btree)]
     pub class_sprint_id: u64,  // 0 = solo sprint; non-zero = class sprint
     #[default(0)]
     pub heat: u8,
 }
 
-#[table(accessor = answers, public)]
+#[table(accessor = answers)]
 pub struct Answer {
     #[primary_key]
     #[auto_inc]
@@ -154,11 +177,10 @@ pub struct IssuedProblemV2 {
     pub options: Vec<u32>,
 }
 
-/// SEC-10: Result table surfaced to the client so it can read the issued token.
-/// Made public because SpacetimeDB 2.0.3 private tables cannot be subscribed to
-/// via SELECT * or receive row pushes via ReducerResult.
-/// The token is short-lived (consumed on submit_answer) and not a long-term secret.
-#[table(accessor = issued_problem_results, public)]
+/// SEC-10: Result table — now private. Accessed by clients exclusively through
+/// the `my_issued_problem_results` view (views.rs), which scopes to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 limitations (resolved via views).
+#[table(accessor = issued_problem_results)]
 pub struct IssuedProblemResult {
     #[primary_key]
     pub owner: Identity,
@@ -167,7 +189,7 @@ pub struct IssuedProblemResult {
     pub prompt_mode: u8,
 }
 
-#[table(accessor = issued_problem_results_v2, public)]
+#[table(accessor = issued_problem_results_v2)]
 pub struct IssuedProblemResultV2 {
     #[primary_key]
     pub owner: Identity,
@@ -185,7 +207,7 @@ pub struct IssuedProblemResultV2 {
 // -------------------------------------------------------
 // An offline PyTorch loop calculates the student's mastery weights based
 // on `kc_telemetry` and forces HTTP synchronization specifically here.
-#[table(accessor = player_dkt_weights, public)]
+#[table(accessor = player_dkt_weights)]
 pub struct PlayerDktWeights {
     #[primary_key]
     pub player_identity: Identity,
@@ -221,10 +243,11 @@ pub struct SprintSequence {
     pub index: u32,         // pointer to the next problem to serve
 }
 
-/// SEQ-02: Public result table for server-driven problem delivery.
+/// SEQ-02: Result table for server-driven problem delivery — now private.
 /// One row per player — upserted by next_problem reducer.
-/// Made public because SpacetimeDB 2.0.3 requires public for row-push to subscribers.
-#[table(accessor = next_problem_results, public)]
+/// Accessed securely via the `my_next_problem_results` view scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 limitations (resolved via views).
+#[table(accessor = next_problem_results)]
 pub struct NextProblemResult {
     #[primary_key]
     pub owner: Identity,
@@ -236,7 +259,7 @@ pub struct NextProblemResult {
     pub prompt_mode: u8,
 }
 
-#[table(accessor = next_problem_results_v2, public)]
+#[table(accessor = next_problem_results_v2)]
 pub struct NextProblemResultV2 {
     #[primary_key]
     pub owner: Identity,
@@ -249,14 +272,15 @@ pub struct NextProblemResultV2 {
     pub options: Vec<u32>,
 }
 
-#[table(accessor = teacher_focus, public)]
+#[table(accessor = teacher_focus)]
 pub struct TeacherFocus {
     #[primary_key]
     pub teacher_id: Identity,
+    #[index(btree)]
     pub focused_student_id: Identity,
 }
 
-#[table(accessor = student_keystrokes, public)]
+#[table(accessor = student_keystrokes)]
 pub struct StudentKeystroke {
     #[primary_key]
     pub student_id: Identity,
@@ -283,11 +307,12 @@ pub struct ProblemStat {
 
 /// Records tier unlocks per player. One row per player per tier.
 /// tier 1 = curated 2-digit multipliers (11,12,15,20,25 × 2-9)
-#[table(accessor = unlock_logs, public)]
+#[table(accessor = unlock_logs)]
 pub struct UnlockLog {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
+    #[index(btree)]
     pub player_identity: Identity,
     pub tier: u8,
     pub unlocked_at: Timestamp,
@@ -644,6 +669,40 @@ pub fn migrate_close_orphan_sessions(ctx: &ReducerContext) -> Result<(), String>
     Ok(())
 }
 
+/// Migration: Strips emails from the public `players` table and securely moves them to `player_secrets`.
+/// Run this once after deployment to anonymize the DB without data loss or schema breaking.
+#[reducer]
+pub fn migrate_emails_to_private(ctx: &ReducerContext) -> Result<(), String> {
+    for mut player in ctx.db.players().iter().collect::<Vec<_>>() {
+        if player.email.is_some() || player.recovery_emailed {
+            ctx.db.player_secrets().insert(PlayerSecret {
+                identity: player.identity,
+                email: player.email.clone(),
+                recovery_emailed: player.recovery_emailed,
+            });
+            player.email = None;
+            // DO NOT reset recovery_emailed so the frontend UI stays resolved.
+            ctx.db.players().identity().update(player);
+        }
+    }
+    Ok(())
+}
+
+/// Securely requests the server to push the player's private email.
+#[reducer]
+pub fn get_my_email(ctx: &ReducerContext) -> Result<(), String> {
+    let email = ctx.db.player_secrets().identity().find(ctx.sender())
+        .and_then(|ps| ps.email)
+        .or_else(|| ctx.db.players().identity().find(ctx.sender()).and_then(|p| p.email));
+        
+    let result = MyEmailResult { owner: ctx.sender(), email };
+    match ctx.db.email_results().owner().find(ctx.sender()) {
+        Some(_) => { ctx.db.email_results().owner().update(result); }
+        None    => { ctx.db.email_results().insert(result); }
+    }
+    Ok(())
+}
+
 /// DATA RESTORE: Re-insert a session row with its original ID and timestamp.
 /// Called as the player (ctx.sender() == player_identity). Skips if row already exists.
 #[reducer]
@@ -959,38 +1018,37 @@ pub struct RecoveryKey {
     pub token: String,
 }
 
-/// Public result table — rows are short-lived and owner-keyed (SEC-03).
+/// Result table — now private. Rows are short-lived and owner-keyed (SEC-03).
 /// Populated by get_my_recovery_code and regenerate_recovery_key.
-#[table(accessor = recovery_code_results, public)]
+/// Accessed securely via the `my_recovery_code_results` view scoped to ctx.sender().
+#[table(accessor = recovery_code_results)]
 pub struct RecoveryCodeResult {
     #[primary_key]
     pub owner: Identity,
     pub code: String,
 }
 
-/// ACCT-03: Result table for restore_account.
-/// Made public (not private) because SpacetimeDB 2.0.3 private tables cannot
-/// push rows to subscribers — same limitation as IssuedProblemResult (SEC-10).
+/// ACCT-03: Result table for restore_account — now private.
+/// Accessed securely via the `my_restore_results` view scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 limitations (resolved via views).
 /// The token is short-lived: consumed the moment the client reloads, and the
 /// row is deleted in identity_disconnected so the window is <1 s.
-#[table(accessor = restore_results, public)]
+#[table(accessor = restore_results)]
 pub struct RestoreResult {
     #[primary_key]
     pub caller: Identity,
     pub token: String,
 }
 
-/// ACCT-04: Result table for get_class_recovery_codes.
-/// Made public (not private) because SpacetimeDB 2.0.3 private tables cannot
-/// push rows to subscribers — same limitation as restore_results (ACCT-03).
-/// Security note: individual recovery codes are already in the public
-/// recovery_code_results table, so this exposes no new data beyond that.
+/// ACCT-04: Result table for get_class_recovery_codes — now private.
+/// Accessed securely via the `my_class_recovery_results` view scoped to teacher ctx.sender().
 /// Rows are created on demand (teacher calls get_class_recovery_codes) and
 /// deleted when the teacher disconnects (identity_disconnected cleanup).
-#[table(accessor = class_recovery_results, public)]
+#[table(accessor = class_recovery_results)]
 pub struct ClassRecoveryResult {
     #[primary_key]
     pub member_identity: Identity,
+    #[index(btree)]
     pub teacher_identity: Identity,
     pub classroom_id: u64,
     pub username: String,
@@ -1154,6 +1212,7 @@ pub struct ClassSprint {
     #[auto_inc]
     pub id: u64,
     pub classroom_id: u64,
+    #[index(btree)]
     pub teacher: Identity,
     pub started_at: Timestamp,
     pub is_active: bool,

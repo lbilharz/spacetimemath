@@ -46,6 +46,7 @@ import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
 import FocusStudentReducer from "./focus_student_reducer";
 import GetClassRecoveryCodesReducer from "./get_class_recovery_codes_reducer";
+import GetMyEmailReducer from "./get_my_email_reducer";
 import GetMyRecoveryCodeReducer from "./get_my_recovery_code_reducer";
 import GrantAdminToReducer from "./grant_admin_to_reducer";
 import IssueProblemReducer from "./issue_problem_reducer";
@@ -54,6 +55,7 @@ import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
 import MigrateCloseOrphanSessionsReducer from "./migrate_close_orphan_sessions_reducer";
+import MigrateEmailsToPrivateReducer from "./migrate_emails_to_private_reducer";
 import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
 import MigrateRecomputeTiersV2Reducer from "./migrate_recompute_tiers_v_2_reducer";
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
@@ -89,51 +91,38 @@ import VerifyTeacherUpgradeReducer from "./verify_teacher_upgrade_reducer";
 // Import all procedure arg schemas
 
 // Import all table schema definitions
-import AnswersRow from "./answers_table";
 import BestScoresRow from "./best_scores_table";
-import ClassRecoveryResultsRow from "./class_recovery_results_table";
 import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
 import FriendInvitesRow from "./friend_invites_table";
 import FriendshipsRow from "./friendships_table";
-import IssuedProblemResultsRow from "./issued_problem_results_table";
-import IssuedProblemResultsV2Row from "./issued_problem_results_v_2_table";
 import LegacyScoreBackupsRow from "./legacy_score_backups_table";
-import NextProblemResultsRow from "./next_problem_results_table";
-import NextProblemResultsV2Row from "./next_problem_results_v_2_table";
+import MyAnswersRow from "./my_answers_table";
+import MyClassRecoveryResultsRow from "./my_class_recovery_results_table";
+import MyClassroomAnswersRow from "./my_classroom_answers_table";
+import MyClassroomKeystrokesRow from "./my_classroom_keystrokes_table";
+import MyClassroomSessionsRow from "./my_classroom_sessions_table";
+import MyEmailResultsRow from "./my_email_results_table";
+import MyIssuedProblemResultsRow from "./my_issued_problem_results_table";
+import MyIssuedProblemResultsV2Row from "./my_issued_problem_results_v_2_table";
+import MyNextProblemResultsRow from "./my_next_problem_results_table";
+import MyNextProblemResultsV2Row from "./my_next_problem_results_v_2_table";
+import MyPlayerDktWeightsRow from "./my_player_dkt_weights_table";
+import MyRecoveryCodeResultsRow from "./my_recovery_code_results_table";
+import MyRestoreResultsRow from "./my_restore_results_table";
+import MySessionsRow from "./my_sessions_table";
+import MyStudentKeystrokesRow from "./my_student_keystrokes_table";
+import MyTeacherFocusRow from "./my_teacher_focus_table";
+import MyUnlockLogsRow from "./my_unlock_logs_table";
 import OnlinePlayersRow from "./online_players_table";
-import PlayerDktWeightsRow from "./player_dkt_weights_table";
 import PlayersRow from "./players_table";
 import ProblemStatsRow from "./problem_stats_table";
-import RecoveryCodeResultsRow from "./recovery_code_results_table";
-import RestoreResultsRow from "./restore_results_table";
-import SessionsRow from "./sessions_table";
-import StudentKeystrokesRow from "./student_keystrokes_table";
-import TeacherFocusRow from "./teacher_focus_table";
-import UnlockLogsRow from "./unlock_logs_table";
 
 /** Type-only namespace exports for generated type groups. */
 
 /** The schema information for all tables in this module. This is defined the same was as the tables would have been defined in the server. */
 const tablesSchema = __schema({
-  answers: __table({
-    name: 'answers',
-    indexes: [
-      { name: 'id', algorithm: 'btree', columns: [
-        'id',
-      ] },
-      { name: 'player_identity', algorithm: 'btree', columns: [
-        'playerIdentity',
-      ] },
-      { name: 'session_id', algorithm: 'btree', columns: [
-        'sessionId',
-      ] },
-    ],
-    constraints: [
-      { name: 'answers_id_key', constraint: 'unique', columns: ['id'] },
-    ],
-  }, AnswersRow),
   best_scores: __table({
     name: 'best_scores',
     indexes: [
@@ -148,22 +137,14 @@ const tablesSchema = __schema({
       { name: 'best_scores_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
     ],
   }, BestScoresRow),
-  class_recovery_results: __table({
-    name: 'class_recovery_results',
-    indexes: [
-      { name: 'member_identity', algorithm: 'btree', columns: [
-        'memberIdentity',
-      ] },
-    ],
-    constraints: [
-      { name: 'class_recovery_results_member_identity_key', constraint: 'unique', columns: ['memberIdentity'] },
-    ],
-  }, ClassRecoveryResultsRow),
   class_sprints: __table({
     name: 'class_sprints',
     indexes: [
       { name: 'id', algorithm: 'btree', columns: [
         'id',
+      ] },
+      { name: 'teacher', algorithm: 'btree', columns: [
+        'teacher',
       ] },
     ],
     constraints: [
@@ -235,28 +216,6 @@ const tablesSchema = __schema({
       { name: 'friendships_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, FriendshipsRow),
-  issued_problem_results: __table({
-    name: 'issued_problem_results',
-    indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
-    ],
-    constraints: [
-      { name: 'issued_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
-    ],
-  }, IssuedProblemResultsRow),
-  issued_problem_results_v2: __table({
-    name: 'issued_problem_results_v_2',
-    indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
-    ],
-    constraints: [
-      { name: 'issued_problem_results_v_2_owner_key', constraint: 'unique', columns: ['owner'] },
-    ],
-  }, IssuedProblemResultsV2Row),
   legacy_score_backups: __table({
     name: 'legacy_score_backups',
     indexes: [
@@ -268,28 +227,6 @@ const tablesSchema = __schema({
       { name: 'legacy_score_backups_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
     ],
   }, LegacyScoreBackupsRow),
-  next_problem_results: __table({
-    name: 'next_problem_results',
-    indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
-    ],
-    constraints: [
-      { name: 'next_problem_results_owner_key', constraint: 'unique', columns: ['owner'] },
-    ],
-  }, NextProblemResultsRow),
-  next_problem_results_v2: __table({
-    name: 'next_problem_results_v_2',
-    indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
-    ],
-    constraints: [
-      { name: 'next_problem_results_v_2_owner_key', constraint: 'unique', columns: ['owner'] },
-    ],
-  }, NextProblemResultsV2Row),
   online_players: __table({
     name: 'online_players',
     indexes: [
@@ -301,17 +238,6 @@ const tablesSchema = __schema({
       { name: 'online_players_identity_key', constraint: 'unique', columns: ['identity'] },
     ],
   }, OnlinePlayersRow),
-  player_dkt_weights: __table({
-    name: 'player_dkt_weights',
-    indexes: [
-      { name: 'player_identity', algorithm: 'btree', columns: [
-        'playerIdentity',
-      ] },
-    ],
-    constraints: [
-      { name: 'player_dkt_weights_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
-    ],
-  }, PlayerDktWeightsRow),
   players: __table({
     name: 'players',
     indexes: [
@@ -343,72 +269,125 @@ const tablesSchema = __schema({
       { name: 'problem_stats_problem_key_key', constraint: 'unique', columns: ['problemKey'] },
     ],
   }, ProblemStatsRow),
-  recovery_code_results: __table({
-    name: 'recovery_code_results',
+  my_answers: __table({
+    name: 'my_answers',
     indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
     ],
     constraints: [
-      { name: 'recovery_code_results_owner_key', constraint: 'unique', columns: ['owner'] },
     ],
-  }, RecoveryCodeResultsRow),
-  restore_results: __table({
-    name: 'restore_results',
+  }, MyAnswersRow),
+  my_class_recovery_results: __table({
+    name: 'my_class_recovery_results',
     indexes: [
-      { name: 'caller', algorithm: 'btree', columns: [
-        'caller',
-      ] },
     ],
     constraints: [
-      { name: 'restore_results_caller_key', constraint: 'unique', columns: ['caller'] },
     ],
-  }, RestoreResultsRow),
-  sessions: __table({
-    name: 'sessions',
+  }, MyClassRecoveryResultsRow),
+  my_classroom_answers: __table({
+    name: 'my_classroom_answers',
     indexes: [
-      { name: 'id', algorithm: 'btree', columns: [
-        'id',
-      ] },
     ],
     constraints: [
-      { name: 'sessions_id_key', constraint: 'unique', columns: ['id'] },
     ],
-  }, SessionsRow),
-  student_keystrokes: __table({
-    name: 'student_keystrokes',
+  }, MyClassroomAnswersRow),
+  my_classroom_keystrokes: __table({
+    name: 'my_classroom_keystrokes',
     indexes: [
-      { name: 'student_id', algorithm: 'btree', columns: [
-        'studentId',
-      ] },
     ],
     constraints: [
-      { name: 'student_keystrokes_student_id_key', constraint: 'unique', columns: ['studentId'] },
     ],
-  }, StudentKeystrokesRow),
-  teacher_focus: __table({
-    name: 'teacher_focus',
+  }, MyClassroomKeystrokesRow),
+  my_classroom_sessions: __table({
+    name: 'my_classroom_sessions',
     indexes: [
-      { name: 'teacher_id', algorithm: 'btree', columns: [
-        'teacherId',
-      ] },
     ],
     constraints: [
-      { name: 'teacher_focus_teacher_id_key', constraint: 'unique', columns: ['teacherId'] },
     ],
-  }, TeacherFocusRow),
-  unlock_logs: __table({
-    name: 'unlock_logs',
+  }, MyClassroomSessionsRow),
+  my_email_results: __table({
+    name: 'my_email_results',
     indexes: [
-      { name: 'id', algorithm: 'btree', columns: [
-        'id',
-      ] },
     ],
     constraints: [
-      { name: 'unlock_logs_id_key', constraint: 'unique', columns: ['id'] },
     ],
-  }, UnlockLogsRow),
+  }, MyEmailResultsRow),
+  my_issued_problem_results: __table({
+    name: 'my_issued_problem_results',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyIssuedProblemResultsRow),
+  my_issued_problem_results_v2: __table({
+    name: 'my_issued_problem_results_v_2',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyIssuedProblemResultsV2Row),
+  my_next_problem_results: __table({
+    name: 'my_next_problem_results',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyNextProblemResultsRow),
+  my_next_problem_results_v2: __table({
+    name: 'my_next_problem_results_v_2',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyNextProblemResultsV2Row),
+  my_player_dkt_weights: __table({
+    name: 'my_player_dkt_weights',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyPlayerDktWeightsRow),
+  my_recovery_code_results: __table({
+    name: 'my_recovery_code_results',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyRecoveryCodeResultsRow),
+  my_restore_results: __table({
+    name: 'my_restore_results',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyRestoreResultsRow),
+  my_sessions: __table({
+    name: 'my_sessions',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MySessionsRow),
+  my_student_keystrokes: __table({
+    name: 'my_student_keystrokes',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyStudentKeystrokesRow),
+  my_teacher_focus: __table({
+    name: 'my_teacher_focus',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyTeacherFocusRow),
+  my_unlock_logs: __table({
+    name: 'my_unlock_logs',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyUnlockLogsRow),
 });
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
@@ -425,6 +404,7 @@ const reducersSchema = __reducers(
   __reducerSchema("end_session", EndSessionReducer),
   __reducerSchema("focus_student", FocusStudentReducer),
   __reducerSchema("get_class_recovery_codes", GetClassRecoveryCodesReducer),
+  __reducerSchema("get_my_email", GetMyEmailReducer),
   __reducerSchema("get_my_recovery_code", GetMyRecoveryCodeReducer),
   __reducerSchema("grant_admin_to", GrantAdminToReducer),
   __reducerSchema("issue_problem", IssueProblemReducer),
@@ -433,6 +413,7 @@ const reducersSchema = __reducers(
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
   __reducerSchema("migrate_close_orphan_sessions", MigrateCloseOrphanSessionsReducer),
+  __reducerSchema("migrate_emails_to_private", MigrateEmailsToPrivateReducer),
   __reducerSchema("migrate_recompute_tiers", MigrateRecomputeTiersReducer),
   __reducerSchema("migrate_recompute_tiers_v_2", MigrateRecomputeTiersV2Reducer),
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),

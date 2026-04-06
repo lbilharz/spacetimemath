@@ -11,11 +11,9 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  owner: __t.identity().primaryKey(),
-  sessionId: __t.u64().name("session_id"),
-  a: __t.u8(),
-  b: __t.u8(),
-  token: __t.string(),
-  promptMode: __t.u8().name("prompt_mode"),
-  options: __t.array(__t.u32()),
+  memberIdentity: __t.identity().name("member_identity"),
+  teacherIdentity: __t.identity().name("teacher_identity"),
+  classroomId: __t.u64().name("classroom_id"),
+  username: __t.string(),
+  code: __t.string(),
 });

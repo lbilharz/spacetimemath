@@ -392,6 +392,36 @@ pub fn submit_answer(
         });
     }
 
+    // Phase 3 Native DKT Logic (Replaces huggingface python polling engine)
+    // We treat success as 1.0 if correct, single attempt, and under 4s.
+    let is_dkt_success = if is_correct && attempts == 1 && response_ms < 4000 { 1.0_f32 } else { 0.0_f32 };
+    
+    let mut current_weights = vec![0.5_f32; 11]; // default starting threshold for 11 KCs
+    if let Some(existing) = ctx.db.player_dkt_weights().player_identity().find(player.identity) {
+        current_weights = existing.kc_mastery.clone();
+    }
+    
+    for &kc in &generated_kcs {
+        let idx = kc as usize;
+        if idx < current_weights.len() {
+            if is_dkt_success == 1.0 {
+                current_weights[idx] = (current_weights[idx] + 0.15).min(0.99);
+            } else {
+                current_weights[idx] = (current_weights[idx] - 0.25).max(0.01);
+            }
+        }
+    }
+    
+    let new_dkt = crate::PlayerDktWeights {
+        player_identity: player.identity,
+        kc_mastery: current_weights,
+        last_updated_timestamp: ctx.timestamp.to_micros_since_unix_epoch() as u64,
+    };
+    match ctx.db.player_dkt_weights().player_identity().find(player.identity) {
+        Some(_) => { ctx.db.player_dkt_weights().player_identity().update(new_dkt); }
+        None => { ctx.db.player_dkt_weights().insert(new_dkt); }
+    }
+
     // try_insert retry loop: auto_inc counter may be out of sync with restored rows.
     for _ in 0..200 {
         if ctx.db.answers().try_insert(Answer {

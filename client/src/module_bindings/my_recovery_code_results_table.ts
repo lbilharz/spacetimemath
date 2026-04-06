@@ -11,7 +11,6 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  studentId: __t.identity().primaryKey().name("student_id"),
-  currentInput: __t.string().name("current_input"),
-  timestamp: __t.timestamp(),
+  owner: __t.identity(),
+  code: __t.string(),
 });

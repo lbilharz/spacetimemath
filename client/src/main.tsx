@@ -53,9 +53,43 @@ function Root() {
       .withDatabaseName(STDB_DB);
 
     return (savedToken ? base.withToken(savedToken) : base)
-      .onConnect((_conn, identity, token) => {
+      .onConnect((conn, identity, token) => {
         setCapturedToken(token);
         localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: identity.toHexString(), token }));
+        
+        conn.subscriptionBuilder()
+          .onApplied(() => console.log("[STDB] Scoped subscriptions applied."))
+          .subscribe([
+            'SELECT * FROM players',
+            'SELECT * FROM best_scores',
+            'SELECT * FROM classrooms',
+            'SELECT * FROM classroom_members',
+            'SELECT * FROM class_sprints',
+            'SELECT * FROM problem_stats',
+            'SELECT * FROM online_players',
+            'SELECT * FROM friendships',
+            'SELECT * FROM friend_invites',
+            'SELECT * FROM legacy_score_backups',
+            'SELECT * FROM my_email_results',
+            // SEC-02: Identity-scoped secure views
+            'SELECT * FROM my_sessions',
+            'SELECT * FROM my_answers',
+            'SELECT * FROM my_student_keystrokes',
+            'SELECT * FROM my_teacher_focus',
+            'SELECT * FROM my_recovery_code_results',
+            'SELECT * FROM my_restore_results',
+            'SELECT * FROM my_issued_problem_results',
+            'SELECT * FROM my_issued_problem_results_v2',
+            'SELECT * FROM my_next_problem_results',
+            'SELECT * FROM my_next_problem_results_v2',
+            'SELECT * FROM my_unlock_logs',
+            'SELECT * FROM my_player_dkt_weights',
+            'SELECT * FROM my_class_recovery_results',
+            // SEC-03: Teacher Dashboard secure views
+            'SELECT * FROM my_classroom_sessions',
+            'SELECT * FROM my_classroom_answers',
+            'SELECT * FROM my_classroom_keystrokes'
+          ]);
       })
       .onConnectError((_conn, err) => {
         console.error('[STDB] Connection error:', err);

@@ -23,10 +23,10 @@ const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆
 
 export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false, extendedLevel = 0 }: Props) {
   const { t } = useTranslation();
-  const [sessions] = useTable(tables.sessions);
-  const [answers]      = useTable(tables.answers);
+  const [sessions] = useTable(tables.my_sessions);
+  const [answers]      = useTable(tables.my_answers);
   const [problemStats] = useTable(tables.problem_stats);
-  const [dktWeights]   = useTable(tables.player_dkt_weights);
+  const [dktWeights]   = useTable(tables.my_player_dkt_weights);
   const setLearningTier = useSTDBReducer(reducers.setLearningTier);
   const setExtendedMode = useSTDBReducer(reducers.setExtendedMode);
 

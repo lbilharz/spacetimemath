@@ -67,8 +67,8 @@ export default function RegisterPage({ onRegistered }: Props) {
   const consumeRestoreResult = useSTDBReducer(reducers.consumeRestoreResult);
   const [restoreResults] = useTable(
     identity
-      ? tables.restore_results.where(r => r.caller.eq(identity))
-      : tables.restore_results
+      ? tables.my_restore_results.where(r => r.caller.eq(identity))
+      : tables.my_restore_results
   );
   const restoreResultsRef = useRef<typeof restoreResults>([]);
   useEffect(() => { restoreResultsRef.current = restoreResults; }, [restoreResults]);

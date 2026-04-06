@@ -39,7 +39,7 @@ export default function ClassroomSettingsModal({
 }: Props) {
   const { t } = useTranslation();
   const [players] = useTable(tables.players);
-  const [classRecoveryResults] = useTable(tables.class_recovery_results);
+  const [classRecoveryResults] = useTable(tables.my_class_recovery_results);
   
   const classRecoveryResultsRef = useRef<ClassRecoveryResult[]>([]);
   useEffect(() => {

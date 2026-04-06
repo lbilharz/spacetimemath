@@ -30,12 +30,12 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const [classrooms]        = useTable(tables.classrooms);
   const [classroomMembers]  = useTable(tables.classroom_members);
   const [classSprints]      = useTable(tables.class_sprints);
-  const [sessions]          = useTable(tables.sessions);
-  const [answers]           = useTable(tables.answers);
+  const [sessions]          = useTable(tables.my_classroom_sessions);
+  const [answers]           = useTable(tables.my_classroom_answers);
   const [players]           = useTable(tables.players);
   const [problemStats]      = useTable(tables.problem_stats);
-  const [nextProblemResults] = useTable(tables.next_problem_results_v2);
-  const [issuedProblemResults] = useTable(tables.issued_problem_results_v2);
+  const [nextProblemResults] = useTable(tables.my_next_problem_results_v2);
+  const [issuedProblemResults] = useTable(tables.my_issued_problem_results_v2);
   // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
   const leaveClassroom        = useSTDBReducer(reducers.leaveClassroom);
@@ -43,7 +43,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const endClassSprint        = useSTDBReducer(reducers.endClassSprint);
   // Subscription not filtered server-side — rows are teacher-scoped at insert time.
   // Client filters by classroomId in the polling loop below.
-  const [classRecoveryResults] = useTable(tables.class_recovery_results);
+  const [classRecoveryResults] = useTable(tables.my_class_recovery_results);
   // Ref so async polling in handleDownloadCodes always reads the latest rows
   const classRecoveryResultsRef = useRef<ClassRecoveryResult[]>([]);
   useEffect(() => {

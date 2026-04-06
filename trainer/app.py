@@ -4,6 +4,7 @@ import uvicorn
 import requests
 import torch
 import os
+import asyncio
 from model import DKTModel
 import pandas as pd
 from typing import List, Dict, Tuple, Any
@@ -169,6 +170,27 @@ def health_check():
         "architecture": "PyTorch CPU-Only",
         "service": "SpacetimeMath Machine Learning Inference"
     }
+
+@app.on_event("startup")
+async def startup_event():
+    print("Initializing autonomous training loop background task...", flush=True)
+    asyncio.create_task(continuous_training_loop())
+
+async def continuous_training_loop():
+    """
+    Indefinite background worker executing standard train job independently
+    of webhook triggers. HF Spaces will keep this rolling continuously.
+    """
+    while True:
+        try:
+            print("\n🔄 [CRON] Starting Autonomous Training Cycle...", flush=True)
+            # Use to_thread to prevent blocking the async FastAPI event loop with the synchronous train_job
+            await asyncio.to_thread(train_job)
+        except Exception as e:
+            print(f"❌ Error during training cycle: {e}", flush=True)
+            
+        print("⏳ [CRON] Sleeping for 60 seconds...", flush=True)
+        await asyncio.sleep(60)
 
 # ----------------------------------------------------
 # HTTP SECURITY (Bearer Token Validation)

@@ -24,8 +24,8 @@ export default function AccountPage({ myPlayer }: Props) {
   const { identity } = useSpacetimeDB();
   const [recoveryCodeResults] = useTable(
     identity
-      ? tables.recovery_code_results.where(r => r.owner.eq(identity))
-      : tables.recovery_code_results
+      ? tables.my_recovery_code_results.where(r => r.owner.eq(identity))
+      : tables.my_recovery_code_results
   );
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const _createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
