@@ -39,8 +39,8 @@ export default function FriendsPage() {
     ? (friendInvites as unknown as FriendInvite[]).find(i => {
         if (i.creatorIdentity.toHexString() === myIdentityHex) {
           let expMs = 0;
-          if (i.expiresAt && typeof i.expiresAt === 'object' && '__timestamp_micros_since_unix_epoch__' in (i.expiresAt as Record<string, unknown>)) {
-            expMs = Number((i.expiresAt as Record<string, number>).__timestamp_micros_since_unix_epoch__) / 1000;
+          if (i.expiresAt && typeof i.expiresAt === 'object' && '__timestamp_micros_since_unix_epoch__' in (i.expiresAt as unknown as Record<string, unknown>)) {
+            expMs = Number((i.expiresAt as unknown as Record<string, number>).__timestamp_micros_since_unix_epoch__) / 1000;
           } else {
             expMs = Number(i.expiresAt) / 1000;
           }
