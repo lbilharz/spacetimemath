@@ -9,8 +9,8 @@ interface Props {
 
 export default function NetworkLeaderboard({ myIdentityHex }: Props) {
   const { t } = useTranslation();
-  const [friendships] = useTable(tables.friendships);
-  const [classroomMembers] = useTable(tables.classroom_members);
+  const [friendships] = useTable(tables.my_friendships);
+  const [classroomMembers] = useTable(tables.my_classroom_members);
   const [players] = useTable(tables.players);
 
   // 1. Gather all identities linked to the user
@@ -33,7 +33,7 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
     .map(m => m.classroomId);
 
   // Add my owned classrooms where I am the teacher
-  const [classrooms] = useTable(tables.classrooms);
+  const [classrooms] = useTable(tables.my_classrooms);
   const myOwnedClassrooms = (classrooms as unknown as Classroom[])
     .filter(c => c.teacher?.toHexString() === myIdentityHex)
     .map(c => c.id);

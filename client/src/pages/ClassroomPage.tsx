@@ -27,8 +27,8 @@ interface ClassRecoveryResult {
 
 export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: Props) {
   const { t } = useTranslation();
-  const [classrooms]        = useTable(tables.classrooms);
-  const [classroomMembers]  = useTable(tables.classroom_members);
+  const [classrooms]        = useTable(tables.my_classrooms);
+  const [classroomMembers]  = useTable(tables.my_classroom_members);
   const [classSprints]      = useTable(tables.class_sprints);
   const [sessions]          = useTable(tables.my_classroom_sessions);
   const [answers]           = useTable(tables.my_classroom_answers);

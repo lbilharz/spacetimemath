@@ -385,7 +385,7 @@ describe('View Isolation Security Tests', () => {
 
     await teacherA.conn.reducers.createClassroom({ name: 'Class D_A' });
     const classA = await waitFor(() => {
-      for (const c of teacherA.conn.db.classrooms.iter()) {
+      for (const c of teacherA.conn.db.my_classrooms.iter()) {
         if (c.teacher.toHexString() === teacherAHex) return c;
       }
     });
@@ -394,7 +394,7 @@ describe('View Isolation Security Tests', () => {
 
     await student.conn.reducers.joinClassroom({ code: classA.code });
     await waitFor(() => {
-      for (const m of student.conn.db.classroom_members.iter()) {
+      for (const m of student.conn.db.my_classroom_members.iter()) {
         if (m.classroomId === classA.id) return m;
       }
     });
@@ -424,14 +424,14 @@ describe('View Isolation Security Tests', () => {
     const teacherHex = teacher.identity.toHexString();
     await teacher.conn.reducers.createClassroom({ name: 'Class E' });
     const classE = await waitFor(() => {
-      for (const c of teacher.conn.db.classrooms.iter()) {
+      for (const c of teacher.conn.db.my_classrooms.iter()) {
         if (c.teacher.toHexString() === teacherHex) return c;
       }
     });
 
     await student.conn.reducers.joinClassroom({ code: classE.code });
     await waitFor(() => {
-      for (const m of student.conn.db.classroom_members.iter()) {
+      for (const m of student.conn.db.my_classroom_members.iter()) {
         if (m.classroomId === classE.id) return m;
       }
     });
@@ -463,14 +463,14 @@ describe('View Isolation Security Tests', () => {
     const teacherHex = teacher.identity.toHexString();
     await teacher.conn.reducers.createClassroom({ name: 'Class F' });
     const classF = await waitFor(() => {
-      for (const c of teacher.conn.db.classrooms.iter()) {
+      for (const c of teacher.conn.db.my_classrooms.iter()) {
         if (c.teacher.toHexString() === teacherHex) return c;
       }
     });
 
     await student.conn.reducers.joinClassroom({ code: classF.code });
     await waitFor(() => {
-      for (const m of student.conn.db.classroom_members.iter()) {
+      for (const m of student.conn.db.my_classroom_members.iter()) {
         if (m.classroomId === classF.id) return m;
       }
     });

@@ -64,6 +64,7 @@ import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reduc
 import MigrateSeedExtendedStatsReducer from "./migrate_seed_extended_stats_reducer";
 import MigrateV3EconomyTriplerReducer from "./migrate_v_3_economy_tripler_reducer";
 import NextProblemReducer from "./next_problem_reducer";
+import ReconnectLegacySessionsReducer from "./reconnect_legacy_sessions_reducer";
 import RecoverOrphanedSprintsReducer from "./recover_orphaned_sprints_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
@@ -84,6 +85,7 @@ import StartClassSprintReducer from "./start_class_sprint_reducer";
 import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
 import SyncKeystrokeReducer from "./sync_keystroke_reducer";
+import SynthesizeLegacySprintsReducer from "./synthesize_legacy_sprints_reducer";
 import ToggleClassroomVisibilityReducer from "./toggle_classroom_visibility_reducer";
 import UpdateDktWeightsReducer from "./update_dkt_weights_reducer";
 import UpdateFriendAliasReducer from "./update_friend_alias_reducer";
@@ -94,18 +96,16 @@ import VerifyTeacherUpgradeReducer from "./verify_teacher_upgrade_reducer";
 // Import all table schema definitions
 import BestScoresRow from "./best_scores_table";
 import ClassSprintsRow from "./class_sprints_table";
-import ClassroomMembersRow from "./classroom_members_table";
-import ClassroomsRow from "./classrooms_table";
-import EmailResultsRow from "./email_results_table";
-import FriendInvitesRow from "./friend_invites_table";
-import FriendshipsRow from "./friendships_table";
-import LegacyScoreBackupsRow from "./legacy_score_backups_table";
 import MyAnswersRow from "./my_answers_table";
 import MyClassRecoveryResultsRow from "./my_class_recovery_results_table";
 import MyClassroomAnswersRow from "./my_classroom_answers_table";
 import MyClassroomKeystrokesRow from "./my_classroom_keystrokes_table";
+import MyClassroomMembersRow from "./my_classroom_members_table";
 import MyClassroomSessionsRow from "./my_classroom_sessions_table";
+import MyClassroomsRow from "./my_classrooms_table";
 import MyEmailResultsRow from "./my_email_results_table";
+import MyFriendInvitesRow from "./my_friend_invites_table";
+import MyFriendshipsRow from "./my_friendships_table";
 import MyIssuedProblemResultsRow from "./my_issued_problem_results_table";
 import MyIssuedProblemResultsV2Row from "./my_issued_problem_results_v_2_table";
 import MyNextProblemResultsRow from "./my_next_problem_results_table";
@@ -156,93 +156,6 @@ const tablesSchema = __schema({
       { name: 'class_sprints_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, ClassSprintsRow),
-  classroom_members: __table({
-    name: 'classroom_members',
-    indexes: [
-      { name: 'classroom_id', algorithm: 'btree', columns: [
-        'classroomId',
-      ] },
-      { name: 'id', algorithm: 'btree', columns: [
-        'id',
-      ] },
-      { name: 'player_identity', algorithm: 'btree', columns: [
-        'playerIdentity',
-      ] },
-    ],
-    constraints: [
-      { name: 'classroom_members_id_key', constraint: 'unique', columns: ['id'] },
-    ],
-  }, ClassroomMembersRow),
-  classrooms: __table({
-    name: 'classrooms',
-    indexes: [
-      { name: 'code', algorithm: 'btree', columns: [
-        'code',
-      ] },
-      { name: 'id', algorithm: 'btree', columns: [
-        'id',
-      ] },
-      { name: 'teacher', algorithm: 'btree', columns: [
-        'teacher',
-      ] },
-    ],
-    constraints: [
-      { name: 'classrooms_id_key', constraint: 'unique', columns: ['id'] },
-    ],
-  }, ClassroomsRow),
-  email_results: __table({
-    name: 'email_results',
-    indexes: [
-      { name: 'owner', algorithm: 'btree', columns: [
-        'owner',
-      ] },
-    ],
-    constraints: [
-      { name: 'email_results_owner_key', constraint: 'unique', columns: ['owner'] },
-    ],
-  }, EmailResultsRow),
-  friend_invites: __table({
-    name: 'friend_invites',
-    indexes: [
-      { name: 'creator_identity', algorithm: 'btree', columns: [
-        'creatorIdentity',
-      ] },
-      { name: 'token', algorithm: 'btree', columns: [
-        'token',
-      ] },
-    ],
-    constraints: [
-      { name: 'friend_invites_token_key', constraint: 'unique', columns: ['token'] },
-    ],
-  }, FriendInvitesRow),
-  friendships: __table({
-    name: 'friendships',
-    indexes: [
-      { name: 'id', algorithm: 'btree', columns: [
-        'id',
-      ] },
-      { name: 'initiator_identity', algorithm: 'btree', columns: [
-        'initiatorIdentity',
-      ] },
-      { name: 'recipient_identity', algorithm: 'btree', columns: [
-        'recipientIdentity',
-      ] },
-    ],
-    constraints: [
-      { name: 'friendships_id_key', constraint: 'unique', columns: ['id'] },
-    ],
-  }, FriendshipsRow),
-  legacy_score_backups: __table({
-    name: 'legacy_score_backups',
-    indexes: [
-      { name: 'player_identity', algorithm: 'btree', columns: [
-        'playerIdentity',
-      ] },
-    ],
-    constraints: [
-      { name: 'legacy_score_backups_player_identity_key', constraint: 'unique', columns: ['playerIdentity'] },
-    ],
-  }, LegacyScoreBackupsRow),
   online_players: __table({
     name: 'online_players',
     indexes: [
@@ -313,6 +226,13 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyClassroomKeystrokesRow),
+  my_classroom_members: __table({
+    name: 'my_classroom_members',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyClassroomMembersRow),
   my_classroom_sessions: __table({
     name: 'my_classroom_sessions',
     indexes: [
@@ -320,6 +240,13 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyClassroomSessionsRow),
+  my_classrooms: __table({
+    name: 'my_classrooms',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyClassroomsRow),
   my_email_results: __table({
     name: 'my_email_results',
     indexes: [
@@ -327,6 +254,20 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyEmailResultsRow),
+  my_friend_invites: __table({
+    name: 'my_friend_invites',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyFriendInvitesRow),
+  my_friendships: __table({
+    name: 'my_friendships',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyFriendshipsRow),
   my_issued_problem_results: __table({
     name: 'my_issued_problem_results',
     indexes: [
@@ -438,6 +379,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_seed_extended_stats", MigrateSeedExtendedStatsReducer),
   __reducerSchema("migrate_v_3_economy_tripler", MigrateV3EconomyTriplerReducer),
   __reducerSchema("next_problem", NextProblemReducer),
+  __reducerSchema("reconnect_legacy_sessions", ReconnectLegacySessionsReducer),
   __reducerSchema("recover_orphaned_sprints", RecoverOrphanedSprintsReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
@@ -458,6 +400,7 @@ const reducersSchema = __reducers(
   __reducerSchema("start_session", StartSessionReducer),
   __reducerSchema("submit_answer", SubmitAnswerReducer),
   __reducerSchema("sync_keystroke", SyncKeystrokeReducer),
+  __reducerSchema("synthesize_legacy_sprints", SynthesizeLegacySprintsReducer),
   __reducerSchema("toggle_classroom_visibility", ToggleClassroomVisibilityReducer),
   __reducerSchema("update_dkt_weights", UpdateDktWeightsReducer),
   __reducerSchema("update_friend_alias", UpdateFriendAliasReducer),

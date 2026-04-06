@@ -11,10 +11,8 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  id: __t.u64().primaryKey(),
-  initiatorIdentity: __t.identity().name("initiator_identity"),
-  recipientIdentity: __t.identity().name("recipient_identity"),
-  aliasByInitiator: __t.option(__t.string()).name("alias_by_initiator"),
-  aliasByRecipient: __t.option(__t.string()).name("alias_by_recipient"),
-  createdAt: __t.timestamp().name("created_at"),
+  token: __t.string(),
+  creatorIdentity: __t.identity().name("creator_identity"),
+  expiresAt: __t.timestamp().name("expires_at"),
+  used: __t.bool(),
 });

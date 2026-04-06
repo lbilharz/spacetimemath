@@ -122,7 +122,7 @@ describe('ACCT-04: get_class_recovery_codes for teacher download', () => {
     // Wait for classroom to appear
     const teacherIdHex = teacher.identity.toHexString();
     const classroom = await waitFor(() => {
-      for (const c of teacher.conn.db.classrooms.iter()) {
+      for (const c of teacher.conn.db.my_classrooms.iter()) {
         if (c.teacher.toHexString() === teacherIdHex) return c;
       }
     });

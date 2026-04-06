@@ -81,7 +81,8 @@ pub struct MyEmailResult {
     pub email: Option<String>,
 }
 
-#[table(accessor = friendships, public)]
+/// Now private. Clients access via `my_friendships` view (views.rs).
+#[table(accessor = friendships)]
 pub struct Friendship {
     #[primary_key]
     #[auto_inc]
@@ -95,7 +96,9 @@ pub struct Friendship {
     pub created_at: Timestamp,
 }
 
-#[table(accessor = friend_invites, public)]
+/// Now private. Clients access via `my_friend_invites` view (views.rs).
+/// The `token` field is a secret — must not be broadcast globally.
+#[table(accessor = friend_invites)]
 pub struct FriendInvite {
     #[primary_key]
     pub token: String,
@@ -340,7 +343,8 @@ pub struct BestScore {
 
 /// A Phase 6 migration archival table to safely store original 1.0x points
 /// before they are converted into 3.0x points for legacy players.
-#[table(accessor = legacy_score_backups, public)]
+/// Migration artifact — no client usage. Private.
+#[table(accessor = legacy_score_backups)]
 pub struct LegacyScoreBackup {
     #[primary_key]
     pub player_identity: Identity,
@@ -1186,7 +1190,9 @@ pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier:
 // CLASSROOMS
 // ============================================================
 
-#[table(accessor = classrooms, public)]
+/// Now private. Clients access via `my_classrooms` view (views.rs).
+/// The `code` field is a join secret — must not be broadcast globally.
+#[table(accessor = classrooms)]
 pub struct Classroom {
     #[primary_key]
     #[auto_inc]
@@ -1198,7 +1204,8 @@ pub struct Classroom {
     pub teacher: Identity,
 }
 
-#[table(accessor = classroom_members, public)]
+/// Now private. Clients access via `my_classroom_members` view (views.rs).
+#[table(accessor = classroom_members)]
 pub struct ClassroomMember {
     #[primary_key]
     #[auto_inc]

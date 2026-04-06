@@ -11,6 +11,8 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  owner: __t.identity().primaryKey(),
-  email: __t.option(__t.string()),
+  id: __t.u64(),
+  code: __t.string(),
+  name: __t.string(),
+  teacher: __t.identity(),
 });

@@ -19,7 +19,7 @@ export default function ClassSprintResultsPage({ classSprintId, myIdentityHex }:
   const [sessions]      = useTable(tables.my_classroom_sessions);
   const [answers]       = useTable(tables.my_classroom_answers);
   const [classSprints]  = useTable(tables.class_sprints);
-  const [classrooms]    = useTable(tables.classrooms);
+  const [classrooms]    = useTable(tables.my_classrooms);
   const [players]       = useTable(tables.players);
   const [problemStats]  = useTable(tables.problem_stats);
 

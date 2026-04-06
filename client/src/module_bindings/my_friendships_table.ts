@@ -11,7 +11,10 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  playerIdentity: __t.identity().primaryKey().name("player_identity"),
-  originalBestScore: __t.f32().name("original_best_score"),
-  backedUpAt: __t.timestamp().name("backed_up_at"),
+  id: __t.u64(),
+  initiatorIdentity: __t.identity().name("initiator_identity"),
+  recipientIdentity: __t.identity().name("recipient_identity"),
+  aliasByInitiator: __t.option(__t.string()).name("alias_by_initiator"),
+  aliasByRecipient: __t.option(__t.string()).name("alias_by_recipient"),
+  createdAt: __t.timestamp().name("created_at"),
 });

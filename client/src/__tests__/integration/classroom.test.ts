@@ -25,7 +25,7 @@ describe('classroom lifecycle', () => {
     await teacher.conn.reducers.createClassroom({ name: 'Mathe 4b' });
 
     const classroom = await waitFor(() => {
-      for (const c of teacher.conn.db.classrooms.iter()) {
+      for (const c of teacher.conn.db.my_classrooms.iter()) {
         if (c.teacher.toHexString() === teacherHex) return c;
       }
     });
@@ -41,7 +41,7 @@ describe('classroom lifecycle', () => {
   it('teacher is automatically a member after creating', async () => {
     const teacherHex = teacher.identity.toHexString();
     const member = await waitFor(() => {
-      for (const m of teacher.conn.db.classroom_members.iter()) {
+      for (const m of teacher.conn.db.my_classroom_members.iter()) {
         if (
           m.classroomId === classroomId &&
           m.playerIdentity.toHexString() === teacherHex
@@ -57,7 +57,7 @@ describe('classroom lifecycle', () => {
     await student.conn.reducers.joinClassroom({ code: classroomCode });
 
     const member = await waitFor(() => {
-      for (const m of student.conn.db.classroom_members.iter()) {
+      for (const m of student.conn.db.my_classroom_members.iter()) {
         if (
           m.classroomId === classroomId &&
           m.playerIdentity.toHexString() === studentHex
@@ -77,7 +77,7 @@ describe('classroom lifecycle', () => {
     // Wait a moment for any potential duplicate to arrive
     await new Promise(r => setTimeout(r, 300));
 
-    const memberships = [...student.conn.db.classroom_members.iter()].filter(
+    const memberships = [...student.conn.db.my_classroom_members.iter()].filter(
       m =>
         m.classroomId === classroomId &&
         m.playerIdentity.toHexString() === studentHex
@@ -88,7 +88,7 @@ describe('classroom lifecycle', () => {
 
   it('classroom is visible to the student after joining', async () => {
     const classroom = await waitFor(() => {
-      for (const c of student.conn.db.classrooms.iter()) {
+      for (const c of student.conn.db.my_classrooms.iter()) {
         if (c.id === classroomId) return c;
       }
     });

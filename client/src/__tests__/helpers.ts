@@ -8,8 +8,8 @@ import type { Identity } from 'spacetimedb';
 const ALL_TABLES = [
   'SELECT * FROM players',
   'SELECT * FROM best_scores',
-  'SELECT * FROM classrooms',
-  'SELECT * FROM classroom_members',
+  'SELECT * FROM my_classrooms',
+  'SELECT * FROM my_classroom_members',
   'SELECT * FROM class_sprints',
   'SELECT * FROM problem_stats',
   'SELECT * FROM online_players',

@@ -64,7 +64,7 @@ describe('class sprint scoring', () => {
     const teacherHex = teacher.identity.toHexString();
     await teacher.conn.reducers.createClassroom({ name: 'Scoring Test Class' });
     const classroom = await waitFor(() => {
-      for (const c of teacher.conn.db.classrooms.iter()) {
+      for (const c of teacher.conn.db.my_classrooms.iter()) {
         if (c.teacher.toHexString() === teacherHex) return c;
       }
     });
@@ -74,7 +74,7 @@ describe('class sprint scoring', () => {
     await student.conn.reducers.joinClassroom({ code: classroom.code });
     const studentHex = student.identity.toHexString();
     await waitFor(() => {
-      for (const m of student.conn.db.classroom_members.iter()) {
+      for (const m of student.conn.db.my_classroom_members.iter()) {
         if (m.classroomId === classroomId && m.playerIdentity.toHexString() === studentHex) return m;
       }
     });

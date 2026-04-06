@@ -23,8 +23,8 @@ interface Props {
 
 export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onEnterClassroom, onGoToAccount }: Props) {
   const { t } = useTranslation();
-  const [classrooms]        = useTable(tables.classrooms);
-  const [classroomMembers]  = useTable(tables.classroom_members);
+  const [classrooms]        = useTable(tables.my_classrooms);
+  const [classroomMembers]  = useTable(tables.my_classroom_members);
   const [problemStats]      = useTable(tables.problem_stats);
   const joinClassroom       = useSTDBReducer(reducers.joinClassroom);
 

@@ -17,8 +17,8 @@ type Panel = 'none' | 'create' | 'join' | 'upgrade';
 
 export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Props) {
   const { t } = useTranslation();
-  const [classrooms] = useTable(tables.classrooms);
-  const [classroomMembers] = useTable(tables.classroom_members);
+  const [classrooms] = useTable(tables.my_classrooms);
+  const [classroomMembers] = useTable(tables.my_classroom_members);
   const [players] = useTable(tables.players);
   const createClassroom = useSTDBReducer(reducers.createClassroom);
   const joinClassroom = useSTDBReducer(reducers.joinClassroom);

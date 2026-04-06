@@ -11,7 +11,7 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  id: __t.u64().primaryKey(),
+  id: __t.u64(),
   classroomId: __t.u64().name("classroom_id"),
   playerIdentity: __t.identity().name("player_identity"),
   hidden: __t.bool(),

@@ -38,10 +38,10 @@ export default function App() {
   // cleared under the hood every time we navigate between Lobby/Classroom pages.
   const { identity, isActive, connectionError } = useSpacetimeDB();
   const [players] = useTable(tables.players);
-  const [classrooms] = useTable(tables.classrooms);
-  const [classroomMembers] = useTable(tables.classroom_members);
+  const [classrooms] = useTable(tables.my_classrooms);
+  const [classroomMembers] = useTable(tables.my_classroom_members);
   const [classSprints] = useTable(tables.class_sprints);
-  useTable(tables.friend_invites);
+  useTable(tables.my_friend_invites);
   useTable(tables.problem_stats);
   // recovery_keys is now a private table (SEC-01) — App.tsx fetches via getMyRecoveryCode once per session (UX-05)
   const { page, setPage, navigate, myPlayerRef } = useAppNavigation('register');

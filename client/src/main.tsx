@@ -62,14 +62,13 @@ function Root() {
           .subscribe([
             'SELECT * FROM players',
             'SELECT * FROM best_scores',
-            'SELECT * FROM classrooms',
-            'SELECT * FROM classroom_members',
+            'SELECT * FROM my_classrooms',
+            'SELECT * FROM my_classroom_members',
             'SELECT * FROM class_sprints',
             'SELECT * FROM problem_stats',
             'SELECT * FROM online_players',
-            'SELECT * FROM friendships',
-            'SELECT * FROM friend_invites',
-            'SELECT * FROM legacy_score_backups',
+            'SELECT * FROM my_friendships',
+            'SELECT * FROM my_friend_invites',
             'SELECT * FROM my_email_results',
             // SEC-02: Identity-scoped secure views
             'SELECT * FROM my_sessions',

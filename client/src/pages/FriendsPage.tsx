@@ -10,8 +10,8 @@ import { FriendsIcon } from '../components/Icons.js';
 export default function FriendsPage() {
   const { t } = useTranslation();
   const { identity } = useSpacetimeDB();
-  const [friendships] = useTable(tables.friendships);
-  const [friendInvites] = useTable(tables.friend_invites);
+  const [friendships] = useTable(tables.my_friendships);
+  const [friendInvites] = useTable(tables.my_friend_invites);
   const [players] = useTable(tables.players);
   const [onlinePlayers] = useTable(tables.online_players);
   
