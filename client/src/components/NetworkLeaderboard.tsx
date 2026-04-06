@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTable } from 'spacetimedb/react';
 import { tables } from '../module_bindings/index.js';
-import type { ClassroomMember, Friendship, Player } from '../module_bindings/types.js';
+import type { Classroom, ClassroomMember, Friendship, Player } from '../module_bindings/types.js';
 
 interface Props {
   myIdentityHex: string;
@@ -27,16 +27,30 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
     if (recHex === myIdentityHex) networkIdentities.add(initHex);
   });
 
-  // Add classmates
-  const myClassroomIds = (classroomMembers as unknown as ClassroomMember[])
+  // Add classmates where I am a member
+  const myClassroomsAsMember = (classroomMembers as unknown as ClassroomMember[])
     .filter(m => m.playerIdentity.toHexString() === myIdentityHex && !m.hidden)
     .map(m => m.classroomId);
 
-  if (myClassroomIds.length > 0) {
+  // Add my owned classrooms where I am the teacher
+  const [classrooms] = useTable(tables.classrooms);
+  const myOwnedClassrooms = (classrooms as unknown as Classroom[])
+    .filter(c => c.teacher?.toHexString() === myIdentityHex)
+    .map(c => c.id);
+
+  const allRelevantClassroomIds = Array.from(new Set([...myClassroomsAsMember, ...myOwnedClassrooms]));
+
+  if (allRelevantClassroomIds.length > 0) {
     (classroomMembers as unknown as ClassroomMember[])
-      .filter(m => myClassroomIds.includes(m.classroomId) && !m.hidden)
+      .filter(m => allRelevantClassroomIds.includes(m.classroomId) && !m.hidden)
       .forEach(m => {
         networkIdentities.add(m.playerIdentity.toHexString());
+      });
+      
+    (classrooms as unknown as Classroom[])
+      .filter(c => allRelevantClassroomIds.includes(c.id) && c.teacher)
+      .forEach(c => {
+         networkIdentities.add(c.teacher!.toHexString());
       });
   }
 

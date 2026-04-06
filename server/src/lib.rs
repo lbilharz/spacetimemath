@@ -1211,6 +1211,7 @@ pub struct ClassSprint {
     #[primary_key]
     #[auto_inc]
     pub id: u64,
+    #[index(btree)]
     pub classroom_id: u64,
     #[index(btree)]
     pub teacher: Identity,

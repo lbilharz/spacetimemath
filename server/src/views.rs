@@ -98,7 +98,7 @@ pub fn my_classroom_sessions(ctx: &ViewContext) -> Vec<Session> {
     let mut visible_sessions = Vec::new();
     let sender = ctx.sender();
     
-    // Authorization: ALL sprints owned by the caller (active and historical)
+    // 1. Authorization: ALL sprints where the caller is the TEACHER (active and historical)
     // Security Acceptance Note: Exposing full historical sprint data to the teacher 
     // is an intentional, accepted educational boundary (Finding 4). It is required 
     // for post-sprint and all-time student trend analytics.
@@ -112,6 +112,27 @@ pub fn my_classroom_sessions(ctx: &ViewContext) -> Vec<Session> {
              ctx.db.sessions().class_sprint_id().filter(&sprint.id)
         );
     }
+
+    // 2. Authorization: ALL sprints where the caller is an active CLASSROOM MEMBER
+    // This allows students to view the classroom leaderboard during and after sprints.
+    let member_classes: Vec<u64> = ctx.db.classroom_members().player_identity().filter(&sender)
+        .map(|m| m.classroom_id).collect();
+        
+    for classroom_id in member_classes {
+        // Find all sprints for this classroom using the BTree index
+        let class_sprints = ctx.db.class_sprints().classroom_id().filter(&classroom_id);
+            
+        for sprint in class_sprints {
+            if sprint.id == 0 { continue; }
+            visible_sessions.extend(ctx.db.sessions().class_sprint_id().filter(&sprint.id));
+        }
+    }
+
+    // De-duplicate in case a user is both a teacher and a member (rare but possible),
+    // or if a sprint was added twice somehow.
+    visible_sessions.sort_by_key(|s| s.id);
+    visible_sessions.dedup_by_key(|s| s.id);
+
     visible_sessions
 }
 

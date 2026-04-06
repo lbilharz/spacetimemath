@@ -121,8 +121,8 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
 
     // Deactivate any previous active ClassSprint for this classroom
     let old_sprints: Vec<_> = ctx.db.class_sprints()
-        .iter()
-        .filter(|s| s.classroom_id == classroom_id && s.is_active)
+        .classroom_id().filter(&classroom_id)
+        .filter(|s| s.is_active)
         .collect();
     for s in old_sprints {
         ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..s });
