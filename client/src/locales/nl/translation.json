@@ -230,7 +230,9 @@
     "noReminders": "Geen actieve herinneringen. Voeg er een toe om je reeks te behouden!",
     "daily": "Elke dag",
     "weekly": "Specifieke dagen",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "Accounttype",
+    "accountTypeDesc": "Je huidige rol bepaalt welke functies beschikbaar zijn."
   },
   "unlock": {
     "tier1Title": "2-Cijferige vermenigvuldiger ontgrendeld!",

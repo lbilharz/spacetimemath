@@ -249,7 +249,9 @@
     "noReminders": "Keine aktiven Erinnerungen. Füge eine hinzu, um dranzubleiben!",
     "daily": "Jeden Tag",
     "weekly": "Bestimmte Tage",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "Kontotyp",
+    "accountTypeDesc": "Deine aktuelle Rolle bestimmt, welche Funktionen dir zur Verfügung stehen."
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",

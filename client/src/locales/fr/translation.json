@@ -230,7 +230,9 @@
     "noReminders": "Aucun rappel actif. Ajoutez-en un pour garder votre série !",
     "daily": "Tous les jours",
     "weekly": "Jours spécifiques",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "Type de compte",
+    "accountTypeDesc": "Votre rôle actuel détermine les fonctionnalités disponibles."
   },
   "unlock": {
     "tier1Title": "Multiplicateur à 2 chiffres débloqué !",

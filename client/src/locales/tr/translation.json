@@ -230,7 +230,9 @@
     "noReminders": "Aktif hatırlatıcı yok. Serini sürdürmek için bir tane ekle!",
     "daily": "Her gün",
     "weekly": "Belirli günler",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "Hesap Türü",
+    "accountTypeDesc": "Mevcut rolünüz hangi özelliklerin kullanılabilir olduğunu belirler."
   },
   "unlock": {
     "tier1Title": "2 Basamaklı Çarpan Açıldı!",

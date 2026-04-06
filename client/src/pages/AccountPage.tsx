@@ -7,6 +7,7 @@ import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
 import PageContainer from '../components/PageContainer.js';
+import TeacherUpgradeForm from '../components/TeacherUpgradeForm.js';
 import { AccountIcon } from '../components/Icons.js';
 import RemindersSettings from '../components/RemindersSettings.js';
 
@@ -19,7 +20,7 @@ interface Props {
 
 
 
-export default function AccountPage({ myPlayer }: Props) {
+export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const { t } = useTranslation();
   const { identity } = useSpacetimeDB();
   const [recoveryCodeResults] = useTable(
@@ -31,14 +32,14 @@ export default function AccountPage({ myPlayer }: Props) {
   const _createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
   const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
+
   // Username rename
   const [nameEditing, setNameEditing] = useState(false);
   const [newName, setNewName] = useState(myPlayer.username);
   const [nameSaving, setNameSaving] = useState(false);
   const [nameSaved, setNameSaved] = useState(false);
 
-  // Recovery key — read from private result table populated by getMyRecoveryCode reducer (SEC-03)
-  // Subscription is scoped to the caller's identity, so [0] is the only possible row.
+  // Recovery key
   const myRecoveryKey = (recoveryCodeResults as unknown as RecoveryCodeResult[])[0];
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
@@ -47,6 +48,10 @@ export default function AccountPage({ myPlayer }: Props) {
 
   // App Settings
   const [showTelemetry, setShowTelemetry] = useState(() => localStorage.getItem('show_telemetry') === '1');
+
+  // Teacher upgrade
+  const isTeacher = myPlayer.playerType?.tag === 'Teacher';
+  const [showUpgradeForm, setShowUpgradeForm] = useState(false);
 
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
@@ -88,6 +93,7 @@ export default function AccountPage({ myPlayer }: Props) {
       setEmailSending(false);
     }
   };
+
   const handleRename = async () => {
     const name = newName.trim();
     if (!name || name === myPlayer.username) { setNameEditing(false); return; }
@@ -117,7 +123,6 @@ export default function AccountPage({ myPlayer }: Props) {
 
   const initials = myPlayer.username.slice(0, 2).toUpperCase();
 
-
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
       <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
@@ -127,7 +132,7 @@ export default function AccountPage({ myPlayer }: Props) {
         {t('nav.account')}
       </h1>
 
-      {/* Profile header */}
+      {/* ── 1. Profile ──────────────────────────────────────────────── */}
       <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
         <div className="flex items-center gap-5 relative">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-yellow font-black text-2xl text-slate-900 shadow-inner">
@@ -146,7 +151,7 @@ export default function AccountPage({ myPlayer }: Props) {
                 />
                 <div className="flex gap-2">
                   <button className="flex-1 sm:flex-none rounded-xl bg-brand-yellow px-4 py-2 text-sm font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50" onClick={handleRename} disabled={nameSaving || !newName.trim()}>
-                    {nameSaving ? '…' : nameSaved ? t('common.saved') : t('common.save')}
+                    {nameSaving ? '...' : nameSaved ? t('common.saved') : t('common.save')}
                   </button>
                   <button className="flex-1 sm:flex-none rounded-xl bg-slate-100 dark:bg-slate-700/50 px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 transition-transform active:scale-95 border border-slate-200 dark:border-slate-700/50" onClick={() => { setNewName(myPlayer.username); setNameEditing(false); }}>
                     ✕
@@ -178,9 +183,44 @@ export default function AccountPage({ myPlayer }: Props) {
         </div>
       </div>
 
-      {/* App Preferences */}
+      {/* ── 2. Account Type ─────────────────────────────────────────── */}
       <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
-        <h2 className="mb-6 text-base font-bold text-slate-900 dark:text-white">⚙️ {t('account.settings')}</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('account.accountType')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.accountTypeDesc')}</p>
+          </div>
+          <span className={`inline-flex items-center rounded-xl px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest ${
+            isTeacher
+              ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-400'
+              : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+          }`}>
+            {isTeacher ? t('common.teacher') : t('common.student')}
+          </span>
+        </div>
+
+        {!isTeacher && (
+          <>
+            {!showUpgradeForm ? (
+              <button
+                onClick={() => setShowUpgradeForm(true)}
+                className="mt-4 w-full rounded-xl bg-brand-yellow/10 border border-brand-yellow/30 px-4 py-3 text-sm font-bold text-amber-700 dark:text-amber-400 transition-all hover:bg-brand-yellow/20 active:scale-[0.98]"
+              >
+                {t('classes.upgradePrompt')}
+              </button>
+            ) : (
+              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-300">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{t('classes.upgradeDesc')}</p>
+                <TeacherUpgradeForm myIdentityHex={myIdentityHex} onUpgraded={() => setShowUpgradeForm(false)} />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── 3. Preferences ──────────────────────────────────────────── */}
+      <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
+        <h2 className="mb-6 text-base font-bold text-slate-900 dark:text-white">{t('account.settings')}</h2>
 
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between">
@@ -205,6 +245,16 @@ export default function AccountPage({ myPlayer }: Props) {
 
           <div className="flex items-center justify-between">
             <div>
+              <div className="font-bold text-sm text-slate-700 dark:text-slate-300">{t('account.language')}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.languageDesc')}</div>
+            </div>
+            <LanguagePicker />
+          </div>
+
+          <div className="h-px w-full bg-slate-100 dark:bg-slate-700/50" />
+
+          <div className="flex items-center justify-between">
+            <div>
               <div className="font-bold text-sm text-slate-700 dark:text-slate-300">{t('account.telemetry')}</div>
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.telemetryDesc')}</div>
             </div>
@@ -223,26 +273,17 @@ export default function AccountPage({ myPlayer }: Props) {
             </button>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-bold text-sm text-slate-700 dark:text-slate-300">{t('account.language')}</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.languageDesc')}</div>
-            </div>
-            <LanguagePicker />
-          </div>
-
           <RemindersSettings />
         </div>
       </div>
 
-      {/* Account recovery */}
+      {/* ── 4. Security ─────────────────────────────────────────────── */}
       <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
-        <h2 className="mb-1.5 text-base font-bold text-slate-900 dark:text-white">🔑 {t('account.recovery')}</h2>
+        <h2 className="mb-1.5 text-base font-bold text-slate-900 dark:text-white">{t('account.recovery')}</h2>
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
           {t('account.recoveryDesc')}
         </p>
 
-        {/* Recovery key */}
         <h3 className="mb-1.5 text-sm font-bold text-slate-700 dark:text-slate-300">{t('account.recoveryKey')}</h3>
         {myRecoveryKey ? (
           <div className="flex flex-col gap-4">
@@ -294,7 +335,7 @@ export default function AccountPage({ myPlayer }: Props) {
               </div>
             )}
 
-            {/* Email recovery — always visible so users can resend */}
+            {/* Email recovery */}
             <div className="mt-3 pt-5 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
                 {t('account.emailKeyDesc')}
@@ -313,10 +354,10 @@ export default function AccountPage({ myPlayer }: Props) {
                   onClick={handleEmailKey}
                   disabled={emailSending || !emailInput.trim()}
                 >
-                  {emailSending ? '…' : myPlayer.recoveryEmailed ? t('account.emailKeyResend') : t('account.emailKeySend')}
+                  {emailSending ? '...' : myPlayer.recoveryEmailed ? t('account.emailKeyResend') : t('account.emailKeySend')}
                 </button>
               </div>
-              {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">✓ {t('account.emailKeySent')}</p>}
+              {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">{t('account.emailKeySent')}</p>}
               {emailError && <p className="mt-2 text-xs font-bold text-red-500">{emailError}</p>}
 
               {!myPlayer.recoveryEmailed && (
@@ -340,7 +381,7 @@ export default function AccountPage({ myPlayer }: Props) {
         )}
       </div>
 
-      {/* Danger zone */}
+      {/* ── 5. Session & Data ───────────────────────────────────────── */}
       <div className="flex flex-col rounded-2xl border border-red-200 bg-white p-6 shadow-sm dark:border-red-900/30 dark:bg-slate-800/80 transition-colors">
         <h2 className="mb-2 text-base font-bold text-red-600 dark:text-red-400">{t('account.session')}</h2>
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
@@ -366,7 +407,7 @@ export default function AccountPage({ myPlayer }: Props) {
                 onClick={handleDeleteAccount}
                 disabled={deleting}
               >
-                {deleting ? '…' : t('account.deleteConfirm')}
+                {deleting ? '...' : t('account.deleteConfirm')}
               </button>
             </div>
           </div>
@@ -384,6 +425,7 @@ export default function AccountPage({ myPlayer }: Props) {
         )}
       </div>
 
+      {/* ── Footer ──────────────────────────────────────────────────── */}
       <div className="mt-4 flex flex-wrap items-center justify-center gap-6 pb-2">
         {[
           { key: 'account.imprint', href: 'https://one.up.bilharz.eu/impressum' },

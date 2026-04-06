@@ -239,7 +239,9 @@
     "noReminders": "Sin recordatorios.",
     "daily": "Cada día",
     "weekly": "Días concretos",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "Tipo de cuenta",
+    "accountTypeDesc": "Tu rol actual determina qué funciones están disponibles."
   },
   "unlock": {
     "tier1Title": "¡Multiplicador de 10 abierto!",

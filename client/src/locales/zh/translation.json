@@ -230,7 +230,9 @@
     "noReminders": "没有活动的提醒。添加一个来保持你的连胜！",
     "daily": "每天",
     "weekly": "特定日期",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "账户类型",
+    "accountTypeDesc": "您当前的角色决定了可用的功能。"
   },
   "unlock": {
     "tier1Title": "已解锁两位数乘法！",

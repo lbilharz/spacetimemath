@@ -230,7 +230,9 @@
     "noReminders": "لا توجد تذكيرات نشطة. أضف واحداً للحفاظ على سلسلتك!",
     "daily": "كل يوم",
     "weekly": "أيام محددة",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "نوع الحساب",
+    "accountTypeDesc": "يحدد دورك الحالي الميزات المتاحة لك."
   },
   "unlock": {
     "tier1Title": "!تم فتح مضاعف الرقمين",

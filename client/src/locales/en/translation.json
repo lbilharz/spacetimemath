@@ -249,7 +249,9 @@
     "noReminders": "No active reminders. Add one to keep your streak alive!",
     "daily": "Every day",
     "weekly": "Specific days",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "accountType": "Account Type",
+    "accountTypeDesc": "Your current role determines what features are available to you."
   },
   "unlock": {
     "tier1Title": "2-Digit Multiplier Unlocked!",
