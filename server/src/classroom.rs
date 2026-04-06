@@ -283,17 +283,20 @@ pub fn restore_classroom(
 }
 
 /// DATA RESTORE: Re-insert a ClassroomMember row for the calling player.
-/// The caller (ctx.sender()) is the player being registered as a member.
-/// Skips if this player is already a member of the classroom.
+/// SEC-13: Admin-gated — only server admins can restore classroom members.
+/// This reducer exists for data recovery/migration only.
 #[reducer]
 pub fn restore_classroom_member(
     ctx: &ReducerContext,
     classroom_id: u64,
     hidden: bool,
 ) -> Result<(), String> {
+    if !crate::auth::is_admin(ctx, ctx.sender()) {
+        return Err("Only admins can restore classroom members".into());
+    }
     let already_member = ctx.db.classroom_members()
-        .iter()
-        .any(|m| m.classroom_id == classroom_id && m.player_identity == ctx.sender());
+        .classroom_id().filter(&classroom_id)
+        .any(|m| m.player_identity == ctx.sender());
     if already_member { return Ok(()); }
     ctx.db.classroom_members().insert(ClassroomMember {
         id: 0,

@@ -72,11 +72,9 @@ pub struct PlayerSecret {
     pub recovery_emailed: bool,
 }
 
-/// Email delivery status table — remains public (not view-wrapped) because:
-/// 1. Owner-keyed via primary key (only one row per identity)
-/// 2. Contains only delivery status (success/fail), not the email address
-/// 3. Named `my_*` by convention but is a direct table, not a view
-#[table(accessor = email_results, public)]
+/// Email delivery status table — now private. Clients access via the
+/// `my_email_results` view (views.rs), scoped to ctx.sender().
+#[table(accessor = email_results)]
 pub struct MyEmailResult {
     #[primary_key]
     pub owner: Identity,
@@ -407,6 +405,9 @@ pub fn identity_disconnected(ctx: &ReducerContext) {
     }
     // ACCT-03: Clean up any restore result row for disconnecting anonymous identity
     ctx.db.restore_results().caller().delete(ctx.sender());
+    // SEC-14: Clean up transient telemetry rows on disconnect
+    ctx.db.student_keystrokes().student_id().delete(ctx.sender());
+    ctx.db.teacher_focus().teacher_id().delete(ctx.sender());
 }
 
 /// EXT-01: Toggle extended-mode practice (curated 2-digit pairs: ×11,×12,×15,×20,×25).

@@ -173,6 +173,11 @@ pub struct ServerAdmin {
     pub identity: spacetimedb::Identity,
 }
 
+/// SEC-13: Check if an identity is a server admin.
+pub(crate) fn is_admin(ctx: &ReducerContext, who: spacetimedb::Identity) -> bool {
+    ctx.db.server_admins().identity().find(who).is_some()
+}
+
 #[reducer]
 pub fn grant_admin_to(ctx: &ReducerContext, target: spacetimedb::Identity) -> Result<(), String> {
     // If the table is entirely empty, anyone can bootstrap the first admin.

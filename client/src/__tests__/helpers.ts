@@ -13,7 +13,7 @@ const ALL_TABLES = [
   'SELECT * FROM class_sprints',
   'SELECT * FROM problem_stats',
   'SELECT * FROM online_players',
-  'SELECT * FROM email_results',
+  'SELECT * FROM my_email_results',
   'SELECT * FROM my_sessions',
   'SELECT * FROM my_answers',
   'SELECT * FROM my_issued_problem_results',

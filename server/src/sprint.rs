@@ -12,7 +12,7 @@ use crate::{
 use crate::{
     players, sessions, answers, issued_problems_v2, issued_problem_results_v2,
     sprint_sequences, next_problem_results_v2, problem_stats, best_scores, class_sprints,
-    kc_telemetry, player_dkt_weights
+    kc_telemetry, player_dkt_weights, classrooms, classroom_members
 };
 
 fn splitmix64(mut x: u64) -> u64 {
@@ -600,6 +600,26 @@ pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity,
 #[reducer]
 pub fn focus_student(ctx: &ReducerContext, student_id: Option<Identity>) -> Result<(), String> {
     use crate::teacher_focus;
+
+    // SEC-11: Only teachers can focus on students
+    let player = ctx.db.players().identity().find(ctx.sender())
+        .ok_or("Player not found")?;
+    if player.player_type != crate::PlayerType::Teacher {
+        return Err("Only teachers can focus students".into());
+    }
+
+    // SEC-12: If focusing a student, verify they share a classroom
+    if let Some(sid) = &student_id {
+        let teacher_classrooms: Vec<u64> = ctx.db.classrooms().teacher()
+            .filter(&ctx.sender()).map(|c| c.id).collect();
+        let student_in_teacher_class = ctx.db.classroom_members()
+            .player_identity().filter(sid)
+            .any(|m| teacher_classrooms.contains(&m.classroom_id));
+        if !student_in_teacher_class {
+            return Err("Student is not in your classroom".into());
+        }
+    }
+
     ctx.db.teacher_focus().teacher_id().delete(ctx.sender());
     if let Some(id) = student_id {
         ctx.db.teacher_focus().insert(crate::TeacherFocus {
@@ -615,7 +635,7 @@ pub fn sync_keystroke(ctx: &ReducerContext, current_input: String) -> Result<(),
     use crate::teacher_focus;
     use crate::student_keystrokes;
     // Check if any teacher is actively watching this student
-    let is_focused = ctx.db.teacher_focus().iter().any(|f| f.focused_student_id == ctx.sender());
+    let is_focused = ctx.db.teacher_focus().focused_student_id().filter(&ctx.sender()).next().is_some();
     if is_focused {
         ctx.db.student_keystrokes().student_id().delete(ctx.sender());
         ctx.db.student_keystrokes().insert(crate::StudentKeystroke {

@@ -340,16 +340,34 @@ describe('View Isolation Security Tests', () => {
   it('Test C: Raw Private Table Subscription Fails Gracefully', async () => {
     const client = await connect();
     await client.conn.reducers.register({ username: 'test_c', playerType: { tag: 'Solo' }, email: undefined });
-    
-    let _subError: any = null;
+
+    let subError: unknown = null;
+    let rowCount = 0;
     try {
-      client.conn.subscriptionBuilder().onApplied(() => {}).subscribe(['SELECT * FROM sessions']);
-      await new Promise(r => setTimeout(r, 1000)); 
+      await new Promise<void>((resolve) => {
+        client.conn.subscriptionBuilder()
+          .onApplied(() => {
+            // If subscription succeeds, check for leaked rows
+            const accessor = (client.conn.db as Record<string, unknown>).sessions;
+            if (accessor && typeof accessor === 'object' && 'iter' in accessor) {
+              rowCount = [...(accessor as { iter(): Iterable<unknown> }).iter()].length;
+            }
+            resolve();
+          })
+          .onError((_ctx: unknown, err: unknown) => {
+            subError = err;
+            resolve(); // Error is expected — resolve, don't reject
+          })
+          .subscribe(['SELECT * FROM sessions']);
+        setTimeout(resolve, 3000); // Timeout fallback
+      });
     } catch (e) {
-      _subError = e;
+      subError = e;
     }
-    
-    expect(true).toBe(true);
+
+    // MUST satisfy at least one: subscription errored OR zero rows returned
+    const isSecure = subError !== null || rowCount === 0;
+    expect(isSecure).toBe(true);
 
     disconnect(client.conn);
   }, 10_000);
