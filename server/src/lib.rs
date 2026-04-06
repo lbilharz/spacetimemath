@@ -1067,9 +1067,9 @@ pub struct ClassRecoveryResult {
     pub code: String,
 }
 
-/// FNV-1a of (sender bytes ++ timestamp micros) → 6 unambiguous uppercase chars
+/// FNV-1a of (sender bytes ++ timestamp micros) → 6-digit numeric code.
+/// Numeric codes are easier to type on mobile (native numpad) and to read aloud in class.
 pub(crate) fn make_code(ctx: &ReducerContext) -> String {
-    const CHARS: &[u8] = b"23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 32, no 0/O/1/I/L
     let ts = ctx.timestamp.to_micros_since_unix_epoch() as u64;
     let mut h: u64 = 14695981039346656037;
     for b in ctx.sender().to_byte_array() {
@@ -1078,7 +1078,7 @@ pub(crate) fn make_code(ctx: &ReducerContext) -> String {
     }
     h ^= ts;
     h = h.wrapping_mul(1099511628211);
-    (0..6).map(|i| CHARS[((h >> (i * 5)) & 31) as usize] as char).collect()
+    format!("{:06}", h % 1_000_000)
 }
 
 /// Same algorithm with a distinct seed → 12 chars for recovery keys
