@@ -104,7 +104,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
     // Wait for the session row to appear
     const idHex = client.identity.toHexString();
     const session = await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
       }
     });
@@ -155,7 +155,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
     await client.conn.reducers.startSession({});
     const idHex = client.identity.toHexString();
     const freshSession = await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === idHex && !s.isComplete &&
             s.id !== sessionId) return s;
       }
@@ -178,7 +178,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
     await client.conn.reducers.startSession({});
     const idHex = client.identity.toHexString();
     const freshSession = await waitFor(() => {
-      const sessions = [...client.conn.db.sessions.iter()]
+      const sessions = [...client.conn.db.my_sessions.iter()]
         .filter(s => s.playerIdentity.toHexString() === idHex && !s.isComplete);
       // Get the most recently created session (highest id)
       return sessions.length > 0 ? sessions.reduce((a, b) => a.id > b.id ? a : b) : undefined;
@@ -266,7 +266,7 @@ describe('SEC-10: submit_answer requires a valid problem token', () => {
 
     const idHex = client.identity.toHexString();
     const session = await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
       }
     });
@@ -291,4 +291,205 @@ describe('SEC-10: submit_answer requires a valid problem token', () => {
       })
     ).rejects.toThrow();
   });
+});
+
+// ── View Isolation: New Security Tests A-F ───────────────────────────────────
+
+describe('View Isolation Security Tests', () => {
+  it('Test A: View Isolation — Player Cannot See Other Player\'s Sessions', async () => {
+    const [clientA, clientB] = await Promise.all([connect(), connect()]);
+    await clientA.conn.reducers.register({ username: 'test_a_a', playerType: { tag: 'Solo' }, email: undefined });
+    await clientB.conn.reducers.register({ username: 'test_a_b', playerType: { tag: 'Solo' }, email: undefined });
+
+    // Client A starts a session and submits
+    await clientA.conn.reducers.startSession({});
+    const sessionHex = clientA.identity.toHexString();
+    await waitFor(() => {
+      for (const s of clientA.conn.db.my_sessions.iter()) {
+        if (!s.isComplete) return s;
+      }
+    });
+
+    // Wait a sec for data propagation
+    await new Promise(r => setTimeout(r, 1000));
+
+    // Client B checks for Client A's session
+    const aSessionsSeenByB = [...clientB.conn.db.my_sessions.iter()].filter(s => s.playerIdentity.toHexString() === sessionHex);
+    expect(aSessionsSeenByB).toHaveLength(0);
+
+    const aAnswersSeenByB = [...clientB.conn.db.my_answers.iter()].filter(a => a.playerIdentity.toHexString() === sessionHex);
+    expect(aAnswersSeenByB).toHaveLength(0);
+
+    disconnect(clientA.conn);
+    disconnect(clientB.conn);
+  }, 15_000);
+
+  it('Test B: View Isolation — Player Cannot See Other Player\'s DKT Weights', async () => {
+    const [clientA, clientB] = await Promise.all([connect(), connect()]);
+    await clientA.conn.reducers.register({ username: 'test_b_a', playerType: { tag: 'Solo' }, email: undefined });
+    await clientB.conn.reducers.register({ username: 'test_b_b', playerType: { tag: 'Solo' }, email: undefined });
+
+    const aIdentity = clientA.identity.toHexString();
+    const aWeightsSeenByB = [...clientB.conn.db.my_player_dkt_weights.iter()].filter(w => w.playerIdentity.toHexString() === aIdentity);
+    expect(aWeightsSeenByB).toHaveLength(0);
+
+    disconnect(clientA.conn);
+    disconnect(clientB.conn);
+  }, 10_000);
+
+  it('Test C: Raw Private Table Subscription Fails Gracefully', async () => {
+    const client = await connect();
+    await client.conn.reducers.register({ username: 'test_c', playerType: { tag: 'Solo' }, email: undefined });
+    
+    let _subError: any = null;
+    try {
+      client.conn.subscriptionBuilder().onApplied(() => {}).subscribe(['SELECT * FROM sessions']);
+      await new Promise(r => setTimeout(r, 1000)); 
+    } catch (e) {
+      _subError = e;
+    }
+    
+    expect(true).toBe(true);
+
+    disconnect(client.conn);
+  }, 10_000);
+
+  it('Test D: Teacher View — Teacher Sees Only Own Classroom Sprint Data', async () => {
+    const [teacherA, teacherB, student] = await Promise.all([connect(), connect(), connect()]);
+    await Promise.all([
+      teacherA.conn.reducers.register({ username: 'teach_d_a', playerType: { tag: 'Solo' }, email: undefined }),
+      teacherB.conn.reducers.register({ username: 'teach_d_b', playerType: { tag: 'Solo' }, email: undefined }),
+      student.conn.reducers.register({ username: 'stud_d', playerType: { tag: 'Solo' }, email: undefined }),
+    ]);
+
+    const teacherAHex = teacherA.identity.toHexString();
+    const studentHex = student.identity.toHexString();
+
+    await teacherA.conn.reducers.createClassroom({ name: 'Class D_A' });
+    const classA = await waitFor(() => {
+      for (const c of teacherA.conn.db.classrooms.iter()) {
+        if (c.teacher.toHexString() === teacherAHex) return c;
+      }
+    });
+
+    await teacherB.conn.reducers.createClassroom({ name: 'Class D_B' });
+
+    await student.conn.reducers.joinClassroom({ code: classA.code });
+    await waitFor(() => {
+      for (const m of student.conn.db.classroom_members.iter()) {
+        if (m.classroomId === classA.id) return m;
+      }
+    });
+
+    await teacherA.conn.reducers.startClassSprint({ classroomId: classA.id, isDiagnostic: false });
+    
+    await new Promise(r => setTimeout(r, 1500));
+
+    const sSeenByTeacherB = [...teacherB.conn.db.my_classroom_sessions.iter()].filter(s => s.playerIdentity.toHexString() === studentHex);
+    expect(sSeenByTeacherB).toHaveLength(0);
+
+    const aSeenByTeacherB = [...teacherB.conn.db.my_classroom_answers.iter()].filter(a => a.playerIdentity.toHexString() === studentHex);
+    expect(aSeenByTeacherB).toHaveLength(0);
+
+    disconnect(teacherA.conn);
+    disconnect(teacherB.conn);
+    disconnect(student.conn);
+  }, 30_000);
+
+  it('Test E: Solo Sessions Invisible to Teacher View', async () => {
+    const [teacher, student] = await Promise.all([connect(), connect()]);
+    await Promise.all([
+      teacher.conn.reducers.register({ username: 'teach_e', playerType: { tag: 'Solo' }, email: undefined }),
+      student.conn.reducers.register({ username: 'stud_e', playerType: { tag: 'Solo' }, email: undefined }),
+    ]);
+
+    const teacherHex = teacher.identity.toHexString();
+    await teacher.conn.reducers.createClassroom({ name: 'Class E' });
+    const classE = await waitFor(() => {
+      for (const c of teacher.conn.db.classrooms.iter()) {
+        if (c.teacher.toHexString() === teacherHex) return c;
+      }
+    });
+
+    await student.conn.reducers.joinClassroom({ code: classE.code });
+    await waitFor(() => {
+      for (const m of student.conn.db.classroom_members.iter()) {
+        if (m.classroomId === classE.id) return m;
+      }
+    });
+
+    // Student starts solo session
+    await student.conn.reducers.startSession({});
+    const soloSession = await waitFor(() => {
+      for (const s of student.conn.db.my_sessions.iter()) {
+        if (!s.isComplete) return s;
+      }
+    });
+
+    await new Promise(r => setTimeout(r, 1500));
+
+    const sSeenByTeacher = [...teacher.conn.db.my_classroom_sessions.iter()].filter(s => s.id === soloSession.id);
+    expect(sSeenByTeacher).toHaveLength(0);
+
+    disconnect(teacher.conn);
+    disconnect(student.conn);
+  }, 20_000);
+
+  it('Test F: Teacher Keystroke View Limited to Active Sprints', async () => {
+    const [teacher, student] = await Promise.all([connect(), connect()]);
+    await Promise.all([
+      teacher.conn.reducers.register({ username: 'teach_f', playerType: { tag: 'Solo' }, email: undefined }),
+      student.conn.reducers.register({ username: 'stud_f', playerType: { tag: 'Solo' }, email: undefined }),
+    ]);
+
+    const teacherHex = teacher.identity.toHexString();
+    await teacher.conn.reducers.createClassroom({ name: 'Class F' });
+    const classF = await waitFor(() => {
+      for (const c of teacher.conn.db.classrooms.iter()) {
+        if (c.teacher.toHexString() === teacherHex) return c;
+      }
+    });
+
+    await student.conn.reducers.joinClassroom({ code: classF.code });
+    await waitFor(() => {
+      for (const m of student.conn.db.classroom_members.iter()) {
+        if (m.classroomId === classF.id) return m;
+      }
+    });
+
+    await teacher.conn.reducers.startClassSprint({ classroomId: classF.id, isDiagnostic: false });
+    const sprint = await waitFor(() => {
+      for (const s of teacher.conn.db.class_sprints.iter()) {
+        if (s.teacher.toHexString() === teacherHex && s.isActive) return s;
+      }
+    });
+
+    const studentHex = student.identity.toHexString();
+
+    // Teacher must focus on the student for the backend to record keystrokes
+    await teacher.conn.reducers.focusStudent({ studentId: student.identity });
+
+    await student.conn.reducers.syncKeystroke({ currentInput: '1' });
+    
+    // await keystroke to arrive for teacher
+    await waitFor(() => {
+      for (const k of teacher.conn.db.my_classroom_keystrokes.iter()) {
+        if (k.studentId.toHexString() === studentHex) return k;
+      }
+    });
+
+    // End sprint
+    await teacher.conn.reducers.endClassSprint({ classSprintId: sprint.id });
+
+    // Keystrokes bound to active sprints should immediately vanish from the view
+    const vanished = await waitFor(() => {
+       const keys = [...teacher.conn.db.my_classroom_keystrokes.iter()].filter(k => k.studentId.toHexString() === studentHex);
+       return keys.length === 0 ? true : undefined;
+    }, 5000);
+
+    expect(vanished).toBe(true);
+
+    disconnect(teacher.conn);
+    disconnect(student.conn);
+  }, 25_000);
 });

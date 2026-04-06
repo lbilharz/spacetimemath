@@ -24,6 +24,7 @@ TABLES=(
   classroom_members
   problem_stats
   best_scores
+  class_sprints
 )
 
 for TABLE in "${TABLES[@]}"; do

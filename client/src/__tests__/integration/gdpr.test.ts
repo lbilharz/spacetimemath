@@ -60,7 +60,7 @@ describe('delete_player', () => {
       // Start and end a session to create session data
       await client.conn.reducers.startSession({});
       const session = await waitFor(() => {
-        for (const s of client.conn.db.sessions.iter()) {
+        for (const s of client.conn.db.my_sessions.iter()) {
           if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
         }
       }, 5_000);
@@ -69,7 +69,7 @@ describe('delete_player', () => {
 
       // Wait for session to be marked complete
       await waitFor(() => {
-        for (const s of client.conn.db.sessions.iter()) {
+        for (const s of client.conn.db.my_sessions.iter()) {
           if (s.id === session.id && s.isComplete) return s;
         }
       }, 5_000);
@@ -79,7 +79,7 @@ describe('delete_player', () => {
 
       // After deletion, no sessions should remain for this identity
       const noSessions = await waitFor(() => {
-        const remaining = [...client.conn.db.sessions.iter()].filter(
+        const remaining = [...client.conn.db.my_sessions.iter()].filter(
           s => s.playerIdentity.toHexString() === idHex
         );
         return remaining.length === 0 ? true : undefined;
@@ -106,7 +106,7 @@ describe('delete_player', () => {
       await seqClient.conn.reducers.startSession({});
       const idHex = seqClient.identity.toHexString();
       const session = await waitFor(() => {
-        for (const s of seqClient.conn.db.sessions.iter()) {
+        for (const s of seqClient.conn.db.my_sessions.iter()) {
           if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
         }
       }, 5_000);

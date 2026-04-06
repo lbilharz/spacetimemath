@@ -10,7 +10,7 @@ import { connect, waitFor, disconnect, type ConnectedClient } from '../helpers.j
 /** Find an incomplete session row for the connected client. */
 function findIncompleteSession(client: ConnectedClient) {
   const idHex = client.identity.toHexString();
-  for (const s of client.conn.db.sessions.iter()) {
+  for (const s of client.conn.db.my_sessions.iter()) {
     if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
   }
 }
@@ -18,7 +18,7 @@ function findIncompleteSession(client: ConnectedClient) {
 /** Find the NextProblemResult row for the connected client. */
 function findNextProblemResult(client: ConnectedClient) {
   const idHex = client.identity.toHexString();
-    for (const r of (client.conn.db as any).next_problem_results_v2.iter()) {
+    for (const r of client.conn.db.my_next_problem_results_v2.iter()) {
       if (r.owner.toHexString() === idHex) return r;
     }
 }
@@ -154,7 +154,7 @@ describe('server-side sprint sequencing', () => {
 
     // Wait for session to be marked complete
     await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.id === sessionId && s.isComplete) return s;
       }
     }, 8_000);
@@ -191,7 +191,7 @@ describe('server-side sprint sequencing', () => {
 
     const idHex = client.identity.toHexString();
     const answer = await waitFor(() => {
-      for (const a of client.conn.db.answers.iter()) {
+      for (const a of client.conn.db.my_answers.iter()) {
         if (a.playerIdentity.toHexString() === idHex && a.a === row.a && a.b === row.b && a.isCorrect) return a;
       }
     }, 8_000);

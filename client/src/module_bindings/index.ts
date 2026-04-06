@@ -64,6 +64,7 @@ import MigrateSeedExtendedPairsReducer from "./migrate_seed_extended_pairs_reduc
 import MigrateSeedExtendedStatsReducer from "./migrate_seed_extended_stats_reducer";
 import MigrateV3EconomyTriplerReducer from "./migrate_v_3_economy_tripler_reducer";
 import NextProblemReducer from "./next_problem_reducer";
+import RecoverOrphanedSprintsReducer from "./recover_orphaned_sprints_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
 import RemoveFriendReducer from "./remove_friend_reducer";
@@ -95,6 +96,7 @@ import BestScoresRow from "./best_scores_table";
 import ClassSprintsRow from "./class_sprints_table";
 import ClassroomMembersRow from "./classroom_members_table";
 import ClassroomsRow from "./classrooms_table";
+import EmailResultsRow from "./email_results_table";
 import FriendInvitesRow from "./friend_invites_table";
 import FriendshipsRow from "./friendships_table";
 import LegacyScoreBackupsRow from "./legacy_score_backups_table";
@@ -140,6 +142,9 @@ const tablesSchema = __schema({
   class_sprints: __table({
     name: 'class_sprints',
     indexes: [
+      { name: 'classroom_id', algorithm: 'btree', columns: [
+        'classroomId',
+      ] },
       { name: 'id', algorithm: 'btree', columns: [
         'id',
       ] },
@@ -185,6 +190,17 @@ const tablesSchema = __schema({
       { name: 'classrooms_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, ClassroomsRow),
+  email_results: __table({
+    name: 'email_results',
+    indexes: [
+      { name: 'owner', algorithm: 'btree', columns: [
+        'owner',
+      ] },
+    ],
+    constraints: [
+      { name: 'email_results_owner_key', constraint: 'unique', columns: ['owner'] },
+    ],
+  }, EmailResultsRow),
   friend_invites: __table({
     name: 'friend_invites',
     indexes: [
@@ -422,6 +438,7 @@ const reducersSchema = __reducers(
   __reducerSchema("migrate_seed_extended_stats", MigrateSeedExtendedStatsReducer),
   __reducerSchema("migrate_v_3_economy_tripler", MigrateV3EconomyTriplerReducer),
   __reducerSchema("next_problem", NextProblemReducer),
+  __reducerSchema("recover_orphaned_sprints", RecoverOrphanedSprintsReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("remove_friend", RemoveFriendReducer),

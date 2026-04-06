@@ -33,7 +33,7 @@ async function issueAndSubmit(
 ): Promise<void> {
   await client.conn.reducers.issueProblem({ sessionId, a, b });
   const result = await waitFor(() => {
-    for (const r of client.conn.db.issued_problem_results_v2.iter()) {
+    for (const r of client.conn.db.my_issued_problem_results_v2.iter()) {
       if (r.owner.toHexString() === client.identity.toHexString()) return r;
     }
   }, 5_000);
@@ -101,7 +101,7 @@ describe('class sprint scoring', () => {
 
     // Wait for the student's session to appear (created by startClassSprint on the server)
     const session = await waitFor(() => {
-      for (const s of student.conn.db.sessions.iter()) {
+      for (const s of student.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === studentHex && !s.isComplete
             && s.classSprintId === sprint.id) return s;
       }
@@ -143,7 +143,7 @@ describe('class sprint scoring', () => {
 
     // Wait for the student's session to appear
     const session2 = await waitFor(() => {
-      for (const s of student.conn.db.sessions.iter()) {
+      for (const s of student.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === studentHex && !s.isComplete
             && s.classSprintId === sprint2.id) return s;
       }

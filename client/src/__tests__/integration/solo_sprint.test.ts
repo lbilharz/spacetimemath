@@ -24,7 +24,7 @@ async function getNextProblemToken(
 ): Promise<{ a: number; b: number; token: string }> {
   // Capture current token to detect when a fresh result arrives
   let before: string | undefined;
-  for (const r of (client.conn.db as any).next_problem_results_v2.iter()) {
+  for (const r of client.conn.db.my_next_problem_results_v2.iter()) {
     if (r.owner.toHexString() === client.identity.toHexString()) {
       before = r.token;
       break;
@@ -34,7 +34,7 @@ async function getNextProblemToken(
   await client.conn.reducers.nextProblem({ sessionId });
 
   const result = await waitFor(() => {
-    for (const r of (client.conn.db as any).next_problem_results_v2.iter()) {
+    for (const r of client.conn.db.my_next_problem_results_v2.iter()) {
       if (r.owner.toHexString() === client.identity.toHexString()) {
         if (r.token !== before) return r; // fresh result
       }
@@ -59,7 +59,7 @@ describe('solo sprint (start → submit → end)', () => {
     await client.conn.reducers.startSession({});
 
     const session = await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === idHex && !s.isComplete) return s;
       }
     });
@@ -72,7 +72,7 @@ describe('solo sprint (start → submit → end)', () => {
 
   it('submit_answer records correct answers and increments totalAnswered', async () => {
     const idHex = client.identity.toHexString();
-    const countBefore = [...client.conn.db.answers.iter()].filter(
+    const countBefore = [...client.conn.db.my_answers.iter()].filter(
       a => a.playerIdentity.toHexString() === idHex
     ).length;
 
@@ -91,7 +91,7 @@ describe('solo sprint (start → submit → end)', () => {
 
     // Wait until all 4 answers are recorded
     const answers = await waitFor(() => {
-      const all = [...client.conn.db.answers.iter()].filter(
+      const all = [...client.conn.db.my_answers.iter()].filter(
         a => a.playerIdentity.toHexString() === idHex
       );
       return all.length >= countBefore + ANSWERS.length ? all : undefined;
@@ -110,7 +110,7 @@ describe('solo sprint (start → submit → end)', () => {
     await client.conn.reducers.submitAnswer({ sessionId, a, b, userAnswer: wrongAnswer, attempts: 1, responseMs: 1000, problemToken: token });
 
     const wrong = await waitFor(() => {
-      for (const ans of client.conn.db.answers.iter()) {
+      for (const ans of client.conn.db.my_answers.iter()) {
         if (ans.playerIdentity.toHexString() === idHex && !ans.isCorrect) return ans;
       }
     });
@@ -123,7 +123,7 @@ describe('solo sprint (start → submit → end)', () => {
     await client.conn.reducers.endSession({ sessionId });
 
     const session = await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.id === sessionId && s.isComplete) return s;
       }
     });

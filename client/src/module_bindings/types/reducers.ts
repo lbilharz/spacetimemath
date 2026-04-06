@@ -36,6 +36,7 @@ import MigrateSeedExtendedPairsReducer from "../migrate_seed_extended_pairs_redu
 import MigrateSeedExtendedStatsReducer from "../migrate_seed_extended_stats_reducer";
 import MigrateV3EconomyTriplerReducer from "../migrate_v_3_economy_tripler_reducer";
 import NextProblemReducer from "../next_problem_reducer";
+import RecoverOrphanedSprintsReducer from "../recover_orphaned_sprints_reducer";
 import RegenerateRecoveryKeyReducer from "../regenerate_recovery_key_reducer";
 import RegisterReducer from "../register_reducer";
 import RemoveFriendReducer from "../remove_friend_reducer";
@@ -90,6 +91,7 @@ export type MigrateSeedExtendedPairsParams = __Infer<typeof MigrateSeedExtendedP
 export type MigrateSeedExtendedStatsParams = __Infer<typeof MigrateSeedExtendedStatsReducer>;
 export type MigrateV3EconomyTriplerParams = __Infer<typeof MigrateV3EconomyTriplerReducer>;
 export type NextProblemParams = __Infer<typeof NextProblemReducer>;
+export type RecoverOrphanedSprintsParams = __Infer<typeof RecoverOrphanedSprintsReducer>;
 export type RegenerateRecoveryKeyParams = __Infer<typeof RegenerateRecoveryKeyReducer>;
 export type RegisterParams = __Infer<typeof RegisterReducer>;
 export type RemoveFriendParams = __Infer<typeof RemoveFriendReducer>;

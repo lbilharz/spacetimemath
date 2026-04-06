@@ -8,7 +8,7 @@ mod gdpr;
 pub mod generator;
 mod friends;
 mod views;
-
+mod recovery;
 // Re-export scheduled reducers so the `scheduled(...)` macro in #[table] attributes can find them.
 pub use classroom::auto_end_class_sprint;
 
@@ -72,8 +72,11 @@ pub struct PlayerSecret {
     pub recovery_emailed: bool,
 }
 
-/// Exception to View-Based Access: Renamed from my_email_results. Now private.
-#[table(accessor = email_results)]
+/// Email delivery status table — remains public (not view-wrapped) because:
+/// 1. Owner-keyed via primary key (only one row per identity)
+/// 2. Contains only delivery status (success/fail), not the email address
+/// 3. Named `my_*` by convention but is a direct table, not a view
+#[table(accessor = email_results, public)]
 pub struct MyEmailResult {
     #[primary_key]
     pub owner: Identity,
@@ -177,9 +180,9 @@ pub struct IssuedProblemV2 {
     pub options: Vec<u32>,
 }
 
-/// SEC-10: Result table — now private. Accessed by clients exclusively through
-/// the `my_issued_problem_results` view (views.rs), which scopes to ctx.sender().
-/// Previously public due to SpacetimeDB 2.0.3 limitations (resolved via views).
+/// SEC-10: Result table — now private. Clients access via the
+/// `my_issued_problem_results` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 #[table(accessor = issued_problem_results)]
 pub struct IssuedProblemResult {
     #[primary_key]
@@ -189,6 +192,9 @@ pub struct IssuedProblemResult {
     pub prompt_mode: u8,
 }
 
+/// SEC-10: Result table — now private. Clients access via the
+/// `my_issued_problem_results_v2` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 #[table(accessor = issued_problem_results_v2)]
 pub struct IssuedProblemResultV2 {
     #[primary_key]
@@ -243,10 +249,9 @@ pub struct SprintSequence {
     pub index: u32,         // pointer to the next problem to serve
 }
 
-/// SEQ-02: Result table for server-driven problem delivery — now private.
-/// One row per player — upserted by next_problem reducer.
-/// Accessed securely via the `my_next_problem_results` view scoped to ctx.sender().
-/// Previously public due to SpacetimeDB 2.0.3 limitations (resolved via views).
+/// SEQ-02: Result table for server-driven problem delivery — now private. Clients access via the
+/// `my_next_problem_results` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 #[table(accessor = next_problem_results)]
 pub struct NextProblemResult {
     #[primary_key]
@@ -259,6 +264,9 @@ pub struct NextProblemResult {
     pub prompt_mode: u8,
 }
 
+/// SEQ-02: Result table for server-driven problem delivery — now private. Clients access via the
+/// `my_next_problem_results_v2` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 #[table(accessor = next_problem_results_v2)]
 pub struct NextProblemResultV2 {
     #[primary_key]
@@ -1018,9 +1026,9 @@ pub struct RecoveryKey {
     pub token: String,
 }
 
-/// Result table — now private. Rows are short-lived and owner-keyed (SEC-03).
-/// Populated by get_my_recovery_code and regenerate_recovery_key.
-/// Accessed securely via the `my_recovery_code_results` view scoped to ctx.sender().
+/// SEC-03: Result table — now private. Clients access via the
+/// `my_recovery_code_results` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 #[table(accessor = recovery_code_results)]
 pub struct RecoveryCodeResult {
     #[primary_key]
@@ -1028,9 +1036,9 @@ pub struct RecoveryCodeResult {
     pub code: String,
 }
 
-/// ACCT-03: Result table for restore_account — now private.
-/// Accessed securely via the `my_restore_results` view scoped to ctx.sender().
-/// Previously public due to SpacetimeDB 2.0.3 limitations (resolved via views).
+/// ACCT-03: Result table — now private. Clients access via the
+/// `my_restore_results` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 /// The token is short-lived: consumed the moment the client reloads, and the
 /// row is deleted in identity_disconnected so the window is <1 s.
 #[table(accessor = restore_results)]
@@ -1040,10 +1048,9 @@ pub struct RestoreResult {
     pub token: String,
 }
 
-/// ACCT-04: Result table for get_class_recovery_codes — now private.
-/// Accessed securely via the `my_class_recovery_results` view scoped to teacher ctx.sender().
-/// Rows are created on demand (teacher calls get_class_recovery_codes) and
-/// deleted when the teacher disconnects (identity_disconnected cleanup).
+/// ACCT-04: Result table — now private. Clients access via the
+/// `my_class_recovery_results` view (views.rs), scoped to ctx.sender().
+/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
 #[table(accessor = class_recovery_results)]
 pub struct ClassRecoveryResult {
     #[primary_key]

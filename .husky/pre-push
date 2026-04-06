@@ -1,1 +1,8 @@
-cd client && npm run test:e2e:ci
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd client
+if [ -n "$TEST_STDB_URI" ]; then
+  npm run test:integration
+fi
+npm run test:e2e:ci
