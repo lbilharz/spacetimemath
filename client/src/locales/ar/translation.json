@@ -202,6 +202,7 @@
     "emailKeyDesc": ".أرسل مفتاح الاسترداد لنفسك عبر البريد الإلكتروني حتى تتمكن من استعادة الوصول على أي جهاز",
     "emailKeyPlaceholder": "your@email.com",
     "emailKeySend": "إرسال",
+    "emailKeyResend": "إعادة الإرسال",
     "emailKeySent": ".تم إرسال مفتاح الاسترداد — تحقق من بريدك الوارد",
     "emailKeyError": ".فشل الإرسال. حاول مرة أخرى",
     "generateRecoveryKey": "إنشاء مفتاح استرداد",

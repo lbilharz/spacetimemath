@@ -211,6 +211,7 @@
     "emailKeyDesc": "Envíate tu clave por correo electrónico.",
     "emailKeyPlaceholder": "tu@correo.com",
     "emailKeySend": "Enviar",
+    "emailKeyResend": "Reenviar",
     "emailKeySent": "Clave enviada: comprueba tu bandeja de entrada.",
     "emailKeyError": "Fallo al enviar. Inténtalo de nuevo.",
     "generateRecoveryKey": "Generar clave",

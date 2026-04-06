@@ -202,6 +202,7 @@
     "emailKeyDesc": "将恢复密钥发给到你的邮箱，以便在任何设备上恢复访问。",
     "emailKeyPlaceholder": "your@email.com",
     "emailKeySend": "发送",
+    "emailKeyResend": "重新发送",
     "emailKeySent": "恢复密钥已发送 — 请检查你的收件箱。",
     "emailKeyError": "发送失败。请重试。",
     "generateRecoveryKey": "生成恢复密钥",

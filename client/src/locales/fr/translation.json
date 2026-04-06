@@ -202,6 +202,7 @@
     "emailKeyDesc": "Envoie-toi ta clé de récupération par e-mail pour restaurer l'accès sur n'importe quel appareil.",
     "emailKeyPlaceholder": "ton@email.com",
     "emailKeySend": "Envoyer",
+    "emailKeyResend": "Renvoyer",
     "emailKeySent": "Clé de récupération envoyée — vérifie ta boîte de réception.",
     "emailKeyError": "Échec de l'envoi. Réessaie.",
     "generateRecoveryKey": "Générer une clé de récupération",

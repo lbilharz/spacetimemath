@@ -221,6 +221,7 @@
     "emailKeyDesc": "Email your recovery key to yourself so you can restore access on any device.",
     "emailKeyPlaceholder": "your@email.com",
     "emailKeySend": "Send",
+    "emailKeyResend": "Resend",
     "emailKeySent": "Recovery key sent — check your inbox.",
     "emailKeyError": "Failed to send. Try again.",
     "generateRecoveryKey": "Generate recovery key",

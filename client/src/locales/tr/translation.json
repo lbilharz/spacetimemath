@@ -202,6 +202,7 @@
     "emailKeyDesc": "Erişimi herhangi bir cihazda kurtarabilmek için kurtarma anahtarını kendine e-postala.",
     "emailKeyPlaceholder": "epostaniz@ornek.com",
     "emailKeySend": "Gönder",
+    "emailKeyResend": "Tekrar gönder",
     "emailKeySent": "Kurtarma anahtarı gönderildi — gelen kutunu kontrol et.",
     "emailKeyError": "Gönderilemedi. Tekrar dene.",
     "generateRecoveryKey": "Kurtarma anahtarı oluştur",

@@ -202,6 +202,7 @@
     "emailKeyDesc": "E-mail je herstelsleutel naar jezelf zodat je de toegang op elk apparaat kunt herstellen.",
     "emailKeyPlaceholder": "jouw@email.com",
     "emailKeySend": "Verzenden",
+    "emailKeyResend": "Opnieuw verzenden",
     "emailKeySent": "Herstelsleutel verzonden — check je inbox.",
     "emailKeyError": "Verzenden mislukt. Probeer het opnieuw.",
     "generateRecoveryKey": "Herstelsleutel genereren",

@@ -80,7 +80,7 @@ export default function AccountPage({ myPlayer }: Props) {
         body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
       });
       if (!res.ok) throw new Error();
-      await markRecoveryEmailed();
+      if (!myPlayer.recoveryEmailed) await markRecoveryEmailed();
       setEmailSent(true);
     } catch {
       setEmailError(t('account.emailKeyError'));
@@ -294,40 +294,40 @@ export default function AccountPage({ myPlayer }: Props) {
               </div>
             )}
 
-            {/* Email recovery */}
-            {!myPlayer.recoveryEmailed && (
-              <div className="mt-3 pt-5 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
-                  {t('account.emailKeyDesc')}
-                </p>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={emailInput}
-                    onChange={e => setEmailInput(e.target.value)}
-                    placeholder={t('account.emailKeyPlaceholder')}
-                    className="w-full flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
-                    onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
-                  />
-                  <button
-                    className="shrink-0 rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition-transform active:scale-95 disabled:opacity-50"
-                    onClick={handleEmailKey}
-                    disabled={emailSending || !emailInput.trim()}
-                  >
-                    {emailSending ? '…' : t('account.emailKeySend')}
-                  </button>
-                </div>
-                {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">✓ {t('account.emailKeySent')}</p>}
-                {emailError && <p className="mt-2 text-xs font-bold text-red-500">{emailError}</p>}
-                
+            {/* Email recovery — always visible so users can resend */}
+            <div className="mt-3 pt-5 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
+                {t('account.emailKeyDesc')}
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={e => setEmailInput(e.target.value)}
+                  placeholder={t('account.emailKeyPlaceholder')}
+                  className="w-full flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
+                  onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
+                />
+                <button
+                  className="shrink-0 rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition-transform active:scale-95 disabled:opacity-50"
+                  onClick={handleEmailKey}
+                  disabled={emailSending || !emailInput.trim()}
+                >
+                  {emailSending ? '…' : myPlayer.recoveryEmailed ? t('account.emailKeyResend') : t('account.emailKeySend')}
+                </button>
+              </div>
+              {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">✓ {t('account.emailKeySent')}</p>}
+              {emailError && <p className="mt-2 text-xs font-bold text-red-500">{emailError}</p>}
+
+              {!myPlayer.recoveryEmailed && (
                 <button
                   className="w-full mt-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-3 text-xs font-bold text-slate-500 dark:text-slate-400 transition-colors border border-slate-200 dark:border-slate-700"
                   onClick={() => markRecoveryEmailed()}
                 >
                   {t('account.keySaved')}
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ) : (
           <button

@@ -221,6 +221,7 @@
     "emailKeyDesc": "Schick dir deinen Wiederherstellungsschlüssel per E-Mail, damit du auf jedem Gerät Zugang hast.",
     "emailKeyPlaceholder": "deine@email.de",
     "emailKeySend": "Senden",
+    "emailKeyResend": "Erneut senden",
     "emailKeySent": "Schlüssel gesendet — prüfe dein Postfach.",
     "emailKeyError": "Fehler beim Senden. Bitte erneut versuchen.",
     "generateRecoveryKey": "Wiederherstellungsschlüssel erstellen",
