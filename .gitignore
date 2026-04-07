@@ -31,3 +31,4 @@ trainer/.venv/
 
 # App Store 
 client/ios/App/fastlane/screenshots/
+.vercel

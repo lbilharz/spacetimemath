@@ -373,8 +373,19 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         ) : (
           <button
             className="w-full rounded-xl bg-brand-yellow px-4 py-3 text-sm font-bold text-slate-900 transition-transform active:scale-[0.98] shadow-sm"
-            onClick={handleGenerateRecoveryKey}
-            disabled={generatingKey || !capturedToken}
+            onClick={() => {
+              const token = capturedToken || JSON.parse(localStorage.getItem('spacetimemath_credentials') || '{}').token;
+              if (token) {
+                setGeneratingKey(true);
+                regenerateRecoveryKey({ token })
+                  .finally(() => {
+                    setGeneratingKey(false);
+                    setConfirmRegenerate(false);
+                    setKeyRevealed(false);
+                  });
+              }
+            }}
+            disabled={generatingKey || (!capturedToken && !localStorage.getItem('spacetimemath_credentials'))}
           >
             {generatingKey ? t('common.generating') : t('account.generateRecoveryKey')}
           </button>

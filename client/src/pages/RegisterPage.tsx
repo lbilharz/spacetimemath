@@ -99,8 +99,8 @@ export default function RegisterPage({ onRegistered }: Props) {
             return;
          }
          
-         // Register natively as Solo
-         await register({ 
+         // Register natively as Solo - fire and forget so we don't block email verification API request
+         register({ 
              username: name, 
              playerType: { tag: 'Solo' }, 
              email: undefined 
