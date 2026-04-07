@@ -5,6 +5,7 @@ import { reducers } from '../module_bindings/index.js';
 
 interface Props {
   myIdentityHex: string | undefined;
+  name?: string;
   /** Called after successful verification. */
   onUpgraded?: () => void;
 }
@@ -13,8 +14,8 @@ interface Props {
  * Self-contained teacher upgrade flow: email → HMAC verification code → reducer.
  * Used in both AccountPage and ClassroomsPage.
  */
-export default function TeacherUpgradeForm({ myIdentityHex, onUpgraded }: Props) {
-  const { t } = useTranslation();
+export default function TeacherUpgradeForm({ myIdentityHex, name, onUpgraded }: Props) {
+  const { t, i18n } = useTranslation();
   const verifyTeacherUpgrade = useSTDBReducer(reducers.verifyTeacherUpgrade);
 
   const [email, setEmail] = useState('');
@@ -40,7 +41,7 @@ export default function TeacherUpgradeForm({ myIdentityHex, onUpgraded }: Props)
       const res = await fetch('/api/send-teacher-verif', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), identityHex: myIdentityHex }),
+        body: JSON.stringify({ email: email.trim(), identityHex: myIdentityHex, name, locale: i18n.language }),
       });
       if (!res.ok) {
         let errorMsg = 'Failed to send verification email';

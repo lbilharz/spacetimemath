@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function RegisterPage({ onRegistered }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   // Split flow states
   const [flowType, setFlowType] = useState<'teacher' | 'student' | 'solo' | null>(null);
@@ -110,7 +110,7 @@ export default function RegisterPage({ onRegistered }: Props) {
          const res = await fetch('/api/send-teacher-verif', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ email: email.trim(), identityHex: hex })
+           body: JSON.stringify({ email: email.trim(), identityHex: hex, name, locale: i18n.language })
          });
          
          if (!res.ok) {

@@ -21,7 +21,7 @@ interface Props {
 
 
 export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { identity } = useSpacetimeDB();
   const [recoveryCodeResults] = useTable(
     identity
@@ -82,7 +82,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
       const res = await fetch('/api/send-recovery-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code }),
+        body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code, name: myPlayer.username, locale: i18n.language }),
       });
       if (!res.ok) throw new Error();
       if (!myPlayer.recoveryEmailed) await markRecoveryEmailed();
