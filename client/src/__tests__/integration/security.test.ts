@@ -10,6 +10,29 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { connect, waitFor, disconnect, type ConnectedClient } from '../helpers.js';
+import crypto from 'crypto';
+
+async function performTeacherUpgrade(client: ConnectedClient) {
+  const secret = process.env.HMAC_SECRET || 'STM_FALLBACK_HMAC_SECRET';
+  const email = 'teacher@example.com';
+  const code = '123456';
+  const expiresAtMs = Date.now() + 15 * 60 * 1000;
+  const identityHex = client.identity.toHexString();
+  const formattedHex = identityHex.startsWith('0x') ? identityHex : '0x' + identityHex;
+  const payload = `${formattedHex}${email}${code}${expiresAtMs}`;
+  const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+
+  await client.conn.reducers.verifyTeacherUpgrade({
+    email,
+    code,
+    signature,
+    expiresAtMs: BigInt(expiresAtMs),
+    gdprConsent: true,
+    teacherDeclaration: true
+  });
+  
+  await new Promise(r => setTimeout(r, 500));
+}
 
 // ── SEC-01 & SEC-02: Table visibility ────────────────────────────────────────
 
@@ -132,6 +155,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
           b,
           userAnswer: a * b,
           attempts: 1, responseMs: 800,
+          problemToken: '',
         });
       } catch {
         // Some submissions may fail before cap is implemented — that's fine
@@ -146,6 +170,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
         b: 3,
         userAnswer: 6,
         attempts: 1, responseMs: 800,
+        problemToken: '',
       })
     ).rejects.toThrow();
   });
@@ -168,6 +193,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
         b: 3,
         userAnswer: 6,
         attempts: 1, responseMs: 100, // below MIN_RESPONSE_MS = 200
+        problemToken: '',
       })
     ).rejects.toThrow();
   });
@@ -191,6 +217,7 @@ describe('SEC-04, SEC-05, SEC-06: submit_answer hardening', () => {
         b: 8,
         userAnswer: 56,
         attempts: 1, responseMs: 800,
+        problemToken: '',
       })
     ).rejects.toThrow();
   });
@@ -354,7 +381,7 @@ describe('View Isolation Security Tests', () => {
             }
             resolve();
           })
-          .onError((_ctx: unknown, err: unknown) => {
+          .onError((err: any) => {
             subError = err;
             resolve(); // Error is expected — resolve, don't reject
           })
@@ -379,6 +406,9 @@ describe('View Isolation Security Tests', () => {
       teacherB.conn.reducers.register({ username: 'teach_d_b', playerType: { tag: 'Solo' }, email: undefined }),
       student.conn.reducers.register({ username: 'stud_d', playerType: { tag: 'Solo' }, email: undefined }),
     ]);
+
+    await performTeacherUpgrade(teacherA);
+    await performTeacherUpgrade(teacherB);
 
     const teacherAHex = teacherA.identity.toHexString();
     const studentHex = student.identity.toHexString();
@@ -421,6 +451,8 @@ describe('View Isolation Security Tests', () => {
       student.conn.reducers.register({ username: 'stud_e', playerType: { tag: 'Solo' }, email: undefined }),
     ]);
 
+    await performTeacherUpgrade(teacher);
+
     const teacherHex = teacher.identity.toHexString();
     await teacher.conn.reducers.createClassroom({ name: 'Class E' });
     const classE = await waitFor(() => {
@@ -459,6 +491,8 @@ describe('View Isolation Security Tests', () => {
       teacher.conn.reducers.register({ username: 'teach_f', playerType: { tag: 'Solo' }, email: undefined }),
       student.conn.reducers.register({ username: 'stud_f', playerType: { tag: 'Solo' }, email: undefined }),
     ]);
+
+    await performTeacherUpgrade(teacher);
 
     const teacherHex = teacher.identity.toHexString();
     await teacher.conn.reducers.createClassroom({ name: 'Class F' });
