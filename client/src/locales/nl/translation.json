@@ -451,5 +451,25 @@
     "confirm": "Bevestigen",
     "score": "Score",
     "unknownPlayer": "Onbekende Speler"
+  },
+  "email": {
+    "impressum": "Imprint",
+    "privacy": "Privacy Policy",
+    "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
+    "recovery": {
+      "subject": "Your Better 1UP recovery key",
+      "greeting_name": "Hi {{name}},",
+      "greeting_anon": "Hello,",
+      "body": "Use this to restore your account on any device. Keep it safe.",
+      "button": "Restore my account →",
+      "orManual": "Or go to <a href=\"{{appUrl}}\" style=\"color:#606060\">{{appDomain}}</a> and enter the code manually under \"Restore account\"."
+    },
+    "teacher": {
+      "subject": "Your Teacher Verification Code",
+      "greeting_name": "Hi {{name}},",
+      "greeting_anon": "Hello,",
+      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
+      "ignore": "If you didn't request this, you can safely ignore this email."
+    }
   }
 }
