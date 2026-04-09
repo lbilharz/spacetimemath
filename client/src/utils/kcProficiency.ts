@@ -29,7 +29,7 @@ export const KC = {
 export const KC_COUNT = 11;
 
 /** KCs that are always implicitly known — never surface as a "focus area" even if untouched. */
-export const KC_TRIVIAL = new Set([KC.ZeroProperty, KC.Identity]);
+export const KC_TRIVIAL = new Set<number>([KC.ZeroProperty, KC.Identity]);
 
 // ---------------------------------------------------------------------------
 // KC Tagging — client-side mirror of calculate_kcs_for_multiplication
