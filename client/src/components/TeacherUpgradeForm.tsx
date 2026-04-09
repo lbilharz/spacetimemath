@@ -77,6 +77,7 @@ export default function TeacherUpgradeForm({ myIdentityHex, name, onUpgraded }: 
     setError('');
     try {
       await verifyTeacherUpgrade({
+        username: undefined,
         email: email.trim(),
         code: verificationCode.trim(),
         signature: hmacSignature,

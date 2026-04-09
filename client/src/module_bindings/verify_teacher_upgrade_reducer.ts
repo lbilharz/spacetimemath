@@ -11,6 +11,7 @@ import {
 } from "spacetimedb";
 
 export default {
+  username: __t.option(__t.string()),
   email: __t.string(),
   code: __t.string(),
   signature: __t.string(),

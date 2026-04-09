@@ -99,13 +99,7 @@ export default function RegisterPage({ onRegistered }: Props) {
             return;
          }
          
-         // Register natively as Solo - fire and forget so we don't block email verification API request
-         register({ 
-             username: name, 
-             playerType: { tag: 'Solo' }, 
-             email: undefined 
-         });
-         
+
          // Trigger verification email via Vercel Admin API
          const res = await fetch('/api/send-teacher-verif', {
            method: 'POST',
@@ -188,6 +182,7 @@ export default function RegisterPage({ onRegistered }: Props) {
     setError('');
     try {
       await verifyTeacherUpgrade({ 
+          username: username.trim(),
           email: email.trim(),
           code: verificationCode.trim(), 
           signature: hmacSignature,

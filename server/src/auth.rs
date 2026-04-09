@@ -222,7 +222,7 @@ pub fn admin_set_hmac_secret(ctx: &ReducerContext, secret: String) -> Result<(),
 
 /// Upgrade a Solo player to a Teacher using a signed verification code.
 #[reducer]
-pub fn verify_teacher_upgrade(ctx: &ReducerContext, email: String, code: String, signature: String, expires_at_ms: u64, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
+pub fn verify_teacher_upgrade(ctx: &ReducerContext, username: Option<String>, email: String, code: String, signature: String, expires_at_ms: u64, gdpr_consent: bool, teacher_declaration: bool) -> Result<(), String> {
     if !gdpr_consent || !teacher_declaration {
         return Err("Must provide all required consents.".into());
     }
@@ -233,9 +233,12 @@ pub fn verify_teacher_upgrade(ctx: &ReducerContext, email: String, code: String,
         return Err("Verification code has expired. Please request a new one.".into());
     }
 
-    let player = get_player(ctx)?;
-    if player.player_type == PlayerType::Student {
-        return Err("Students cannot upgrade to Teachers.".into());
+    if let Some(player) = get_player(ctx).ok() {
+        if player.player_type == PlayerType::Student {
+            return Err("Students cannot upgrade to Teachers.".into());
+        }
+    } else if username.is_none() {
+        return Err("Player does not exist and no fallback username was provided.".into());
     }
     
     // 2. Fetch shared secret (with fallback)
@@ -260,12 +263,41 @@ pub fn verify_teacher_upgrade(ctx: &ReducerContext, email: String, code: String,
         return Err("Invalid or tampered verification code signature.".into());
     }
     
-    // 5. Apply Upgrade
-    ctx.db.players().identity().update(Player {
-        player_type: PlayerType::Teacher,
-        email: None,
-        ..player
-    });
+    // 5. Apply Upgrade or Creation
+    if let Some(player) = ctx.db.players().identity().find(ctx.sender()) {
+        ctx.db.players().identity().update(Player {
+            player_type: PlayerType::Teacher,
+            email: None,
+            ..player
+        });
+    } else if let Some(uname) = username {
+        let name = uname.trim().to_string();
+        validate_username(&name)?;
+        
+        ctx.db.players().insert(Player {
+            identity: ctx.sender(),
+            player_type: PlayerType::Teacher,
+            class_id: None,
+            email: None,
+            username: name.clone(),
+            best_score: 0.0,
+            total_sessions: 0,
+            total_correct: 0,
+            total_answered: 0,
+            onboarding_done: false,
+            learning_tier: 0,
+            recovery_emailed: false,
+            extended_mode: false,
+            extended_level: 0,
+        });
+        
+        ctx.db.online_players().try_insert(OnlinePlayer {
+            identity: ctx.sender(),
+            username: name,
+            connected_at: ctx.timestamp,
+            connection_count: 1,
+        }).ok();
+    }
     
     // Store email privately
     match ctx.db.player_secrets().identity().find(ctx.sender()) {
