@@ -33,10 +33,12 @@ pub fn create_recovery_key(ctx: &ReducerContext, token: String) -> Result<(), St
 #[reducer]
 pub fn get_my_recovery_code(ctx: &ReducerContext) -> Result<(), String> {
     let _player = get_player(ctx)?;
-    let record = ctx.db.recovery_keys()
+    let record = match ctx.db.recovery_keys()
         .iter()
-        .find(|k| k.owner == ctx.sender())
-        .ok_or("No recovery key found")?;
+        .find(|k| k.owner == ctx.sender()) {
+            Some(r) => r,
+            None => return Ok(()) // Silent fail: player might just have registered and key is in flight
+        };
     match ctx.db.recovery_code_results().owner().find(ctx.sender()) {
         Some(_) => {
             ctx.db.recovery_code_results().owner().update(RecoveryCodeResult {

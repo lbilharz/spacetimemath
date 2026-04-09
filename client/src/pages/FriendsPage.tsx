@@ -5,7 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Friendship, FriendInvite } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
-import { FriendsIcon, CodeIcon, InviteLinkIcon } from '../components/Icons.js';
+import { FriendsIcon, CodeIcon, InviteLinkIcon, Swosh } from '../components/Icons.js';
 
 export default function FriendsPage() {
   const { t } = useTranslation();
@@ -37,17 +37,17 @@ export default function FriendsPage() {
 
   const activeInvite = myIdentityHex
     ? (friendInvites as unknown as FriendInvite[]).find(i => {
-        if (i.creatorIdentity.toHexString() === myIdentityHex) {
-          let expMs = 0;
-          if (i.expiresAt && typeof i.expiresAt === 'object' && '__timestamp_micros_since_unix_epoch__' in (i.expiresAt as unknown as Record<string, unknown>)) {
-            expMs = Number((i.expiresAt as unknown as Record<string, number>).__timestamp_micros_since_unix_epoch__) / 1000;
-          } else {
-            expMs = Number(i.expiresAt) / 1000;
-          }
-          return expMs > Date.now();
+      if (i.creatorIdentity.toHexString() === myIdentityHex) {
+        let expMs = 0;
+        if (i.expiresAt && typeof i.expiresAt === 'object' && '__timestamp_micros_since_unix_epoch__' in (i.expiresAt as unknown as Record<string, unknown>)) {
+          expMs = Number((i.expiresAt as unknown as Record<string, number>).__timestamp_micros_since_unix_epoch__) / 1000;
+        } else {
+          expMs = Number(i.expiresAt) / 1000;
         }
-        return false;
-      })
+        return expMs > Date.now();
+      }
+      return false;
+    })
     : undefined;
 
   const inviteLink = activeInvite ? `https://up.bilharz.eu/friend/${activeInvite.token}` : '';
@@ -96,16 +96,17 @@ export default function FriendsPage() {
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
       {/* Header */}
-      <div className="flex items-center gap-3 mt-2">
-        <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-          <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <FriendsIcon className="drop-shadow-sm scale-110" />
-          </div>
+      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+        <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <FriendsIcon className="drop-shadow-sm scale-110" />
+        </div>
+        <span className="relative z-10 inline-block text-slate-900 dark:text-white">
           {t('nav.friends', { defaultValue: 'Friends' })}
-        </h1>
-      </div>
+          <Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" />
+        </span>
+      </h1>
 
-      <div className="flex flex-col gap-6 mt-6">
+      <div className="flex flex-col gap-6">
         {/* 1. Friends list OR empty state */}
         {myFriends.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white dark:bg-slate-800/50 dark:border-slate-800 p-8 text-center shadow-sm relative overflow-hidden">

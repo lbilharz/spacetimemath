@@ -77,7 +77,18 @@
     "masteryTitle": "Mijn Beheersingsrooster",
     "masteryDesc": "Je 1×1 tabel in één oogopslag — tik op een product om te zien hoe je het kunt uitrekenen.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "friendsTitle": "Speel met vrienden",
+    "friendsDesc": "Wissel codes uit en speel mee in het klassement.",
+    "classesTitle": "Word lid van een klas",
+    "classesDesc": "Maak verbinding met je leraar en klasgenoten.",
+    "focusHint": "Volgende om te beheersen",
+    "focusNew": "{{kc}} — begin met ontdekken!",
+    "focusPractice": "{{kc}} — {{accuracy}}% nauwkeurigheid. Ga zo door!",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "welcomeBack": "Welcome back,",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "60 seconden op de klok",
@@ -90,7 +101,8 @@
     "startSprint": "Start 60s sprint ⚡",
     "okay": "Oké",
     "next": "Volgende",
-    "back": "Terug"
+    "back": "Terug",
+    "card3BodyPlacement": "Start je diagnostische sprint van 60 seconden. Doe je best — we gebruiken dit om je perfecte startniveau te vinden!"
   },
   "sprint": {
     "getReady": "Klaar?",
@@ -273,7 +285,9 @@
     "joinError": "Klas niet gevonden",
     "areYouTeacher": "Are you a teacher?",
     "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "emptyHeading": "Samen leren! 🏫",
+    "emptyDesc": "Word lid van een klas om het op te nemen tegen klasgenoten en laat je leraar je leerproces begeleiden!"
   },
   "extendedTables": {
     "title": "Uitgebreide Tafels",
@@ -353,7 +367,6 @@
     "cardTitle": "Kies je startniveau",
     "cardBody": "Vertel ons wat je al kunt — je kunt het op elk moment wijzigen.",
     "adjustTitle": "Niveau aanpassen",
-    "changeLevel": "Niveau wijzigen",
     "myLevel": "Mijn niveau",
     "adjustBody": "Oefen makkelijkere tafels of spring vooruit.",
     "setLevel": "Niveau instellen",
@@ -364,7 +377,9 @@
     "tier4Desc": "Ik ken ook ×4",
     "tier5Desc": "Ik ken ook ×6",
     "tier6Desc": "Ik ken ook ×7",
-    "tier7Desc": "Ik ken al mijn tafels!"
+    "tier7Desc": "Ik ken al mijn tafels!",
+    "setLevelManually": "Niveau handmatig instellen",
+    "testMyLevel": "Test mijn niveau"
   },
   "tiers": {
     "unlocked1": "×3 ontgrendeld!",
@@ -399,6 +414,12 @@
     "nextUnlock6": "Beheers ×8 om ×9 te ontgrendelen",
     "allUnlocked": "Alle tafels ontgrendeld! 🎉"
   },
+  "tierLadder": {
+    "level": "Niveau",
+    "yourStats": "Jouw stats",
+    "acc": "Nwk",
+    "spd": "Snl"
+  },
   "days": {
     "mo": "Ma",
     "tu": "Di",
@@ -420,10 +441,33 @@
     "8": "Moeilijke Sommen — De lastigste problemen zoals 6×7, 6×8 en 7×8.",
     "9": "Grote Tientallen (×20) — Vermenigvuldigen met getallen zoals 20 of 25.",
     "10": "Gevorderde Basis — Rekenen met getallen groter dan 10 (zoals 15×8).",
+    "name0": "De 0-tafel",
+    "name1": "De 1-tafel",
+    "name2": "De 2-tafel",
+    "name3": "De 5-tafel",
+    "name4": "De 9-tafel",
+    "name5": "De 10-tafel",
+    "name6": "Kwadraten",
+    "name7": "Omkeerregel",
+    "name8": "Moeilijke sommen",
+    "name9": "Grote tientallen",
+    "name10": "Gevorderd",
     "title": "Jouw Leerprofiel",
-    "desc": "Onze AI heeft al je sprints geanalyseerd. Hier zie je waar je in uitblinkt en wat je nu moet oefenen.",
-    "weakest": "Volgende Doel",
-    "strongest": "Beheerst"
+    "desc": "Gebaseerd op je nauwkeurigheid, snelheid en consistentie over alle sprints.",
+    "weakest": "Aandachtspunt",
+    "strongest": "Sterkste vaardigheid",
+    "moreData": "Kalibratie nodig",
+    "moreDataDesc": "Speel nog een paar sprints op je huidige niveau zodat we je sterke en zwakke punten kunnen analyseren.",
+    "allMastered": "Niveau beheerst!",
+    "allMasteredDesc": "Je hebt alle vermenigvuldigers op dit niveau onder de knie. Briljant werk!",
+    "insight": {
+      "fluent": "{{kc}} — zit goed! Je bent snel en nauwkeurig.",
+      "developingSpeed": "{{kc}} — nauwkeurig ({{accuracy}}%) maar traag ({{speed}}s gem.). Oefen voor meer vloeiendheid.",
+      "developingAccuracy": "{{kc}} — snel maar slechts {{accuracy}}% nauwkeurig. Doe het rustiger aan en concentreer je.",
+      "developing": "{{kc}} — {{accuracy}}% nauwkeurigheid, {{speed}}s gem. Blijf oefenen!",
+      "struggling": "{{kc}} — moet beter ({{accuracy}}% nauwkeurigheid). Probeer de strategietips hieronder.",
+      "untouched": "{{kc}} — nog niet verkend. Start een sprint om te ontgrendelen!"
+    }
   },
   "register_split": {
     "teacher_btn": "Leraar",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "Brons I",
+    "bronze2": "Brons II",
+    "bronze3": "Brons III",
+    "silver1": "Zilver I",
+    "silver2": "Zilver II",
+    "silver3": "Zilver III",
+    "gold1": "Goud I",
+    "gold2": "Goud II",
+    "gold3": "Goud III",
+    "diamond": "Diamant",
+    "unlock": {
+      "bronze2": "Sprint-reacties",
+      "bronze3": "Sprint-thema's",
+      "silver1": "Daag een vriend uit",
+      "silver2": "Eigen avatarkleur",
+      "silver3": "Snelronde (2x XP)",
+      "gold1": "Ranglijstkroon",
+      "gold2": "Eigen sprintbouwer",
+      "gold3": "Uitgebreide tafels (x11-x20)",
+      "diamond": "Meestertitel"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "tot {{rank}}",
+    "maxRank": "Hoogste rang bereikt!",
+    "levelAndRank": "Niveau {{level}}",
+    "unlocks": "{{rank}} ontgrendelt: {{feature}}",
+    "xpExplainer": "Moeilijkere sommen leveren meer XP op."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }

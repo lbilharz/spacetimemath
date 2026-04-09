@@ -1,10 +1,10 @@
 use spacetimedb::{reducer, ReducerContext, Table, Timestamp, ScheduleAt};
 use crate::{
     Session, Classroom, ClassroomMember, ClassSprint, EndSprintSchedule,
-    SprintSequence, get_player, make_code, build_sequence,
+    SprintSequence, get_player, make_code, build_sequence, DiagnosticState
 };
 use crate::{classrooms, classroom_members, class_sprints, sessions, players,
-            end_sprint_schedule, sprint_sequences};
+            end_sprint_schedule, sprint_sequences, diagnostic_states};
 use crate::sprint::{finalize_session, credit_session_to_player};
 
 /// Create a new classroom. The caller becomes its teacher and first member.
@@ -171,15 +171,26 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
                     class_sprint_id: sprint.id,
                     heat: 0,
                 }) {
-                    // SEQ: generate and store problem sequence for this student session
-                    // Class sprints don't use extended mode (player.extended_mode ignored for class context)
-                    let seq_str = build_sequence(ctx, inserted_sess.id, player.learning_tier, false, 0);
-                    ctx.db.sprint_sequences().insert(SprintSequence {
-                        session_id: inserted_sess.id,
-                        player_identity: member.player_identity,
-                        sequence: seq_str,
-                        index: 0,
-                    });
+                    if is_diagnostic {
+                        ctx.db.diagnostic_states().insert(DiagnosticState {
+                            session_id: inserted_sess.id,
+                            player_identity: member.player_identity,
+                            current_tier: 1,
+                            consecutive_fast_correct: 0,
+                            wrong_streak: 0,
+                            force_tap_mode: false,
+                        });
+                    } else {
+                        // SEQ: generate and store problem sequence for this student session
+                        // Class sprints don't use extended mode (player.extended_mode ignored for class context)
+                        let seq_str = build_sequence(ctx, inserted_sess.id, player.learning_tier, false, 0);
+                        ctx.db.sprint_sequences().insert(SprintSequence {
+                            session_id: inserted_sess.id,
+                            player_identity: member.player_identity,
+                            sequence: seq_str,
+                            index: 0,
+                        });
+                    }
                     success = true;
                     break;
                 }

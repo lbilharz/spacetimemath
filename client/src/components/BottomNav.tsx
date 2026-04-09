@@ -11,9 +11,9 @@ interface Props {
 
 const tabs: { id: NavTab; labelKey: ParseKeys | string }[] = [
   { id: 'lobby',      labelKey: 'nav.home'     },
-  { id: 'classrooms', labelKey: 'nav.classes'  },
-  { id: 'friends',    labelKey: 'nav.friends'  },
   { id: 'progress',   labelKey: 'nav.progress' },
+  { id: 'friends',    labelKey: 'nav.friends'  },
+  { id: 'classrooms', labelKey: 'nav.classes'  },
   { id: 'account',    labelKey: 'nav.account'  },
 ];
 

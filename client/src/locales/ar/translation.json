@@ -77,7 +77,18 @@
     "masteryTitle": "شبكة الإتقان الخاصة بي",
     "masteryDesc": "جدول الضرب الخاص بك في لمحة — اضغط على أي نتيجة لترى التفكير الصحيح لحلها.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "friendsTitle": "العب مع الأصدقاء",
+    "friendsDesc": "تبادل الأكواد وتنافس في لوحة الصدارة.",
+    "classesTitle": "انضم إلى فصل",
+    "classesDesc": "تواصل مع معلمك وزملائك.",
+    "focusHint": "التالي للإتقان",
+    "focusNew": "{{kc}} — ابدأ الاستكشاف!",
+    "focusPractice": "{{kc}} — دقة {{accuracy}}%. واصل التقدم!",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "welcomeBack": "Welcome back,",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "60 ثانية على الساعة",
@@ -90,7 +101,8 @@
     "startSprint": "⚡ ابدأ سبرينت 60 ثانية",
     "okay": "موافق",
     "next": "التالي",
-    "back": "رجوع"
+    "back": "رجوع",
+    "card3BodyPlacement": "ابدأ سبرينت التشخيص لمدة 60 ثانية. ابذل قصارى جهدك — سنستخدم هذا للعثور على مستوى البداية المثالي لك!"
   },
   "sprint": {
     "getReady": "استعد!",
@@ -273,7 +285,9 @@
     "joinError": "الفصل الدراسي غير موجود",
     "areYouTeacher": "Are you a teacher?",
     "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "emptyHeading": "تعلموا معاً! 🏫",
+    "emptyDesc": "انضم إلى فصل لتتنافس مع زملائك، ودع معلمك يوجه رحلتك التعليمية!"
   },
   "extendedTables": {
     "title": "الجداول الموسعة",
@@ -353,7 +367,6 @@
     "cardTitle": "اختر مستوى البداية",
     "cardBody": ".أخبرنا بما تعرفه بالفعل — يمكنك تغييره في أي وقت",
     "adjustTitle": "تعديل المستوى",
-    "changeLevel": "تغيير المستوى",
     "myLevel": "مستواي",
     "adjustBody": ".تدرب على جداول أسهل أو انتقل للأمام",
     "setLevel": "تعيين المستوى",
@@ -364,7 +377,9 @@
     "tier4Desc": "أعرف أيضًا ×4",
     "tier5Desc": "أعرف أيضًا ×6",
     "tier6Desc": "أعرف أيضًا ×7",
-    "tier7Desc": "!أعرف كل جداولي"
+    "tier7Desc": "!أعرف كل جداولي",
+    "setLevelManually": "تحديد المستوى يدوياً",
+    "testMyLevel": "اختبار مستواي"
   },
   "tiers": {
     "unlocked1": "!تم فتح ×3",
@@ -399,6 +414,12 @@
     "nextUnlock6": "×9 أتقن ×8 لفتح",
     "allUnlocked": "!تم فتح جميع الجداول 🎉"
   },
+  "tierLadder": {
+    "level": "مستوى",
+    "yourStats": "إحصائياتك",
+    "acc": "دقة",
+    "spd": "سرع"
+  },
   "days": {
     "mo": "ن",
     "tu": "ث",
@@ -420,10 +441,33 @@
     "8": "المسائل الصعبة — أصعب المسائل مثل 6×7، 6×8، و 7×8.",
     "9": "العشرات الكبيرة (×20) — الضرب في أرقام مثل 20 أو 25.",
     "10": "الأساسيات المتقدمة — الضرب بأرقام أكبر من 10 (مثل 15×8).",
+    "name0": "الأصفار",
+    "name1": "الآحاد",
+    "name2": "جدول 2",
+    "name3": "جدول 5",
+    "name4": "جدول 9",
+    "name5": "جدول 10",
+    "name6": "المربعات",
+    "name7": "قاعدة التبديل",
+    "name8": "المسائل الصعبة",
+    "name9": "العشرات الكبيرة",
+    "name10": "متقدم",
     "title": "ملف التعلم الخاص بك",
-    "desc": "قام الذكاء الاصطناعي بتحليل جولاتك السريعة. إليك نقاط قوتك وما يجب أن تركز عليه لاحقًا.",
-    "weakest": "الهدف التالي",
-    "strongest": "أُتقنت"
+    "desc": "بناءً على دقتك وسرعتك واتساقك عبر جميع الجولات.",
+    "weakest": "مجال التركيز",
+    "strongest": "أقوى مهارة",
+    "moreData": "يحتاج إلى معايرة",
+    "moreDataDesc": "العب بضع جولات أخرى في مستواك الحالي حتى نتمكن من تحليل نقاط قوتك وضعفك.",
+    "allMastered": "تم إتقان المستوى!",
+    "allMasteredDesc": "لقد أتقنت جميع المضاعفات في هذا المستوى. عمل رائع!",
+    "insight": {
+      "fluent": "{{kc}} — ممتاز! أنت سريع ودقيق.",
+      "developingSpeed": "{{kc}} — دقيق ({{accuracy}}%) لكن بطيء ({{speed}}ث معدل). تدرّب لتصبح أكثر طلاقة.",
+      "developingAccuracy": "{{kc}} — سريع لكن الدقة {{accuracy}}% فقط. تمهّل وركّز.",
+      "developing": "{{kc}} — {{accuracy}}% دقة، {{speed}}ث معدل. واصل التدريب!",
+      "struggling": "{{kc}} — يحتاج عملاً ({{accuracy}}% دقة). جرّب نصائح الاستراتيجية أدناه.",
+      "untouched": "{{kc}} — لم يُستكشف بعد. ابدأ سباقاً سريعاً للفتح!"
+    }
   },
   "register_split": {
     "teacher_btn": "معلم",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "برونزي I",
+    "bronze2": "برونزي II",
+    "bronze3": "برونزي III",
+    "silver1": "فضي I",
+    "silver2": "فضي II",
+    "silver3": "فضي III",
+    "gold1": "ذهبي I",
+    "gold2": "ذهبي II",
+    "gold3": "ذهبي III",
+    "diamond": "الماسي",
+    "unlock": {
+      "bronze2": "تفاعلات السبرينت",
+      "bronze3": "أنماط السبرينت",
+      "silver1": "تحدي صديق",
+      "silver2": "لون أفاتار مخصص",
+      "silver3": "جولة سريعة (2x XP)",
+      "gold1": "تاج لوحة المتصدرين",
+      "gold2": "منشئ سبرينت مخصص",
+      "gold3": "جداول موسعة (x11-x20)",
+      "diamond": "لقب الماستر"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "للوصول إلى {{rank}}",
+    "maxRank": "تم الوصول إلى أعلى رتبة!",
+    "levelAndRank": "المستوى {{level}}",
+    "unlocks": "{{rank}} يفتح: {{feature}}",
+    "xpExplainer": "المسائل الأصعب تمنح المزيد من XP."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }

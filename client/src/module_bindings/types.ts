@@ -70,6 +70,16 @@ export const ClassroomMember = __t.object("ClassroomMember", {
 });
 export type ClassroomMember = __Infer<typeof ClassroomMember>;
 
+export const DiagnosticState = __t.object("DiagnosticState", {
+  sessionId: __t.u64(),
+  playerIdentity: __t.identity(),
+  currentTier: __t.u8(),
+  consecutiveFastCorrect: __t.u8(),
+  wrongStreak: __t.u8(),
+  forceTapMode: __t.bool(),
+});
+export type DiagnosticState = __Infer<typeof DiagnosticState>;
+
 export const EndSprintSchedule = __t.object("EndSprintSchedule", {
   scheduledId: __t.u64(),
   scheduledAt: __t.scheduleAt(),

@@ -77,7 +77,18 @@
     "masteryTitle": "Ustalık Tablom",
     "masteryDesc": "1×1 tablon bir bakışta — sonucunu nasıl düşüneceğini görmek için herhangi bir işleme dokun.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "friendsTitle": "Arkadaşlarınla Oyna",
+    "friendsDesc": "Kodları paylaş ve liderlik tablosunda yarış.",
+    "classesTitle": "Sınıfa Katıl",
+    "classesDesc": "Öğretmenin ve sınıf arkadaşlarınla bağlan.",
+    "focusHint": "Sıradaki ustalaşılacak",
+    "focusNew": "{{kc}} — keşfetmeye başla!",
+    "focusPractice": "{{kc}} — %{{accuracy}} doğruluk. Devam et!",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "welcomeBack": "Welcome back,",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "Saat 60 saniye",
@@ -90,7 +101,8 @@
     "startSprint": "60s Sprint Başlat ⚡",
     "okay": "Tamam",
     "next": "İleri",
-    "back": "Geri"
+    "back": "Geri",
+    "card3BodyPlacement": "60 saniyelik tanı sprintinize başlayın. Elinizden gelenin en iyisini yapın — bunu mükemmel başlangıç seviyenizi bulmak için kullanacağız!"
   },
   "sprint": {
     "getReady": "Hazır ol!",
@@ -273,7 +285,9 @@
     "joinError": "Sınıf bulunamadı",
     "areYouTeacher": "Are you a teacher?",
     "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "emptyHeading": "Birlikte öğrenin! 🏫",
+    "emptyDesc": "Sınıf arkadaşlarınla rekabet etmek için bir sınıfa katıl ve öğretmeninin öğrenme yolculuğuna rehberlik etmesine izin ver!"
   },
   "extendedTables": {
     "title": "Genişletilmiş Tablolar",
@@ -353,7 +367,6 @@
     "cardTitle": "Başlangıç Seviyeni Seç",
     "cardBody": "Neleri bildiğini bize söyle — istediğin zaman değiştirebilirsin.",
     "adjustTitle": "Seviyeyi Ayarla",
-    "changeLevel": "Seviyeyi Değiştir",
     "myLevel": "Seviyem",
     "adjustBody": "Daha kolay tabloları çalış veya ileri atla.",
     "setLevel": "Seviyeyi Belirle",
@@ -364,7 +377,9 @@
     "tier4Desc": "×4 de biliyorum",
     "tier5Desc": "×6 da biliyorum",
     "tier6Desc": "×7 de biliyorum",
-    "tier7Desc": "Tüm tablolarımı biliyorum!"
+    "tier7Desc": "Tüm tablolarımı biliyorum!",
+    "setLevelManually": "Seviyeyi manuel ayarla",
+    "testMyLevel": "Seviyemi test et"
   },
   "tiers": {
     "unlocked1": "×3 açıldı!",
@@ -399,6 +414,12 @@
     "nextUnlock6": "×9'u açmak için ×8'de ustalaş",
     "allUnlocked": "Tüm tablolar açıldı! 🎉"
   },
+  "tierLadder": {
+    "level": "Seviye",
+    "yourStats": "Senin istatistiklerin",
+    "acc": "Isa",
+    "spd": "Hız"
+  },
   "days": {
     "mo": "Pt",
     "tu": "Sa",
@@ -420,10 +441,33 @@
     "8": "Zor İşlemler — 6×7, 6×8 ve 7×8 gibi en zor problemler.",
     "9": "Büyük Onluklar (×20) — 20 veya 25 gibi sayılarla çarpmak.",
     "10": "İleri Temeller — 10'dan büyük sayılarla çarpmak (örneğin 15×8).",
+    "name0": "0'lar",
+    "name1": "1'ler",
+    "name2": "2'ler",
+    "name3": "5'ler",
+    "name4": "9'lar",
+    "name5": "10'lar",
+    "name6": "Kareler",
+    "name7": "Değişim kuralı",
+    "name8": "Zor işlemler",
+    "name9": "Büyük onluklar",
+    "name10": "İleri düzey",
     "title": "Öğrenme Profilin",
-    "desc": "Yapay zekamız tüm sprintlerini analiz etti. İşte mükemmel olduğun ve geliştirmen gereken yerler.",
-    "weakest": "Sıradaki Hedef",
-    "strongest": "Uzmanlaşıldı"
+    "desc": "Tüm sprintlerindeki doğruluk, hız ve tutarlılığına dayanarak.",
+    "weakest": "Odak Alanı",
+    "strongest": "En Güçlü Beceri",
+    "moreData": "Kalibrasyon Gerekiyor",
+    "moreDataDesc": "Güçlü ve zayıf yönlerini analiz edebilmemiz için mevcut seviyende birkaç sprint daha oyna.",
+    "allMastered": "Seviye Tamamlandı!",
+    "allMasteredDesc": "Bu seviyedeki tüm çarpanlarda ustalaştın. Harika iş!",
+    "insight": {
+      "fluent": "{{kc}} — harika! Hızlı ve doğrusun.",
+      "developingSpeed": "{{kc}} — doğru ({{accuracy}}%) ama yavaş ({{speed}}s ort.). Akıcılık için pratik yap.",
+      "developingAccuracy": "{{kc}} — hızlı ama sadece {{accuracy}}% doğru. Yavaşla ve odaklan.",
+      "developing": "{{kc}} — {{accuracy}}% doğruluk, {{speed}}s ort. Pratik yapmaya devam et!",
+      "struggling": "{{kc}} — çalışılması gerekiyor ({{accuracy}}% doğruluk). Aşağıdaki strateji ipuçlarını dene.",
+      "untouched": "{{kc}} — henüz keşfedilmedi. Açmak için bir sprint başlat!"
+    }
   },
   "register_split": {
     "teacher_btn": "Öğretmen",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "Bronz I",
+    "bronze2": "Bronz II",
+    "bronze3": "Bronz III",
+    "silver1": "Gumus I",
+    "silver2": "Gumus II",
+    "silver3": "Gumus III",
+    "gold1": "Altin I",
+    "gold2": "Altin II",
+    "gold3": "Altin III",
+    "diamond": "Elmas",
+    "unlock": {
+      "bronze2": "Sprint Tepkileri",
+      "bronze3": "Sprint Temalari",
+      "silver1": "Bir Arkadasi Davet Et",
+      "silver2": "Ozel Avatar Rengi",
+      "silver3": "Hizli Tur (2x XP)",
+      "gold1": "Liderlik Tablosu Taci",
+      "gold2": "Ozel Sprint Olusturucu",
+      "gold3": "Genisletilmis Tablolar (x11-x20)",
+      "diamond": "Usta Unvani"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "{{rank}} icin",
+    "maxRank": "En Yuksek Rutbeye Ulasildi!",
+    "levelAndRank": "Seviye {{level}}",
+    "unlocks": "{{rank}} acar: {{feature}}",
+    "xpExplainer": "Zor problemler daha fazla XP kazandirir."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }

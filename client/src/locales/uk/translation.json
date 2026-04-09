@@ -77,7 +77,18 @@
     "masteryTitle": "Моя таблиця знань",
     "masteryDesc": "Ваша таблиця множення як на долоні — натисніть на будь-який результат, щоб дізнатися логіку обчислення.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "friendsTitle": "Грай з Друзями",
+    "friendsDesc": "Обмінюйтесь кодами та змагайтесь у рейтингу.",
+    "classesTitle": "Приєднатися до Класу",
+    "classesDesc": "Спілкуйся з вчителем та однокласниками.",
+    "focusHint": "Наступне для опанування",
+    "focusNew": "{{kc}} — починай досліджувати!",
+    "focusPractice": "{{kc}} — {{accuracy}}% точності. Продовжуй!",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "welcomeBack": "Welcome back,",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "60 секунд на годиннику",
@@ -90,7 +101,8 @@
     "startSprint": "Почати спринт 60с ⚡",
     "okay": "Окей",
     "next": "Далі",
-    "back": "Назад"
+    "back": "Назад",
+    "card3BodyPlacement": "Розпочніть свій 60-секундний діагностичний спринт. Зробіть усе можливе — ми використаємо це, щоб знайти ваш ідеальний стартовий рівень!"
   },
   "sprint": {
     "getReady": "Готуйся!",
@@ -273,7 +285,9 @@
     "joinError": "Клас не знайдено",
     "areYouTeacher": "Are you a teacher?",
     "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "emptyHeading": "Навчайтеся разом! 🏫",
+    "emptyDesc": "Приєднуйтесь до класу, щоб змагатися з однокласниками, та дозвольте вчителю скеровувати ваш навчальний шлях!"
   },
   "extendedTables": {
     "title": "Розширена таблиця",
@@ -353,7 +367,6 @@
     "cardTitle": "Обери свій стартовий рівень",
     "cardBody": "Скажи нам, що ти вже знаєш — ти зможеш змінити це в будь-який час.",
     "adjustTitle": "Налаштувати рівень",
-    "changeLevel": "Змінити рівень",
     "myLevel": "Мій рівень",
     "adjustBody": "Тренуй легші таблиці або перестрибуй вперед.",
     "setLevel": "Встановити рівень",
@@ -364,7 +377,9 @@
     "tier4Desc": "Я також знаю ×4",
     "tier5Desc": "Я також знаю ×6",
     "tier6Desc": "Я також знаю ×7",
-    "tier7Desc": "Я знаю всі таблиці!"
+    "tier7Desc": "Я знаю всі таблиці!",
+    "setLevelManually": "Встановити рівень вручну",
+    "testMyLevel": "Перевірити мій рівень"
   },
   "tiers": {
     "unlocked1": "×3 розблоковано!",
@@ -399,6 +414,12 @@
     "nextUnlock6": "Освой ×8, щоб відкрити ×9",
     "allUnlocked": "Всі таблиці розблоковано! 🎉"
   },
+  "tierLadder": {
+    "level": "Рівень",
+    "yourStats": "Твої дані",
+    "acc": "Тчн",
+    "spd": "Шкд"
+  },
   "days": {
     "mo": "Пн",
     "tu": "Вв",
@@ -420,10 +441,33 @@
     "8": "Складні приклади — Найскладніші задачі, такі як 6×7, 6×8 та 7×8.",
     "9": "Великі десятки (×20) — Множення на такі числа, як 20 або 25.",
     "10": "Розширені основи — Множення з числами більше 10 (наприклад, 15×8).",
+    "name0": "Нулі",
+    "name1": "Одиниці",
+    "name2": "Двійки",
+    "name3": "П'ятірки",
+    "name4": "Дев'ятки",
+    "name5": "Десятки",
+    "name6": "Квадрати",
+    "name7": "Правило обміну",
+    "name8": "Складні приклади",
+    "name9": "Великі десятки",
+    "name10": "Просунутий",
     "title": "Твій Профіль Навчання",
-    "desc": "Наш ШІ проаналізував твої спринти. Ось де ти на висоті, і над чим варто попрацювати далі.",
-    "weakest": "Наступна Ціль",
-    "strongest": "Опановано"
+    "desc": "На основі твоєї точності, швидкості та стабільності в усіх спринтах.",
+    "weakest": "Зона для роботи",
+    "strongest": "Найсильніша навичка",
+    "moreData": "Потребує калібрування",
+    "moreDataDesc": "Зіграй ще кілька спринтів на поточному рівні, щоб ми могли проаналізувати твої сильні та слабкі сторони.",
+    "allMastered": "Рівень пройдено!",
+    "allMasteredDesc": "Ти опанував усі множники на цьому рівні. Блискуча робота!",
+    "insight": {
+      "fluent": "{{kc}} — чудово! Ти швидкий і точний.",
+      "developingSpeed": "{{kc}} — точно ({{accuracy}}%), але повільно ({{speed}}с сер.). Тренуйся для швидкості.",
+      "developingAccuracy": "{{kc}} — швидко, але лише {{accuracy}}% точності. Сповільнись і зосередься.",
+      "developing": "{{kc}} — {{accuracy}}% точності, {{speed}}с сер. Продовжуй тренуватися!",
+      "struggling": "{{kc}} — потребує роботи ({{accuracy}}% точності). Спробуй поради нижче.",
+      "untouched": "{{kc}} — ще не досліджено. Почни спринт, щоб розблокувати!"
+    }
   },
   "register_split": {
     "teacher_btn": "Вчитель",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "Бронза I",
+    "bronze2": "Бронза II",
+    "bronze3": "Бронза III",
+    "silver1": "Срібло I",
+    "silver2": "Срібло II",
+    "silver3": "Срібло III",
+    "gold1": "Золото I",
+    "gold2": "Золото II",
+    "gold3": "Золото III",
+    "diamond": "Діамант",
+    "unlock": {
+      "bronze2": "Реакції спринту",
+      "bronze3": "Теми спринту",
+      "silver1": "Виклик другу",
+      "silver2": "Власний колір аватара",
+      "silver3": "Швидкий раунд (2x XP)",
+      "gold1": "Корона рейтингу",
+      "gold2": "Конструктор спринтів",
+      "gold3": "Розширені таблиці (x11–x20)",
+      "diamond": "Титул Майстра"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "до {{rank}}",
+    "maxRank": "Досягнуто найвищий ранг!",
+    "levelAndRank": "Рівень {{level}}",
+    "unlocks": "{{rank}} відкриває: {{feature}}",
+    "xpExplainer": "Складніші завдання дають більше XP."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }

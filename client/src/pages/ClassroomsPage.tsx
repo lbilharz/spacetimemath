@@ -5,7 +5,7 @@ import { tables, reducers } from '../module_bindings/index.js';
 import type { Classroom, ClassroomMember, Player } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
 import TeacherUpgradeForm from '../components/TeacherUpgradeForm.js';
-import { AddIcon, JoinIcon, ViewArrowIcon, ClassesIcon } from '../components/Icons.js';
+import { AddIcon, JoinIcon, ViewArrowIcon, ClassesIcon, Swosh } from '../components/Icons.js';
 
 interface Props {
   myIdentityHex: string | undefined;
@@ -84,16 +84,17 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
       {/* Header */}
-      <div className="flex items-center gap-3 mt-2">
-        <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-          <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <ClassesIcon className="drop-shadow-sm scale-110" />
-          </div>
+      <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+        <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <ClassesIcon className="drop-shadow-sm scale-110" />
+        </div>
+        <span className="relative z-10 inline-block text-slate-900 dark:text-white">
           {t('nav.classes')}
-        </h1>
-      </div>
+          <Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" />
+        </span>
+      </h1>
 
-      <div className="flex flex-col gap-6 mt-6">
+      <div className="flex flex-col gap-6">
         {/* 1. Classroom list OR empty state */}
         {myClassrooms.length > 0 ? (
           myClassrooms.map(c => {
@@ -130,9 +131,9 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
         ) : (
           <div className="rounded-3xl border border-slate-200 bg-white dark:bg-slate-800/50 dark:border-slate-800 p-8 text-center shadow-sm relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-yellow via-brand-yellow to-brand-yellow animate-pulse" />
-            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-3 mt-2">{t('classes.empty')}</h3>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-3 mt-2">{t('classes.emptyHeading', { defaultValue: 'Learn together! 🏫' })}</h3>
             <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-sm mx-auto mb-6">
-              {t('classes.emptyHint')}
+              {t('classes.emptyDesc', { defaultValue: 'Join a classroom to compete with classmates, conquer assignments together, and let your teacher guide your learning journey!' })}
             </p>
             <div className="text-sm font-bold text-slate-400 uppercase tracking-wider">— {t('classes.empty')} —</div>
           </div>

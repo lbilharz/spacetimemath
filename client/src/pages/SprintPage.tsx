@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { ClassSprint, Player, NextProblemResultV2, IssuedProblemResultV2, ProblemStat, Answer, Session } from '../module_bindings/types.js';
+import type { ClassSprint, Player, NextProblemResultV2, ProblemStat, Answer, Session } from '../module_bindings/types.js';
 
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
@@ -19,34 +19,6 @@ const hapticBad = () => Haptics.notification({ type: NotificationType.Error }).c
 
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
-
-// ── Diagnostic assessment sprint ─────────────────────────────────────────────
-// 4 phases × 8 seconds = 32 seconds total. Problem set expands each phase.
-const DIAGNOSTIC_PHASE_SECS = 15;
-const DIAGNOSTIC_PHASES: (number[] | null)[] = [
-  [1, 2, 5, 10],                          // Phase 0  0–8s
-  [1, 2, 3, 4, 5, 10],                    // Phase 1  8–16s
-  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],       // Phase 2  16–24s
-  null,                                    // Phase 3  24–32s (one two-digit factor)
-];
-
-function selectDiagnosticProblem(elapsed: number, lastKey: number | undefined): { a: number; b: number } {
-  const phase = Math.min(Math.floor(elapsed / DIAGNOSTIC_PHASE_SECS), 3);
-  let a: number, b: number;
-  if (phase === 3) {
-    a = 11 + Math.floor(Math.random() * 10); // 11–20
-    b = 2 + Math.floor(Math.random() * 9);  // 2–10
-    if (Math.random() < 0.5) { const tmp = a; a = b; b = tmp; }
-  } else {
-    const factors = DIAGNOSTIC_PHASES[phase] as number[];
-    a = factors[Math.floor(Math.random() * factors.length)];
-    b = factors[Math.floor(Math.random() * factors.length)];
-  }
-  const key = a * 100 + b;
-  // Retry once to avoid the same problem twice
-  if (key === lastKey) return selectDiagnosticProblem(elapsed, undefined);
-  return { a, b };
-}
 
 function getMasteryLocal(answers: Answer[], a: number, b: number): Mastery {
   const pair = answers.filter(ans => ans.a === a && ans.b === b);
@@ -97,6 +69,7 @@ interface Props {
   myIdentityHex: string;
   /** Set when navigating from a class-sprint alert — session is pre-created by the server */
   classSprintId?: bigint;
+  forceDiagnostic?: boolean;
   onFinished: (sessionId: bigint) => void;
 }
 
@@ -169,7 +142,7 @@ const Numpad = React.memo(function Numpad({ disabled, onKey }: NumpadProps) {
   );
 });
 
-export default function SprintPage({ myIdentityHex, classSprintId, onFinished }: Props) {
+export default function SprintPage({ myIdentityHex, classSprintId, forceDiagnostic, onFinished }: Props) {
   const { t } = useTranslation();
   const { isActive } = useSpacetimeDB();
   const hwLatency = useInteractionLatency();
@@ -179,11 +152,14 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   const [players] = useTable(tables.players);
   const [classSprints] = useTable(tables.class_sprints);
 
+  const myPlayer = (players as Player[]).find(p => p.identity.toHexString() === myIdentityHex);
+  const isFirstSession = myPlayer && myPlayer.totalSessions === 0;
+
   // Derive sprint mode from the active class sprint (if any)
   const isDiagnostic = classSprintId
     ? !!((classSprints as ClassSprint[]).find(s => s.id === classSprintId)?.isDiagnostic)
-    : false;
-  const SPRINT_DURATION = isDiagnostic ? 60 : 60;
+    : (!!isFirstSession || !!forceDiagnostic);
+  const SPRINT_DURATION = 60;
 
   const playerLearningTier: number = (players as Player[]).find(
     p => p.identity.toHexString() === myIdentityHex
@@ -195,13 +171,12 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   );
 
   const startSession = useSTDBReducer(reducers.startSession);
+  const startDiagnosticSession = useSTDBReducer(reducers.startDiagnosticSession);
   const submitAnswer = useSTDBReducer(reducers.submitAnswer);
   const endSession = useSTDBReducer(reducers.endSession);
-  const issueProblem = useSTDBReducer(reducers.issueProblem);
   const nextProblem = useSTDBReducer(reducers.nextProblem);
 
   // SEC-10: Read back the server-issued problem token (diagnostic sprint)
-  const [issuedProblemResults] = useTable(tables.my_issued_problem_results_v2);
   // Server-driven problem delivery (normal sprint)
   const [nextProblemResults] = useTable(tables.my_next_problem_results_v2);
 
@@ -272,7 +247,11 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   // 1. Start session on mount — skip for class sprints (server pre-creates the session)
   useEffect(() => {
     if (classSprintId === undefined) {
-      startSession();
+      if (forceDiagnostic) {
+        startDiagnosticSession();
+      } else {
+        startSession();
+      }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -341,56 +320,52 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
   }, [preCountdown]);
 
   // 3c. Select first problem when sprint starts + stats are ready (diagnostic only)
-  // Normal sprints: first problem was pre-fetched in 3a during countdown; 3d delivers it.
-  // Calling nextProblem here for normal sprints would cause a double-call that skips
-  // problem #1 in the sequence (the pre-fetch result gets overwritten immediately).
+  // Both standard and diagnostic sprints pull their first problem directly
+  // from the server's NextProblemResult view.
   useEffect(() => {
-    if (sprintStarted && !problem && isDiagnostic && eligibleStats.length > 0) {
-      const p = selectDiagnosticProblem(0, undefined);
-      // Fallback for diagnostic mode since it isn't using the server sequence yet
-      setProblem({ ...p, promptMode: 0, options: [] });
-      lastKeyRef.current = p.a * 100 + p.b;
+    if (sprintStarted && !problem && eligibleStats.length > 0 && sessionIdRef.current !== null) {
+      nextProblem({ sessionId: sessionIdRef.current });
       problemStartRef.current = Date.now();
-      if (sessionIdRef.current !== null) {
-        issueProblem({ sessionId: sessionIdRef.current, a: p.a, b: p.b });
-      }
     }
-  }, [sprintStarted, problem, problemStats.length, isDiagnostic, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sprintStarted, problem, eligibleStats.length]);
 
-  // 3d. Receive server-delivered problem from NextProblemResult subscription (normal sprint only)
+  // 3d. Receive server-delivered problem from NextProblemResult subscription
   useEffect(() => {
-    if (isDiagnostic || !sprintStarted || ending) return;
+    if (!sprintStarted || ending) return;
     const row = (nextProblemResults as unknown as NextProblemResultV2[]).find(
       r => r.owner.toHexString() === myIdentityHex
     );
     if (!row) return;
-    // Only update if this is for our current session
-    if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
-    // Prevent re-consuming the same problem token on WS reconnect (subscription re-fire)
-    if (row.token === lastConsumedTokenRef.current) return;
 
-    const newMode = row.promptMode;
+    if (sessionIdRef.current === null || String(row.sessionId) !== String(sessionIdRef.current)) return;
+
+    // Detect if this is a new problem from the server
+    const serverKey = row.a * 100 + row.b;
+    const isNewProblem = serverKey !== lastKeyRef.current;
+
+    // Skip update if already tracking this problem locally
+    if (!isNewProblem) return;
+
+    lastKeyRef.current = serverKey;
     const oldMode = problem?.promptMode;
+    const newMode = row.promptMode;
     const isFirstProblem = problem === null;
 
     if (!isFirstProblem && oldMode !== undefined && newMode !== oldMode) {
       setInterstitial(newMode === 1 ? 'tap' : 'type');
-      lastConsumedTokenRef.current = row.token;
-
       setTimeout(() => {
         setInterstitial(null);
         setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
         setAttempts(1);
         problemStartRef.current = Date.now();
-      }, 1500);
+      }, 1000);
       return;
     }
 
-    lastConsumedTokenRef.current = row.token;
     setProblem({ a: row.a, b: row.b, promptMode: row.promptMode, options: Array.from(row.options) });
     setAttempts(1);
     problemStartRef.current = Date.now();
-  }, [nextProblemResults, isDiagnostic, sprintStarted, ending, myIdentityHex, problem?.promptMode, sessionId]);
+  }, [nextProblemResults, sprintStarted, ending, myIdentityHex, problem?.promptMode, sessionId]);
 
   // 4. Sprint timer
   // Class sprint: tick is derived from server's startedAt — survives reloads
@@ -473,14 +448,10 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
       return;
     }
 
-    // SEC-10: Get the current token for this player (source differs by sprint type)
-    const tokenRow = isDiagnostic
-      ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
-        r => r.owner.toHexString() === myIdentityHex
-      )
-      : (nextProblemResults as unknown as NextProblemResultV2[]).find(
-        r => r.owner.toHexString() === myIdentityHex
-      );
+    // SEC-10: Get the current token for this player
+    const tokenRow = (nextProblemResults as unknown as NextProblemResultV2[]).find(
+      r => r.owner.toHexString() === myIdentityHex
+    );
     if (!tokenRow) {
       // Token not yet available — queue and retry when it arrives (useEffect below)
       pendingAnswerRef.current = { sessionId, a: problem.a, b: problem.b, userAnswer, responseMs, attempts };
@@ -504,47 +475,31 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
     if (inputRef.current) inputRef.current.value = '';
     setInput('');
 
-    // Normal sprint: pre-fetch next problem immediately so server RTT overlaps with feedback display
-    if (!isDiagnostic && sessionIdRef.current !== null) {
+    // Both standard and diagnostic sprint pre-fetch the next problem immediately
+    // so the server RTT overlaps with the Green "Correct!" feedback display.
+    if (sessionIdRef.current !== null) {
       nextProblem({ sessionId: sessionIdRef.current });
     }
 
     // Show feedback briefly, then next problem
     setTimeout(() => {
       setFeedback(null);
-      if (isDiagnostic) {
-        // Diagnostic: client selects next problem
-        const elapsed = SPRINT_DURATION - timeLeft;
-        const next = selectDiagnosticProblem(elapsed, lastKeyRef.current);
-        setProblem({ ...next, promptMode: 0, options: [] });
-        setAttempts(1);
-        lastKeyRef.current = next.a * 100 + next.b;
-        problemStartRef.current = Date.now();
-        if (sessionIdRef.current !== null) {
-          issueProblem({ sessionId: sessionIdRef.current, a: next.a, b: next.b });
-        }
-      }
-      // Normal sprint: problem already set via subscription effect (pre-fetched above)
     }, 600);
-  }, [problem, sessionId, feedback, isDiagnostic, myIdentityHex, issuedProblemResults,
-    nextProblemResults, problemStats, timeLeft, classSprintId, submitAnswer, nextProblem,
-    issueProblem, input, SPRINT_DURATION, attempts]);
+  }, [problem, sessionId, feedback, myIdentityHex,
+    nextProblemResults, problemStats, classSprintId, submitAnswer, nextProblem,
+    input, attempts]);
 
-  // SEC-10: Retry any queued answer once the token arrives (source differs by sprint type)
+  // SEC-10: Retry any queued answer once the token arrives
   useEffect(() => {
     const pending = pendingAnswerRef.current;
     if (!pending) return;
-    const tokenRow = isDiagnostic
-      ? (issuedProblemResults as unknown as IssuedProblemResultV2[]).find(
-        r => r.owner.toHexString() === myIdentityHex
-      )
-      : (nextProblemResults as unknown as NextProblemResultV2[]).find(
-        r => r.owner.toHexString() === myIdentityHex
-      );
+    const tokenRow = (nextProblemResults as unknown as NextProblemResultV2[]).find(
+      r => r.owner.toHexString() === myIdentityHex
+    );
     if (!tokenRow) return;
     pendingAnswerRef.current = null;
     submitAnswer({ ...pending, problemToken: tokenRow.token });
-  }, [issuedProblemResults, nextProblemResults]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [nextProblemResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const handleNumpadKey = useCallback((key: number | '←' | 'OK') => {
@@ -589,9 +544,30 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
 
   // --- Render ---
   // --- Render ---
-  // Secure Event Proxies bypass stale closures inside the useMemo'd DOM tree below
   const handlersRef = useRef({ handleEnd, doSubmit, handleNumpadKey, handleTapAnswer });
   handlersRef.current = { handleEnd, doSubmit, handleNumpadKey, handleTapAnswer };
+
+  // Global hardware keyboard listener (fixes iPads with Magic Keyboards & Mac Catalyst)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target === inputRef.current && !isTouchDevice) return; // Native input handles this
+      
+      const key = e.key;
+      if (key >= '0' && key <= '9') {
+        e.preventDefault();
+        handlersRef.current.handleNumpadKey(parseInt(key, 10));
+      } else if (key === 'Backspace') {
+        e.preventDefault();
+        handlersRef.current.handleNumpadKey('←');
+      } else if (key === 'Enter') {
+        e.preventDefault();
+        handlersRef.current.handleNumpadKey('OK');
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isTouchDevice]);
 
   const renderedUI = useMemo(() => {
     if (!problem) return null;
@@ -635,7 +611,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, onFinished }:
             </div>
             <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.2, fontWeight: 500 }}>
               {isDiagnostic
-                ? `${t('sprint.phase')} ${Math.min(Math.floor((SPRINT_DURATION - timeLeft) / DIAGNOSTIC_PHASE_SECS), 3) + 1}/4`
+                ? `✓ ${correct}/${answered} · Placement Match`
                 : `✓ ${correct}/${answered} · ${score.toFixed(1)} pts`
               }
             </div>

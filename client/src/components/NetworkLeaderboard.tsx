@@ -12,10 +12,11 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
   const [friendships] = useTable(tables.my_friendships);
   const [classroomMembers] = useTable(tables.my_classroom_members);
   const [players] = useTable(tables.players);
+  const [onlinePlayers] = useTable(tables.online_players);
 
   // 1. Gather all identities linked to the user
   const networkIdentities = new Set<string>();
-  
+
   // Add self
   networkIdentities.add(myIdentityHex);
 
@@ -46,11 +47,11 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
       .forEach(m => {
         networkIdentities.add(m.playerIdentity.toHexString());
       });
-      
+
     (classrooms as unknown as Classroom[])
       .filter(c => allRelevantClassroomIds.includes(c.id) && c.teacher)
       .forEach(c => {
-         networkIdentities.add(c.teacher!.toHexString());
+        networkIdentities.add(c.teacher!.toHexString());
       });
   }
 
@@ -59,11 +60,16 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
     .map(hex => {
       const p = (players as unknown as Player[]).find(player => player.identity.toHexString() === hex);
       if (!p) return null;
+      const isOnline = Array.from(onlinePlayers as unknown as any[]).some(
+        op => op.identity.toHexString() === hex && op.connectionCount > 0
+      );
+
       return {
         id: hex,
         username: p.username,
         best: p.bestScore,
         playerType: p.playerType?.tag,
+        isOnline,
       };
     })
     .filter(row => row !== null && row.best > 0) // Hide users with no score
@@ -78,7 +84,7 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
   const medals = ['🥇', '🥈', '🥉'];
 
   return (
-    <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 mb-6 transition-colors">
+    <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
       <h2 className="mb-6 text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white">
         🏆 {t('lobby.networkLeaderboard', 'Network Leaderboard')}
       </h2>
@@ -90,8 +96,14 @@ export default function NetworkLeaderboard({ myIdentityHex }: Props) {
               <div className={`flex w-8 justify-center font-black ${i < 3 ? 'text-brand-yellow text-xl drop-shadow-sm' : 'text-slate-400'}`}>
                 {i < 3 ? medals[i] : i + 1}
               </div>
-              <div className={`flex-1 font-bold ${isMe ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
+              <div className={`flex-1 font-bold flex items-center ${isMe ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
                 {m!.username}
+                {m!.isOnline && !isMe && (
+                  <span className="relative flex h-2 w-2 ml-2" title="Online">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                )}
                 {isMe && <span className="ml-2 rounded-md bg-brand-yellow/20 px-2 py-0.5 text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('common.you')}</span>}
                 {!isMe && m!.playerType === 'Teacher' && <span className="ml-2 rounded-md bg-slate-200 dark:bg-slate-700 px-2 py-0.5 text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-300">{t('common.teacher')}</span>}
               </div>

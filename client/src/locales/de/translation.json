@@ -96,7 +96,18 @@
     "masteryTitle": "Meine Lernübersicht",
     "masteryDesc": "Dein Einmaleins auf einen Blick — tippe ein Ergebnis, um den Rechenweg zu sehen.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "friendsTitle": "Mit Freunden spielen",
+    "friendsDesc": "Tauscht Codes aus und erobert die Bestenliste.",
+    "classesTitle": "Klasse beitreten",
+    "classesDesc": "Verbinde dich mit deiner Lehrkraft und Klasse.",
+    "focusHint": "Als Nächstes meistern",
+    "focusNew": "{{kc}} — jetzt entdecken!",
+    "focusPractice": "{{kc}} — {{accuracy}}% Genauigkeit. Weiter so!",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "welcomeBack": "Welcome back,",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "60 Sekunden auf der Uhr",
@@ -109,7 +120,8 @@
     "startSprint": "60s Sprint starten ⚡",
     "okay": "Okay",
     "next": "Weiter",
-    "back": "Zurück"
+    "back": "Zurück",
+    "card3BodyPlacement": "Starte deinen 60-Sekunden-Einstufungstest. Gib dein Bestes — so finden wir dein perfektes Startlevel!"
   },
   "sprint": {
     "getReady": "Mach dich bereit!",
@@ -292,7 +304,9 @@
     "joinError": "Klassenraum nicht gefunden",
     "areYouTeacher": "Bist du Lehrer/in?",
     "upgradePrompt": "Upgrade dein Konto, um Klassenräume zu erstellen",
-    "upgradeDesc": "Führe ein kostenloses Upgrade für dein Konto durch, um Schüler zu verwalten und Klassensprints zu starten."
+    "upgradeDesc": "Führe ein kostenloses Upgrade für dein Konto durch, um Schüler zu verwalten und Klassensprints zu starten.",
+    "emptyHeading": "Gemeinsam lernen! 🏫",
+    "emptyDesc": "Tritt einer Klasse bei, um gegen Mitschüler anzutreten, Aufgaben gemeinsam zu lösen und dich von deiner Lehrkraft an die Spitze führen zu lassen!"
   },
   "extendedTables": {
     "title": "Erweiterte Tabellen",
@@ -372,7 +386,6 @@
     "cardTitle": "Wähle dein Startlevel",
     "cardBody": "Sag uns, was du schon kannst — du kannst es jederzeit ändern.",
     "adjustTitle": "Level anpassen",
-    "changeLevel": "Level ändern",
     "myLevel": "Mein Level",
     "adjustBody": "Übe einfachere Tabellen oder steige höher ein.",
     "setLevel": "Level setzen",
@@ -383,7 +396,9 @@
     "tier4Desc": "Ich kenne auch ×4",
     "tier5Desc": "Ich kenne auch ×6",
     "tier6Desc": "Ich kenne auch ×7",
-    "tier7Desc": "Ich kenne alle Einmaleins-Reihen!"
+    "tier7Desc": "Ich kenne alle Einmaleins-Reihen!",
+    "setLevelManually": "Level manuell setzen",
+    "testMyLevel": "Mein Level testen"
   },
   "tiers": {
     "unlocked1": "×3 freigeschaltet!",
@@ -418,6 +433,12 @@
     "nextUnlock6": "×8 meistern → ×9 freischalten",
     "allUnlocked": "Alle Tabellen freigeschaltet! 🎉"
   },
+  "tierLadder": {
+    "level": "Stufe",
+    "yourStats": "Deine Werte",
+    "acc": "Gen",
+    "spd": "Tmp"
+  },
   "dkt": {
     "0": "Rechnen mit 0 (×0) — Jede Zahl mal Null ist immer Null.",
     "1": "Rechnen mit 1 (×1) — Jede Zahl mal Eins bleibt genau sie selbst.",
@@ -430,10 +451,33 @@
     "8": "Schwere Kernaufgaben — Die kniffligsten Aufgaben (wie 6×7, 6×8, 7×8).",
     "9": "Große Zehner (×20) — Multiplizieren mit großen Zehnerzahlen wie 20.",
     "10": "Große Einmaleins-Basics — Rechnen mit Zahlen über 10 (z.B. 15×8).",
+    "name0": "Die 0er",
+    "name1": "Die 1er",
+    "name2": "Die 2er",
+    "name3": "Die 5er",
+    "name4": "Die 9er",
+    "name5": "Die 10er",
+    "name6": "Quadrate",
+    "name7": "Tauschregel",
+    "name8": "Schwere Aufgaben",
+    "name9": "Große Zehner",
+    "name10": "Fortgeschritten",
     "title": "Deine Lern-Analyse",
-    "desc": "Unsere KI hat alle deine Sprints ausgewertet. Hier siehst du, wo du glänzt und was du direkt üben solltest.",
-    "weakest": "Dein nächstes Ziel",
-    "strongest": "Perfekt gemeistert"
+    "desc": "Basierend auf deiner Genauigkeit, Geschwindigkeit und Beständigkeit über alle Sprints.",
+    "weakest": "Übungsschwerpunkt",
+    "strongest": "Stärkste Fähigkeit",
+    "moreData": "Kalibrierung benötigt",
+    "moreDataDesc": "Spiele ein paar weitere Sprints auf deinem aktuellen Level, damit wir deine Stärken und Schwächen analysieren können.",
+    "allMastered": "Level gemeistert!",
+    "allMasteredDesc": "Du hast alle Multiplikatoren auf diesem Level gemeistert. Hervorragende Arbeit!",
+    "insight": {
+      "fluent": "{{kc}} — sitzt! Du bist schnell und genau.",
+      "developingSpeed": "{{kc}} — genau ({{accuracy}}%), aber langsam ({{speed}}s Ø). Übe für mehr Flüssigkeit.",
+      "developingAccuracy": "{{kc}} — schnell, aber nur {{accuracy}}% genau. Werde langsamer und konzentriere dich.",
+      "developing": "{{kc}} — {{accuracy}}% Genauigkeit, {{speed}}s Ø. Weiter üben!",
+      "struggling": "{{kc}} — braucht Übung ({{accuracy}}% Genauigkeit). Probier die Strategietipps unten.",
+      "untouched": "{{kc}} — noch nicht erkundet. Starte einen Sprint, um freizuschalten!"
+    }
   },
   "friends": {
     "haveCode": "Hast du den Code eines Freundes?",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "Bronze I",
+    "bronze2": "Bronze II",
+    "bronze3": "Bronze III",
+    "silver1": "Silber I",
+    "silver2": "Silber II",
+    "silver3": "Silber III",
+    "gold1": "Gold I",
+    "gold2": "Gold II",
+    "gold3": "Gold III",
+    "diamond": "Diamant",
+    "unlock": {
+      "bronze2": "Sprint-Reaktionen",
+      "bronze3": "Sprint-Designs",
+      "silver1": "Einen Freund herausfordern",
+      "silver2": "Eigene Avatar-Farbe",
+      "silver3": "Schnellrunde (2x XP)",
+      "gold1": "Bestenlisten-Krone",
+      "gold2": "Eigener Sprint-Baukasten",
+      "gold3": "Erweiterte Tabellen (x11–x20)",
+      "diamond": "Meister-Titel"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "bis {{rank}}",
+    "maxRank": "Höchster Rang erreicht!",
+    "levelAndRank": "Level {{level}}",
+    "unlocks": "{{rank}} schaltet frei: {{feature}}",
+    "xpExplainer": "Schwerere Aufgaben bringen mehr XP."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }
