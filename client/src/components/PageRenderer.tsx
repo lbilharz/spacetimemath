@@ -25,7 +25,8 @@ interface Props {
   tierAtSprintStartRef: MutableRefObject<number>;
   inClassroom: boolean;
   showBottomNav: boolean;
-  onStartSprint: (id: bigint, origin: 'lobby' | 'classroom') => void;
+  isDiagnosticMode: boolean;
+  onStartSprint: (id: bigint, origin: 'lobby' | 'classroom', isDiag?: boolean) => void;
   onEnterClassroom: (id: bigint) => void;
   onGoToAccount: () => void;
   setPage: (page: Page) => void;
@@ -45,6 +46,7 @@ export default function PageRenderer({
   tierAtSprintStartRef,
   inClassroom,
   showBottomNav,
+  isDiagnosticMode,
   onStartSprint,
   onEnterClassroom,
   onGoToAccount,
@@ -66,6 +68,7 @@ export default function PageRenderer({
           myPlayer={myPlayer}
           myIdentityHex={myIdentityHex}
           onStartSprint={(id) => onStartSprint(id, 'lobby')}
+          onRetakeDiagnostic={() => onStartSprint(0n, 'lobby', true)}
           onEnterClassroom={onEnterClassroom}
           onGoToAccount={onGoToAccount}
         />
@@ -85,6 +88,8 @@ export default function PageRenderer({
           playerLearningTier={myPlayer?.learningTier ?? 0}
           extendedMode={myPlayer?.extendedMode ?? false}
           extendedLevel={myPlayer?.extendedLevel ?? 0}
+          onRetakeDiagnostic={() => onStartSprint(0n, 'lobby', true)}
+          onStartSprint={(id) => onStartSprint(id, 'lobby')}
         />
       )}
       {page === 'classroom' && (
@@ -103,6 +108,7 @@ export default function PageRenderer({
         <SprintPage
           myIdentityHex={myIdentityHex!}
           classSprintId={activeClassSprintId ?? undefined}
+          forceDiagnostic={isDiagnosticMode}
           onFinished={(id) => {
             setSessionId(id);
             if (activeClassSprintId !== null) {

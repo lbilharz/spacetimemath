@@ -77,7 +77,18 @@
     "masteryTitle": "Ma grille de maîtrise",
     "masteryDesc": "Ta table de 1×1 en un coup d'œil — appuie sur un produit pour voir comment le calculer.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "friendsTitle": "Joue avec des Amis",
+    "friendsDesc": "Échangez des codes et dominez le classement.",
+    "classesTitle": "Rejoins une Classe",
+    "classesDesc": "Connecte-toi avec ton prof et tes profs.",
+    "focusHint": "Prochaine à maîtriser",
+    "focusNew": "{{kc}} — commence à explorer !",
+    "focusPractice": "{{kc}} — {{accuracy}}% de précision. Continue !",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "welcomeBack": "Welcome back,",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "60 secondes au compteur",
@@ -90,7 +101,8 @@
     "startSprint": "Démarrer le sprint 60s ⚡",
     "okay": "D'accord",
     "next": "Suivant",
-    "back": "Retour"
+    "back": "Retour",
+    "card3BodyPlacement": "Lancez votre sprint de diagnostic de 60 secondes. Faites de votre mieux — nous l'utiliserons pour trouver votre niveau de départ idéal !"
   },
   "sprint": {
     "getReady": "Prêt ?",
@@ -273,7 +285,9 @@
     "joinError": "Classe introuvable",
     "areYouTeacher": "Are you a teacher?",
     "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "emptyHeading": "Apprenez ensemble ! 🏫",
+    "emptyDesc": "Rejoignez une classe pour rivaliser avec vos camarades et laissez votre professeur guider votre parcours d'apprentissage !"
   },
   "extendedTables": {
     "title": "Tables étendues",
@@ -353,7 +367,6 @@
     "cardTitle": "Choisis ton niveau de départ",
     "cardBody": "Dis-nous ce que tu sais déjà — tu pourras le modifier à tout moment.",
     "adjustTitle": "Ajuster le niveau",
-    "changeLevel": "Changer le niveau",
     "myLevel": "Mon niveau",
     "adjustBody": "Entraîne-toi sur des tables plus faciles ou passe à la suite.",
     "setLevel": "Valider le niveau",
@@ -364,7 +377,9 @@
     "tier4Desc": "Je connais aussi ×4",
     "tier5Desc": "Je connais aussi ×6",
     "tier6Desc": "Je connais aussi ×7",
-    "tier7Desc": "Je connais toutes mes tables !"
+    "tier7Desc": "Je connais toutes mes tables !",
+    "setLevelManually": "Définir le niveau manuellement",
+    "testMyLevel": "Tester mon niveau"
   },
   "tiers": {
     "unlocked1": "×3 débloqué !",
@@ -399,6 +414,12 @@
     "nextUnlock6": "Maîtrise ×8 pour débloquer ×9",
     "allUnlocked": "Toutes les tables sont débloquées ! 🎉"
   },
+  "tierLadder": {
+    "level": "Niveau",
+    "yourStats": "Tes stats",
+    "acc": "Prc",
+    "spd": "Vit"
+  },
   "days": {
     "mo": "Lu",
     "tu": "Ma",
@@ -420,10 +441,33 @@
     "8": "Opérations Difficiles — Les problèmes les plus difficiles comme 6×7, 6×8 et 7×8.",
     "9": "Grandes Dizaines (×20) — Multiplier par des nombres comme 20 ou 25.",
     "10": "Bases Avancées — Multiplier avec des nombres au-dessus de 10 (comme 15×8).",
+    "name0": "Les 0",
+    "name1": "Les 1",
+    "name2": "Les 2",
+    "name3": "Les 5",
+    "name4": "Les 9",
+    "name5": "Les 10",
+    "name6": "Carrés",
+    "name7": "Règle d'échange",
+    "name8": "Calculs difficiles",
+    "name9": "Grandes dizaines",
+    "name10": "Avancé",
     "title": "Ton Profil d'Apprentissage",
-    "desc": "Notre IA a analysé tes sprints. Voici tes points forts et ce que tu devrais réviser.",
-    "weakest": "Prochain Objectif",
-    "strongest": "Maîtrisé"
+    "desc": "Basé sur ta précision, ta vitesse et ta régularité sur tous les sprints.",
+    "weakest": "Point à travailler",
+    "strongest": "Point fort",
+    "moreData": "Besoin de calibrage",
+    "moreDataDesc": "Joue quelques sprints de plus à ton niveau actuel pour que nous puissions analyser tes forces et tes faiblesses.",
+    "allMastered": "Niveau maîtrisé !",
+    "allMasteredDesc": "Tu as maîtrisé tous les multiplicateurs de ce niveau. Excellent travail !",
+    "insight": {
+      "fluent": "{{kc}} — solide ! Tu es rapide et précis.",
+      "developingSpeed": "{{kc}} — précis ({{accuracy}}%) mais lent ({{speed}}s en moy.). Entraîne-toi pour plus de fluidité.",
+      "developingAccuracy": "{{kc}} — rapide mais seulement {{accuracy}}% de précision. Ralentis et concentre-toi.",
+      "developing": "{{kc}} — {{accuracy}}% de précision, {{speed}}s en moy. Continue à t'entraîner !",
+      "struggling": "{{kc}} — à travailler ({{accuracy}}% de précision). Essaie les astuces ci-dessous.",
+      "untouched": "{{kc}} — pas encore exploré. Lance un sprint pour débloquer !"
+    }
   },
   "register_split": {
     "teacher_btn": "Enseignant",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "Bronze I",
+    "bronze2": "Bronze II",
+    "bronze3": "Bronze III",
+    "silver1": "Argent I",
+    "silver2": "Argent II",
+    "silver3": "Argent III",
+    "gold1": "Or I",
+    "gold2": "Or II",
+    "gold3": "Or III",
+    "diamond": "Diamant",
+    "unlock": {
+      "bronze2": "Reactions de sprint",
+      "bronze3": "Themes de sprint",
+      "silver1": "Defier un ami",
+      "silver2": "Couleur d'avatar personnalisee",
+      "silver3": "Tour rapide (2x XP)",
+      "gold1": "Couronne du classement",
+      "gold2": "Constructeur de sprint personnalise",
+      "gold3": "Tables etendues (x11-x20)",
+      "diamond": "Titre de Maitre"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "pour atteindre {{rank}}",
+    "maxRank": "Rang maximum atteint !",
+    "levelAndRank": "Niveau {{level}}",
+    "unlocks": "{{rank}} debloque : {{feature}}",
+    "xpExplainer": "Les problemes plus difficiles rapportent plus d'XP."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }

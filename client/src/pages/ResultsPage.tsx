@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
-import { useTable } from 'spacetimedb/react';
-import { tables } from '../module_bindings';
-import type { ProblemStat } from '../module_bindings/types.js';
+import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
+import { tables, reducers } from '../module_bindings';
+import type { ProblemStat, Player } from '../module_bindings/types.js';
 import { getRechenweg } from '../utils/rechenwege.js';
 import MasteryGrid, { getSessionMastery } from '../components/MasteryGrid.js';
 import PageContainer from '../components/PageContainer.js';
+import AnimatedScore from '../components/AnimatedScore.js';
 
 interface Props {
   sessionId: bigint;
@@ -20,6 +21,11 @@ interface Props {
 
 function TierUnlockCelebration({ tier, onContinue }: { tier: number, onContinue: () => void }) {
   const { t } = useTranslation();
+  
+  useEffect(() => {
+    import('../utils/audio.js').then((m) => m.playNewRecord());
+  }, []);
+
   return (
     <div className="fixed inset-0 bg-brand-yellow z-[100] flex flex-col items-center justify-center p-6 text-slate-900 animate-in fade-in duration-500">
       <div className="text-[120px] md:text-[180px] animate-bounce mb-8 drop-shadow-xl" style={{ animationDuration: '2s' }}>🎉</div>
@@ -45,9 +51,12 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
   const [sessions] = useTable(tables.my_sessions);
   const [allAnswers] = useTable(tables.my_answers);
   const [problemStats] = useTable(tables.problem_stats);
+  const [players] = useTable(tables.players);
   const session = sessions.find(s => s.id === sessionId);
+  const myPlayer = (players as Player[]).find(p => p.identity.toHexString() === myIdentityHex);
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex);
   const sessionAnswers = myAnswers.filter(a => a.sessionId === sessionId);
+  const setLearningTier = useSTDBReducer(reducers.setLearningTier);
 
   // Top 3 hardest pairs this session (wrong answers by difficulty weight)
   const wrongPairs = sessionAnswers
@@ -81,15 +90,20 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
   // Trigger DKT Hugging Face AI pipeline once the session finalized
   useEffect(() => {
     if (isComplete && myIdentityHex) {
-      // Fire and forget webhook. The remote Hugging Face Python worker intercepts this,
-      // runs the PyTorch LSTM locally, and publishes the resulting PlayerDktWeights matrix.
-      fetch(`https://lbillharz-spacetimemath-dkt.hf.space/train`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player_hex: myIdentityHex })
-      }).catch(err => console.debug("[DKT] Webhook failed:", err));
+      // Automatic placement based on raw score for the very first session
+      if (myPlayer && myPlayer.totalSessions === 1 && session) {
+        let tier = 0;
+        if (session.rawScore >= 40) tier = 7;
+        else if (session.rawScore >= 30) tier = 5;
+        else if (session.rawScore >= 20) tier = 3;
+        else if (session.rawScore >= 10) tier = 1;
+        
+        if (myPlayer.learningTier < tier) {
+          setLearningTier({ tier }).catch(console.error);
+        }
+      }
     }
-  }, [isComplete, myIdentityHex]);
+  }, [isComplete, myIdentityHex, myPlayer?.totalSessions, session?.rawScore]);
 
   if (showCelebration && newlyUnlockedTier !== undefined) {
     return <TierUnlockCelebration tier={newlyUnlockedTier} onContinue={() => setShowCelebration(false)} />;
@@ -113,9 +127,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
           </div>
         ) : (
           <>
-            <div className="text-brand-yellow font-black text-[80px] leading-none mb-2 drop-shadow-sm">
-              {session!.weightedScore.toFixed(1)}
-            </div>
+            <AnimatedScore score={session!.weightedScore} />
             <p className="text-slate-500 dark:text-slate-400 font-bold">{t('results.weightedScore')}</p>
             <a
               href="/progress#scoring-guide"

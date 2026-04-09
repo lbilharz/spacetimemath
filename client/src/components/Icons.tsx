@@ -14,6 +14,12 @@ export const StopIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+export const Swosh = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 100 10" preserveAspectRatio="none">
+    <path d="M0 5 Q 50 15 100 5" stroke="currentColor" strokeWidth="8" fill="transparent" />
+  </svg>
+);
+
 export const BackIcon = ({ className }: { className?: string }) => (
   <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
     <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
@@ -200,6 +206,30 @@ export const FriendsIcon = ({ className }: { className?: string }) => (
     <rect x="58" y="47" width="26" height="37" rx="8" fill="var(--icon-yellow)" opacity="0.6" />
 
     <rect x="37" y="47" width="26" height="26" rx="6" fill="var(--icon-red)" />
+  </svg>
+);
+
+export const SetLevelIcon = ({ className }: { className?: string }) => (
+  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+    {/* Staircase/Sliders hybrid */}
+    <rect x="6"  y="68" width="26" height="26" rx="6" fill="var(--icon-blue)"/>
+    <rect x="37" y="37" width="26" height="26" rx="6" fill="var(--icon-yellow)"/>
+    <rect x="68" y="6"  width="26" height="26" rx="6" fill="var(--icon-green)"/>
+    <rect x="68" y="37" width="26" height="26" rx="6" fill="var(--icon-blue)"/>
+    <rect x="37" y="68" width="26" height="26" rx="6" fill="var(--icon-red)"/>
+  </svg>
+);
+
+export const TestLevelIcon = ({ className }: { className?: string }) => (
+  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+    {/* Target reticle / radar pattern */}
+    <rect x="37" y="6"  width="26" height="26" rx="6" fill="var(--icon-blue)" />
+    <rect x="37" y="68" width="26" height="26" rx="6" fill="var(--icon-blue)" />
+    <rect x="6"  y="37" width="26" height="26" rx="6" fill="var(--icon-blue)" />
+    <rect x="68" y="37" width="26" height="26" rx="6" fill="var(--icon-blue)" />
+    <rect x="37" y="37" width="26" height="26" rx="6" fill="var(--icon-red)" />
   </svg>
 );
 

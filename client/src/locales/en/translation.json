@@ -75,6 +75,7 @@
     "you": "you",
     "more": "more",
     "hello": "Hi, {{name}}!",
+    "welcomeBack": "Welcome back,",
     "bestScore": "Best score:",
     "sessions_one": "{{count}} session",
     "sessions_other": "{{count}} sessions",
@@ -96,7 +97,17 @@
     "masteryTitle": "My Mastery Grid",
     "masteryDesc": "Your 1×1 table at a glance — tap any product to see how to think it through.",
     "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions"
+    "sessions": "Sessions",
+    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "friendsTitle": "Play with Friends",
+    "friendsDesc": "Exchange codes and compete on the leaderboard.",
+    "classesTitle": "Join a Classroom",
+    "classesDesc": "Connect with your teacher and classmates.",
+    "focusHint": "Next to master",
+    "focusNew": "{{kc}} — start exploring!",
+    "focusPractice": "{{kc}} — {{accuracy}}% accuracy. Keep going!",
+    "detailsLink": "Details",
+    "sprintCta": "Practice Now"
   },
   "onboarding": {
     "card1Title": "60 Seconds on the Clock",
@@ -109,7 +120,8 @@
     "startSprint": "Start 60s Sprint ⚡",
     "okay": "Okay",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "card3BodyPlacement": "Start your 60-second diagnostic sprint. Do your best — we will use this to find your perfect starting level!"
   },
   "sprint": {
     "getReady": "Get ready!",
@@ -292,7 +304,9 @@
     "joinError": "Classroom not found",
     "areYouTeacher": "Are you a teacher?",
     "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints."
+    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "emptyHeading": "Learn together! 🏫",
+    "emptyDesc": "Join a classroom to compete with classmates, conquer assignments together, and let your teacher guide your learning journey!"
   },
   "extendedTables": {
     "title": "Extended Tables",
@@ -372,7 +386,6 @@
     "cardTitle": "Pick Your Starting Level",
     "cardBody": "Choose where you want to begin — you can always adjust later.",
     "adjustTitle": "Adjust Level",
-    "changeLevel": "Change Level",
     "myLevel": "My Level",
     "adjustBody": "Practice easier tables or jump ahead.",
     "setLevel": "Set Level",
@@ -383,7 +396,9 @@
     "tier4Desc": "I also know ×4",
     "tier5Desc": "I also know ×6",
     "tier6Desc": "I also know ×7",
-    "tier7Desc": "I know all my tables!"
+    "tier7Desc": "I know all my tables!",
+    "setLevelManually": "Set Level manually",
+    "testMyLevel": "Test my Level"
   },
   "tiers": {
     "unlocked1": "×3 unlocked!",
@@ -418,6 +433,12 @@
     "nextUnlock6": "Master ×8 to unlock ×9",
     "allUnlocked": "All tables unlocked! 🎉"
   },
+  "tierLadder": {
+    "level": "Level",
+    "yourStats": "Your Stats",
+    "acc": "Acc",
+    "spd": "Spd"
+  },
   "dkt": {
     "0": "Multiplying by 0 — Anything times zero is always zero.",
     "1": "Multiplying by 1 — Anything times one stays exactly the same.",
@@ -430,10 +451,33 @@
     "8": "Hard Core Facts — The trickiest problems like 6×7, 6×8, and 7×8.",
     "9": "Big Tens (×20) — Multiplying by numbers like 20 or 25.",
     "10": "Advanced Basics — Multiplying with numbers above 10 (like 15×8).",
+    "name0": "The 0s",
+    "name1": "The 1s",
+    "name2": "The 2s",
+    "name3": "The 5s",
+    "name4": "The 9s",
+    "name5": "The 10s",
+    "name6": "Squares",
+    "name7": "Swap Rule",
+    "name8": "Hard Facts",
+    "name9": "Big Tens",
+    "name10": "Advanced",
     "title": "Your Learning Profile",
-    "desc": "Our AI analyzed all your past sprints. Here is where you shine and what you should focus on next.",
-    "weakest": "Next Goal",
-    "strongest": "Mastered"
+    "desc": "Based on your accuracy, speed, and consistency across all sprints.",
+    "weakest": "Focus Area",
+    "strongest": "Strongest Skill",
+    "moreData": "Needs Calibration",
+    "moreDataDesc": "Play a few more sprints on your current level so we can analyze your strengths and weaknesses.",
+    "allMastered": "Level Mastered!",
+    "allMasteredDesc": "You have mastered all the multipliers on this level. Brilliant work!",
+    "insight": {
+      "fluent": "{{kc}} — solid! You're fast and accurate.",
+      "developingSpeed": "{{kc}} — accurate ({{accuracy}}%) but slow ({{speed}}s avg). Practice for fluency.",
+      "developingAccuracy": "{{kc}} — fast but only {{accuracy}}% accurate. Slow down and focus.",
+      "developing": "{{kc}} — {{accuracy}}% accuracy, {{speed}}s avg. Keep practicing!",
+      "struggling": "{{kc}} — needs work ({{accuracy}}% accuracy). Try the strategy tips below.",
+      "untouched": "{{kc}} — not yet explored. Start a sprint to unlock!"
+    }
   },
   "friends": {
     "haveCode": "Have a friend's code?",
@@ -471,5 +515,43 @@
       "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
       "ignore": "If you didn't request this, you can safely ignore this email."
     }
+  },
+  "ranks": {
+    "bronze1": "Bronze I",
+    "bronze2": "Bronze II",
+    "bronze3": "Bronze III",
+    "silver1": "Silver I",
+    "silver2": "Silver II",
+    "silver3": "Silver III",
+    "gold1": "Gold I",
+    "gold2": "Gold II",
+    "gold3": "Gold III",
+    "diamond": "Diamond",
+    "unlock": {
+      "bronze2": "Sprint Reactions",
+      "bronze3": "Sprint Themes",
+      "silver1": "Challenge a Friend",
+      "silver2": "Custom Avatar Color",
+      "silver3": "Speed Round (2x XP)",
+      "gold1": "Leaderboard Crown",
+      "gold2": "Custom Sprint Builder",
+      "gold3": "Extended Tables (x11-x20)",
+      "diamond": "Master Title"
+    }
+  },
+  "trophyRoad": {
+    "xp": "XP",
+    "nextRank": "to reach {{rank}}",
+    "maxRank": "Max Rank Reached!",
+    "levelAndRank": "Level {{level}}",
+    "unlocks": "{{rank}} unlocks: {{feature}}",
+    "xpExplainer": "Harder problems earn more XP."
+  },
+  "progress": {
+    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
+    "missionFocusPairs": "Try {{pairs}}",
+    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "startSprint": "Start Sprint",
+    "setLevel": "Set Level"
   }
 }

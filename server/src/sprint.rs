@@ -12,7 +12,8 @@ use crate::{
 use crate::{
     players, sessions, answers, issued_problems_v2, issued_problem_results_v2,
     sprint_sequences, next_problem_results_v2, problem_stats, best_scores, class_sprints,
-    kc_telemetry, player_dkt_weights, classrooms, classroom_members
+    kc_telemetry, player_dkt_weights, classrooms, classroom_members, diagnostic_states,
+    DiagnosticState
 };
 
 fn splitmix64(mut x: u64) -> u64 {
@@ -117,18 +118,69 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
             class_sprint_id: 0,
             heat: 0,
         }) {
-            // SEQ: generate and store problem sequence for this session
-            let seq_str = build_sequence(ctx, inserted.id, player.learning_tier, player.extended_mode, player.extended_level);
-            ctx.db.sprint_sequences().insert(SprintSequence {
-                session_id: inserted.id,
-                player_identity: ctx.sender(),
-                sequence: seq_str,
-                index: 0,
-            });
+            if player.total_sessions == 0 {
+                ctx.db.diagnostic_states().insert(DiagnosticState {
+                    session_id: inserted.id,
+                    player_identity: ctx.sender(),
+                    current_tier: 1,
+                    consecutive_fast_correct: 0,
+                    wrong_streak: 0,
+                    force_tap_mode: false,
+                });
+            } else {
+                let seq_str = build_sequence(ctx, inserted.id, player.learning_tier, player.extended_mode, player.extended_level);
+                ctx.db.sprint_sequences().insert(SprintSequence {
+                    session_id: inserted.id,
+                    player_identity: ctx.sender(),
+                    sequence: seq_str,
+                    index: 0,
+                });
+            }
             return Ok(());
         }
     }
     Err("Could not start session".to_string())
+}
+
+#[reducer]
+pub fn start_diagnostic_session(ctx: &ReducerContext) -> Result<(), String> {
+    let player = get_player(ctx)?;
+
+    // Close any orphaned incomplete solo sessions
+    let orphans: Vec<_> = ctx.db.sessions()
+        .iter()
+        .filter(|s| s.player_identity == ctx.sender() && !s.is_complete && s.class_sprint_id == 0)
+        .collect();
+    for s in orphans {
+        ctx.db.sessions().id().update(Session { is_complete: true, ..s });
+    }
+
+    for _ in 0..200 {
+        if let Ok(inserted) = ctx.db.sessions().try_insert(Session {
+            id: 0,
+            player_identity: ctx.sender(),
+            username: player.username.clone(),
+            weighted_score: 0.0,
+            raw_score: 0,
+            accuracy_pct: 0,
+            total_answered: 0,
+            is_complete: false,
+            started_at: ctx.timestamp,
+            class_sprint_id: 0,
+            heat: 0,
+        }) {
+            ctx.db.diagnostic_states().insert(DiagnosticState {
+                session_id: inserted.id,
+                player_identity: ctx.sender(),
+                current_tier: 1,
+                consecutive_fast_correct: 0,
+                wrong_streak: 0,
+                force_tap_mode: false,
+            });
+            return Ok(());
+        }
+    }
+    Err("Could not start diagnostic session".to_string())
 }
 
 /// SEC-10: Server deals a problem — creates an IssuedProblem row and writes
@@ -150,12 +202,14 @@ pub fn issue_problem(
         return Err("Session already complete".into());
     }
     let player = get_player(ctx)?;
+    let is_diag = ctx.db.diagnostic_states().session_id().find(session_id).is_some();
+
     let is_extended_pair = a.max(b) >= 11 && a.max(b) <= 20;
     if is_extended_pair {
-        if !player.extended_mode {
+        if !is_diag && !player.extended_mode {
             return Err("Extended mode not enabled".into());
         }
-        if a.max(b) > 11 + player.extended_level {
+        if !is_diag && a.max(b) > 11 + player.extended_level {
             return Err("Extended pair not yet unlocked".into());
         }
         let key = (a as u16) * 100 + (b as u16);
@@ -164,7 +218,6 @@ pub fn issue_problem(
         }
     } else {
         let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
-        let is_diag = ctx.db.class_sprints().id().find(session.class_sprint_id).map(|s| s.is_diagnostic).unwrap_or(false);
         if !is_diag && pair_tier > player.learning_tier {
             return Err("Problem pair above player's current tier".into());
         }
@@ -226,32 +279,62 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
         return Err("Session already complete".into());
     }
 
-    let mut seq = ctx.db.sprint_sequences().session_id().find(session_id)
-        .ok_or("No sequence for this session")?;
+    let session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
 
-    let keys: Vec<u16> = if seq.sequence.is_empty() {
-        vec![]
+    let (a, b, prompt_mode) = if let Some(diag) = ctx.db.diagnostic_states().session_id().find(session_id) {
+        // --- TIER CLIMBER ---
+        let mut a: u8 = 1;
+        let mut b: u8 = 1;
+        // Simple mapping representing tiers. 
+        // Real tier mapping: Tier 1=Add/Sub Tier 2=Multiplication etc, but for spacetimemath,
+        // we use learning_tier table. E.g. Tier 1 = max(a,b) <= 3. Tier 2: x5.
+        // We will sample based on current_tier to make it simple but accurate.
+        let seed_val = (ctx.timestamp.to_micros_since_unix_epoch() as u64) + (diag.current_tier as u64);
+        let seed = splitmix64(seed_val);
+        let r1 = (seed % 100) as u8;
+        let r2 = ((seed / 100) % 100) as u8;
+        
+        match diag.current_tier {
+            1 => { a = r1 % 4 + 1; b = r2 % 3 + 1; }, // 1-4, 1-3
+            2 => { a = r1 % 5 + 1; b = 5; },
+            3 => { a = r1 % 9 + 2; b = r2 % 2 + 2; }, 
+            4 => { a = r1 % 10 + 1; b = 10; },
+            5 => { a = r1 % 6 + 4; b = r2 % 6 + 4; }, 
+            _ => { a = r1 % 9 + 2; b = r2 % 9 + 2; }, 
+        }
+        if seed % 2 == 0 { std::mem::swap(&mut a, &mut b); }
+        let p_mode = if diag.force_tap_mode { 1 } else { 0 };
+        (a, b, p_mode)
     } else {
-        seq.sequence.split(',')
-            .filter_map(|s| s.parse::<u16>().ok())
-            .collect()
+        // --- STANDARD SEQUENCE ---
+        let mut seq = ctx.db.sprint_sequences().session_id().find(session_id)
+            .ok_or("No sequence for this session")?;
+
+        let keys: Vec<u16> = if seq.sequence.is_empty() {
+            vec![]
+        } else {
+            seq.sequence.split(',')
+                .filter_map(|s| s.parse::<u16>().ok())
+                .collect()
+        };
+
+        let idx = seq.index as usize;
+        if idx >= keys.len() {
+            return Err("Sequence exhausted".into());
+        }
+
+        let key = keys[idx];
+        let a = (key / 100) as u8;
+        let b = (key % 100) as u8;
+
+        // Advance index
+        seq.index += 1;
+        ctx.db.sprint_sequences().session_id().update(seq);
+        let p_mode = if session.heat >= 3 { 0 } else { 1 };
+        (a, b, p_mode)
     };
 
-    let idx = seq.index as usize;
-    if idx >= keys.len() {
-        return Err("Sequence exhausted".into());
-    }
 
-    let key = keys[idx];
-    let a = (key / 100) as u8;
-    let b = (key % 100) as u8;
-
-    // Advance index
-    seq.index += 1;
-    ctx.db.sprint_sequences().session_id().update(seq);
-
-    let session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
-    let prompt_mode = if session.heat >= 3 { 0 } else { 1 };
     let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
     let options_sys = options.clone(); // For the IssuedProblemV2 table
     let options_res = options.clone(); // For the NextProblemResultV2 table
@@ -335,12 +418,14 @@ pub fn submit_answer(
     }
 
     // SEC-06: (a, b) pair must be within player's learning tier (or extended pool if enabled)
+    let is_diag = ctx.db.diagnostic_states().session_id().find(session_id).is_some();
+
     let is_extended_pair = a.max(b) >= 11 && a.max(b) <= 20;
     if is_extended_pair {
-        if !player.extended_mode {
+        if !is_diag && !player.extended_mode {
             return Err("Extended mode not enabled".into());
         }
-        if a.max(b) > 11 + player.extended_level {
+        if !is_diag && a.max(b) > 11 + player.extended_level {
             return Err("Extended pair not yet unlocked".into());
         }
         let key = (a as u16) * 100 + (b as u16);
@@ -350,7 +435,6 @@ pub fn submit_answer(
     } else {
         let pair_tier = pair_learning_tier(a, b)
             .ok_or_else(|| "Invalid problem pair".to_string())?;
-        let is_diag = ctx.db.class_sprints().id().find(session.class_sprint_id).map(|s| s.is_diagnostic).unwrap_or(false);
         if !is_diag && pair_tier > player.learning_tier {
             return Err("Problem pair above player's current tier".into());
         }
@@ -368,6 +452,35 @@ pub fn submit_answer(
 
     let correct_answer = (a as u32) * (b as u32);
     let is_correct = user_answer == correct_answer;
+
+    // --- TIER CLIMBER LOGIC ---
+    if let Some(mut diag) = ctx.db.diagnostic_states().session_id().find(session_id) {
+        let is_fast = response_ms < 4000;
+        if is_correct {
+            diag.wrong_streak = 0;
+            diag.force_tap_mode = false;
+            if is_fast {
+                diag.consecutive_fast_correct += 1;
+                if diag.consecutive_fast_correct >= 2 {
+                    diag.current_tier = diag.current_tier.saturating_add(1).min(7);
+                    diag.consecutive_fast_correct = 0;
+                }
+            } else {
+                diag.consecutive_fast_correct = 0;
+            }
+        } else {
+            diag.consecutive_fast_correct = 0;
+            diag.wrong_streak += 1;
+            if diag.wrong_streak == 2 {
+                diag.force_tap_mode = true;
+            } else if diag.wrong_streak >= 3 {
+                diag.current_tier = diag.current_tier.saturating_sub(1).max(1);
+                diag.wrong_streak = 0;
+                diag.force_tap_mode = false;
+            }
+        }
+        ctx.db.diagnostic_states().session_id().update(diag);
+    }
 
     // Track Heat in the Session
     let mut session = ctx.db.sessions().id().find(session_id).ok_or_else(|| "Session not found".to_string())?;
@@ -402,7 +515,7 @@ pub fn submit_answer(
     }
     
     for &kc in &generated_kcs {
-        let idx = kc as usize;
+        let idx = (kc as usize).saturating_sub(1); // KC enum is 1-based, array is 0-based
         if idx < current_weights.len() {
             if is_dkt_success == 1.0 {
                 current_weights[idx] = (current_weights[idx] + 0.15).min(0.99);
@@ -560,11 +673,20 @@ pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity,
     let total = session.total_answered;
 
     let new_best = player.best_score.max(weighted_score);
+    
+    // Check if this was a diagnostic placement match
+    let mut final_learning_tier = player.learning_tier.min(7);
+    if let Some(diag) = ctx.db.diagnostic_states().session_id().find(session_id) {
+        final_learning_tier = diag.current_tier.min(7);
+        ctx.db.diagnostic_states().session_id().delete(session_id);
+    }
+
     ctx.db.players().identity().update(Player {
         best_score: new_best,
         total_sessions: player.total_sessions + 1,
         total_correct: player.total_correct + raw_score,
         total_answered: player.total_answered + total,
+        learning_tier: final_learning_tier,
         ..player
     });
     check_and_unlock(ctx, identity, session_id);
@@ -643,6 +765,35 @@ pub fn sync_keystroke(ctx: &ReducerContext, current_input: String) -> Result<(),
             current_input,
             timestamp: ctx.timestamp,
         });
+    }
+    Ok(())
+}
+
+#[reducer]
+pub fn fix_tiers(ctx: &ReducerContext) -> Result<(), String> {
+    let mut to_update = Vec::new();
+    for player in ctx.db.players().iter() {
+        if player.learning_tier > 7 {
+             to_update.push(crate::Player {
+                learning_tier: 7,
+                identity: player.identity,
+                username: player.username.clone(),
+                best_score: player.best_score,
+                total_sessions: player.total_sessions,
+                total_correct: player.total_correct,
+                total_answered: player.total_answered,
+                onboarding_done: player.onboarding_done,
+                recovery_emailed: player.recovery_emailed,
+                extended_mode: player.extended_mode,
+                extended_level: player.extended_level,
+                player_type: player.player_type,
+                class_id: player.class_id,
+                email: player.email.clone(),
+            });
+        }
+    }
+    for p in to_update {
+        ctx.db.players().identity().update(p);
     }
     Ok(())
 }

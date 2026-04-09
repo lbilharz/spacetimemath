@@ -48,6 +48,7 @@ export default function App() {
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [classroomId, setClassroomId] = useState<bigint | null>(null);
   const [sprintOrigin, setSprintOrigin] = useState<'lobby' | 'classroom'>('lobby');
+  const [isDiagnosticMode, setIsDiagnosticMode] = useState(false);
   const [activeClassSprintId, setActiveClassSprintId] = useState<bigint | null>(null);
   const [incomingClassSprint, setIncomingClassSprint] = useState<ClassSprint | null>(null);
   const seenClassSprintIds = useRef(new Set<bigint>());
@@ -239,10 +240,11 @@ export default function App() {
   }, [isActive, effectivePlayer]);
 
   // ── Sprint helpers ──────────────────────────────────────────────────────────
-  const goToSprint = (id: bigint, origin: 'lobby' | 'classroom') => {
+  const goToSprint = (id: bigint, origin: 'lobby' | 'classroom', isDiag: boolean = false) => {
     tierAtSprintStartRef.current = effectivePlayer?.learningTier ?? 0;
     setSessionId(id);
     setSprintOrigin(origin);
+    setIsDiagnosticMode(isDiag);
     setActiveClassSprintId(null);
     navigate('sprint');
   };
@@ -427,6 +429,7 @@ export default function App() {
         tierAtSprintStartRef={tierAtSprintStartRef}
         inClassroom={inClassroom}
         showBottomNav={showBottomNav}
+        isDiagnosticMode={isDiagnosticMode}
         onStartSprint={goToSprint}
         onEnterClassroom={goToClassroom}
         onGoToAccount={() => setPage('account')}

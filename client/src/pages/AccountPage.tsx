@@ -8,7 +8,7 @@ import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
 import PageContainer from '../components/PageContainer.js';
 import TeacherUpgradeForm from '../components/TeacherUpgradeForm.js';
-import { AccountIcon } from '../components/Icons.js';
+import { AccountIcon, Swosh } from '../components/Icons.js';
 import RemindersSettings from '../components/RemindersSettings.js';
 
 
@@ -129,7 +129,10 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
           <AccountIcon className="drop-shadow-sm scale-110" />
         </div>
-        {t('nav.account')}
+        <span className="relative z-10 inline-block text-slate-900 dark:text-white">
+          {t('nav.account')}
+          <Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" />
+        </span>
       </h1>
 
       {/* ── 1. Profile ──────────────────────────────────────────────── */}
@@ -190,11 +193,10 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
             <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('account.accountType')}</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.accountTypeDesc')}</p>
           </div>
-          <span className={`inline-flex items-center rounded-xl px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest ${
-            isTeacher
-              ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-400'
-              : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
-          }`}>
+          <span className={`inline-flex items-center rounded-xl px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest ${isTeacher
+            ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-400'
+            : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+            }`}>
             {isTeacher ? t('common.teacher') : t('common.student')}
           </span>
         </div>
@@ -202,17 +204,23 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         {!isTeacher && (
           <>
             {!showUpgradeForm ? (
-              <button
-                onClick={() => setShowUpgradeForm(true)}
-                className="mt-4 w-full rounded-xl bg-brand-yellow/10 border border-brand-yellow/30 px-4 py-3 text-sm font-bold text-amber-700 dark:text-amber-400 transition-all hover:bg-brand-yellow/20 active:scale-[0.98]"
-              >
-                {t('classes.upgradePrompt')}
-              </button>
+              <>
+                <div className="mt-4 font-bold text-sm text-slate-700 dark:text-slate-300">
+                  {t('classes.areYouTeacher')}
+                </div>
+                <button
+                  onClick={() => setShowUpgradeForm(true)}
+                  className="mt-2 w-full rounded-xl bg-brand-yellow/10 border border-brand-yellow/30 px-4 py-3 text-sm font-bold text-amber-700 dark:text-amber-400 transition-all hover:bg-brand-yellow/20 active:scale-[0.98]"
+                >
+                  {t('classes.upgradePrompt')}
+                </button>
+              </>
             ) : (
               <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-300">
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{t('classes.upgradeDesc')}</p>
                 <TeacherUpgradeForm myIdentityHex={myIdentityHex} onUpgraded={() => setShowUpgradeForm(false)} />
               </div>
+
             )}
           </>
         )}

@@ -1,20 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { getRechenweg } from '../utils/rechenwege.js';
 import { learningTierOf } from '../utils/learningTier.js';
+import { tagKCs } from '../utils/kcProficiency.js';
 
 import type { Answer, ProblemStat } from '../module_bindings/types.js';
 
 interface Props {
   answers: Answer[];
   problemStats: ProblemStat[];
-  dktWeights?: number[];
   highlightSession?: bigint;
   sessionAnswers?: Answer[];
   showExtended?: boolean;
   focusCell?: { a: number; b: number } | null;
   playerLearningTier?: number;
+  activeMissionKc?: number;
 }
 
 type Mastery = 'mastered' | 'learning' | 'struggling' | 'untouched';
@@ -30,38 +31,6 @@ export function getSessionMastery(ans: Answer | undefined): Mastery | null {
   if (attempts === 2 || timeSecs > 6) return 'learning';
   return 'mastered';
 }
-
-function mapKcIndex(a: number, b: number): number {
-  const maxVal = Math.max(a, b);
-  if (maxVal > 10) return 9; // Extended Base 10
-  if (a === 0 || b === 0) return 0; // Zero Property
-  if (a === 1 || b === 1) return 1; // Identity
-  if (a === b) return 6; // Squares
-  if (a === 2 || b === 2) return 2; // Fact 2s
-  if (a === 5 || b === 5) return 3; // Fact 5s
-  if (a === 9 || b === 9) return 4; // Fact 9s
-  if (a === 10 || b === 10) return 5; // Fact 10s
-  
-  if ((a === 6 && b === 7) || (a === 7 && b === 6) ||
-      (a === 6 && b === 8) || (a === 8 && b === 6) ||
-      (a === 7 && b === 8) || (a === 8 && b === 7)) {
-      return 8; // Hard Facts
-  }
-  return -1; // Fallback
-}
-
-function getMasteryFromTensor(dktWeights: number[] | undefined, a: number, b: number): Mastery {
-  if (!dktWeights || dktWeights.length < 11) return 'untouched';
-  
-  const kcIdx = mapKcIndex(a, b);
-  if (kcIdx === -1) return 'learning'; // Default fallback for untagged cells like 3x4
-  
-  const w = dktWeights[kcIdx];
-  if (w >= 0.8) return 'mastered';
-  if (w >= 0.5) return 'learning';
-  return 'struggling';
-}
-
 
 const MASTERY_COLORS: Record<Mastery, string> = {
   mastered:   '#5DD23C',
@@ -79,13 +48,16 @@ const MASTERY_BG: Record<Mastery, string> = {
 
 const EXTENDED_A = [11,12,13,14,15,16,17,18,19,20];
 
-export default function MasteryGrid({ answers, problemStats, dktWeights, highlightSession: _highlightSession, sessionAnswers = [], showExtended = false, focusCell, playerLearningTier }: Props) {
+export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], showExtended = false, focusCell, playerLearningTier, activeMissionKc }: Props) {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<{ a: number; b: number } | null>(null);
+  const [selected, setSelected] = useState<{ a: number; b: number } | null>(focusCell || null);
+  const [lastFocusCell, setLastFocusCell] = useState(focusCell);
 
-  useEffect(() => {
-    if (focusCell) setSelected(focusCell);
-  }, [focusCell?.a, focusCell?.b]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (focusCell?.a !== lastFocusCell?.a || focusCell?.b !== lastFocusCell?.b) {
+    setLastFocusCell(focusCell);
+    setSelected(focusCell || null);
+  }
+
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
   const cells: React.ReactNode[] = [];
@@ -99,6 +71,68 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
     );
   }
 
+  const renderCell = (a: number, b: number, isExt: boolean) => {
+    let mastery: Mastery = 'untouched';
+    
+    if (answers && answers.length > 0) {
+      const pairAns = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
+      if (pairAns.length > 0) {
+        const override = getSessionMastery(pairAns[pairAns.length - 1]);
+        if (override) mastery = override;
+      }
+    }
+
+    const key = a * 100 + b;
+    const isHighlighted = sessionKeys.has(key);
+    const isSelected = selected?.a === a && selected?.b === b;
+    
+    if (isHighlighted) {
+      const lastSessionAns = sessionAnswers.filter(ans => ans.a === a && ans.b === b).pop();
+      const override = getSessionMastery(lastSessionAns);
+      if (override) mastery = override;
+    }
+
+    const stat = problemStats.find(s => s.problemKey === key);
+    const w = stat?.difficultyWeight ?? 0;
+    const answer = a * b;
+    const isLocked = playerLearningTier !== undefined && learningTierOf(a, b) > playerLearningTier;
+    
+    // Check if this cell is part of the player's active mission focus
+    const isMission = activeMissionKc !== undefined && tagKCs(a, b).includes(activeMissionKc);
+
+    cells.push(
+      <button
+        key={`${isExt ? 'ext-' : ''}${a}-${b}`}
+        className={`w-[34px] h-[34px] rounded-[6px] flex items-center justify-center transition-all relative ${
+          isLocked 
+            ? 'cursor-default opacity-20 filter grayscale blur-[0.5px] pointer-events-none' 
+            : 'cursor-pointer hover:scale-[1.05] active:scale-95 shadow-sm'
+        } ${!isLocked && isMission ? 'ring-2 ring-brand-yellow/60 animate-[pulse_2s_ease-in-out_infinite] z-20' : ''}`}
+        title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
+        onClick={() => !isLocked && setSelected(isSelected ? null : { a, b })}
+        style={{
+          background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
+          border: isSelected
+            ? `2px solid ${MASTERY_COLORS[mastery]}`
+            : isHighlighted
+            ? '2px solid #facc15'
+            : `1px solid ${MASTERY_COLORS[mastery]}44`,
+          color: MASTERY_COLORS[mastery],
+          fontWeight: 600,
+          fontSize: 13,
+          zIndex: isHighlighted || isSelected ? 10 : 1,
+          boxShadow: isHighlighted ? '0 0 10px rgba(250,204,21,0.3)' : 'none',
+        }}
+      >
+        {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}
+        {/* Difficulty dot */}
+        {w >= 1.5 && (
+          <span className="absolute top-[2px] right-[3px] w-1 h-1 rounded-full bg-red-500 block" />
+        )}
+      </button>
+    );
+  };
+
   for (let a = 1; a <= 10; a++) {
     // Row label
     cells.push(
@@ -107,60 +141,7 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
       </div>
     );
     for (let b = 1; b <= 10; b++) {
-      let mastery = getMasteryFromTensor(dktWeights, a, b);
-      
-      // Fallback: If DKT is missing/uncomputed (often the case locally or on first sprint), evaluate answers manually
-      if (mastery === 'untouched' && answers && answers.length > 0) {
-        const pairAns = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
-        if (pairAns.length > 0) {
-          const override = getSessionMastery(pairAns[pairAns.length - 1]);
-          if (override) mastery = override;
-        }
-      }
-
-      const key = a * 100 + b;
-      const isHighlighted = sessionKeys.has(key);
-      const isSelected = selected?.a === a && selected?.b === b;
-      
-      if (isHighlighted) {
-        const lastSessionAns = sessionAnswers.filter(ans => ans.a === a && ans.b === b).pop();
-        const override = getSessionMastery(lastSessionAns);
-        if (override) mastery = override;
-      }
-
-      const stat = problemStats.find(s => s.problemKey === key);
-      const w = stat?.difficultyWeight ?? 0;
-      const answer = a * b;
-      const isLocked = playerLearningTier !== undefined
-        && learningTierOf(a, b) > playerLearningTier;
-
-      cells.push(
-        <button
-          key={`${a}-${b}`}
-          className={`w-[34px] h-[34px] rounded-[6px] flex items-center justify-center transition-all shadow-sm relative ${isLocked ? 'cursor-default opacity-25' : 'cursor-pointer hover:scale-[1.05] active:scale-95'}`}
-          title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
-          onClick={() => !isLocked && setSelected(isSelected ? null : { a, b })}
-          style={{
-            background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
-            border: isSelected
-              ? `2px solid ${MASTERY_COLORS[mastery]}`
-              : isHighlighted
-              ? '2px solid #facc15' // brand-yellow
-              : `1px solid ${MASTERY_COLORS[mastery]}44`,
-            color: MASTERY_COLORS[mastery],
-            fontWeight: 600,
-            fontSize: 13,
-            zIndex: isHighlighted || isSelected ? 10 : 1,
-            boxShadow: isHighlighted ? '0 0 10px rgba(250,204,21,0.3)' : 'none',
-          }}
-        >
-          {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}
-          {/* Difficulty dot */}
-          {w >= 1.5 && (
-            <span className="absolute top-[2px] right-[3px] w-1 h-1 rounded-full bg-red-500 block" />
-          )}
-        </button>
-      );
+      renderCell(a, b, false);
     }
   }
 
@@ -184,56 +165,7 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
         </div>
       );
       for (let b = 1; b <= 10; b++) {
-        let mastery = getMasteryFromTensor(dktWeights, a, b);
-
-        if (mastery === 'untouched' && answers && answers.length > 0) {
-          const pairAns = answers.filter(ans => (ans.a === a && ans.b === b) || (ans.a === b && ans.b === a));
-          if (pairAns.length > 0) {
-            const override = getSessionMastery(pairAns[pairAns.length - 1]);
-            if (override) mastery = override;
-          }
-        }
-
-        const key = a * 100 + b;
-        const isHighlighted = sessionKeys.has(key);
-        const isSelected = selected?.a === a && selected?.b === b;
-
-        if (isHighlighted) {
-          const lastSessionAns = sessionAnswers.filter(ans => ans.a === a && ans.b === b).pop();
-          const override = getSessionMastery(lastSessionAns);
-          if (override) mastery = override;
-        }
-
-        const stat = problemStats.find(s => s.problemKey === key);
-        const w = stat?.difficultyWeight ?? 0;
-        const answer = a * b;
-
-        cells.push(
-          <button
-            key={`ext-${a}-${b}`}
-            className="w-[34px] h-[34px] rounded-[6px] flex items-center justify-center cursor-pointer transition-all hover:scale-[1.05] active:scale-95 shadow-sm relative"
-            title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
-            onClick={() => setSelected(isSelected ? null : { a, b })}
-            style={{
-              background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
-              border: isSelected
-                ? `2px solid ${MASTERY_COLORS[mastery]}`
-                : isHighlighted
-                ? '2px solid #facc15'
-                : `1px solid ${MASTERY_COLORS[mastery]}44`,
-              color: MASTERY_COLORS[mastery],
-              fontWeight: 600,
-              fontSize: 13,
-              zIndex: isHighlighted || isSelected ? 10 : 1,
-              boxShadow: isHighlighted ? '0 0 10px rgba(250,204,21,0.3)' : 'none',
-            }}
-          >
-            {a === b ? <span style={{ opacity: 0.7 }}>{answer}</span> : answer}
-            {w >= 1.5 && (
-              <span className="absolute top-[2px] right-[3px] w-1 h-1 rounded-full bg-red-500 block" />
-            )}
-          </button>
-        );
+        renderCell(a, b, true);
       }
     }
   }
@@ -241,8 +173,8 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
   const rw = selected ? getRechenweg(selected.a, selected.b) : null;
 
   return (
-    <div>
-      <div className="overflow-x-auto pb-2">
+    <div className="flex flex-col w-full relative">
+      <div className="overflow-x-auto pb-2 self-center lg:self-start">
         <div style={{
           display: 'grid',
           gridTemplateColumns: '28px repeat(10, 34px)',
@@ -254,7 +186,7 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
 
       {/* Rechenweg panel */}
       {selected && rw && (
-        <div className="mt-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 transition-all animate-in fade-in slide-in-from-top-2">
+        <div className="mt-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 transition-all animate-in fade-in slide-in-from-top-2 max-w-[390px]">
           <div className="flex items-center justify-between gap-4 mb-2 border-b border-slate-200 dark:border-slate-800 pb-2">
             <span className="font-black tabular-nums text-lg text-slate-800 dark:text-white">
               {selected.a} × {selected.b} = {selected.a * selected.b}
@@ -283,7 +215,7 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
             return (
               <div className="border-t border-slate-200 dark:border-slate-800 mt-4 pt-4">
                 <div className="text-[11px] text-slate-500 font-bold mb-3 uppercase tracking-wider">
-                  {t('mastery.correctOfLast', { correct, recent: recent.length, all: pair.length, defaultValue: `${correct}/${recent.length} RICHTIG (LETZTE ${recent.length} VON ${pair.length})` })}
+                  {t('mastery.correctOfLast', { correct, recent: recent.length, all: pair.length, defaultValue: `${correct}/${recent.length} CORRECT (LAST ${recent.length} OF ${pair.length})` })}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {recent.map((ans, i) => {
@@ -319,20 +251,20 @@ export default function MasteryGrid({ answers, problemStats, dktWeights, highlig
         </div>
       )}
 
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-6 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+      {/* Tighter Native Legend */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/60 max-w-[390px] lg:max-w-none">
         {(['mastered', 'learning', 'struggling', 'untouched'] as Mastery[]).map(m => (
-          <div key={m} className="flex items-center gap-2.5">
+          <div key={m} className="flex items-center gap-2">
             <div className="w-3.5 h-3.5 rounded-[4px]" style={{
               background: MASTERY_BG[m],
               border: `1px solid ${MASTERY_COLORS[m]}`,
             }} />
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide uppercase">{t(`mastery.${m}` as const)}</span>
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">{t(`mastery.${m}` as const)}</span>
           </div>
         ))}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-red-600 dark:bg-red-500" />
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide uppercase">{t('mastery.hardDiff')}</span>
+          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">{t('mastery.hardDiff')}</span>
         </div>
       </div>
     </div>

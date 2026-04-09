@@ -237,6 +237,18 @@ pub struct KcTelemetry {
     pub timestamp: u64,
 }
 
+/// DIALOG: Track state for ongoing diagnostic placement matches
+#[table(accessor = diagnostic_states)]
+pub struct DiagnosticState {
+    #[primary_key]
+    pub session_id: u64,
+    pub player_identity: Identity,
+    pub current_tier: u8,
+    pub consecutive_fast_correct: u8,
+    pub wrong_streak: u8,
+    pub force_tap_mode: bool,
+}
+
 /// SEQ-01: Server-side sprint problem sequence (private — never pushed to client).
 /// Keyed by session_id; one row per active session.
 /// The sequence field is a comma-separated list of problem_keys (a*100+b as u16 values).
@@ -698,6 +710,61 @@ pub fn migrate_emails_to_private(ctx: &ReducerContext) -> Result<(), String> {
             ctx.db.players().identity().update(player);
         }
     }
+    Ok(())
+}
+
+/// Migration: Rebuild all DKT weight tensors from answer history.
+/// The original submit_answer used 1-based KC enum values as array indices,
+/// leaving index 0 unused and misaligning all weights. This replays every
+/// answer in chronological order with correct 0-based indexing.
+/// Idempotent — safe to call multiple times.
+#[reducer]
+pub fn migrate_rebuild_dkt_weights(ctx: &ReducerContext) -> Result<(), String> {
+    // Collect all player identities that have answers
+    let player_ids: std::collections::HashSet<Identity> = ctx.db.answers()
+        .iter()
+        .map(|a| a.player_identity)
+        .collect();
+
+    let mut rebuilt = 0u64;
+    for pid in &player_ids {
+        // Gather this player's answers, sorted chronologically by id
+        let mut answers: Vec<Answer> = ctx.db.answers()
+            .player_identity()
+            .filter(pid)
+            .collect();
+        answers.sort_by_key(|a| a.id);
+
+        // Start from fresh default weights
+        let mut weights = vec![0.5_f32; 11];
+
+        for ans in &answers {
+            let kcs = crate::generator::calculate_kcs_for_multiplication(ans.a, ans.b);
+            let is_success = ans.is_correct && ans.attempts == 1 && ans.response_ms < 4000;
+            for &kc in &kcs {
+                let idx = (kc as usize).saturating_sub(1); // 1-based enum → 0-based array
+                if idx < weights.len() {
+                    if is_success {
+                        weights[idx] = (weights[idx] + 0.15).min(0.99);
+                    } else {
+                        weights[idx] = (weights[idx] - 0.25).max(0.01);
+                    }
+                }
+            }
+        }
+
+        let row = PlayerDktWeights {
+            player_identity: *pid,
+            kc_mastery: weights,
+            last_updated_timestamp: ctx.timestamp.to_micros_since_unix_epoch() as u64,
+        };
+        match ctx.db.player_dkt_weights().player_identity().find(*pid) {
+            Some(_) => { ctx.db.player_dkt_weights().player_identity().update(row); }
+            None    => { ctx.db.player_dkt_weights().insert(row); }
+        }
+        rebuilt += 1;
+    }
+    spacetimedb::log::info!("migrate_rebuild_dkt_weights: rebuilt weights for {} players from answer history", rebuilt);
     Ok(())
 }
 

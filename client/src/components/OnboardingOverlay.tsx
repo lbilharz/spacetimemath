@@ -2,15 +2,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { reducers } from '../module_bindings/index.js';
-import TierLadder from './TierLadder.js';
 
 const INFO_CARDS = [
   { emoji: '⏱️', titleKey: 'onboarding.card1Title', bodyKey: 'onboarding.card1Body' },
   { emoji: '🎯', titleKey: 'onboarding.card2Title', bodyKey: 'onboarding.card2Body' },
-  { emoji: '⚡', titleKey: 'onboarding.card3Title', bodyKey: 'onboarding.card3Body' },
+  { emoji: '⚡', titleKey: 'onboarding.card3Title', bodyKey: 'onboarding.card3BodyPlacement' as any },
 ] as const;
 
-const TOTAL_STEPS = INFO_CARDS.length + 1; // 3 info + 1 tier picker
+const TOTAL_STEPS = INFO_CARDS.length;
 
 interface Props {
   onDone: () => void;
@@ -25,18 +24,14 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [finishing, setFinishing] = useState(false);
-  const [selectedTier, setSelectedTier] = useState(0);
   const completeOnboarding = useSTDBReducer(reducers.completeOnboarding);
-  const setLearningTier    = useSTDBReducer(reducers.setLearningTier);
 
-  const isTierStep = step === TOTAL_STEPS - 1;
-  const isLast     = isTierStep; // tier step is always last
-  const card       = !isTierStep ? INFO_CARDS[step] : null;
+  const isLast     = step === TOTAL_STEPS - 1;
+  const card       = INFO_CARDS[step];
 
   const handleDone = async () => {
     if (finishing) return;
     setFinishing(true);
-    if (selectedTier > 0) await setLearningTier({ tier: selectedTier });
     await completeOnboarding();
     onDone();
   };
@@ -46,7 +41,6 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
   const handleOkay = async () => {
     if (finishing) return;
     setFinishing(true);
-    if (selectedTier > 0) await setLearningTier({ tier: selectedTier });
     await completeOnboarding();
     onClose?.();
   };
@@ -58,39 +52,16 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto px-8 pt-10 pb-6">
           <div className="flex flex-col items-center gap-6 text-center">
-            {isTierStep ? (
-              /* Tier picker card */
-              <>
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                    {t('tierPicker.cardTitle')}
-                  </h2>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                    {t('tierPicker.cardBody')}
-                  </p>
-                </div>
-                <div className="w-full">
-                  <TierLadder
-                    currentTier={0}
-                    selectedTier={selectedTier}
-                    onSelect={setSelectedTier}
-                  />
-                </div>
-              </>
-            ) : (
-              /* Info cards */
-              <>
-                <div className="text-7xl leading-none drop-shadow-sm animate-bounce duration-[2000ms]">{card!.emoji}</div>
-                <div className="flex flex-col gap-3">
-                  <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                    {t(card!.titleKey)}
-                  </h2>
-                  <p className="text-[17px] font-medium leading-relaxed text-slate-600 dark:text-slate-300">
-                    {t(card!.bodyKey)}
-                  </p>
-                </div>
-              </>
-            )}
+            {/* Info cards */}
+            <div className="text-7xl leading-none drop-shadow-sm animate-bounce duration-[2000ms]">{card!.emoji}</div>
+            <div className="flex flex-col gap-3">
+              <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                {t(card!.titleKey)}
+              </h2>
+              <p className="text-[17px] font-medium leading-relaxed text-slate-600 dark:text-slate-300">
+                {t(card!.bodyKey)}
+              </p>
+            </div>
           </div>
         </div>
 

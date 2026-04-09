@@ -44,6 +44,7 @@ import CreateRecoveryKeyReducer from "./create_recovery_key_reducer";
 import DeletePlayerReducer from "./delete_player_reducer";
 import EndClassSprintReducer from "./end_class_sprint_reducer";
 import EndSessionReducer from "./end_session_reducer";
+import FixTiersReducer from "./fix_tiers_reducer";
 import FocusStudentReducer from "./focus_student_reducer";
 import GetClassRecoveryCodesReducer from "./get_class_recovery_codes_reducer";
 import GetMyEmailReducer from "./get_my_email_reducer";
@@ -56,6 +57,7 @@ import LeaveClassroomReducer from "./leave_classroom_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
 import MigrateCloseOrphanSessionsReducer from "./migrate_close_orphan_sessions_reducer";
 import MigrateEmailsToPrivateReducer from "./migrate_emails_to_private_reducer";
+import MigrateRebuildDktWeightsReducer from "./migrate_rebuild_dkt_weights_reducer";
 import MigrateRecomputeTiersReducer from "./migrate_recompute_tiers_reducer";
 import MigrateRecomputeTiersV2Reducer from "./migrate_recompute_tiers_v_2_reducer";
 import MigrateResetWeightsReducer from "./migrate_reset_weights_reducer";
@@ -82,6 +84,7 @@ import SetExtendedModeReducer from "./set_extended_mode_reducer";
 import SetLearningTierReducer from "./set_learning_tier_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import StartClassSprintReducer from "./start_class_sprint_reducer";
+import StartDiagnosticSessionReducer from "./start_diagnostic_session_reducer";
 import StartSessionReducer from "./start_session_reducer";
 import SubmitAnswerReducer from "./submit_answer_reducer";
 import SyncKeystrokeReducer from "./sync_keystroke_reducer";
@@ -128,10 +131,10 @@ const tablesSchema = __schema({
   best_scores: __table({
     name: 'best_scores',
     indexes: [
-      { name: 'learning_tier', algorithm: 'btree', columns: [
+      { accessor: 'learningTier', name: 'learning_tier', algorithm: 'btree', columns: [
         'learningTier',
       ] },
-      { name: 'player_identity', algorithm: 'btree', columns: [
+      { accessor: 'playerIdentity', name: 'player_identity', algorithm: 'btree', columns: [
         'playerIdentity',
       ] },
     ],
@@ -142,13 +145,13 @@ const tablesSchema = __schema({
   class_sprints: __table({
     name: 'class_sprints',
     indexes: [
-      { name: 'classroom_id', algorithm: 'btree', columns: [
+      { accessor: 'classroomId', name: 'classroom_id', algorithm: 'btree', columns: [
         'classroomId',
       ] },
-      { name: 'id', algorithm: 'btree', columns: [
+      { accessor: 'id', name: 'id', algorithm: 'btree', columns: [
         'id',
       ] },
-      { name: 'teacher', algorithm: 'btree', columns: [
+      { accessor: 'teacher', name: 'teacher', algorithm: 'btree', columns: [
         'teacher',
       ] },
     ],
@@ -159,7 +162,7 @@ const tablesSchema = __schema({
   online_players: __table({
     name: 'online_players',
     indexes: [
-      { name: 'identity', algorithm: 'btree', columns: [
+      { accessor: 'identity', name: 'identity', algorithm: 'btree', columns: [
         'identity',
       ] },
     ],
@@ -170,10 +173,10 @@ const tablesSchema = __schema({
   players: __table({
     name: 'players',
     indexes: [
-      { name: 'identity', algorithm: 'btree', columns: [
+      { accessor: 'identity', name: 'identity', algorithm: 'btree', columns: [
         'identity',
       ] },
-      { name: 'learning_tier', algorithm: 'btree', columns: [
+      { accessor: 'learningTier', name: 'learning_tier', algorithm: 'btree', columns: [
         'learningTier',
       ] },
     ],
@@ -184,13 +187,13 @@ const tablesSchema = __schema({
   problem_stats: __table({
     name: 'problem_stats',
     indexes: [
-      { name: 'a', algorithm: 'btree', columns: [
+      { accessor: 'a', name: 'a', algorithm: 'btree', columns: [
         'a',
       ] },
-      { name: 'b', algorithm: 'btree', columns: [
+      { accessor: 'b', name: 'b', algorithm: 'btree', columns: [
         'b',
       ] },
-      { name: 'problem_key', algorithm: 'btree', columns: [
+      { accessor: 'problemKey', name: 'problem_key', algorithm: 'btree', columns: [
         'problemKey',
       ] },
     ],
@@ -359,6 +362,7 @@ const reducersSchema = __reducers(
   __reducerSchema("delete_player", DeletePlayerReducer),
   __reducerSchema("end_class_sprint", EndClassSprintReducer),
   __reducerSchema("end_session", EndSessionReducer),
+  __reducerSchema("fix_tiers", FixTiersReducer),
   __reducerSchema("focus_student", FocusStudentReducer),
   __reducerSchema("get_class_recovery_codes", GetClassRecoveryCodesReducer),
   __reducerSchema("get_my_email", GetMyEmailReducer),
@@ -371,6 +375,7 @@ const reducersSchema = __reducers(
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
   __reducerSchema("migrate_close_orphan_sessions", MigrateCloseOrphanSessionsReducer),
   __reducerSchema("migrate_emails_to_private", MigrateEmailsToPrivateReducer),
+  __reducerSchema("migrate_rebuild_dkt_weights", MigrateRebuildDktWeightsReducer),
   __reducerSchema("migrate_recompute_tiers", MigrateRecomputeTiersReducer),
   __reducerSchema("migrate_recompute_tiers_v_2", MigrateRecomputeTiersV2Reducer),
   __reducerSchema("migrate_reset_weights", MigrateResetWeightsReducer),
@@ -397,6 +402,7 @@ const reducersSchema = __reducers(
   __reducerSchema("set_learning_tier", SetLearningTierReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("start_class_sprint", StartClassSprintReducer),
+  __reducerSchema("start_diagnostic_session", StartDiagnosticSessionReducer),
   __reducerSchema("start_session", StartSessionReducer),
   __reducerSchema("submit_answer", SubmitAnswerReducer),
   __reducerSchema("sync_keystroke", SyncKeystrokeReducer),
