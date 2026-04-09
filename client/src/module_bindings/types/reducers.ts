@@ -124,12 +124,5 @@ export type SynthesizeLegacySprintsParams = __Infer<typeof SynthesizeLegacySprin
 export type ToggleClassroomVisibilityParams = __Infer<typeof ToggleClassroomVisibilityReducer>;
 export type UpdateDktWeightsParams = __Infer<typeof UpdateDktWeightsReducer>;
 export type UpdateFriendAliasParams = __Infer<typeof UpdateFriendAliasReducer>;
-export type VerifyTeacherUpgradeParams = {
-  username?: string;
-  email: string;
-  code: string;
-  signature: string;
-  expiresAtMs: bigint;
-  gdprConsent: boolean;
-  teacherDeclaration: boolean;
-};
+export type VerifyTeacherUpgradeParams = __Infer<typeof VerifyTeacherUpgradeReducer>;
+
