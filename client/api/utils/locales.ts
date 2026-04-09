@@ -1,12 +1,15 @@
-import ar from '../../src/locales/ar/translation.json';
-import de from '../../src/locales/de/translation.json';
-import en from '../../src/locales/en/translation.json';
-import es from '../../src/locales/es/translation.json';
-import fr from '../../src/locales/fr/translation.json';
-import nl from '../../src/locales/nl/translation.json';
-import tr from '../../src/locales/tr/translation.json';
-import uk from '../../src/locales/uk/translation.json';
-import zh from '../../src/locales/zh/translation.json';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+const ar = require('../../src/locales/ar/translation.json');
+const de = require('../../src/locales/de/translation.json');
+const en = require('../../src/locales/en/translation.json');
+const es = require('../../src/locales/es/translation.json');
+const fr = require('../../src/locales/fr/translation.json');
+const nl = require('../../src/locales/nl/translation.json');
+const tr = require('../../src/locales/tr/translation.json');
+const uk = require('../../src/locales/uk/translation.json');
+const zh = require('../../src/locales/zh/translation.json');
 
 const translations: Record<string, typeof en> = {
   ar, de, en, es, fr, nl, tr, uk, zh
