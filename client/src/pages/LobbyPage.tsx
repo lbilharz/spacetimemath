@@ -201,7 +201,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
                     </div>
                   </a>
                   <a
-                    href="/classes"
+                    href="/classrooms"
                     className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 flex items-center gap-4 no-underline transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 group"
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
