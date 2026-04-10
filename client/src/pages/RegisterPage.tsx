@@ -57,6 +57,12 @@ export default function RegisterPage({ onRegistered }: Props) {
       setAutoRestoreCode(upper);
     }
     
+    const joinCode = params.get('join');
+    if (joinCode && joinCode.trim().length >= 4) {
+      setClassCode(joinCode.trim().toUpperCase());
+      setFlowType('student');
+    }
+
     try {
       if (localStorage.getItem('_pendingFriendToken')) {
         setHasFriendInvite(true);
@@ -211,7 +217,8 @@ export default function RegisterPage({ onRegistered }: Props) {
     try {
       const hex = identity?.toHexString();
       if (!hex) throw new Error("Connection not established");
-      const res = await fetch('/api/send-email-login', {
+      const apiBase = import.meta.env.VITE_API_URL || (window.location.origin.startsWith('http') && !window.location.origin.includes('localhost') ? window.location.origin : 'https://up.bilharz.eu');
+      const res = await fetch(`${apiBase}/api/send-email-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: restoreEmail.trim(), identityHex: hex, locale: i18n.language })
@@ -564,7 +571,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                   type="email"
                   placeholder="name@school.edu"
                   value={restoreEmail}
-                  onChange={e => setRestoreEmail(e.target.value)}
+                  onChange={e => setRestoreEmail(e.target.value.trim())}
                   autoFocus
                   disabled={restoring}
                   required
