@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import type { Answer } from '../module_bindings/types.js';
 
-const TIER_EMOJIS = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
+import { TIER_EMOJI } from '../utils/learningTier.js';
 
 // What each tier adds (displayed as a badge)
 const TIER_NEW_FACTORS: (string | null)[] = [
@@ -102,7 +102,7 @@ export default function TierLadder({ currentTier, selectedTier, onSelect, answer
           <span />
         </div>
       )}
-      {TIER_EMOJIS.map((emoji, tier) => {
+      {TIER_EMOJI.map((emoji, tier) => {
         const isCurrent = tier === currentTier;
         const isSelected = selectedTier !== undefined ? tier === selectedTier : isCurrent;
         const newFactor = TIER_NEW_FACTORS[tier];

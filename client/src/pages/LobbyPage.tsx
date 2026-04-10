@@ -11,7 +11,8 @@ import { computeProficiency, relevantKCsForTier, KC_TRIVIAL } from '../utils/kcP
 import type { KcProficiency } from '../utils/kcProficiency.js';
 import type { Answer } from '../module_bindings/types.js';
 
-const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'];
+import { APP_LANGUAGES } from '../components/LanguagePicker.js';
+import { TIER_EMOJI } from '../utils/learningTier.js';
 
 
 
@@ -25,7 +26,9 @@ interface Props {
 }
 
 export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRetakeDiagnostic, onEnterClassroom, onGoToAccount: _onGoToAccount }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [greeting] = useState(() => APP_LANGUAGES[Math.floor(Math.random() * APP_LANGUAGES.length)]);
+  const isSameLang = i18n.language.startsWith(greeting.code);
   const [classrooms] = useTable(tables.my_classrooms);
   const [_classroomMembers] = useTable(tables.my_classroom_members);
   const [answers] = useTable(tables.my_answers);
@@ -108,12 +111,31 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
         return (
           <>
             {/* ── Greeting ── */}
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3 relative">
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-start gap-4 relative">
               <div className="flex h-[1.3em] w-[1.3em] shrink-0 items-center justify-center rounded-2xl bg-white border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700">
                 <LobbyIcon className="scale-110" />
               </div>
-              <span className="relative z-10">
-                {t('lobby.welcomeBack', { defaultValue: 'Welcome back,' })} <span className="relative z-10 inline-block text-brand-yellow-hover pr-1">{myPlayer.username}<Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" /></span>! 👋
+              <span className="relative z-10 flex flex-col gap-1.5 pt-0.5">
+                <span className="flex items-center flex-wrap leading-tight">
+                  {greeting.greeting},&nbsp;<span className="whitespace-nowrap"><span className="relative z-10 inline-block text-brand-yellow-hover pr-1">{myPlayer.username}<Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" /></span>! 👋</span>
+                </span>
+                {!isSameLang && (
+                  <span className="text-sm font-bold text-slate-400 dark:text-slate-500 flex items-center gap-1.5 opacity-90 transition-opacity hover:opacity-100">
+                    <span className="text-base leading-none -mt-px">{greeting.flag}</span> 
+                    <span className="leading-none">{
+                      (() => {
+                        try {
+                          const langStr = new Intl.DisplayNames([i18n.language], { type: 'language' }).of(greeting.code) || greeting.code;
+                          return langStr.charAt(0).toUpperCase() + langStr.slice(1);
+                        } catch {
+                          return greeting.code.toUpperCase();
+                        }
+                      })()
+                    }</span> 
+                    <span className="opacity-40 text-[11px] mx-0.5 uppercase tracking-widest font-black">➔</span> 
+                    <span className="leading-none text-slate-500 dark:text-slate-400">{t('lobby.welcomeBack', { defaultValue: 'Welcome back,' }).replace(/,$/, '')}</span>
+                  </span>
+                )}
               </span>
             </h1>
 

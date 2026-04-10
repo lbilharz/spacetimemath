@@ -1,3 +1,5 @@
+export const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
+
 /**
  * Returns the learning tier for a single factor value.
  * Returns 99 for ×0 and extended factors (excluded from pool).

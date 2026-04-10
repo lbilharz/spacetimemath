@@ -20,7 +20,7 @@ interface Props {
   onStartSprint: (sessionId: bigint) => void;
 }
 
-const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
+import { TIER_EMOJI } from '../utils/learningTier.js';
 
 export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, extendedMode = false, onRetakeDiagnostic, onStartSprint }: Props) {
   const { t } = useTranslation();

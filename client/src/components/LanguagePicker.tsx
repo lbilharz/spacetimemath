@@ -9,16 +9,16 @@ const GlobeIcon = ({ size = 24, className = "" }) => (
   </svg>
 );
 
-const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
-  { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
-  { code: 'uk', label: 'Українська', flag: '🇺🇦' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'zh', label: '中文', flag: '🇨🇳' },
+export const APP_LANGUAGES = [
+  { code: 'en', label: 'English', flag: '🇬🇧', greeting: "Welcome back" },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪', greeting: "Willkommen zurück" },
+  { code: 'es', label: 'Español', flag: '🇪🇸', greeting: "Bienvenido de nuevo" },
+  { code: 'fr', label: 'Français', flag: '🇫🇷', greeting: "Bon retour" },
+  { code: 'nl', label: 'Nederlands', flag: '🇳🇱', greeting: "Welkom terug" },
+  { code: 'tr', label: 'Türkçe', flag: '🇹🇷', greeting: "Tekrar hoşgeldin" },
+  { code: 'uk', label: 'Українська', flag: '🇺🇦', greeting: "З поверненням" },
+  { code: 'ar', label: 'العربية', flag: '🇸🇦', greeting: "مرحباً بعودتك" },
+  { code: 'zh', label: '中文', flag: '🇨🇳', greeting: "欢迎回来" },
 ];
 
 export default function LanguagePicker() {
@@ -26,7 +26,7 @@ export default function LanguagePicker() {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const currentLang = LANGUAGES.find(l => l.code === i18n.language.split('-')[0]) || LANGUAGES[0];
+  const currentLang = APP_LANGUAGES.find(l => l.code === i18n.language.split('-')[0]) || APP_LANGUAGES[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,7 +56,7 @@ export default function LanguagePicker() {
       {isOpen && (
         <div className="absolute end-0 mt-3 w-48 transform overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900">
           <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto">
-            {LANGUAGES.map((lang, idx) => (
+            {APP_LANGUAGES.map((lang, idx) => (
               <button
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
