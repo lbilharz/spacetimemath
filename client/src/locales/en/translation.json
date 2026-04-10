@@ -90,7 +90,7 @@
     "sessions_one": "{{count}} session",
     "sessions_other": "{{count}} sessions",
     "starting": "Starting…",
-    "startSprint": "Start Sprint",
+    "startSprint": "Train My Level",
     "recoveryNag": "You have an active classroom — please secure your Account Recovery Key so you don't lose access to your students.",
     "recoveryNagCta": "Go to Account →",
     "viewClass": "📚 View →",
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "Train My Level",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"

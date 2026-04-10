@@ -89,7 +89,7 @@
     "sessions_one": "{{count}} Sprint",
     "sessions_other": "{{count}} Sprints",
     "starting": "Startet…",
-    "startSprint": "Sprint starten",
+    "startSprint": "Level trainieren",
     "recoveryNag": "Du hast eine offene Klasse — sichere dir deinen Account-Wiederherstellungsschlüssel, damit du keinen Zugang verlierst.",
     "recoveryNagCta": "Zum Account →",
     "viewClass": "📚 Ansehen →",
@@ -115,7 +115,7 @@
     "focusNew": "{{kc}} — jetzt entdecken!",
     "focusPractice": "{{kc}} — {{accuracy}}% Genauigkeit. Weiter so!",
     "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
+    "welcomeBack": "Willkommen zurück,",
     "detailsLink": "Details",
     "sprintCta": "Practice Now"
   },
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "Level trainieren",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"
