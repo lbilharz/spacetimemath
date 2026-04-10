@@ -87,7 +87,6 @@ export default function PageRenderer({
           myIdentityHex={myIdentityHex}
           playerLearningTier={myPlayer?.learningTier ?? 0}
           extendedMode={myPlayer?.extendedMode ?? false}
-          extendedLevel={myPlayer?.extendedLevel ?? 0}
           onRetakeDiagnostic={() => onStartSprint(0n, 'lobby', true)}
           onStartSprint={(id) => onStartSprint(id, 'lobby')}
         />

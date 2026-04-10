@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Classroom, ClassroomMember, Player } from '../module_bindings/types.js';
+import type { Classroom, Player } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
 import { PlayIcon, ProgressIcon, FriendsIcon, ClassesIcon, Swosh, TestLevelIcon, LobbyIcon } from '../components/Icons.js';
 import NetworkLeaderboard from '../components/NetworkLeaderboard.js';
@@ -24,10 +24,10 @@ interface Props {
   onGoToAccount: () => void;
 }
 
-export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRetakeDiagnostic, onEnterClassroom, onGoToAccount }: Props) {
+export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRetakeDiagnostic, onEnterClassroom, onGoToAccount: _onGoToAccount }: Props) {
   const { t } = useTranslation();
   const [classrooms] = useTable(tables.my_classrooms);
-  const [classroomMembers] = useTable(tables.my_classroom_members);
+  const [_classroomMembers] = useTable(tables.my_classroom_members);
   const [answers] = useTable(tables.my_answers);
   const joinClassroom = useSTDBReducer(reducers.joinClassroom);
 
@@ -41,12 +41,6 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
     [myAnswers, myPlayer?.learningTier]
   );
 
-  // Nag: teacher with students who hasn't emailed their recovery key yet
-  const hasStudents = (classrooms as unknown as Classroom[]).some(c =>
-    c.teacher.toHexString() === myIdentityHex &&
-    (classroomMembers as unknown as ClassroomMember[]).some(m => m.classroomId === c.id && !m.hidden)
-  );
-  const showNag = hasStudents && !myPlayer?.recoveryEmailed;
 
   const [starting, setStarting] = useState(false);
   // Pending auto-join code from ?join=CODE URL param; cleared once we navigate
@@ -83,18 +77,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
 
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
-      {/* Recovery key nag for teachers with students */}
-      {showNag && (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl border-[1.5px] border-brand-yellow bg-brand-yellow/10 p-3 md:p-4">
-          <span className="text-xl">⚠️</span>
-          <p className="flex-1 text-sm text-slate-800 dark:text-slate-200 font-medium">
-            {t('lobby.recoveryNag')}
-          </p>
-          <button className="rounded-lg bg-brand-yellow px-4 py-2 text-sm font-bold text-slate-900 hover:bg-brand-yellow-hover whitespace-nowrap transition-colors" onClick={onGoToAccount}>
-            {t('lobby.recoveryNagCta')}
-          </button>
-        </div>
-      )}
+
 
       {myPlayer && (() => {
         const tier = myPlayer.learningTier ?? 0;
@@ -147,9 +130,9 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
                   </span>
                 </div>
               </div>
-              <div className="flex flex-row items-center gap-2 w-full pt-1">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full pt-1">
                 <button
-                  className={`group flex items-center justify-center gap-2 flex-[2] rounded-[18px] bg-brand-yellow py-3.5 px-6 text-[16px] font-black tracking-wide text-slate-900 transition-all active:scale-[0.97] ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-sm hover:shadow-[0_8px_30px_rgba(250,204,21,0.4)]'}`}
+                  className={`group flex items-center justify-center gap-2 sm:flex-[2] rounded-[18px] bg-brand-yellow py-4 px-6 text-[16px] font-black tracking-wide text-slate-900 transition-all active:scale-[0.97] ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-sm hover:shadow-[0_8px_30px_rgba(250,204,21,0.4)]'}`}
                   onClick={handleStartSprint}
                   disabled={starting}
                 >
@@ -159,10 +142,10 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
                 <button
                   onClick={onRetakeDiagnostic}
                   title={t('tierPicker.testMyLevel')}
-                  className="flex-[1] rounded-[18px] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 py-3.5 px-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-[0.98] flex items-center justify-center gap-2 group shadow-sm min-w-[50px] whitespace-nowrap overflow-hidden"
+                  className="sm:flex-[1] rounded-[18px] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 py-4 px-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-[0.98] flex items-center justify-center gap-2 group shadow-sm min-w-[50px] whitespace-nowrap overflow-hidden"
                 >
                   <TestLevelIcon className="h-5 w-5 scale-110 transition-transform group-hover:scale-[1.2]" />
-                  <span className="hidden sm:inline">{t('tierPicker.testMyLevel')}</span>
+                  <span>{t('tierPicker.testMyLevel')}</span>
                 </button>
               </div>
             </div>

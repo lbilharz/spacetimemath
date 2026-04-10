@@ -11,7 +11,7 @@ use crate::{
 };
 use crate::{
     players, sessions, answers, issued_problems_v2, issued_problem_results_v2,
-    sprint_sequences, next_problem_results_v2, problem_stats, best_scores, class_sprints,
+    sprint_sequences, next_problem_results_v2, problem_stats, best_scores,
     kc_telemetry, player_dkt_weights, classrooms, classroom_members, diagnostic_states,
     DiagnosticState
 };
@@ -229,7 +229,7 @@ pub fn issue_problem(
     
     let options = if prompt_mode == 1 { generate_tap_options(session_id, a, b) } else { vec![] };
     let options_res = options.clone(); // For the result table
-    let generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
+    let _generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
 
     ctx.db.issued_problems_v2().insert(IssuedProblemV2 {
         id: 0,
@@ -283,8 +283,8 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
 
     let (a, b, prompt_mode) = if let Some(diag) = ctx.db.diagnostic_states().session_id().find(session_id) {
         // --- TIER CLIMBER ---
-        let mut a: u8 = 1;
-        let mut b: u8 = 1;
+        let mut a: u8;
+        let mut b: u8;
         // Simple mapping representing tiers. 
         // Real tier mapping: Tier 1=Add/Sub Tier 2=Multiplication etc, but for spacetimemath,
         // we use learning_tier table. E.g. Tier 1 = max(a,b) <= 3. Tier 2: x5.
@@ -341,7 +341,7 @@ pub fn next_problem(ctx: &ReducerContext, session_id: u64) -> Result<(), String>
 
     // Issue token (reuse SEC-10 IssuedProblem pattern)
     let token = make_code(ctx); // Assuming make_code(ctx) is the equivalent of generate_random_token()
-    let generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
+    let _generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
 
     ctx.db.issued_problems_v2().insert(IssuedProblemV2 {
         id: 0, // Assuming id is still auto-incremented

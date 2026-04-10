@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { RecoveryCodeResult, Player } from '../module_bindings/types.js';
+import type { RecoveryCodeResult, Player, MyEmailResult } from '../module_bindings/types.js';
 import type { ParseKeys } from 'i18next';
 import { capturedToken } from '../auth.js';
 import LanguagePicker from '../components/LanguagePicker.js';
@@ -21,17 +21,21 @@ interface Props {
 
 
 export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { identity } = useSpacetimeDB();
   const [recoveryCodeResults] = useTable(
     identity
       ? tables.my_recovery_code_results.where(r => r.owner.eq(identity))
       : tables.my_recovery_code_results
   );
+  const [emailResults] = useTable(
+    identity
+      ? tables.my_email_results.where(r => r.owner.eq(identity))
+      : tables.my_email_results
+  );
   const setUsernameReducer = useSTDBReducer(reducers.setUsername);
   const _createRecoveryKey = useSTDBReducer(reducers.createRecoveryKey);
   const regenerateRecoveryKey = useSTDBReducer(reducers.regenerateRecoveryKey);
-  const markRecoveryEmailed = useSTDBReducer(reducers.markRecoveryEmailed);
 
   // Username rename
   const [nameEditing, setNameEditing] = useState(false);
@@ -39,7 +43,8 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const [nameSaving, setNameSaving] = useState(false);
   const [nameSaved, setNameSaved] = useState(false);
 
-  // Recovery key
+  // Recovery key & Email
+  const myEmail = (emailResults as unknown as MyEmailResult[])[0]?.email;
   const myRecoveryKey = (recoveryCodeResults as unknown as RecoveryCodeResult[])[0];
   const [generatingKey, setGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
@@ -67,31 +72,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
     navigator.clipboard.writeText(myRecoveryKey.code);
     setKeyCopied(true);
     setTimeout(() => setKeyCopied(false), 2000);
-  };
-
-  const [emailInput, setEmailInput] = useState('');
-  const [emailSending, setEmailSending] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [emailError, setEmailError] = useState('');
-
-  const handleEmailKey = async () => {
-    if (!myRecoveryKey || !emailInput.trim()) return;
-    setEmailSending(true);
-    setEmailError('');
-    try {
-      const res = await fetch('/api/send-recovery-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput.trim(), code: myRecoveryKey.code, name: myPlayer.username, locale: i18n.language }),
-      });
-      if (!res.ok) throw new Error();
-      if (!myPlayer.recoveryEmailed) await markRecoveryEmailed();
-      setEmailSent(true);
-    } catch {
-      setEmailError(t('account.emailKeyError'));
-    } finally {
-      setEmailSending(false);
-    }
   };
 
   const handleRename = async () => {
@@ -191,7 +171,13 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('account.accountType')}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.accountTypeDesc')}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {myEmail ? (
+                <>You're registered with: <strong className="text-slate-700 dark:text-slate-300 font-bold">{myEmail}</strong></>
+              ) : (
+                t('account.accountTypeDesc')
+              )}
+            </p>
           </div>
           <span className={`inline-flex items-center rounded-xl px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest ${isTeacher
             ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-400'
@@ -343,40 +329,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
               </div>
             )}
 
-            {/* Email recovery */}
-            <div className="mt-3 pt-5 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
-                {t('account.emailKeyDesc')}
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={emailInput}
-                  onChange={e => setEmailInput(e.target.value)}
-                  placeholder={t('account.emailKeyPlaceholder')}
-                  className="w-full flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
-                  onKeyDown={e => e.key === 'Enter' && handleEmailKey()}
-                />
-                <button
-                  className="shrink-0 rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition-transform active:scale-95 disabled:opacity-50"
-                  onClick={handleEmailKey}
-                  disabled={emailSending || !emailInput.trim()}
-                >
-                  {emailSending ? '...' : myPlayer.recoveryEmailed ? t('account.emailKeyResend') : t('account.emailKeySend')}
-                </button>
-              </div>
-              {emailSent && <p className="mt-2 text-xs font-bold text-green-600 dark:text-green-400">{t('account.emailKeySent')}</p>}
-              {emailError && <p className="mt-2 text-xs font-bold text-red-500">{emailError}</p>}
 
-              {!myPlayer.recoveryEmailed && (
-                <button
-                  className="w-full mt-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-3 text-xs font-bold text-slate-500 dark:text-slate-400 transition-colors border border-slate-200 dark:border-slate-700"
-                  onClick={() => markRecoveryEmailed()}
-                >
-                  {t('account.keySaved')}
-                </button>
-              )}
-            </div>
           </div>
         ) : (
           <button

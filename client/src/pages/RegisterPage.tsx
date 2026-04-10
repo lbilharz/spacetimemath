@@ -38,6 +38,8 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [expiresAtMs, setExpiresAtMs] = useState<number>(0);
 
   const [showRestore, setShowRestore] = useState(false);
+  const [restoreMode, setRestoreMode] = useState<'select' | 'code' | 'email' | 'email-verify'>('select');
+  const [restoreEmail, setRestoreEmail] = useState('');
   const [code, setCode] = useState('');
   const [restoreError, setRestoreError] = useState('');
   const [restoring, setRestoring] = useState(false);
@@ -51,6 +53,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       window.history.replaceState({}, '', '/');
       setCode(upper);
       setShowRestore(true);
+      setRestoreMode('code');
       setAutoRestoreCode(upper);
     }
     
@@ -197,6 +200,73 @@ export default function RegisterPage({ onRegistered }: Props) {
     } catch (err: unknown) {
       setError((err as Error)?.message ?? "Invalid verification code");
       setVerifyLoading(false);
+    }
+  };
+
+  const handleEmailRestore = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!restoreEmail.trim()) return;
+    setRestoring(true);
+    setRestoreError('');
+    try {
+      const hex = identity?.toHexString();
+      if (!hex) throw new Error("Connection not established");
+      const res = await fetch('/api/send-email-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: restoreEmail.trim(), identityHex: hex, locale: i18n.language })
+      });
+      if (!res.ok) {
+        let msg = "Failed to send email.";
+        try { msg = (await res.json()).error || msg; } catch { /* best-effort */ }
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      setHmacSignature(data.signature);
+      setExpiresAtMs(data.expiresAt);
+      setRestoreMode('email-verify');
+    } catch (err: any) {
+      setRestoreError(err.message);
+    } finally {
+      setRestoring(false);
+    }
+  };
+
+  const [syncing, setSyncing] = useState(false);
+  const restoreAccountViaEmail = useSTDBReducer(reducers.restoreAccountViaEmail);
+  const handleVerifyEmailRestore = async (e: FormEvent) => {
+    e.preventDefault();
+    if (code.trim().length !== 6) return;
+    setRestoring(true);
+    setRestoreError('');
+    try {
+      await restoreAccountViaEmail({
+        email: restoreEmail.trim(),
+        code: code.trim(),
+        signature: hmacSignature,
+        expiresAtMs: BigInt(expiresAtMs)
+      });
+      setSyncing(true);
+      const POLL_INTERVAL = 50;
+      const TIMEOUT = 5_000;
+      const deadline = Date.now() + TIMEOUT;
+      type RestoreRow = { caller: { toHexString: () => string }; token: string };
+      const getRow = () => (restoreResultsRef.current as unknown as RestoreRow[]).find(r => r.token.length > 0);
+      let row = getRow();
+      while (!row && Date.now() < deadline) {
+        await new Promise(res => setTimeout(res, POLL_INTERVAL));
+        row = getRow();
+      }
+      if (!row) throw new Error(t('register.restoreTimeout'));
+      localStorage.setItem('spacetimemath_credentials', JSON.stringify({ identity: '', token: row.token }));
+      try { await consumeRestoreResult(); } catch { /* best-effort */ }
+      setRestoring(false);
+      setSyncing(false);
+      window.location.reload();
+    } catch (err: any) {
+      setRestoreError(err.message || 'Verification failed');
+      setRestoring(false);
+      setSyncing(false);
     }
   };
 
@@ -460,7 +530,7 @@ export default function RegisterPage({ onRegistered }: Props) {
             </div>
 
             <button
-              onClick={() => setShowRestore(true)}
+              onClick={() => { setShowRestore(true); setRestoreMode('select'); }}
               className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-600 transition-all hover:border-slate-200 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
             >
               <span>{t('register.restoreLink')}</span>
@@ -469,54 +539,122 @@ export default function RegisterPage({ onRegistered }: Props) {
           </div>
         ) : (
           <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
-            {/* Same restore UI */}
-            <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
-              {t('register.restoreHeading')}
-            </h2>
-            <p className="mb-8 text-sm font-medium text-slate-500 dark:text-slate-400">
-              {t('register.restoreDesc')}
-            </p>
-            {autoRestoreCode ? (
-              <div className="flex flex-col items-center justify-center py-6">
-                <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-brand-yellow border-t-transparent" />
-                <p className="text-lg font-bold text-slate-900 dark:text-white">
-                  {t('register.restoring')}
+            {restoreMode === 'select' ? (
+              <>
+                <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+                  {t('register.restoreHeading')}
+                </h2>
+                <p className="mb-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {t('register.howToRestore')}
                 </p>
-              </div>
-            ) : (
-              <form onSubmit={handleRestore} className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
+                  <button onClick={() => { setRestoreMode('code'); setCode(''); }} className="h-14 w-full rounded-2xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors">
+                    {t('register.restoreViaCode')}
+                  </button>
+                  <button onClick={() => { setRestoreMode('email'); setCode(''); }} className="h-14 w-full rounded-2xl border-2 border-brand-yellow/30 bg-brand-yellow/10 text-brand-yellow font-bold hover:bg-brand-yellow/20 transition-colors relative">
+                    {t('register.restoreViaEmail')} <span className="opacity-70 text-xs ml-1 font-medium bg-brand-yellow/20 px-2 py-0.5 rounded-md right-4 absolute top-1/2 -translate-y-1/2">{t('register.teacher')}</span>
+                  </button>
+                </div>
+              </>
+            ) : restoreMode === 'email' ? (
+              <form onSubmit={handleEmailRestore} className="flex flex-col gap-6">
+                <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">{t('register.restoreViaEmail')}</h2>
                 <input
-                  className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 text-center"
-                  type="text"
-                  placeholder={t('register.restorePlaceholder')}
-                  value={code}
-                  onChange={e => setCode(e.target.value.toUpperCase())}
-                  maxLength={12}
+                  className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900"
+                  type="email"
+                  placeholder="name@school.edu"
+                  value={restoreEmail}
+                  onChange={e => setRestoreEmail(e.target.value)}
                   autoFocus
                   disabled={restoring}
+                  required
                 />
                 {restoreError && (
-                  <p className="flex items-center gap-2 font-medium text-red-500">
-                    <span className="text-xl">⚠</span> {restoreError}
-                  </p>
+                  <p className="flex items-center gap-2 font-medium text-red-500"><span className="text-xl">⚠</span> {restoreError}</p>
                 )}
-                <button
-                  className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center uppercase font-black"
-                  type="submit"
-                  disabled={restoring || (code.trim().length !== 6 && code.trim().length !== 12)}
-                >
-                  {restoring ? t('register.restoring') : (
-                     <>{t('register.restore')} <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span></>
-                  )}
+                <button type="submit" disabled={restoring || !restoreEmail} className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center uppercase font-black text-slate-900">
+                  {restoring ? t('register.restoring') : t('register.sendMagicLink')}
                 </button>
+              </form>
+            ) : restoreMode === 'email-verify' ? (
+              <form onSubmit={handleVerifyEmailRestore} className="flex flex-col gap-6">
+                <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">{t('register.enter6DigitCode')}</h2>
+                <input
+                  className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-widest text-center transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900"
+                  type="text"
+                  placeholder="123456"
+                  value={code}
+                  onChange={e => setCode(e.target.value.replace(/[^0-9]/g, ''))}
+                  maxLength={6}
+                  autoFocus
+                  disabled={restoring || syncing}
+                  required
+                />
+                {restoreError && (
+                  <p className="flex items-center gap-2 font-medium text-red-500"><span className="text-xl">⚠</span> {restoreError}</p>
+                )}
+                <button type="submit" disabled={restoring || syncing || code.length !== 6} className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-[#10B981] px-8 py-4 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center uppercase font-black tracking-wider text-white">
+                  {syncing ? t('register.awaitingSync') : (restoring ? t('register.verifying') : t('register.verifyLogin'))}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleRestore} className="flex flex-col gap-6">
+                <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+                  {t('register.restoreHeading')}
+                </h2>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {t('register.restoreDesc')}
+                </p>
+                {autoRestoreCode && (
+                  <div className="flex flex-col items-center justify-center py-6">
+                    <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-brand-yellow border-t-transparent" />
+                    <p className="text-lg font-bold text-slate-900 dark:text-white">
+                      {t('register.restoring')}
+                    </p>
+                  </div>
+                )}
+                {!autoRestoreCode && (
+                  <>
+                    <input
+                      className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 text-center"
+                      type="text"
+                      placeholder={t('register.restorePlaceholder')}
+                      value={code}
+                      onChange={e => setCode(e.target.value.toUpperCase())}
+                      maxLength={12}
+                      autoFocus
+                      disabled={restoring}
+                    />
+                    {restoreError && (
+                      <p className="flex items-center gap-2 font-medium text-red-500">
+                        <span className="text-xl">⚠</span> {restoreError}
+                      </p>
+                    )}
+                    <button
+                      className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center uppercase font-black text-slate-900"
+                      type="submit"
+                      disabled={restoring || code.trim().length !== 12}
+                    >
+                      {restoring ? t('register.restoring') : (
+                         <>{t('register.restore')} <span className="transition-transform ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180">→</span></>
+                      )}
+                    </button>
+                  </>
+                )}
               </form>
             )}
 
             <button
-              onClick={() => { setShowRestore(false); setCode(''); setRestoreError(''); setAutoRestoreCode(null); }}
+               onClick={() => { 
+                if (restoreMode === 'email' || restoreMode === 'code' || restoreMode === 'email-verify') {
+                  setRestoreMode('select'); setRestoreError(''); setCode(''); setRestoreEmail('');
+                } else {
+                  setShowRestore(false); setCode(''); setRestoreError(''); setAutoRestoreCode(null); 
+                }
+              }}
               className="group mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-brand-yellow dark:text-slate-400"
             >
-              ← <span>{t('register.newAccount')}</span>
+              ← <span>{restoreMode !== 'select' ? t('register.backToRecovery') : t('register.newAccount')}</span>
             </button>
           </div>
         )}

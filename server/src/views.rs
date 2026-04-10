@@ -1,4 +1,4 @@
-use spacetimedb::{Table, ViewContext};
+use spacetimedb::ViewContext;
 use crate::*;
 
 /// =========================================

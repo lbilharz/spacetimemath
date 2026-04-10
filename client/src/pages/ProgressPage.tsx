@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
@@ -16,7 +16,6 @@ interface Props {
   myIdentityHex: string;
   playerLearningTier?: number;
   extendedMode?: boolean;
-  extendedLevel?: number;
   onRetakeDiagnostic: () => void;
   onStartSprint: (sessionId: bigint) => void;
 }
@@ -93,7 +92,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
   const needsCalibration = withData.length === 0;
 
   // Suggesting pairs
-  const suggestPairs = (kcIndex: number) => {
+  const suggestPairs = useCallback((kcIndex: number) => {
     const pairs: {a:number,b:number}[] = [];
     for(let a=1; a<=10; a++) {
       for(let b=a; b<=10; b++) {
@@ -114,7 +113,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
         return a.score - b.score;
     });
     return pairScores.slice(0, 3).map(p => `${p.a}×${p.b}`).join(', ');
-  };
+  }, [myAnswers]);
 
   function insightText(p: KcProficiency): string {
     const pct = Math.round(p.accuracy * 100);
@@ -222,7 +221,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
         {adjusting && (
            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-6 animate-in slide-in-from-top-2 relative z-10">
               <div className="flex flex-col gap-4">
-                <span className="font-bold text-slate-700 dark:text-slate-200">Adjust Learning Tier</span>
+                <span className="font-bold text-slate-700 dark:text-slate-200">{t('progress.adjustTier', { defaultValue: 'Adjust Learning Tier' })}</span>
                 <TierLadder currentTier={playerLearningTier} selectedTier={extendedMode ? -1 : pendingTier} onSelect={handleSetTier} answers={myAnswers} />
                 
                 {/* Extended Toggle Inline */}
@@ -247,7 +246,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
                          {t('extendedTables.toggle')}
                        </span>
                        <span className="hidden text-xs font-medium text-slate-500 dark:text-slate-400 sm:inline truncate">
-                         Unlocks ×11 to ×20
+                         {t('progress.unlocksExtended', { defaultValue: 'Unlocks ×11 to ×20' })}
                        </span>
                      </div>
                      
@@ -261,9 +260,9 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
         )}
 
         {/* ── INLINE ACTION BAR ── */}
-        <div className="flex flex-row items-center gap-2 w-full mt-6 relative z-10 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full mt-6 relative z-10 pt-2">
            <button
-              className={`group flex items-center justify-center gap-2 flex-[2] rounded-[18px] bg-brand-yellow py-3.5 px-6 text-[16px] font-black tracking-wide text-slate-900 transition-all active:scale-[0.97] ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-sm hover:shadow-[0_8px_30px_rgba(250,204,21,0.4)]'}`}
+              className={`group flex items-center justify-center gap-2 sm:flex-[2] rounded-[18px] bg-brand-yellow py-4 px-6 text-[16px] font-black tracking-wide text-slate-900 transition-all active:scale-[0.97] ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-sm hover:shadow-[0_8px_30px_rgba(250,204,21,0.4)]'}`}
               onClick={handleStartSprint}
               disabled={starting}
             >
@@ -273,10 +272,10 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
            <button
               onClick={onRetakeDiagnostic}
               title={t('tierPicker.testMyLevel')}
-              className="flex-[1] rounded-[18px] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 py-3.5 px-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-[0.98] flex items-center justify-center gap-2 group shadow-sm min-w-[50px] whitespace-nowrap overflow-hidden"
+              className="sm:flex-[1] rounded-[18px] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 py-4 px-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-[0.98] flex items-center justify-center gap-2 group shadow-sm min-w-[50px] whitespace-nowrap overflow-hidden"
            >
               <TestLevelIcon className="h-5 w-5 scale-110 transition-transform group-hover:scale-[1.2]" />
-              <span className="hidden sm:inline">{t('tierPicker.testMyLevel')}</span>
+              <span>{t('tierPicker.testMyLevel')}</span>
            </button>
         </div>
       </div>
