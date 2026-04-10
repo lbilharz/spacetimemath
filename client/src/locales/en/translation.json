@@ -54,6 +54,16 @@
     "restoreTimeout": "Timeout waiting for server response — try again",
     "newAccount": "New account",
     "restoreError": "Key not found — check your 12-character recovery key",
+    "howToRestore": "How would you like to restore your account?",
+    "restoreViaCode": "Restore via 12-Character Code",
+    "restoreViaEmail": "Restore via Email",
+    "teacher": "Teacher",
+    "sendMagicLink": "Send Magic Link",
+    "enter6DigitCode": "Enter 6-Digit Code",
+    "verifying": "Verifying...",
+    "verifyLogin": "Verify Login",
+    "backToRecovery": "Back to recovery options",
+    "awaitingSync": "Awaiting sync...",
     "footer": "Problems are weighted by community difficulty · powered by SpaceTimeDB",
     "friendInviteBanner": "Friend Invite"
   },
@@ -501,12 +511,10 @@
     "privacy": "Privacy Policy",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your Better 1UP recovery key",
-      "greeting_name": "Hi {{name}},",
+      "subject": "Your 1UP Login Code",
       "greeting_anon": "Hello,",
-      "body": "Use this to restore your account on any device. Keep it safe.",
-      "button": "Restore my account →",
-      "orManual": "Or go to <a href=\"{{appUrl}}\" style=\"color:#606060\">{{appDomain}}</a> and enter the code manually under \"Restore account\"."
+      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
+      "ignore": "If you didn't request this, you can safely ignore this email."
     },
     "teacher": {
       "subject": "Your Teacher Verification Code",
@@ -552,6 +560,8 @@
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
     "startSprint": "Start Sprint",
-    "setLevel": "Set Level"
+    "setLevel": "Set Level",
+    "adjustTier": "Adjust Learning Tier",
+    "unlocksExtended": "Unlocks ×11 to ×20"
   }
 }

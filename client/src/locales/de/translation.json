@@ -55,7 +55,17 @@
     "newAccount": "Neues Konto",
     "restoreError": "Schlüssel nicht gefunden – überprüfe deinen 12-stelligen Wiederherstellungsschlüssel",
     "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB",
-    "friendInviteBanner": "Friend Invite"
+    "friendInviteBanner": "Friend Invite",
+    "howToRestore": "Wie möchtest du dein Konto wiederherstellen?",
+    "restoreViaCode": "Mit 12-Zeichen-Code wiederherstellen",
+    "restoreViaEmail": "Per E-Mail wiederherstellen",
+    "teacher": "Lehrkraft",
+    "sendMagicLink": "Magic Link senden",
+    "enter6DigitCode": "6-stelligen Code eingeben",
+    "verifying": "Wird überprüft...",
+    "verifyLogin": "Login bestätigen",
+    "backToRecovery": "Zurück zu den Wiederherstellungsoptionen",
+    "awaitingSync": "Synchronisierung läuft..."
   },
   "register_split": {
     "teacher_btn": "Lehrkraft",
@@ -501,12 +511,10 @@
     "privacy": "Privacy Policy",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your Better 1UP recovery key",
-      "greeting_name": "Hi {{name}},",
+      "subject": "Your 1UP Login Code",
       "greeting_anon": "Hello,",
-      "body": "Use this to restore your account on any device. Keep it safe.",
-      "button": "Restore my account →",
-      "orManual": "Or go to <a href=\"{{appUrl}}\" style=\"color:#606060\">{{appDomain}}</a> and enter the code manually under \"Restore account\"."
+      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
+      "ignore": "If you didn't request this, you can safely ignore this email."
     },
     "teacher": {
       "subject": "Your Teacher Verification Code",
@@ -552,6 +560,8 @@
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
     "startSprint": "Start Sprint",
-    "setLevel": "Set Level"
+    "setLevel": "Set Level",
+    "adjustTier": "Adjust Learning Tier",
+    "unlocksExtended": "Unlocks ×11 to ×20"
   }
 }

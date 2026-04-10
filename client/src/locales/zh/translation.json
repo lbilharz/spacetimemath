@@ -46,7 +46,17 @@
     "newAccount": "新账户",
     "restoreError": "未找到密钥 — 请检查你的 12 位恢复密钥",
     "footer": "题目按社区难度加权 · 由 SpaceTimeDB 驱动",
-    "friendInviteBanner": "Friend Invite"
+    "friendInviteBanner": "Friend Invite",
+    "howToRestore": "你想如何恢复账户？",
+    "restoreViaCode": "使用12位恢复码恢复",
+    "restoreViaEmail": "通过电子邮件恢复",
+    "teacher": "教师",
+    "sendMagicLink": "发送魔法链接",
+    "enter6DigitCode": "输入6位验证码",
+    "verifying": "验证中...",
+    "verifyLogin": "验证登录",
+    "backToRecovery": "返回恢复选项",
+    "awaitingSync": "等待同步..."
   },
   "lobby": {
     "online": "在线",
@@ -501,12 +511,10 @@
     "privacy": "Privacy Policy",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your Better 1UP recovery key",
-      "greeting_name": "Hi {{name}},",
+      "subject": "Your 1UP Login Code",
       "greeting_anon": "Hello,",
-      "body": "Use this to restore your account on any device. Keep it safe.",
-      "button": "Restore my account →",
-      "orManual": "Or go to <a href=\"{{appUrl}}\" style=\"color:#606060\">{{appDomain}}</a> and enter the code manually under \"Restore account\"."
+      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
+      "ignore": "If you didn't request this, you can safely ignore this email."
     },
     "teacher": {
       "subject": "Your Teacher Verification Code",
@@ -552,6 +560,8 @@
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
     "startSprint": "Start Sprint",
-    "setLevel": "Set Level"
+    "setLevel": "Set Level",
+    "adjustTier": "Adjust Learning Tier",
+    "unlocksExtended": "Unlocks ×11 to ×20"
   }
 }
