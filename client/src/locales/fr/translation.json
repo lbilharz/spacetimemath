@@ -70,7 +70,7 @@
     "sessions_one": "{{count}} session",
     "sessions_other": "{{count}} sessions",
     "starting": "Démarrage…",
-    "startSprint": "Démarrer le sprint",
+    "startSprint": "Entraîner mon niveau",
     "recoveryNag": "Vous avez une classe active — veuillez sécuriser votre clé de récupération de compte pour ne pas perdre l'accès.",
     "recoveryNagCta": "Aller au compte →",
     "viewClass": "📚 Voir →",
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "Entraîner mon niveau",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"

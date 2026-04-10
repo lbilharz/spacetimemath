@@ -70,7 +70,7 @@
     "sessions_one": "{{count}} 次练习",
     "sessions_other": "{{count}} 次练习",
     "starting": "正在启动…",
-    "startSprint": "开始冲刺",
+    "startSprint": "训练我的等级",
     "recoveryNag": "您有一个活跃的班级 — 请务必妥善保存您的帐户恢复密钥，以免失去访问权限。",
     "recoveryNagCta": "前往个人账户 →",
     "viewClass": "📚 查看 →",
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "训练我的等级",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"

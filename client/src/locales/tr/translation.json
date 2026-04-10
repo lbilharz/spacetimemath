@@ -70,7 +70,7 @@
     "sessions_one": "{{count}} oturum",
     "sessions_other": "{{count}} oturum",
     "starting": "Başlatılıyor…",
-    "startSprint": "Sprint Başlat",
+    "startSprint": "Seviyemi eğit",
     "recoveryNag": "Aktif bir sınıfınız var — öğrencilerinize erişimi kaybetmemek için lütfen Hesap Kurtarma Anahtarınızı güvenliğe alın.",
     "recoveryNagCta": "Hesaba git →",
     "viewClass": "📚 Görüntüle →",
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "Seviyemi eğit",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"

@@ -70,7 +70,7 @@
     "sessions_one": "جلسة {{count}}",
     "sessions_other": "{{count}} جلسات",
     "starting": "... جاري البدء",
-    "startSprint": "ابدأ سبرينت",
+    "startSprint": "تدريب مستواي",
     "recoveryNag": "لديك فصل نشط — يرجى تأمين مفتاح استرداد حسابك حتى لا تفقد الوصول إلى طلابك.",
     "recoveryNagCta": "← اذهب إلى الحساب",
     "viewClass": "📚 عرض ←",
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "تدريب مستواي",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"

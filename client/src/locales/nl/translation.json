@@ -70,7 +70,7 @@
     "sessions_one": "{{count}} sessie",
     "sessions_other": "{{count}} sessies",
     "starting": "Starten…",
-    "startSprint": "Start Sprint",
+    "startSprint": "Mijn niveau trainen",
     "recoveryNag": "Je hebt een actieve klas — beveilig je Accountherstelsleutel zodat je de toegang tot je studenten niet verliest.",
     "recoveryNagCta": "Ga naar Account →",
     "viewClass": "📚 Bekijken →",
@@ -559,7 +559,7 @@
     "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
     "missionFocusPairs": "Try {{pairs}}",
     "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
-    "startSprint": "Start Sprint",
+    "startSprint": "Mijn niveau trainen",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
     "unlocksExtended": "Unlocks ×11 to ×20"
