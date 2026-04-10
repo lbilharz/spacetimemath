@@ -29,6 +29,19 @@ dist/
 !.planning/codebase/
 trainer/.venv/
 
-# App Store 
+# App Store / iOS build artifacts
 client/ios/App/fastlane/screenshots/
+client/ios/App/*.ipa
+client/ios/App/*.dSYM.zip
+client/ios/App/fastlane/report.xml
+client/ios/App/CapApp-SPM/
+client/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 .vercel
+
+# Scratch / dev files
+scratch.js
+client/test_json.js
+
+# Test output
+test-results/
+client/playwright-report/
