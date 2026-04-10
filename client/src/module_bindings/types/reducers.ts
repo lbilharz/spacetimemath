@@ -44,6 +44,7 @@ import RegenerateRecoveryKeyReducer from "../regenerate_recovery_key_reducer";
 import RegisterReducer from "../register_reducer";
 import RemoveFriendReducer from "../remove_friend_reducer";
 import RestoreAccountReducer from "../restore_account_reducer";
+import RestoreAccountViaEmailReducer from "../restore_account_via_email_reducer";
 import RestoreAnswerReducer from "../restore_answer_reducer";
 import RestoreBestScoreReducer from "../restore_best_score_reducer";
 import RestoreClassroomReducer from "../restore_classroom_reducer";
@@ -104,6 +105,7 @@ export type RegenerateRecoveryKeyParams = __Infer<typeof RegenerateRecoveryKeyRe
 export type RegisterParams = __Infer<typeof RegisterReducer>;
 export type RemoveFriendParams = __Infer<typeof RemoveFriendReducer>;
 export type RestoreAccountParams = __Infer<typeof RestoreAccountReducer>;
+export type RestoreAccountViaEmailParams = __Infer<typeof RestoreAccountViaEmailReducer>;
 export type RestoreAnswerParams = __Infer<typeof RestoreAnswerReducer>;
 export type RestoreBestScoreParams = __Infer<typeof RestoreBestScoreReducer>;
 export type RestoreClassroomParams = __Infer<typeof RestoreClassroomReducer>;

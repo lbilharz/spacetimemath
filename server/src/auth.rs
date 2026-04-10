@@ -244,7 +244,7 @@ pub fn verify_teacher_upgrade(ctx: &ReducerContext, username: Option<String>, em
     // 2. Fetch shared secret (with fallback)
     let secret_str = ctx.db.teacher_secrets().id().find(0)
         .map(|s| s.secret)
-        .unwrap_or_else(|| "STM_FALLBACK_HMAC_SECRET".to_string());
+        .ok_or("Server error: Missing HMAC secret.")?;
     
     // 3. Reconstruct payload exactly as Vercel signed it: identity + email + code + expires_at_ms
     let mut identity_hex = ctx.sender().to_hex().to_string();

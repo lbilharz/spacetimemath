@@ -11,7 +11,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { email, identityHex, name, locale = 'en' } = req.body ?? {};
+  const { email, identityHex, locale = 'en' } = req.body ?? {};
   if (!email || !identityHex || typeof email !== 'string' || typeof identityHex !== 'string') {
     return res.status(400).json({ error: 'email and identityHex required' });
   }
@@ -33,11 +33,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payload = `${formattedHex}${email.trim()}${code}${expiresAtMs}`;
   const signature = crypto.createHmac('sha256', SECRET).update(payload).digest('hex');
 
-  const dictionary = getTranslation(locale).email.teacher;
+  const dictionary = getTranslation(locale).email.recovery;
   
-  const greeting = name 
-     ? dictionary.greeting_name.replace('{{name}}', name) 
-     : dictionary.greeting_anon;
+  const greeting = dictionary.greeting_anon;
 
   const contentHtml = `
     <h1 style="font-size:20px;color:#2C3E50;margin:0 0 16px;">${greeting}</h1>

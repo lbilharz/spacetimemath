@@ -72,6 +72,7 @@ import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
 import RemoveFriendReducer from "./remove_friend_reducer";
 import RestoreAccountReducer from "./restore_account_reducer";
+import RestoreAccountViaEmailReducer from "./restore_account_via_email_reducer";
 import RestoreAnswerReducer from "./restore_answer_reducer";
 import RestoreBestScoreReducer from "./restore_best_score_reducer";
 import RestoreClassroomReducer from "./restore_classroom_reducer";
@@ -390,6 +391,7 @@ const reducersSchema = __reducers(
   __reducerSchema("register", RegisterReducer),
   __reducerSchema("remove_friend", RemoveFriendReducer),
   __reducerSchema("restore_account", RestoreAccountReducer),
+  __reducerSchema("restore_account_via_email", RestoreAccountViaEmailReducer),
   __reducerSchema("restore_answer", RestoreAnswerReducer),
   __reducerSchema("restore_best_score", RestoreBestScoreReducer),
   __reducerSchema("restore_classroom", RestoreClassroomReducer),
