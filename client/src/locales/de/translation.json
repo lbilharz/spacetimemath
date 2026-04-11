@@ -192,6 +192,9 @@
     "hideStatsTitle": "Statistik vor dieser Klasse verbergen.",
     "hiddenHint": "Deine Statistik ist vor der Rangliste und Lernübersicht dieser Klasse verborgen.",
     "noMembers": "Die Klasse ist noch leer.",
+    "removeMemberTitle": "Schüler entfernen",
+    "removeMemberDesc": "Tippe den Namen '{{name}}' ein, um diesen Schüler endgültig aus der Klasse zu entfernen:",
+    "remove": "Entfernen",
     "hidden": "verborgen",
     "noSessions": "keine Sprints",
     "accessAndInvite": "Zugang & Einladung",
@@ -220,7 +223,10 @@
     "liveObserver": "Live Observer",
     "actionLog": "Action Log",
     "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted"
+    "submitted": "Submitted",
+    "remove": "Entfernen",
+    "removeMemberTitle": "Schüler entfernen",
+    "removeMemberDesc": "Bist du sicher, dass du {{name}} aus dieser Klasse entfernen möchtest?"
   },
   "account": {
     "sessions_one": "{{count}} Sprint",

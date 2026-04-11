@@ -201,7 +201,10 @@
     "liveObserver": "Live Observer",
     "actionLog": "Action Log",
     "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted"
+    "submitted": "Submitted",
+    "remove": "Kaldır",
+    "removeMemberTitle": "Öğrenciyi kaldır",
+    "removeMemberDesc": "{{name}} adlı öğrenciyi bu sınıftan kaldırmak istediğine emin misin?"
   },
   "account": {
     "sessions_one": "{{count}} oturum",

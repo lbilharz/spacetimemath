@@ -201,7 +201,10 @@
     "liveObserver": "Live Observer",
     "actionLog": "Action Log",
     "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted"
+    "submitted": "Submitted",
+    "remove": "移除",
+    "removeMemberTitle": "移除学生",
+    "removeMemberDesc": "你确定要将 {{name}} 从这个班级中移除吗？"
   },
   "account": {
     "sessions_one": "{{count}} 次练习",

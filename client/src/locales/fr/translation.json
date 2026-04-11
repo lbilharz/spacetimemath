@@ -201,7 +201,10 @@
     "liveObserver": "Live Observer",
     "actionLog": "Action Log",
     "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted"
+    "submitted": "Submitted",
+    "remove": "Supprimer",
+    "removeMemberTitle": "Supprimer l'élève",
+    "removeMemberDesc": "Es-tu sûr de vouloir supprimer {{name}} de cette classe ?"
   },
   "account": {
     "sessions_one": "{{count}} session",
