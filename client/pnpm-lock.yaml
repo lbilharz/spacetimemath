@@ -69,8 +69,8 @@ importers:
         specifier: ^6.9.3
         version: 6.10.0
       spacetimedb:
-        specifier: ^2.0.0
-        version: 2.1.0(react@19.2.5)
+        specifier: 2.0.3
+        version: 2.0.3(react@19.2.5)
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
@@ -3362,8 +3362,8 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
-  spacetimedb@2.1.0:
-    resolution: {integrity: sha512-Kzs+HXCRj15ryld03ztU4a2uQg0M8ivV/9Bk/gvMpb59lLc/A2/r7UkGCYBePsBL7Zwqgr8gE8FeufoZVXtPnA==}
+  spacetimedb@2.0.3:
+    resolution: {integrity: sha512-ksW+A7CIHgfC7VBmvLwoCd0bqxHbPOX0gZmNt7LXVw0vsjnfRJWcLOSE8AbJCcw5eUOcI3MvuA/XH8monUG1OA==}
     peerDependencies:
       '@angular/core': '>=17.0.0'
       '@tanstack/react-query': ^5.0.0
@@ -7281,7 +7281,7 @@ snapshots:
 
   source-map@0.6.1: {}
 
-  spacetimedb@2.1.0(react@19.2.5):
+  spacetimedb@2.0.3(react@19.2.5):
     dependencies:
       base64-js: 1.5.1
       headers-polyfill: 4.0.3
