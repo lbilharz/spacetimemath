@@ -1,3 +1,7 @@
-Première version — Better 1UP est en ligne !
+v1.2 — Récupération de compte & améliorations des classes
 
-Sprinte dans tes tables, rejoins des courses en classe en direct et monte 8 niveaux de maîtrise. Sans compte ni inscription.
+- Récupérez votre compte par lien magique par e-mail — fini la perte de progression
+- Les enseignants peuvent désormais retirer des élèves d'une classe
+- Les liens QR pré-remplissent le code de classe lors de l'inscription
+- Nouveau bouton « Entraîner mon niveau » pour une expérience plus claire
+- Correction du zoom bloqué sur iOS lors de la saisie

@@ -1,3 +1,7 @@
-Erste Version — Better 1UP ist live!
+v1.2 — Kontowiederherstellung & Verbesserungen im Klassenzimmer
 
-Sprintet durch das Einmaleins, nehmt an Live-Klassen-Sprints teil und erklimmt 8 Lernstufen. Kein Konto, keine Anmeldung nötig.
+- Konto per E-Mail-Link wiederherstellen — kein Fortschritt geht mehr verloren
+- Lehrkräfte können jetzt Schüler aus Klassenzimmern entfernen
+- QR-Beitrittslinks füllen den Klassencode bei der Anmeldung automatisch aus
+- Neuer „Meine Stufe trainieren"-Button für ein klareres Übungserlebnis
+- iOS-Zoom-Fehler bei Eingabefeldern behoben

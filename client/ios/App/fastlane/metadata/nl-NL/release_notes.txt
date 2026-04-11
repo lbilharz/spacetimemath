@@ -1,3 +1,7 @@
-Eerste versie — Better 1UP is live!
+v1.2 — Accountherstel & verbeteringen voor het klaslokaal
 
-Sprint door je tafels, doe mee aan live klassenraces en klim 8 beheersingsniveaus. Geen account of aanmelding nodig.
+- Herstel je account via een e-maillink — geen voortgang meer kwijt
+- Leraren kunnen nu leerlingen uit een klas verwijderen
+- QR-deelnamelinks vullen de klascode automatisch in bij registratie
+- Nieuwe knop "Train mijn niveau" voor een duidelijkere oefenervaring
+- iOS-zoomprobleem bij invoervelden opgelost

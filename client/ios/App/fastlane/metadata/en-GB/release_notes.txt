@@ -1,3 +1,7 @@
-First release — Better 1UP is live!
+v1.2 — Account recovery & classroom improvements
 
-Sprint through your times tables, join live classroom races, and climb 8 mastery tiers. No account or sign-up needed.
+- Recover your account via email magic link — no more lost progress
+- Teachers can now remove students from classrooms
+- QR join links auto-fill the class code when signing up
+- "Train My Level" button for a clearer practice experience
+- Fixed iOS zoom getting stuck on input fields

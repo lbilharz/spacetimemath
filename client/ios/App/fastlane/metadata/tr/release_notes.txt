@@ -1,3 +1,7 @@
-İlk sürüm — Better 1UP yayında!
+v1.2 — Hesap kurtarma ve sınıf iyileştirmeleri
 
-Çarpım tablonuzu sprint edin, canlı sınıf yarışlarına katılın ve 8 ustalık seviyesini tırmanın. Hesap veya kayıt gerekmez.
+- Hesabınızı e-posta bağlantısıyla kurtarın — ilerlemenizi kaybetmeyin
+- Öğretmenler artık öğrencileri sınıftan çıkarabilir
+- QR katılım bağlantıları kayıt sırasında sınıf kodunu otomatik doldurur
+- Daha net bir deneyim için yeni "Seviyemi Çalış" butonu
+- Giriş alanlarında iOS yakınlaştırma hatası düzeltildi

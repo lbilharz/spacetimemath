@@ -1,3 +1,7 @@
-Primera versión — ¡Better 1UP ya está disponible!
+v1.2 — Recuperación de cuenta y mejoras en el aula
 
-Haz sprint por tus tablas, únete a carreras de clase en directo y sube 8 niveles de dominio. Sin cuenta ni registro.
+- Recupera tu cuenta con un enlace por correo electrónico — no pierdas más tu progreso
+- Los profesores ahora pueden eliminar alumnos del aula
+- Los enlaces QR rellenan automáticamente el código de clase al registrarse
+- Nuevo botón "Entrenar mi nivel" para una experiencia más clara
+- Corregido el problema de zoom en iOS al escribir en campos de texto
