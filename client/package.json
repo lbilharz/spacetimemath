@@ -36,7 +36,7 @@
     "react-dom": "^19.0.0",
     "react-i18next": "^16.5.6",
     "resend": "^6.9.3",
-    "spacetimedb": "^2.0.0",
+    "spacetimedb": "2.0.3",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
