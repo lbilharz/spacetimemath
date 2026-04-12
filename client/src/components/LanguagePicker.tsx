@@ -55,7 +55,7 @@ export default function LanguagePicker() {
 
       {isOpen && (
         <div className="absolute end-0 mt-3 w-48 transform overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto">
+          <div className="flex flex-col gap-1 max-h-[85vh] overflow-y-auto">
             {APP_LANGUAGES.map((lang, idx) => (
               <button
                 key={lang.code}
