@@ -1,7 +1,6 @@
-v1.2 — Recuperación de cuenta y mejoras en el aula
+v1.3 — Registro e inicio de sesión más fáciles en la app
 
-- Recupera tu cuenta con un enlace por correo electrónico — no pierdas más tu progreso
-- Los profesores ahora pueden eliminar alumnos del aula
-- Los enlaces QR rellenan automáticamente el código de clase al registrarse
-- Nuevo botón "Entrenar mi nivel" para una experiencia más clara
-- Corregido el problema de zoom en iOS al escribir en campos de texto
+- El enlace de inicio de sesión por correo electrónico ahora funciona en la app de iOS
+- Los enlaces de unión rellenan y bloquean automáticamente el código de clase
+- El campo de nombre de usuario se enfoca automáticamente al unirse por código QR
+- Proceso de registro simplificado para estudiantes que escanean un código QR de clase

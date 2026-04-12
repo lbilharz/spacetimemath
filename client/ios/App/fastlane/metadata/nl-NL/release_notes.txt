@@ -1,7 +1,6 @@
-v1.2 — Accountherstel & verbeteringen voor het klaslokaal
+v1.3 — Soepeler registreren & inloggen in de app
 
-- Herstel je account via een e-maillink — geen voortgang meer kwijt
-- Leraren kunnen nu leerlingen uit een klas verwijderen
-- QR-deelnamelinks vullen de klascode automatisch in bij registratie
-- Nieuwe knop "Train mijn niveau" voor een duidelijkere oefenervaring
-- iOS-zoomprobleem bij invoervelden opgelost
+- E-mail-inloglink werkt nu ook in de iOS-app
+- Uitnodigingslinks vullen de klascode automatisch in en vergrendelen deze
+- Gebruikersnaamveld wordt automatisch geselecteerd bij aanmelden via QR-code
+- Vereenvoudigd registratieproces voor leerlingen die een klas-QR-code scannen

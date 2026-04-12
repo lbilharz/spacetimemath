@@ -1,7 +1,6 @@
-v1.2 — Account recovery & classroom improvements
+v1.3 — Smoother sign-up & login in the app
 
-- Recover your account via email magic link — no more lost progress
-- Teachers can now remove students from classrooms
-- QR join links auto-fill the class code when signing up
-- "Train My Level" button for a clearer practice experience
-- Fixed iOS zoom getting stuck on input fields
+- Fixed email magic link not working inside the iOS app
+- Join links now pre-fill and lock the class code for fewer mistakes
+- Username field is auto-focused when joining via QR code
+- Streamlined student registration flow when scanning a class QR code

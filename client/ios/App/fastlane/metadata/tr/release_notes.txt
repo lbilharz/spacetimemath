@@ -1,7 +1,6 @@
-v1.2 — Hesap kurtarma ve sınıf iyileştirmeleri
+v1.3 — Uygulamada daha kolay kayıt ve giriş
 
-- Hesabınızı e-posta bağlantısıyla kurtarın — ilerlemenizi kaybetmeyin
-- Öğretmenler artık öğrencileri sınıftan çıkarabilir
-- QR katılım bağlantıları kayıt sırasında sınıf kodunu otomatik doldurur
-- Daha net bir deneyim için yeni "Seviyemi Çalış" butonu
-- Giriş alanlarında iOS yakınlaştırma hatası düzeltildi
+- E-posta ile giriş bağlantısı artık iOS uygulamasında çalışıyor
+- Katılım bağlantıları sınıf kodunu otomatik dolduruyor ve kilitliyor
+- QR kod ile katılırken kullanıcı adı alanı otomatik olarak odaklanıyor
+- QR kod tarayan öğrenciler için basitleştirilmiş kayıt süreci

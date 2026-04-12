@@ -1,7 +1,6 @@
-v1.2 — Récupération de compte & améliorations des classes
+v1.3 — Inscription et connexion simplifiées dans l'app
 
-- Récupérez votre compte par lien magique par e-mail — fini la perte de progression
-- Les enseignants peuvent désormais retirer des élèves d'une classe
-- Les liens QR pré-remplissent le code de classe lors de l'inscription
-- Nouveau bouton « Entraîner mon niveau » pour une expérience plus claire
-- Correction du zoom bloqué sur iOS lors de la saisie
+- Le lien magique par e-mail fonctionne désormais dans l'app iOS
+- Les liens d'invitation pré-remplissent et verrouillent le code de classe
+- Le champ du nom d'utilisateur est automatiquement sélectionné lors d'une inscription par QR code
+- Processus d'inscription simplifié pour les élèves qui scannent un QR code de classe

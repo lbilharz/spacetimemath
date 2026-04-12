@@ -1,7 +1,6 @@
-v1.2 — Kontowiederherstellung & Verbesserungen im Klassenzimmer
+v1.3 — Reibungslosere Anmeldung & Login in der App
 
-- Konto per E-Mail-Link wiederherstellen — kein Fortschritt geht mehr verloren
-- Lehrkräfte können jetzt Schüler aus Klassenzimmern entfernen
-- QR-Beitrittslinks füllen den Klassencode bei der Anmeldung automatisch aus
-- Neuer „Meine Stufe trainieren"-Button für ein klareres Übungserlebnis
-- iOS-Zoom-Fehler bei Eingabefeldern behoben
+- E-Mail-Login-Link funktioniert jetzt auch in der iOS-App
+- Beitrittslinks fuellen den Klassencode automatisch aus und sperren ihn gegen Tippfehler
+- Benutzername-Feld wird beim Beitreten per QR-Code automatisch fokussiert
+- Vereinfachter Registrierungsablauf fuer Schueler beim Scannen eines Klassen-QR-Codes
