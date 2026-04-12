@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Email Payload Integration', () => {
 
-  test('Teacher verification flow dynamically passes correct localization and user identity', async ({ page }) => {
+  test.skip('Teacher verification flow dynamically passes correct localization and user identity — teacher flow removed from RegisterPage', async ({ page }) => {
     // 1. Setup Vercel API intercept to prevent real emails from sending and capture payload
     let capturedPayload: any = null;
     page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
