@@ -121,12 +121,12 @@ export default function App() {
     }
   }, []);
 
-  // Hold the splash for at least 2.5 s on first load (not on WS reconnect).
-  // For returning users with saved credentials, skip the timer — the second
-  // guard (!isActive && !effectivePlayer) still keeps the splash until the
-  // WebSocket is up and player data is loaded.
-  const [splashDone, setSplashDone] = useState(isSessionRestore);
+  // Track first-ever connection vs startup sync
+  const [syncTimeoutFired, setSyncTimeoutFired] = useState(false);
+  const [splashDone, setSplashDone] = useState(false);
+
   useEffect(() => {
+    // 2.5s base minimum splash on very first install
     const id = setTimeout(() => setSplashDone(true), 2500);
     return () => clearTimeout(id);
   }, []);
@@ -137,6 +137,14 @@ export default function App() {
   const [cachedPlayer, setCachedPlayer] = useState(myPlayer);
   useEffect(() => { if (myPlayer) setCachedPlayer(myPlayer); }, [myPlayer]);  
   const effectivePlayer = myPlayer ?? cachedPlayer;
+
+  useEffect(() => {
+    // Break the waiting lock if table sync hangs for 3s after websocket connection
+    if (isActive && isSessionRestore && !effectivePlayer) {
+      const id = setTimeout(() => setSyncTimeoutFired(true), 3000); 
+      return () => clearTimeout(id);
+    }
+  }, [isActive, isSessionRestore, effectivePlayer]);
 
   useEffect(() => { myPlayerRef.current = effectivePlayer; }, [effectivePlayer]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -339,11 +347,12 @@ export default function App() {
     );
   }
 
-  // First-ever load: show branded splash for at least 1.5 s,
-  // then keep showing until the connection is up and we have a player.
-  // Once we've connected at least once, never re-show splash on WS reconnect
-  // (the "reconnecting" pill handles that instead).
-  if (!splashDone || (!isActive && !effectivePlayer && !wasEverConnected)) {
+  // First-ever load: wait for base 2.5s splash AND websocket connected.
+  // Returning users: Wait for websocket AND wait for player DB row to hydrate (prevent register flash).
+  const isConnecting = !wasEverConnected;
+  const isSyncingReturningUser = isSessionRestore && isActive && !effectivePlayer && !syncTimeoutFired;
+  
+  if ((!splashDone && !isSessionRestore) || isConnecting || isSyncingReturningUser) {
     return (
       <div className="fixed inset-0 bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center gap-0 z-[9999] transition-colors duration-200">
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 58%, rgba(251,186,0,0.18) 0%, transparent 70%)' }} />
