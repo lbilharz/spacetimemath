@@ -6,11 +6,11 @@ export interface ScreenConfig {
 }
 
 export const SCREENS: ScreenConfig[] = [
-  { id: 1, component: 'SprintScreen',       label: 'JTBD 1: Sprint',      background: 'light' },
-  { id: 2, component: 'FriendsLeaderboard', label: 'JTBD 2: Friends',     background: 'light' },
-  { id: 3, component: 'AdaptiveTiers',      label: 'JTBD 3: Pacing',      background: 'light' },
-  { id: 4, component: 'MasteryGrid',        label: 'JTBD 4: Assessment',  background: 'light' },
-  { id: 5, component: 'ClassroomLive',      label: 'JTBD 5: Spot Help',   background: 'light' },
+  { id: 1, component: 'LobbyScreen',        label: '1) Lobby',      background: 'dark' },
+  { id: 2, component: 'SprintScreen',       label: '2) Sprint',     background: 'dark' },
+  { id: 3, component: 'ProgressScreen',     label: '3) Progress',   background: 'dark' },
+  { id: 4, component: 'FriendsScreen',      label: '4) Friends',    background: 'dark' },
+  { id: 5, component: 'ClassroomsScreen',   label: '5) Classrooms', background: 'dark' },
 ]
 
 export const LOCALES = [

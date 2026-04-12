@@ -46,7 +46,7 @@ const MarketingSidePanel = ({ title, desc, badge, lang }: { title: string, desc:
             <span className="text-[11px] font-bold text-slate-300 tracking-widest uppercase">{badge}</span>
          </div>
        )}
-       <h1 className="text-[28px] xs:text-[34px] font-black text-white leading-[1.1] tracking-tight mb-3" dangerouslySetInnerHTML={{ __html: title.replace('game', '<span class="text-brand-yellow relative inline-block">game<svg class="absolute -bottom-1 -left-1 -right-1 text-brand-yellow/80" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0,10 Q50,20 100,5" stroke="currentColor" stroke-width="4" fill="none"/></svg></span>') }} />
+       <h1 className="text-[28px] xs:text-[34px] font-black text-white leading-[1.1] tracking-tight mb-3" dangerouslySetInnerHTML={{ __html: title.replace('<sw>', '<span class="text-brand-yellow relative inline-block">').replace('</sw>', '<svg class="absolute w-full h-4 -bottom-1 left-0 text-brand-yellow/40 z-[-1]" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 15 100 5" stroke="currentColor" stroke-width="8" fill="transparent"/></svg></span>') }} />
        <p className="text-[15px] sm:text-[17px] text-slate-300 font-medium leading-snug max-w-[340px]">
          {desc}
        </p>
@@ -62,7 +62,7 @@ const MarketingSidePanelDesktop = ({ title, desc, badge, lang }: { title: string
           <div className="w-2.5 h-2.5 rounded-full bg-brand-yellow drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]"></div>
           <span className="text-[13px] font-bold text-slate-300 tracking-widest uppercase">{badge || 'Spacetime Math'}</span>
        </div>
-       <h1 className="text-[48px] lg:text-[56px] font-bold text-white leading-[1.05] tracking-tight mb-6" dangerouslySetInnerHTML={{ __html: title.replace('game', '<span class="text-brand-yellow relative inline-block">game<svg class="absolute -bottom-2 -left-1 -right-2 text-brand-yellow/80" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0,10 Q50,20 100,5" stroke="currentColor" stroke-width="4" fill="none"/></svg></span>') }} />
+       <h1 className="text-[48px] lg:text-[56px] font-bold text-white leading-[1.05] tracking-tight mb-6" dangerouslySetInnerHTML={{ __html: title.replace('<sw>', '<span class="text-brand-yellow relative inline-block">').replace('</sw>', '<svg class="absolute w-full h-4 -bottom-1 left-0 text-brand-yellow/40 z-[-1]" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 15 100 5" stroke="currentColor" stroke-width="8" fill="transparent"/></svg></span>') }} />
        <p className="text-[20px] lg:text-[22px] text-slate-300 font-medium leading-relaxed max-w-xl">
          {desc}
        </p>
