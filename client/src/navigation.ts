@@ -1,4 +1,4 @@
-export type Page = 'register' | 'lobby' | 'classrooms' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom' | 'classsprintresults' | 'friends';
+export type Page = 'register' | 'lobby' | 'classrooms' | 'progress' | 'sprint' | 'results' | 'account' | 'classroom' | 'classsprintresults' | 'friends' | 'notfound';
 
 export const TABBED_PAGES: Page[] = ['lobby', 'classrooms', 'friends', 'progress', 'account'];
 

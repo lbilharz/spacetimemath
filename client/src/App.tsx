@@ -91,6 +91,8 @@ export default function App() {
         navigate('register' as Page, undefined, slug);
       } else if (slug.startsWith('/classrooms') || slug.startsWith('/classroom')) {
         navigate('classrooms' as Page, undefined, slug);
+      } else if (slug.startsWith('/friends')) {
+        navigate('friends' as Page, undefined, slug);
       } else if (slug.startsWith('/account')) {
         navigate('account' as Page, undefined, slug);
       } else if (slug.startsWith('/results')) {
@@ -103,21 +105,16 @@ export default function App() {
   }, [navigate]);
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
-  const acceptFriendInvite = useSTDBReducer(reducers.acceptFriendInvite);
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
     ? players.find(p => p.identity.toHexString() === myIdentityHex)
     : undefined;
 
-  // Persist "joined via classroom link" or friend link early
+  // Persist "joined via classroom link" early
   useEffect(() => {
     if (window.location.search.includes('join=')) {
       localStorage.setItem('_joinedViaClassroom', '1');
-    }
-    if (window.location.pathname.startsWith('/friend/')) {
-      const token = window.location.pathname.split('/').pop();
-      if (token) localStorage.setItem('_pendingFriendToken', token);
     }
   }, []);
 
@@ -153,16 +150,6 @@ export default function App() {
     if (myPlayer && isActive && !hasFetchedRecoveryCodeRef.current) {
       hasFetchedRecoveryCodeRef.current = true;
       getMyRecoveryCode();
-    }
-    
-    // Check for pending friend tokens
-    if (myPlayer && isActive) {
-       const token = localStorage.getItem('_pendingFriendToken');
-       if (token) {
-           acceptFriendInvite({ token }).then(() => {
-               localStorage.removeItem('_pendingFriendToken');
-           }).catch(console.error);
-       }
     }
   }, [myPlayer?.identity?.toHexString(), isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -321,10 +308,27 @@ export default function App() {
   // Instead we push the URL manually, preserving search params so LobbyPage can auto-join.
   useEffect(() => {
     if (myPlayer && page === 'register') {
-      const fromUrl = PATH_MAP[window.location.pathname];
-      const target: Page = (fromUrl && TABBED_PAGES.includes(fromUrl)) ? fromUrl : 'lobby';
-      const path = PAGE_PATH[target] ?? '/';
-      const search = window.location.search; // preserve e.g. ?join=8652EV
+      const pathname = window.location.pathname;
+      let target: Page = 'lobby';
+
+      // Route Matching
+      if (pathname.startsWith('/classroom/')) {
+        target = 'classroom';
+      } else if (PATH_MAP[pathname]) {
+        target = PATH_MAP[pathname];
+      } else if (pathname !== '/') {
+        // Unknown route
+        target = 'notfound';
+      }
+
+      // Enforce valid entry points (you can't hot-reload directly into a sprint)
+      if (!TABBED_PAGES.includes(target) && target !== 'classroom' && target !== 'notfound') {
+        target = 'lobby';
+      }
+
+      // Fallback path logic preserves the visual 404 URL
+      const path = target === 'notfound' || target === 'classroom' ? pathname : (PAGE_PATH[target] ?? '/');
+      const search = window.location.search; 
       window.history.pushState(null, '', search ? `${path}${search}` : path);
       setPage(target);
     }

@@ -11,6 +11,7 @@ import ClassroomPage from '../pages/ClassroomPage.js';
 import ClassroomsPage from '../pages/ClassroomsPage.js';
 import ClassSprintResultsPage from '../pages/ClassSprintResultsPage.js';
 import FriendsPage from '../pages/FriendsPage.js';
+import NotFoundPage from '../pages/NotFoundPage.js';
 
 
 
@@ -154,6 +155,9 @@ export default function PageRenderer({
             navigate('classroom');
           }}
         />
+      )}
+      {page === 'notfound' && (
+        <NotFoundPage navigate={navigate} />
       )}
     </main>
   );
