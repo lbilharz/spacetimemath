@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Sprint Reliability E2E', () => {
+test.describe('Sprint Reliability E2E', () => {
 
   test('Solo Sprint loads successfully and displays first problem', async ({ page }) => {
 
@@ -8,43 +8,46 @@ test.describe.skip('Sprint Reliability E2E', () => {
     await page.goto('/');
 
     // 2. Fresh session starts at the registration page.
-    const soloBtn = page.getByRole('button').nth(2); // Third button is Solo (Teacher, Student, Solo)
-    await soloBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
-    if (await soloBtn.isVisible()) {
-      await soloBtn.click();
-    }
-
-    const nameInput = page.locator('input[type="text"]').last();
+    const nameInput = page.locator('input[type="text"]').first();
     await nameInput.waitFor({ state: 'visible', timeout: 10000 });
-    await nameInput.fill('E2E Tester');
     
-    // Press enter or click the submit button
-    await nameInput.press('Enter');
+    // Fill the gamertag slightly differently to avoid conflicts
+    await nameInput.clear();
+    await nameInput.fill(`Sprint Tester ${Math.floor(Math.random() * 1000)}`);
 
-    // 3. Defensively wait for the Onboarding overlay to fade in after registration
+    // **CRITICAL**: Wait for STDB credentials before clicking submit
+    await page.waitForFunction(() => localStorage.getItem('spacetimemath_credentials') !== null, { timeout: 15000 });
+    await page.waitForTimeout(500);
+
+    // Submit
+    const submitBtn = page.locator('button[type="submit"]');
+    await submitBtn.click();
+
+    // Ensure the credentials loaded
+    await page.waitForFunction(() => localStorage.getItem('spacetimemath_credentials') !== null, { timeout: 15000 });
+
+    // 4. Clear the Onboarding Overlay that appears for brand new users.
+    // It has multiple slides. The final slide's button triggers the sprint.
     const overlayBtn = page.getByRole('button').filter({ hasText: '→' }).first();
-    await overlayBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
-
+    await overlayBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+    
     let attempts = 0;
-    while (attempts < 10) {
+    while (attempts < 5) {
       attempts++;
       try {
-        // Pre-click Tier 1 on the Ladder to guarantee the backend finds assigned math sequences
-        await page.getByText(/Tier 1/i).first().click({ timeout: 50 }).catch(() => {});
-
         if (await overlayBtn.isVisible({ timeout: 500 })) {
           await overlayBtn.click();
-          await page.waitForTimeout(600); // wait for next slide/modal animation
+          await page.waitForTimeout(600);
         } else {
-          break; // Overlay is gone
+          break;
         }
       } catch {
-        await page.waitForTimeout(300);
+        break;
       }
     }
     
-    // 4. In Lobby, click "Sprint starten" (Start Solo Sprint), unless the Onboarding
-    // already fired us directly into the sprint page path.
+    // We arrived at lobby!
+    // Since auto-play into sprints or splash overlays might occur depending on tier config, let's defensively check.
     let isAlreadySprinting = false;
     try {
       await page.waitForURL('**/sprint', { timeout: 3000 });
@@ -54,7 +57,8 @@ test.describe.skip('Sprint Reliability E2E', () => {
     }
     
     if (!isAlreadySprinting) {
-      const startBtn = page.getByRole('button').filter({ hasText: /Sprint/i }).first();
+      // Wait for the primary Start Sprint button in the lobby via test ID
+      const startBtn = page.getByTestId('start-sprint-button');
       await startBtn.waitFor({ state: 'visible', timeout: 10000 });
       await startBtn.click();
     }
@@ -63,11 +67,12 @@ test.describe.skip('Sprint Reliability E2E', () => {
     // It shouldn't get stuck on "Lade Aufgaben..." ("Loading tasks...")
     // It should eventually show the math problem: "WHAT IS X x Y"
     const problemHeader = page.locator('text=WHAT IS').or(page.locator('text=WAS IST'));
+    
     // If it hangs indefinitely here, then the `db.query` / `useTable` sinkhole bug has regressed.
     await problemHeader.waitFor({ state: 'visible', timeout: 15000 });
 
     // 6. Verify the math problem is genuinely visible and parseable
-    const multSymbol = page.locator('text=×');
+    const multSymbol = page.locator('text=×').first();
     await expect(multSymbol).toBeVisible();
     
     console.log('E2E Test Success: Sprint initialized without hanging!');
