@@ -160,7 +160,8 @@
     "tapPenalty": "Not quite right. Take a quick moment...",
     "ending": "Ending…",
     "endSprint": "End Sprint",
-    "phase": "Phase"
+    "phase": "Phase",
+    "whatIs": "WHAT IS"
   },
   "migration": {
     "title": "Welcome Back!",

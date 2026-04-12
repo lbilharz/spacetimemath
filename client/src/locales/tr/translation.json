@@ -16,8 +16,8 @@
     "or": "veya",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "Yoğunluk",
+    "submit": "Gönder",
     "backspace": "Backspace",
     "viewAll": "Hepsini Gör",
     "6digitCode": "6 HANELİ KOD",
@@ -53,7 +53,7 @@
     "newAccount": "Yeni hesap",
     "restoreError": "Anahtar bulunamadı — 12 karakterlik kurtarma anahtarını kontrol et",
     "footer": "Problemler topluluk zorluğuna göre ağırlıklandırılmıştır · SpaceTimeDB tarafından desteklenmektedir",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "Arkadaş Daveti",
     "howToRestore": "Hesabını nasıl geri yüklemek istersin?",
     "restoreViaCode": "12 karakterli kodla geri yükle",
     "restoreViaEmail": "E-posta ile geri yükle",
@@ -97,8 +97,8 @@
     "join": "Katıl →",
     "masteryTitle": "Ustalık Tablom",
     "masteryDesc": "1×1 tablon bir bakışta — sonucunu nasıl düşüneceğini görmek için herhangi bir işleme dokun.",
-    "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions",
+    "networkLeaderboard": "Ağ Skor Tablosu",
+    "sessions": "Oturumlar",
     "friendsTitle": "Arkadaşlarınla Oyna",
     "friendsDesc": "Kodları paylaş ve liderlik tablosunda yarış.",
     "classesTitle": "Sınıfa Katıl",
@@ -106,10 +106,10 @@
     "focusHint": "Sıradaki ustalaşılacak",
     "focusNew": "{{kc}} — keşfetmeye başla!",
     "focusPractice": "{{kc}} — %{{accuracy}} doğruluk. Devam et!",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
-    "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "progressProfileDesc": "Çalışma tablosunu ve öğrenme istatistiklerini gör.",
+    "welcomeBack": "Tekrar hoş geldin,",
+    "detailsLink": "Detaylar",
+    "sprintCta": "Şimdi Çalış"
   },
   "onboarding": {
     "card1Title": "Saat 60 saniye",
@@ -141,7 +141,8 @@
     "ending": "Bitiriliyor…",
     "endSprint": "Sprinti Bitir",
     "phase": "Faz",
-    "tapPenalty": "Tam olarak doğru değil. Biraz düşün..."
+    "tapPenalty": "Tam olarak doğru değil. Biraz düşün...",
+    "whatIs": "KAÇ EDER"
   },
   "migration": {
     "title": "Tekrar Hoş Geldin!",
@@ -163,7 +164,7 @@
     "viewProgress": "Gelişimini gör",
     "problemsTitle": "Bu sprintteki problemler",
     "maxStreak": "Maks. Seri",
-    "score": "Score"
+    "score": "Puan"
   },
   "classroom": {
     "notFound": "Sınıf bulunamadı",
@@ -206,13 +207,13 @@
     "printNoKeys": "Giriş kartı mevcut değil — bazı öğrencilerin henüz kurtarma anahtarı olmayabilir.",
     "showLoginCard": "Giriş QR kartını göster",
     "studentLoginHint": "Herhangi bir cihazda giriş yapmak için okut — şifre gerekmez.",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
+    "members": "Üyeler",
+    "classMasteryDesc": "Sınıf İlerlemesi",
+    "waitingForStudentState": "Öğrenci durumu bekleniyor",
+    "liveObserver": "Canlı Gözlemci",
+    "actionLog": "Etkinlik Günlüğü",
+    "noActionsYet": "Henüz etkinlik yok",
+    "submitted": "Gönderildi",
     "remove": "Kaldır",
     "removeMemberTitle": "Öğrenciyi kaldır",
     "removeMemberDesc": "{{name}} adlı öğrenciyi bu sınıftan kaldırmak istediğine emin misin?"
@@ -266,7 +267,7 @@
     "noReminders": "Aktif hatırlatıcı yok. Serini sürdürmek için bir tane ekle!",
     "daily": "Her gün",
     "weekly": "Belirli günler",
-    "sessions": "Sessions",
+    "sessions": "Oturumlar",
     "accountType": "Hesap Türü",
     "accountTypeDesc": "Mevcut rolünüz hangi özelliklerin kullanılabilir olduğunu belirler."
   },
@@ -307,9 +308,9 @@
     "emptyHint": "Mevcut bir sınıfa katıl veya kendi sınıfını oluştur.",
     "createError": "Sınıf oluşturulamadı",
     "joinError": "Sınıf bulunamadı",
-    "areYouTeacher": "Are you a teacher?",
-    "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "areYouTeacher": "Öğretmen misin?",
+    "upgradePrompt": "Sınıf oluşturmak için hesabını yükselt",
+    "upgradeDesc": "Öğrencileri yönetmek ve sınıf sprintleri başlatmak için hesabını ücretsiz yükselt.",
     "emptyHeading": "Birlikte öğrenin! 🏫",
     "emptyDesc": "Sınıf arkadaşlarınla rekabet etmek için bir sınıfa katıl ve öğretmeninin öğrenme yolculuğuna rehberlik etmesine izin ver!",
     "joinButton": "Sınıfa Katıl",
@@ -333,9 +334,9 @@
   "history": {
     "title": "📋 Sprint Geçmişi",
     "noAnswers": "Kayıtlı cevap yok.",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "streak": "Streak"
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "streak": "Seri"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  zorluk: {{difficulty}}",
@@ -344,7 +345,7 @@
     "struggling": "zorlanıyor",
     "untouched": "denenmedi",
     "hardDiff": "zor (≥1.5×)",
-    "correctOfLast": "Correct of Last"
+    "correctOfLast": "Son doğrular"
   },
   "classSprint": {
     "start": "Sınıf sprinti başlat",
@@ -386,8 +387,8 @@
       "leaderboard": "Sprint Podyumu",
       "correctShort": "TAMAM"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "Devam ediyor",
+    "colStreak": "Seri"
   },
   "tierPicker": {
     "cardTitle": "Başlangıç Seviyeni Seç",
@@ -526,21 +527,21 @@
     "addedSuccess": "Bağlantı kuruldu!"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "Yasal Bilgiler",
+    "privacy": "Gizlilik Politikası",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "1UP Giriş Kodun",
+      "greeting_anon": "Merhaba,",
+      "body": "Hesabını güvenle geri yüklemek için bu 6 haneli kodu gir. Bu kod 15 dakika içinde geçerliliğini yitirir.",
+      "ignore": "Bunu sen istemediysen, bu e-postayı görmezden gelebilirsin."
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Öğretmen Doğrulama Kodun",
+      "greeting_name": "Merhaba {{name}},",
+      "greeting_anon": "Merhaba,",
+      "body": "E-postanı doğrulamak ve hesabını Öğretmen hesabına yükseltmek için bu 6 haneli kodu gir.",
+      "ignore": "Bunu sen istemediysen, bu e-postayı görmezden gelebilirsin."
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "Zor problemler daha fazla XP kazandirir."
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "{{kc}} çalışman gerekiyor — {{accuracy}}% doğruluk",
+    "missionFocusPairs": "{{pairs}} dene",
+    "missionStrong": "En güçlü: {{kc}} — {{accuracy}}% doğruluk",
     "startSprint": "Seviyemi eğit",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "Seviye seç",
+    "adjustTier": "Öğrenme seviyesini ayarla",
+    "unlocksExtended": "×11 ile ×20 arası açılır"
   }
 }

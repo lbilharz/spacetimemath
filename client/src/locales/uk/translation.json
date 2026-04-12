@@ -16,8 +16,8 @@
     "or": "або",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "Інтенсивність",
+    "submit": "Надіслати",
     "backspace": "Backspace",
     "viewAll": "Переглянути все",
     "6digitCode": "6-ЗНАЧНИЙ КОД",
@@ -53,7 +53,7 @@
     "newAccount": "Новий акаунт",
     "restoreError": "Ключ не знайдено — перевір свій 12-значний ключ відновлення",
     "footer": "Завдання зважені за складністю спільноти · працює на SpaceTimeDB",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "Запрошення друга",
     "howToRestore": "Як ви хочете відновити свій обліковий запис?",
     "restoreViaCode": "Відновити за допомогою 12-символьного коду",
     "restoreViaEmail": "Відновити через електронну пошту",
@@ -97,8 +97,8 @@
     "join": "Приєднатися →",
     "masteryTitle": "Моя таблиця знань",
     "masteryDesc": "Ваша таблиця множення як на долоні — натисніть на будь-який результат, щоб дізнатися логіку обчислення.",
-    "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions",
+    "networkLeaderboard": "Рейтинг мережі",
+    "sessions": "Сесії",
     "friendsTitle": "Грай з Друзями",
     "friendsDesc": "Обмінюйтесь кодами та змагайтесь у рейтингу.",
     "classesTitle": "Приєднатися до Класу",
@@ -106,10 +106,10 @@
     "focusHint": "Наступне для опанування",
     "focusNew": "{{kc}} — починай досліджувати!",
     "focusPractice": "{{kc}} — {{accuracy}}% точності. Продовжуй!",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
-    "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "progressProfileDesc": "Переглянь свою таблицю вправ та навчальний прогрес.",
+    "welcomeBack": "З поверненням,",
+    "detailsLink": "Деталі",
+    "sprintCta": "Тренуватися"
   },
   "onboarding": {
     "card1Title": "60 секунд на годиннику",
@@ -141,7 +141,8 @@
     "ending": "Завершення…",
     "endSprint": "Завершити спринт",
     "phase": "Фаза",
-    "tapPenalty": "Не зовсім так. Подумай ще хвилинку..."
+    "tapPenalty": "Не зовсім так. Подумай ще хвилинку...",
+    "whatIs": "СКІЛЬКИ"
   },
   "migration": {
     "title": "З поверненням!",
@@ -163,7 +164,7 @@
     "viewProgress": "Переглянути прогрес",
     "problemsTitle": "Приклади цього спринту",
     "maxStreak": "Макс. серія",
-    "score": "Score"
+    "score": "Бали"
   },
   "classroom": {
     "notFound": "Клас не знайдено",
@@ -206,13 +207,13 @@
     "printNoKeys": "Картки входу недоступні — можливо, деякі учні ще не мають ключів відновлення.",
     "showLoginCard": "Показати QR-картку входу",
     "studentLoginHint": "Відскануйте, щоб увійти на будь-якому пристрої — пароль не потрібен.",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
+    "members": "Учасники",
+    "classMasteryDesc": "Прогрес класу",
+    "waitingForStudentState": "Очікування стану учня",
+    "liveObserver": "Спостереження наживо",
+    "actionLog": "Журнал дій",
+    "noActionsYet": "Ще немає дій",
+    "submitted": "Здано",
     "remove": "Видалити",
     "removeMemberTitle": "Видалити учня",
     "removeMemberDesc": "Ти впевнений, що хочеш видалити {{name}} з цього класу?"
@@ -266,7 +267,7 @@
     "noReminders": "Немає активних нагадувань. Додайте одне, щоб зберегти свою серію!",
     "daily": "Кожен день",
     "weekly": "Окремі дні",
-    "sessions": "Sessions",
+    "sessions": "Сесії",
     "accountType": "Тип облікового запису",
     "accountTypeDesc": "Ваша поточна роль визначає, які функції вам доступні."
   },
@@ -307,9 +308,9 @@
     "emptyHint": "Приєднуйся до існуючого класу або створи власний.",
     "createError": "Не вдалося створити клас",
     "joinError": "Клас не знайдено",
-    "areYouTeacher": "Are you a teacher?",
-    "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "areYouTeacher": "Ти вчитель/ка?",
+    "upgradePrompt": "Оновіть обліковий запис, щоб створювати класи",
+    "upgradeDesc": "Безкоштовно оновіть обліковий запис, щоб керувати учнями та запускати класні спринти.",
     "emptyHeading": "Навчайтеся разом! 🏫",
     "emptyDesc": "Приєднуйтесь до класу, щоб змагатися з однокласниками, та дозвольте вчителю скеровувати ваш навчальний шлях!",
     "joinButton": "Приєднатися до класу",
@@ -333,9 +334,9 @@
   "history": {
     "title": "📋 Історія спринтів",
     "noAnswers": "Відповідей не записано.",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "streak": "Streak"
+    "today": "Сьогодні",
+    "yesterday": "Вчора",
+    "streak": "Серія"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  складність: {{difficulty}}",
@@ -344,7 +345,7 @@
     "struggling": "важко",
     "untouched": "не пробував",
     "hardDiff": "важко (≥1.5×)",
-    "correctOfLast": "Correct of Last"
+    "correctOfLast": "Правильних з останніх"
   },
   "classSprint": {
     "start": "Почати спринт класу",
@@ -386,8 +387,8 @@
       "leaderboard": "Спринт Подіум",
       "correctShort": "ГОТОВО"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "Ще йде",
+    "colStreak": "Серія"
   },
   "tierPicker": {
     "cardTitle": "Обери свій стартовий рівень",
@@ -526,21 +527,21 @@
     "addedSuccess": "З'єднання встановлено!"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "Правова інформація",
+    "privacy": "Політика конфіденційності",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Твій код входу в 1UP",
+      "greeting_anon": "Привіт,",
+      "body": "Введи цей 6-значний код, щоб безпечно відновити свій обліковий запис. Код дійсний 15 хвилин.",
+      "ignore": "Якщо ти цього не запитував/ла, просто проігноруй цей лист."
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Твій код підтвердження вчителя",
+      "greeting_name": "Привіт, {{name}},",
+      "greeting_anon": "Привіт,",
+      "body": "Введи цей 6-значний код, щоб підтвердити свою електронну пошту та оновити обліковий запис до вчителя.",
+      "ignore": "Якщо ти цього не запитував/ла, просто проігноруй цей лист."
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "Складніші завдання дають більше XP."
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "Твої {{kc}} потребують роботи — {{accuracy}}% точність",
+    "missionFocusPairs": "Спробуй {{pairs}}",
+    "missionStrong": "Найсильніше: {{kc}} — {{accuracy}}% точність",
     "startSprint": "Тренувати мій рівень",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "Обрати рівень",
+    "adjustTier": "Налаштувати рівень",
+    "unlocksExtended": "Відкриває ×11 до ×20"
   }
 }

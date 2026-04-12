@@ -10,14 +10,14 @@
     "back": "Terug",
     "lobby": "Lobby",
     "teacher": "Leraar",
-    "student": "Student",
+    "student": "Leerling",
     "you": "jij",
     "code": "code",
     "or": "of",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "Intensiteit",
+    "submit": "Versturen",
     "backspace": "Backspace",
     "viewAll": "Bekijk alles",
     "6digitCode": "6-CIJFERIG CODE",
@@ -42,7 +42,7 @@
     "usernameError": "Gebruikersnaam moet 1-24 tekens zijn",
     "registering": "Registreren…",
     "createAccountDesc": "Kies een naam voor je nieuwe account en ga direct aan de slag!",
-    "joinSprint": "Start Level Up",
+    "joinSprint": "Sprint starten",
     "restoreLink": "Bestaand account herstellen",
     "restoreHeading": "Account herstellen",
     "restoreDesc": "Voer je 12-cijferige herstelsleutel in om toegang te herstellen.",
@@ -53,7 +53,7 @@
     "newAccount": "Nieuw account",
     "restoreError": "Sleutel niet gevonden — controleer je 12-cijferige herstelsleutel",
     "footer": "Problemen zijn gewogen op basis van de moeilijkheidsgraad van de gemeenschap · aangedreven door SpaceTimeDB",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "Vriendenuitnodiging",
     "howToRestore": "Hoe wil je je account herstellen?",
     "restoreViaCode": "Herstellen met 12-tekens code",
     "restoreViaEmail": "Herstellen via e-mail",
@@ -97,8 +97,8 @@
     "join": "Lid worden →",
     "masteryTitle": "Mijn Beheersingsrooster",
     "masteryDesc": "Je 1×1 tabel in één oogopslag — tik op een product om te zien hoe je het kunt uitrekenen.",
-    "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions",
+    "networkLeaderboard": "Netwerk-scorebord",
+    "sessions": "Sessies",
     "friendsTitle": "Speel met vrienden",
     "friendsDesc": "Wissel codes uit en speel mee in het klassement.",
     "classesTitle": "Word lid van een klas",
@@ -106,10 +106,10 @@
     "focusHint": "Volgende om te beheersen",
     "focusNew": "{{kc}} — begin met ontdekken!",
     "focusPractice": "{{kc}} — {{accuracy}}% nauwkeurigheid. Ga zo door!",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
+    "progressProfileDesc": "Bekijk je oefenraster en leervoortgang.",
+    "welcomeBack": "Welkom terug,",
     "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "sprintCta": "Nu oefenen"
   },
   "onboarding": {
     "card1Title": "60 seconden op de klok",
@@ -131,7 +131,7 @@
     "loadingQuestions": "Vragen laden…",
     "startingSession": "Sessie starten…",
     "stats": "✓ {{correct}}/{{answered}} goed",
-    "score": "score:",
+    "score": "punten:",
     "tagHard": "🔥 Moeilijk",
     "tagMedium": "⚡ Gemiddeld",
     "tagEasy": "✓ Makkelijk",
@@ -141,7 +141,8 @@
     "ending": "Sessie beëindigen…",
     "endSprint": "Sprint beëindigen",
     "phase": "Fase",
-    "tapPenalty": "Nog niet helemaal goed. Denk even na..."
+    "tapPenalty": "Nog niet helemaal goed. Denk even na...",
+    "whatIs": "WAT IS"
   },
   "migration": {
     "title": "Welkom terug!",
@@ -172,7 +173,7 @@
     "members_one": "{{count}} lid",
     "members_other": "{{count}} leden",
     "starting": "Starten…",
-    "startSprint": "Start Sprint",
+    "startSprint": "Sprint starten",
     "joinCode": "Deelnamecode",
     "copyLink": "⎘ Deelnamelink kopiëren",
     "copyCodeHint": "tik om code te kopiëren",
@@ -206,13 +207,13 @@
     "printNoKeys": "Geen inlogkaarten beschikbaar — sommige leerlingen hebben misschien nog geen herstelsleutels.",
     "showLoginCard": "Toon inlog QR-kaart",
     "studentLoginHint": "Scan om in te loggen op elk apparaat — geen wachtwoord nodig.",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
+    "members": "Leden",
+    "classMasteryDesc": "Klasvoortgang",
+    "waitingForStudentState": "Wachten op leerlingstatus",
+    "liveObserver": "Live Meekijken",
+    "actionLog": "Activiteitenlog",
+    "noActionsYet": "Nog geen activiteit",
+    "submitted": "Ingediend",
     "remove": "Verwijderen",
     "removeMemberTitle": "Leerling verwijderen",
     "removeMemberDesc": "Weet je zeker dat je {{name}} uit deze klas wilt verwijderen?"
@@ -266,7 +267,7 @@
     "noReminders": "Geen actieve herinneringen. Voeg er een toe om je reeks te behouden!",
     "daily": "Elke dag",
     "weekly": "Specifieke dagen",
-    "sessions": "Sessions",
+    "sessions": "Sessies",
     "accountType": "Accounttype",
     "accountTypeDesc": "Je huidige rol bepaalt welke functies beschikbaar zijn."
   },
@@ -296,7 +297,7 @@
     "twentyfive": "÷4 van ×100"
   },
   "nav": {
-    "home": "Home",
+    "home": "Start",
     "classes": "Klassen",
     "progress": "Voortgang",
     "account": "Account",
@@ -307,9 +308,9 @@
     "emptyHint": "Word lid van een bestaande klas of maak er zelf een aan.",
     "createError": "Klas aanmaken mislukt",
     "joinError": "Klas niet gevonden",
-    "areYouTeacher": "Are you a teacher?",
-    "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "areYouTeacher": "Ben je docent?",
+    "upgradePrompt": "Upgrade je account om klassen aan te maken",
+    "upgradeDesc": "Upgrade je account gratis om leerlingen te beheren en klassikale sprints te starten.",
     "emptyHeading": "Samen leren! 🏫",
     "emptyDesc": "Word lid van een klas om het op te nemen tegen klasgenoten en laat je leraar je leerproces begeleiden!",
     "joinButton": "Neem deel aan klas",
@@ -333,9 +334,9 @@
   "history": {
     "title": "📋 Sprintgeschiedenis",
     "noAnswers": "Geen antwoorden geregistreerd.",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "streak": "Streak"
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "streak": "Reeks"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  moeilijkheid: {{difficulty}}",
@@ -343,8 +344,8 @@
     "learning": "lerend",
     "struggling": "moeilijk",
     "untouched": "niet geprobeerd",
-    "hardDiff": "hard (≥1.5×)",
-    "correctOfLast": "Correct of Last"
+    "hardDiff": "moeilijk (≥1.5×)",
+    "correctOfLast": "Goed van de laatste"
   },
   "classSprint": {
     "start": "Start klassprint",
@@ -386,8 +387,8 @@
       "leaderboard": "Sprint Podium",
       "correctShort": "KLAAR"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "Nog bezig",
+    "colStreak": "Reeks"
   },
   "tierPicker": {
     "cardTitle": "Kies je startniveau",
@@ -423,7 +424,7 @@
     "unlocked7": "×9 ontgrendeld — volledige tabel voltooid!",
     "unlockedDesc7": "Je kent elke vermenigvuldiging van 1 tot 10. 🏆",
     "statusLevel": "Niveau {{tier}}",
-    "tier0Name": "Starter",
+    "tier0Name": "Beginner",
     "tier1Name": "Bouwer",
     "tier2Name": "Klimmer",
     "tier3Name": "Presteerder",
@@ -526,21 +527,21 @@
     "addedSuccess": "Verbinding gemaakt!"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "Colofon",
+    "privacy": "Privacybeleid",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Je 1UP inlogcode",
+      "greeting_anon": "Hallo,",
+      "body": "Voer deze 6-cijferige code in om je account veilig te herstellen. De code verloopt over 15 minuten.",
+      "ignore": "Als je dit niet hebt aangevraagd, kun je deze e-mail negeren."
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Je verificatiecode als docent",
+      "greeting_name": "Hallo {{name}},",
+      "greeting_anon": "Hallo,",
+      "body": "Voer deze 6-cijferige code in om je e-mail te verifiëren en je account om te zetten naar een docentaccount.",
+      "ignore": "Als je dit niet hebt aangevraagd, kun je deze e-mail negeren."
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "Moeilijkere sommen leveren meer XP op."
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "Je {{kc}} hebben oefening nodig — {{accuracy}}% nauwkeurigheid",
+    "missionFocusPairs": "Probeer {{pairs}}",
+    "missionStrong": "Sterkste: {{kc}} — {{accuracy}}% nauwkeurigheid",
     "startSprint": "Mijn niveau trainen",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "Niveau kiezen",
+    "adjustTier": "Leerniveau aanpassen",
+    "unlocksExtended": "Ontgrendelt ×11 tot ×20"
   }
 }

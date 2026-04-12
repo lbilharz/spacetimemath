@@ -16,8 +16,8 @@
     "or": "أو",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "الحرارة",
+    "submit": "إرسال",
     "backspace": "Backspace",
     "viewAll": "عرض الكل",
     "6digitCode": "رمز من 6 أرقام",
@@ -53,7 +53,7 @@
     "newAccount": "حساب جديد",
     "restoreError": "المفتاح غير موجود - تحقق من مفتاح الاسترداد المكون من 12 حرفًا",
     "footer": "SpaceTimeDB المهام موزونة حسب صعوبة المجتمع · مدعوم من",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "دعوة صديق",
     "howToRestore": "كيف تريد استعادة حسابك؟",
     "restoreViaCode": "الاستعادة برمز من 12 حرفاً",
     "restoreViaEmail": "الاستعادة بالبريد الإلكتروني",
@@ -97,8 +97,8 @@
     "join": "انضم ←",
     "masteryTitle": "شبكة الإتقان الخاصة بي",
     "masteryDesc": "جدول الضرب الخاص بك في لمحة — اضغط على أي نتيجة لترى التفكير الصحيح لحلها.",
-    "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions",
+    "networkLeaderboard": "لوحة صدارة الشبكة",
+    "sessions": "جلسات",
     "friendsTitle": "العب مع الأصدقاء",
     "friendsDesc": "تبادل الأكواد وتنافس في لوحة الصدارة.",
     "classesTitle": "انضم إلى فصل",
@@ -106,10 +106,10 @@
     "focusHint": "التالي للإتقان",
     "focusNew": "{{kc}} — ابدأ الاستكشاف!",
     "focusPractice": "{{kc}} — دقة {{accuracy}}%. واصل التقدم!",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
-    "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "progressProfileDesc": "عرض شبكة التمارين ورؤى التعلم الخاصة بك.",
+    "welcomeBack": "مرحبًا بعودتك،",
+    "detailsLink": "التفاصيل",
+    "sprintCta": "تدرّب الآن"
   },
   "onboarding": {
     "card1Title": "60 ثانية على الساعة",
@@ -141,7 +141,8 @@
     "ending": "... جاري الإنهاء",
     "endSprint": "إنهاء السبرينت",
     "phase": "المرحلة",
-    "tapPenalty": "ليست صحيحة تماماً. خذ لحظة للتفكير..."
+    "tapPenalty": "ليست صحيحة تماماً. خذ لحظة للتفكير...",
+    "whatIs": "كم يساوي"
   },
   "migration": {
     "title": "مرحبًا بعودتك!",
@@ -163,7 +164,7 @@
     "viewProgress": "عرض تقدمك",
     "problemsTitle": "المسائل في هذا السبرينت",
     "maxStreak": "أقصى سلسلة",
-    "score": "Score"
+    "score": "النقاط"
   },
   "classroom": {
     "notFound": "الفصل الدراسي غير موجود",
@@ -206,13 +207,13 @@
     "printNoKeys": ".لا توجد بطاقات دخول متاحة — ربما لا يملك بعض الطلاب مفاتيح استرداد بعد",
     "showLoginCard": "QR عرض بطاقة دخول",
     "studentLoginHint": ".مسح لتسجيل الدخول على أي جهاز — لا حاجة لكلمة مرور",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
+    "members": "الأعضاء",
+    "classMasteryDesc": "تقدّم الفصل",
+    "waitingForStudentState": "في انتظار حالة الطالب",
+    "liveObserver": "المراقب المباشر",
+    "actionLog": "سجل الإجراءات",
+    "noActionsYet": "لا توجد إجراءات بعد",
+    "submitted": "تم التقديم",
     "remove": "إزالة",
     "removeMemberTitle": "إزالة طالب",
     "removeMemberDesc": "هل أنت متأكد أنك تريد إزالة {{name}} من هذا الفصل؟"
@@ -266,7 +267,7 @@
     "noReminders": "لا توجد تذكيرات نشطة. أضف واحداً للحفاظ على سلسلتك!",
     "daily": "كل يوم",
     "weekly": "أيام محددة",
-    "sessions": "Sessions",
+    "sessions": "جلسات",
     "accountType": "نوع الحساب",
     "accountTypeDesc": "يحدد دورك الحالي الميزات المتاحة لك."
   },
@@ -307,9 +308,9 @@
     "emptyHint": ".انضم إلى فصل موجود أو أنشئ فصلاً خاصًا بك",
     "createError": "فشل إنشاء الفصل الدراسي",
     "joinError": "الفصل الدراسي غير موجود",
-    "areYouTeacher": "Are you a teacher?",
-    "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "areYouTeacher": "هل أنت معلم/ة؟",
+    "upgradePrompt": "قم بترقية حسابك لإنشاء فصول دراسية",
+    "upgradeDesc": "قم بترقية حسابك مجانًا لإدارة الطلاب وتشغيل سباقات الفصل.",
     "emptyHeading": "تعلموا معاً! 🏫",
     "emptyDesc": "انضم إلى فصل لتتنافس مع زملائك، ودع معلمك يوجه رحلتك التعليمية!",
     "joinButton": "الانضمام إلى الفصل",
@@ -333,9 +334,9 @@
   "history": {
     "title": "📋 سجل السبرينت",
     "noAnswers": ".لا توجد إجابات مسجلة",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "streak": "Streak"
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "streak": "سلسلة"
   },
   "mastery": {
     "tooltip": "{{difficulty}} :الصعوبة  {{answer}}={{b}}×{{a}}",
@@ -344,7 +345,7 @@
     "struggling": "صعب",
     "untouched": "لم تتم تجربته",
     "hardDiff": "صعب (أكبر من أو يساوي 1.5×)",
-    "correctOfLast": "Correct of Last"
+    "correctOfLast": "صحيح من آخر"
   },
   "classSprint": {
     "start": "ابدأ سبرينت الفصل",
@@ -386,8 +387,8 @@
       "leaderboard": "منصة تتويج السبرينت",
       "correctShort": "تم"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "لا يزال جاريًا",
+    "colStreak": "سلسلة"
   },
   "tierPicker": {
     "cardTitle": "اختر مستوى البداية",
@@ -526,21 +527,21 @@
     "addedSuccess": "تم إنشاء الاتصال!"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "البيانات القانونية",
+    "privacy": "سياسة الخصوصية",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "رمز تسجيل الدخول الخاص بك في 1UP",
+      "greeting_anon": "مرحبًا،",
+      "body": "أدخل هذا الرمز المكوّن من 6 أرقام لاستعادة حسابك بأمان. تنتهي صلاحية هذا الرمز خلال 15 دقيقة.",
+      "ignore": "إذا لم تطلب هذا، يمكنك تجاهل هذا البريد الإلكتروني بأمان."
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "رمز التحقق الخاص بالمعلم",
+      "greeting_name": "مرحبًا {{name}}،",
+      "greeting_anon": "مرحبًا،",
+      "body": "أدخل هذا الرمز المكوّن من 6 أرقام للتحقق من بريدك الإلكتروني وترقية حسابك إلى حساب معلم.",
+      "ignore": "إذا لم تطلب هذا، يمكنك تجاهل هذا البريد الإلكتروني بأمان."
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "المسائل الأصعب تمنح المزيد من XP."
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "{{kc}} بحاجة لمزيد من التمرين — دقة {{accuracy}}%",
+    "missionFocusPairs": "جرّب {{pairs}}",
+    "missionStrong": "الأقوى: {{kc}} — دقة {{accuracy}}%",
     "startSprint": "تدريب مستواي",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "اختر المستوى",
+    "adjustTier": "ضبط مستوى التعلم",
+    "unlocksExtended": "يفتح ×11 إلى ×20"
   }
 }

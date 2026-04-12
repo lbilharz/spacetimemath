@@ -16,8 +16,8 @@
     "or": "或",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "热度",
+    "submit": "提交",
     "backspace": "Backspace",
     "viewAll": "查看全部",
     "6digitCode": "6位代码",
@@ -53,7 +53,7 @@
     "newAccount": "新账户",
     "restoreError": "未找到密钥 — 请检查你的 12 位恢复密钥",
     "footer": "题目按社区难度加权 · 由 SpaceTimeDB 驱动",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "好友邀请",
     "howToRestore": "你想如何恢复账户？",
     "restoreViaCode": "使用12位恢复码恢复",
     "restoreViaEmail": "通过电子邮件恢复",
@@ -97,8 +97,8 @@
     "join": "加入 →",
     "masteryTitle": "我的掌握矩阵",
     "masteryDesc": "你的 1×1 乘法表概览 — 点击任何乘积查看解题思路。",
-    "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions",
+    "networkLeaderboard": "全网排行榜",
+    "sessions": "训练次数",
     "friendsTitle": "和朋友一起玩",
     "friendsDesc": "交换代码并在排行榜上竞争。",
     "classesTitle": "加入班级",
@@ -106,10 +106,10 @@
     "focusHint": "下一个要掌握的",
     "focusNew": "{{kc}} — 开始探索吧！",
     "focusPractice": "{{kc}} — {{accuracy}}% 准确率，继续加油！",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
-    "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "progressProfileDesc": "查看你的练习网格和学习进度。",
+    "welcomeBack": "欢迎回来，",
+    "detailsLink": "详情",
+    "sprintCta": "开始练习"
   },
   "onboarding": {
     "card1Title": "60 秒计时",
@@ -141,7 +141,8 @@
     "ending": "正在结束…",
     "endSprint": "结束冲刺",
     "phase": "阶段",
-    "tapPenalty": "不完全对，再想一下吧..."
+    "tapPenalty": "不完全对，再想一下吧...",
+    "whatIs": "计算"
   },
   "migration": {
     "title": "欢迎回来！",
@@ -163,7 +164,7 @@
     "viewProgress": "查看你的进度",
     "problemsTitle": "本次冲刺题目",
     "maxStreak": "最高连胜",
-    "score": "Score"
+    "score": "分数"
   },
   "classroom": {
     "notFound": "未找到班级",
@@ -206,13 +207,13 @@
     "printNoKeys": "暂无登录卡片 — 部分学生可能还没有恢复密钥。",
     "showLoginCard": "显示登录二维码卡片",
     "studentLoginHint": "在任何设备上扫描即可登录 — 无需密码。",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
+    "members": "成员",
+    "classMasteryDesc": "班级掌握度",
+    "waitingForStudentState": "等待学生状态",
+    "liveObserver": "实时观察",
+    "actionLog": "活动日志",
+    "noActionsYet": "暂无活动",
+    "submitted": "已提交",
     "remove": "移除",
     "removeMemberTitle": "移除学生",
     "removeMemberDesc": "你确定要将 {{name}} 从这个班级中移除吗？"
@@ -266,7 +267,7 @@
     "noReminders": "没有活动的提醒。添加一个来保持你的连胜！",
     "daily": "每天",
     "weekly": "特定日期",
-    "sessions": "Sessions",
+    "sessions": "训练次数",
     "accountType": "账户类型",
     "accountTypeDesc": "您当前的角色决定了可用的功能。"
   },
@@ -307,9 +308,9 @@
     "emptyHint": "加入现有班级或创建自己的班级。",
     "createError": "创建班级失败",
     "joinError": "未找到班级",
-    "areYouTeacher": "Are you a teacher?",
-    "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "areYouTeacher": "你是老师吗？",
+    "upgradePrompt": "升级你的账户以创建班级",
+    "upgradeDesc": "免费升级你的账户，开始管理学生并运行班级冲刺。",
     "emptyHeading": "一起学习！ 🏫",
     "emptyDesc": "加入班级与同学竞争，让老师指导你的学习之旅！",
     "joinButton": "加入班级",
@@ -333,9 +334,9 @@
   "history": {
     "title": "📋 冲刺历史",
     "noAnswers": "暂无回答记录。",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "streak": "Streak"
+    "today": "今天",
+    "yesterday": "昨天",
+    "streak": "连胜"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  难度：{{difficulty}}",
@@ -344,7 +345,7 @@
     "struggling": "较吃力",
     "untouched": "未涉及",
     "hardDiff": "困难 (≥1.5×)",
-    "correctOfLast": "Correct of Last"
+    "correctOfLast": "最近答对"
   },
   "classSprint": {
     "start": "开始班级冲刺",
@@ -386,8 +387,8 @@
       "leaderboard": "冲刺领奖台",
       "correctShort": "完成"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "进行中",
+    "colStreak": "连胜"
   },
   "tierPicker": {
     "cardTitle": "选择你的起始等级",
@@ -526,21 +527,21 @@
     "addedSuccess": "连接已建立！"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "法律信息",
+    "privacy": "隐私政策",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "你的 1UP 登录验证码",
+      "greeting_anon": "你好，",
+      "body": "输入此 6 位验证码以安全恢复你的账户。验证码将在 15 分钟后失效。",
+      "ignore": "如果你没有请求此操作，可以放心忽略这封邮件。"
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "你的教师验证码",
+      "greeting_name": "你好 {{name}}，",
+      "greeting_anon": "你好，",
+      "body": "输入此 6 位验证码以验证你的邮箱并升级为教师账户。",
+      "ignore": "如果你没有请求此操作，可以放心忽略这封邮件。"
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "更难的题目获得更多经验值。"
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "你的 {{kc}} 需要练习 — {{accuracy}}% 准确率",
+    "missionFocusPairs": "试试 {{pairs}}",
+    "missionStrong": "最强：{{kc}} — {{accuracy}}% 准确率",
     "startSprint": "训练我的等级",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "设置等级",
+    "adjustTier": "调整学习等级",
+    "unlocksExtended": "解锁 ×11 到 ×20"
   }
 }

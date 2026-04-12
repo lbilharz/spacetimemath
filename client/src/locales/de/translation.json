@@ -16,8 +16,8 @@
     "or": "oder",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "Hitze",
+    "submit": "Absenden",
     "backspace": "Backspace",
     "viewAll": "Alle ansehen",
     "6digitCode": "6-STELLIGER CODE",
@@ -62,7 +62,7 @@
     "newAccount": "Neues Konto",
     "restoreError": "Schlüssel nicht gefunden – überprüfe deinen 12-stelligen Wiederherstellungsschlüssel",
     "footer": "Aufgaben sind nach Schwierigkeit gewichtet · powered by SpaceTimeDB",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "Freundeseinladung",
     "howToRestore": "Wie möchtest du dein Konto wiederherstellen?",
     "restoreViaCode": "Mit 12-Zeichen-Code wiederherstellen",
     "restoreViaEmail": "Per E-Mail wiederherstellen",
@@ -116,8 +116,8 @@
     "join": "Beitreten →",
     "masteryTitle": "Meine Lernübersicht",
     "masteryDesc": "Dein Einmaleins auf einen Blick — tippe ein Ergebnis, um den Rechenweg zu sehen.",
-    "networkLeaderboard": "Network Leaderboard",
-    "sessions": "Sessions",
+    "networkLeaderboard": "Netzwerk-Bestenliste",
+    "sessions": "Runden",
     "friendsTitle": "Mit Freunden spielen",
     "friendsDesc": "Tauscht Codes aus und erobert die Bestenliste.",
     "classesTitle": "Klasse beitreten",
@@ -125,10 +125,10 @@
     "focusHint": "Als Nächstes meistern",
     "focusNew": "{{kc}} — jetzt entdecken!",
     "focusPractice": "{{kc}} — {{accuracy}}% Genauigkeit. Weiter so!",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
+    "progressProfileDesc": "Dein Übungsgitter und Lernfortschritt ansehen.",
     "welcomeBack": "Willkommen zurück,",
     "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "sprintCta": "Jetzt üben"
   },
   "onboarding": {
     "card1Title": "60 Sekunden auf der Uhr",
@@ -139,7 +139,7 @@
     "card3Body": "Starte deinen ersten 60-Sekunden-Multiplikationssprint. Beantworte so viele wie möglich — dein Ergebnis wird gespeichert!",
     "letsGo": "Los geht's! 🚀",
     "startSprint": "60s Sprint starten ⚡",
-    "okay": "Okay",
+    "okay": "Alles klar",
     "next": "Weiter",
     "back": "Zurück",
     "card3BodyPlacement": "Starte deinen 60-Sekunden-Einstufungstest. Gib dein Bestes — so finden wir dein perfektes Startlevel!"
@@ -160,7 +160,8 @@
     "tapPenalty": "Noch nicht ganz richtig. Überleg noch mal kurz...",
     "ending": "Wird beendet…",
     "endSprint": "Sprint beenden",
-    "phase": "Phase"
+    "phase": "Phase",
+    "whatIs": "WAS IST"
   },
   "migration": {
     "title": "Willkommen zurück!",
@@ -182,7 +183,7 @@
     "scoringExplained": "Wie wird gewertet?",
     "viewProgress": "Fortschritt ansehen",
     "problemsTitle": "Aufgaben in diesem Sprint",
-    "score": "Score"
+    "score": "Punkte"
   },
   "classroom": {
     "notFound": "Klasse nicht gefunden",
@@ -228,13 +229,13 @@
     "printNoKeys": "Keine Login-Karten verfügbar – womöglich haben noch nicht alle einen Wiederherstellungsschlüssel.",
     "showLoginCard": "Login-QR-Karte zeigen",
     "studentLoginHint": "Scannen zum Einloggen auf jedem Gerät — kein Passwort nötig.",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted"
+    "members": "Mitglieder",
+    "classMasteryDesc": "Klassenfortschritt",
+    "waitingForStudentState": "Warte auf Schülerstatus",
+    "liveObserver": "Live-Beobachter",
+    "actionLog": "Aktivitätsprotokoll",
+    "noActionsYet": "Noch keine Aktivitäten",
+    "submitted": "Abgegeben"
   },
   "account": {
     "sessions_one": "{{count}} Sprint",
@@ -274,7 +275,7 @@
     "privacy": "Datenschutz",
     "terms": "AGB",
     "settings": "App-Einstellungen",
-    "darkMode": "Dark Mode",
+    "darkMode": "Dunkelmodus",
     "darkModeDesc": "Erscheinungsbild anpassen",
     "telemetry": "Telemetrie (FPS)",
     "telemetryDesc": "Leistungsdaten und Latenz anzeigen",
@@ -285,7 +286,7 @@
     "noReminders": "Keine aktiven Erinnerungen. Füge eine hinzu, um dranzubleiben!",
     "daily": "Jeden Tag",
     "weekly": "Bestimmte Tage",
-    "sessions": "Sessions",
+    "sessions": "Runden",
     "accountType": "Kontotyp",
     "accountTypeDesc": "Deine aktuelle Rolle bestimmt, welche Funktionen dir zur Verfügung stehen."
   },
@@ -352,8 +353,8 @@
   "history": {
     "title": "📋 Sprint-Verlauf",
     "noAnswers": "Keine Antworten aufgezeichnet.",
-    "today": "Today",
-    "yesterday": "Yesterday",
+    "today": "Heute",
+    "yesterday": "Gestern",
     "streak": "Streak"
   },
   "mastery": {
@@ -363,7 +364,7 @@
     "struggling": "schwierig",
     "untouched": "unversucht",
     "hardDiff": "schwer (≥1.5×)",
-    "correctOfLast": "Correct of Last"
+    "correctOfLast": "Richtig von letzten"
   },
   "classSprint": {
     "start": "Klassen-Sprint starten",
@@ -405,8 +406,8 @@
       "leaderboard": "Sprint-Podium",
       "correctShort": "FERTIG"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "Läuft noch",
+    "colStreak": "Serie"
   },
   "tierPicker": {
     "cardTitle": "Wähle dein Startlevel",
@@ -526,21 +527,21 @@
     "addedSuccess": "Verbindung hergestellt!"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "Impressum",
+    "privacy": "Datenschutz",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Dein 1UP Login-Code",
+      "greeting_anon": "Hallo,",
+      "body": "Gib diesen 6-stelligen Code ein, um dein Konto sicher wiederherzustellen. Der Code läuft in 15 Minuten ab.",
+      "ignore": "Falls du das nicht angefordert hast, kannst du diese E-Mail einfach ignorieren."
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Dein Lehrer-Verifizierungscode",
+      "greeting_name": "Hallo {{name}},",
+      "greeting_anon": "Hallo,",
+      "body": "Gib diesen 6-stelligen Code ein, um deine E-Mail zu bestätigen und dein Konto zum Lehrer-Konto aufzuwerten.",
+      "ignore": "Falls du das nicht angefordert hast, kannst du diese E-Mail einfach ignorieren."
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "Schwerere Aufgaben bringen mehr XP."
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "Deine {{kc}} brauchen Übung — {{accuracy}}% Genauigkeit",
+    "missionFocusPairs": "Versuch {{pairs}}",
+    "missionStrong": "Stärkste: {{kc}} — {{accuracy}}% Genauigkeit",
     "startSprint": "Level trainieren",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "Stufe wählen",
+    "adjustTier": "Lernstufe anpassen",
+    "unlocksExtended": "Schaltet ×11 bis ×20 frei"
   }
 }

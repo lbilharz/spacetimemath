@@ -16,8 +16,8 @@
     "or": "ou",
     "add": "Add",
     "return": "Return",
-    "heat": "Heat",
-    "submit": "Submit",
+    "heat": "Intensité",
+    "submit": "Envoyer",
     "backspace": "Backspace",
     "viewAll": "Voir tout",
     "6digitCode": "CODE À 6 CHIFFRES",
@@ -53,7 +53,7 @@
     "newAccount": "Nouveau compte",
     "restoreError": "Clé introuvable — vérifie ta clé de récupération à 12 caractères",
     "footer": "Les problèmes sont pondérés par la difficulté communautaire · propulsé par SpaceTimeDB",
-    "friendInviteBanner": "Friend Invite",
+    "friendInviteBanner": "Invitation d'ami",
     "howToRestore": "Comment souhaitez-vous restaurer votre compte ?",
     "restoreViaCode": "Restaurer avec un code à 12 caractères",
     "restoreViaEmail": "Restaurer par e-mail",
@@ -97,7 +97,7 @@
     "join": "Rejoindre →",
     "masteryTitle": "Ma grille de maîtrise",
     "masteryDesc": "Ta table de 1×1 en un coup d'œil — appuie sur un produit pour voir comment le calculer.",
-    "networkLeaderboard": "Network Leaderboard",
+    "networkLeaderboard": "Classement du réseau",
     "sessions": "Sessions",
     "friendsTitle": "Joue avec des Amis",
     "friendsDesc": "Échangez des codes et dominez le classement.",
@@ -106,10 +106,10 @@
     "focusHint": "Prochaine à maîtriser",
     "focusNew": "{{kc}} — commence à explorer !",
     "focusPractice": "{{kc}} — {{accuracy}}% de précision. Continue !",
-    "progressProfileDesc": "View your mastery grid and learning insights.",
-    "welcomeBack": "Welcome back,",
-    "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "progressProfileDesc": "Voir ta grille de maîtrise et tes progrès.",
+    "welcomeBack": "Bon retour,",
+    "detailsLink": "Détails",
+    "sprintCta": "S'entraîner"
   },
   "onboarding": {
     "card1Title": "60 secondes au compteur",
@@ -141,7 +141,8 @@
     "ending": "Fin de session…",
     "endSprint": "Terminer le sprint",
     "phase": "Phase",
-    "tapPenalty": "Pas tout à fait. Prends un court instant..."
+    "tapPenalty": "Pas tout à fait. Prends un court instant...",
+    "whatIs": "COMBIEN FONT"
   },
   "migration": {
     "title": "Bon Retour !",
@@ -206,13 +207,13 @@
     "printNoKeys": "Aucune carte disponible — certains élèves n'ont peut-être pas encore de clé.",
     "showLoginCard": "Afficher la carte QR de connexion",
     "studentLoginHint": "Scanne pour te connecter sur n'importe quel appareil — pas de mot de passe requis.",
-    "members": "Members",
-    "classMasteryDesc": "Class Mastery",
-    "waitingForStudentState": "Waiting for Student State",
-    "liveObserver": "Live Observer",
-    "actionLog": "Action Log",
-    "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
+    "members": "Membres",
+    "classMasteryDesc": "Maîtrise de la classe",
+    "waitingForStudentState": "En attente de l'état de l'élève",
+    "liveObserver": "Observateur en direct",
+    "actionLog": "Journal d'activité",
+    "noActionsYet": "Aucune activité",
+    "submitted": "Envoyé",
     "remove": "Supprimer",
     "removeMemberTitle": "Supprimer l'élève",
     "removeMemberDesc": "Es-tu sûr de vouloir supprimer {{name}} de cette classe ?"
@@ -296,7 +297,7 @@
     "twentyfive": "÷4 de ×100"
   },
   "nav": {
-    "home": "Home",
+    "home": "Accueil",
     "classes": "Classes",
     "progress": "Progrès",
     "account": "Compte",
@@ -307,9 +308,9 @@
     "emptyHint": "Rejoins une classe existante ou crée la tienne.",
     "createError": "Échec de la création de la classe",
     "joinError": "Classe introuvable",
-    "areYouTeacher": "Are you a teacher?",
-    "upgradePrompt": "Upgrade your account to create classrooms",
-    "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
+    "areYouTeacher": "Tu es enseignant(e) ?",
+    "upgradePrompt": "Passe en compte enseignant pour créer des classes",
+    "upgradeDesc": "Passe gratuitement en compte enseignant pour gérer des élèves et lancer des sprints de classe.",
     "emptyHeading": "Apprenez ensemble ! 🏫",
     "emptyDesc": "Rejoignez une classe pour rivaliser avec vos camarades et laissez votre professeur guider votre parcours d'apprentissage !",
     "joinButton": "Rejoindre la classe",
@@ -333,9 +334,9 @@
   "history": {
     "title": "📋 Historique des sprints",
     "noAnswers": "Aucune réponse enregistrée.",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "streak": "Streak"
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "streak": "Série"
   },
   "mastery": {
     "tooltip": "{{a}}×{{b}}={{answer}}  difficulté : {{difficulty}}",
@@ -344,7 +345,7 @@
     "struggling": "difficile",
     "untouched": "non tenté",
     "hardDiff": "dur (≥1.5×)",
-    "correctOfLast": "Correct of Last"
+    "correctOfLast": "Correct sur les derniers"
   },
   "classSprint": {
     "start": "Démarrer le sprint de classe",
@@ -386,8 +387,8 @@
       "leaderboard": "Podium du Sprint",
       "correctShort": "FAIT"
     },
-    "stillRunning": "Still Running",
-    "colStreak": "Streak"
+    "stillRunning": "En cours",
+    "colStreak": "Série"
   },
   "tierPicker": {
     "cardTitle": "Choisis ton niveau de départ",
@@ -526,21 +527,21 @@
     "addedSuccess": "Connexion établie !"
   },
   "email": {
-    "impressum": "Imprint",
-    "privacy": "Privacy Policy",
+    "impressum": "Mentions légales",
+    "privacy": "Politique de confidentialité",
     "operator": "This is an automated email from Better 1UP.<br>Operator: Lars Bilharz, Boppstraße 3, 10967 Berlin, Germany",
     "recovery": {
-      "subject": "Your 1UP Login Code",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to securely restore your account. This code expires in 15 minutes.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Ton code de connexion 1UP",
+      "greeting_anon": "Bonjour,",
+      "body": "Entre ce code à 6 chiffres pour restaurer ton compte en toute sécurité. Ce code expire dans 15 minutes.",
+      "ignore": "Si tu n'as pas fait cette demande, tu peux ignorer cet e-mail."
     },
     "teacher": {
-      "subject": "Your Teacher Verification Code",
-      "greeting_name": "Hi {{name}},",
-      "greeting_anon": "Hello,",
-      "body": "Enter this 6-digit code to verify your email and complete your upgrade to a Teacher account.",
-      "ignore": "If you didn't request this, you can safely ignore this email."
+      "subject": "Ton code de vérification enseignant",
+      "greeting_name": "Bonjour {{name}},",
+      "greeting_anon": "Bonjour,",
+      "body": "Entre ce code à 6 chiffres pour vérifier ton e-mail et passer en compte enseignant.",
+      "ignore": "Si tu n'as pas fait cette demande, tu peux ignorer cet e-mail."
     }
   },
   "ranks": {
@@ -575,12 +576,12 @@
     "xpExplainer": "Les problemes plus difficiles rapportent plus d'XP."
   },
   "progress": {
-    "missionFocus": "Your {{kc}} need work — {{accuracy}}% accuracy",
-    "missionFocusPairs": "Try {{pairs}}",
-    "missionStrong": "Strongest: {{kc}} — {{accuracy}}% accuracy",
+    "missionFocus": "Tes {{kc}} ont besoin de travail — {{accuracy}}% de précision",
+    "missionFocusPairs": "Essaie {{pairs}}",
+    "missionStrong": "Meilleur : {{kc}} — {{accuracy}}% de précision",
     "startSprint": "Entraîner mon niveau",
-    "setLevel": "Set Level",
-    "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "setLevel": "Choisir le niveau",
+    "adjustTier": "Ajuster le niveau",
+    "unlocksExtended": "Débloque ×11 à ×20"
   }
 }
