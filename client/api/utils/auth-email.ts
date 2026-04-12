@@ -92,7 +92,7 @@ export async function handleAuthEmail(
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     const stack = err instanceof Error ? err.stack : undefined;
-    console.error(\`Crash inside send-\${dictionaryKey}:\`, err);
+    console.error(`Crash inside send-${dictionaryKey}:`, err);
     return res.status(500).json({ error: 'Function crashed!', trace: stack || message });
   }
 }
