@@ -1,6 +1,8 @@
-v1.3 — Smoother sign-up & login in the app
+v1.3 — Jump right in!
 
-- Fixed email magic link not working inside the iOS app
-- Join links now pre-fill and lock the class code for fewer mistakes
-- Username field is auto-focused when joining via QR code
-- Streamlined student registration flow when scanning a class QR code
+- One-tap sign-up: you get a fun gamertag instantly — change it if you want, or just go
+- Friends can now share invite links that connect you automatically
+- Joining a class or adding a friend shows a little celebration
+- Email magic link finally works reliably on iOS
+- New 404 page (you probably won't see it, but it looks cool)
+- Lots of small fixes for a snappier experience

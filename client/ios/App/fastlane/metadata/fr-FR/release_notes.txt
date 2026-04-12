@@ -1,6 +1,8 @@
-v1.3 — Inscription et connexion simplifiées dans l'app
+v1.3 — Fonce direct !
 
-- Le lien magique par e-mail fonctionne désormais dans l'app iOS
-- Les liens d'invitation pré-remplissent et verrouillent le code de classe
-- Le champ du nom d'utilisateur est automatiquement sélectionné lors d'une inscription par QR code
-- Processus d'inscription simplifié pour les élèves qui scannent un QR code de classe
+- Inscription en un clic : tu recois un gamertag fun instantanement — change-le si tu veux
+- Les amis peuvent partager des liens d'invitation qui connectent automatiquement
+- Rejoindre une classe ou ajouter un ami affiche une petite celebration
+- Le lien magique par e-mail fonctionne enfin sur iOS
+- Nouvelle page 404 (tu ne la verras probablement jamais, mais elle est cool)
+- Plein de petites corrections pour une experience plus fluide

@@ -1,6 +1,8 @@
-v1.3 — Reibungslosere Anmeldung & Login in der App
+v1.3 — Einfach loslegen!
 
-- E-Mail-Login-Link funktioniert jetzt auch in der iOS-App
-- Beitrittslinks fuellen den Klassencode automatisch aus und sperren ihn gegen Tippfehler
-- Benutzername-Feld wird beim Beitreten per QR-Code automatisch fokussiert
-- Vereinfachter Registrierungsablauf fuer Schueler beim Scannen eines Klassen-QR-Codes
+- Anmeldung in einem Tipp: du bekommst sofort einen coolen Gamertag — aendern geht natuerlich auch
+- Freunde koennen jetzt Einladungslinks teilen, die automatisch verbinden
+- Einer Klasse beitreten oder Freunde adden zeigt jetzt eine kleine Feier
+- E-Mail-Login-Link funktioniert endlich zuverlaessig auf iOS
+- Neue 404-Seite (wirst du vermutlich nie sehen, sieht aber gut aus)
+- Viele kleine Fixes fuer ein flottes Erlebnis

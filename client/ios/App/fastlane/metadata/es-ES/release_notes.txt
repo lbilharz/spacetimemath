@@ -1,6 +1,8 @@
-v1.3 — Registro e inicio de sesión más fáciles en la app
+v1.3 — A jugar de una!
 
-- El enlace de inicio de sesión por correo electrónico ahora funciona en la app de iOS
-- Los enlaces de unión rellenan y bloquean automáticamente el código de clase
-- El campo de nombre de usuario se enfoca automáticamente al unirse por código QR
-- Proceso de registro simplificado para estudiantes que escanean un código QR de clase
+- Registro en un toque: recibes un gamertag divertido al instante — cambialo si quieres
+- Los amigos ahora pueden compartir enlaces de invitacion que conectan automaticamente
+- Unirse a una clase o agregar un amigo muestra una pequena celebracion
+- El enlace magico por correo por fin funciona en iOS
+- Nueva pagina 404 (probablemente nunca la veras, pero se ve genial)
+- Muchas correcciones pequenas para una experiencia mas rapida

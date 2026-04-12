@@ -1,6 +1,8 @@
-v1.3 — Soepeler registreren & inloggen in de app
+v1.3 — Meteen erin!
 
-- E-mail-inloglink werkt nu ook in de iOS-app
-- Uitnodigingslinks vullen de klascode automatisch in en vergrendelen deze
-- Gebruikersnaamveld wordt automatisch geselecteerd bij aanmelden via QR-code
-- Vereenvoudigd registratieproces voor leerlingen die een klas-QR-code scannen
+- Aanmelden in een tik: je krijgt direct een toffe gamertag — wijzigen kan altijd
+- Vrienden kunnen nu uitnodigingslinks delen die automatisch verbinden
+- Een klas joinen of een vriend toevoegen laat een kleine viering zien
+- E-mail-inloglink werkt eindelijk betrouwbaar op iOS
+- Nieuwe 404-pagina (je ziet hem waarschijnlijk nooit, maar hij ziet er gaaf uit)
+- Veel kleine verbeteringen voor een vlottere ervaring

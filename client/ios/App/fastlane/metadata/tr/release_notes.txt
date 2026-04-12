@@ -1,6 +1,8 @@
-v1.3 — Uygulamada daha kolay kayıt ve giriş
+v1.3 — Hemen basla!
 
-- E-posta ile giriş bağlantısı artık iOS uygulamasında çalışıyor
-- Katılım bağlantıları sınıf kodunu otomatik dolduruyor ve kilitliyor
-- QR kod ile katılırken kullanıcı adı alanı otomatik olarak odaklanıyor
-- QR kod tarayan öğrenciler için basitleştirilmiş kayıt süreci
+- Tek dokunusla kayit: aninda eglenceli bir oyuncu adi alirsin — istersen degistir
+- Arkadaslar artik otomatik baglanan davet linkleri paylasabiliyor
+- Sinifa katilmak veya arkadas eklemek kucuk bir kutlama gosteriyor
+- E-posta giris baglantisi sonunda iOS'ta duzgun calisiyor
+- Yeni 404 sayfasi (muhtemelen hic gormeyeceksin ama cok guzel)
+- Daha hizli bir deneyim icin bir suru kucuk duzeltme
