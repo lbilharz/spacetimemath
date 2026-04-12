@@ -233,3 +233,17 @@ export const TestLevelIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+
+export const EmailColorIcon = ({ className }: { className?: string }) => (
+  <svg width="24" height="24" viewBox="0 0 100 100" aria-hidden="true" className={className}>
+    <rect width="100" height="100" rx="18" fill="currentColor" opacity="0.05" />
+    {/* Letter */}
+    <rect x="24" y="18" width="52" height="44" rx="8" fill="var(--icon-yellow)" />
+    <rect x="34" y="28" width="16" height="6" rx="3" fill="#000" opacity="0.1" />
+    <rect x="34" y="38" width="32" height="6" rx="3" fill="#000" opacity="0.1" />
+    {/* Envelope base */}
+    <rect x="14" y="46" width="72" height="38" rx="10" fill="var(--icon-blue)" />
+    {/* Red seal overlapping */}
+    <rect x="38" y="34" width="24" height="24" rx="12" fill="var(--icon-red)" />
+  </svg>
+);
