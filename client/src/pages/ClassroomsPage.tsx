@@ -139,90 +139,91 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
           </div>
         )}
 
-        {/* 2 & 3. Action icon buttons */}
-        <div className={`flex flex-col sm:flex-row gap-3 ${!isTeacher ? 'justify-center max-w-sm mx-auto w-full' : ''}`}>
-          <button
-            className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
-            onClick={() => { setShowJoin(!showJoin); setShowCreate(false); setJoinError(''); setJoinCode(''); }}
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
-              <JoinIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
-            </div>
-            {t('lobby.joinClass')}
-          </button>
-          {isTeacher && (
+        {/* 2 & 3. Action icon buttons / inline forms */}
+        <div className={`flex flex-col md:flex-row gap-3 ${!isTeacher ? 'justify-center max-w-sm mx-auto w-full' : ''}`}>
+          {showJoin ? (
+            <form onSubmit={handleJoin} className="flex-1 rounded-3xl border border-brand-yellow bg-brand-yellow/5 p-4 shadow-sm flex flex-col gap-3 justify-center animate-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('lobby.joinClassHeading')}</span>
+                <button type="button" onClick={() => setShowJoin(false)} className="text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors">✕</button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  className="flex-1 w-full rounded-2xl border-2 border-slate-200 bg-white dark:bg-slate-900 px-3 py-2 text-center text-sm tracking-[0.2em] font-black text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:border-slate-700 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none transition-colors"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder={t('lobby.joinCodePlaceholder')}
+                  value={joinCode}
+                  onChange={e => setJoinCode(e.target.value.replace(/[^0-9A-Za-z]/g, '').toUpperCase())}
+                  maxLength={6}
+                  autoFocus
+                  autoComplete="off"
+                  disabled={joining}
+                />
+                <button
+                  className="bg-brand-yellow px-5 rounded-2xl font-black text-[13px] text-slate-900 transition-transform active:scale-95 disabled:opacity-50 tracking-wider uppercase"
+                  type="submit"
+                  disabled={joining || joinCode.trim().length !== 6}
+                >
+                  {joining ? '...' : t('lobby.join')}
+                </button>
+              </div>
+              {joinError && <p className="text-red-500 text-sm font-bold">{joinError}</p>}
+            </form>
+          ) : (
             <button
               className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
-              onClick={() => { setShowCreate(!showCreate); setShowJoin(false); setClassError(''); setClassName(''); }}
+              onClick={() => { setShowJoin(true); setShowCreate(false); setJoinError(''); setJoinCode(''); }}
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
-                <AddIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
+                <JoinIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
               </div>
-              {t('lobby.createClass')}
+              {t('lobby.joinClass')}
             </button>
           )}
+
+          {isTeacher && (
+            showCreate ? (
+              <form onSubmit={handleCreate} className="flex-1 rounded-3xl border border-brand-yellow bg-brand-yellow/5 p-4 shadow-sm flex flex-col gap-3 justify-center animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('lobby.createClassHeading')}</span>
+                  <button type="button" onClick={() => setShowCreate(false)} className="text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors">✕</button>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    className="flex-1 w-full rounded-2xl border-2 border-slate-200 bg-white dark:bg-slate-900 px-3 py-2 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 border-slate-300 dark:border-slate-700 focus:border-brand-yellow focus:outline-none transition-colors"
+                    type="text"
+                    placeholder={t('lobby.classNamePlaceholder')}
+                    value={className}
+                    onChange={e => setClassName(e.target.value)}
+                    maxLength={40}
+                    autoFocus
+                    autoComplete="off"
+                    disabled={submitting}
+                  />
+                  <button
+                    className="bg-brand-yellow px-5 rounded-2xl font-black text-[13px] text-slate-900 transition-transform active:scale-95 disabled:opacity-50 tracking-wider uppercase shadow-sm shadow-brand-yellow/20"
+                    type="submit"
+                    disabled={submitting || !className.trim()}
+                  >
+                    {submitting ? '...' : t('lobby.create')}
+                  </button>
+                </div>
+                {classError && <p className="text-red-600 dark:text-red-400 font-bold text-xs">{classError}</p>}
+              </form>
+            ) : (
+              <button
+                className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
+                onClick={() => { setShowCreate(true); setShowJoin(false); setClassError(''); setClassName(''); }}
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
+                  <AddIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
+                </div>
+                {t('lobby.createClass')}
+              </button>
+            )
+          )}
         </div>
-
-        {/* Join form — expands below */}
-        {showJoin && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-slate-800/80 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-300">
-            <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">{t('lobby.joinClassHeading')}</h2>
-            <form onSubmit={handleJoin} className="flex flex-col sm:flex-row gap-3">
-              <input
-                className="flex-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3.5 text-center text-xl tracking-[0.2em] font-bold text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:bg-white shadow-inner transition-colors"
-                type="text"
-                inputMode="numeric"
-                placeholder={t('lobby.joinCodePlaceholder')}
-                value={joinCode}
-                onChange={e => setJoinCode(e.target.value.replace(/[^0-9A-Za-z]/g, '').toUpperCase())}
-                maxLength={6}
-                autoFocus
-                autoComplete="off"
-                disabled={joining}
-              />
-              <button
-                className="flex-1 sm:flex-none rounded-2xl bg-brand-yellow px-6 py-3.5 text-[15px] font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50"
-                type="submit"
-                disabled={joining || joinCode.trim().length !== 6}
-              >
-                {joining ? t('lobby.joining') : t('lobby.join')}
-              </button>
-            </form>
-            {joinError && <p className="text-red-500 text-sm font-bold mt-2">{joinError}</p>}
-          </div>
-        )}
-
-        {/* Create form — expands below */}
-        {showCreate && isTeacher && (
-          <div className="rounded-3xl border-2 border-brand-yellow/50 bg-brand-yellow/5 p-6 animate-in fade-in zoom-in-95 duration-300">
-            <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">{t('lobby.createClassHeading')}</h2>
-            <form onSubmit={handleCreate} className="flex flex-col sm:flex-row gap-3">
-              <input
-                className="flex-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3.5 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 shadow-inner"
-                type="text"
-                placeholder={t('lobby.classNamePlaceholder')}
-                value={className}
-                onChange={e => setClassName(e.target.value)}
-                maxLength={40}
-                autoFocus
-                autoComplete="off"
-                disabled={submitting}
-              />
-              <button
-                className="flex-1 sm:flex-none rounded-2xl bg-brand-yellow px-6 py-3.5 text-[15px] font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50 shadow-sm shadow-brand-yellow/20"
-                type="submit"
-                disabled={submitting || !className.trim()}
-              >
-                {submitting ? t('lobby.creating') : t('lobby.create')}
-              </button>
-            </form>
-            {classError && (
-              <p className="text-red-600 dark:text-red-400 font-bold text-xs mt-4 bg-red-50 dark:bg-red-900/20 py-2.5 px-3.5 rounded-lg border border-red-100 dark:border-red-900/50">
-                {classError}
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Teacher upgrade prompt — only for non-teachers with no classrooms */}

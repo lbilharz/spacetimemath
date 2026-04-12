@@ -18,7 +18,9 @@
     "return": "Return",
     "heat": "Heat",
     "submit": "Submit",
-    "backspace": "Backspace"
+    "backspace": "Backspace",
+    "viewAll": "查看全部",
+    "6digitCode": "6位代码"
   },
   "app": {
     "brand": "1UP",
@@ -56,7 +58,11 @@
     "verifying": "验证中...",
     "verifyLogin": "验证登录",
     "backToRecovery": "返回恢复选项",
-    "awaitingSync": "等待同步..."
+    "awaitingSync": "等待同步...",
+    "iknowCode": "我有一个 12 位代码",
+    "codeDesc": "印在您的恢复卡上",
+    "iknowEmail": "我知道我的电子邮件",
+    "emailDesc": "通过神奇链接登录"
   },
   "lobby": {
     "online": "在线",
@@ -300,7 +306,8 @@
     "upgradePrompt": "Upgrade your account to create classrooms",
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "一起学习！ 🏫",
-    "emptyDesc": "加入班级与同学竞争，让老师指导你的学习之旅！"
+    "emptyDesc": "加入班级与同学竞争，让老师指导你的学习之旅！",
+    "joinButton": "加入班级"
   },
   "extendedTables": {
     "title": "扩展乘法表",
@@ -507,7 +514,8 @@
     "remove": "移除",
     "confirm": "确认",
     "score": "分数",
-    "unknownPlayer": "未知玩家"
+    "unknownPlayer": "未知玩家",
+    "addFriend": "添加朋友"
   },
   "email": {
     "impressum": "Imprint",

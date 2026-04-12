@@ -18,7 +18,9 @@
     "return": "Return",
     "heat": "Heat",
     "submit": "Submit",
-    "backspace": "Backspace"
+    "backspace": "Backspace",
+    "viewAll": "Переглянути все",
+    "6digitCode": "6-ЗНАЧНИЙ КОД"
   },
   "app": {
     "brand": "1UP",
@@ -56,7 +58,11 @@
     "verifying": "Перевірка...",
     "verifyLogin": "Підтвердити вхід",
     "backToRecovery": "Повернутися до варіантів відновлення",
-    "awaitingSync": "Очікування синхронізації..."
+    "awaitingSync": "Очікування синхронізації...",
+    "iknowCode": "У мене є 12-значний код",
+    "codeDesc": "Надруковано на вашій картці відновлення",
+    "iknowEmail": "Я знаю свою електронну пошту",
+    "emailDesc": "Увійти за допомогою чарівного посилання"
   },
   "lobby": {
     "online": "онлайн",
@@ -300,7 +306,8 @@
     "upgradePrompt": "Upgrade your account to create classrooms",
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Навчайтеся разом! 🏫",
-    "emptyDesc": "Приєднуйтесь до класу, щоб змагатися з однокласниками, та дозвольте вчителю скеровувати ваш навчальний шлях!"
+    "emptyDesc": "Приєднуйтесь до класу, щоб змагатися з однокласниками, та дозвольте вчителю скеровувати ваш навчальний шлях!",
+    "joinButton": "Приєднатися до класу"
   },
   "extendedTables": {
     "title": "Розширена таблиця",
@@ -507,7 +514,8 @@
     "remove": "Видалити",
     "confirm": "Підтвердити",
     "score": "Рахунок",
-    "unknownPlayer": "Невідомий Гравець"
+    "unknownPlayer": "Невідомий Гравець",
+    "addFriend": "Додати друга"
   },
   "email": {
     "impressum": "Imprint",

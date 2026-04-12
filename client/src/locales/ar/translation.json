@@ -18,7 +18,9 @@
     "return": "Return",
     "heat": "Heat",
     "submit": "Submit",
-    "backspace": "Backspace"
+    "backspace": "Backspace",
+    "viewAll": "عرض الكل",
+    "6digitCode": "رمز من 6 أرقام"
   },
   "app": {
     "brand": "1UP",
@@ -56,7 +58,11 @@
     "verifying": "جارٍ التحقق...",
     "verifyLogin": "تحقّق من تسجيل الدخول",
     "backToRecovery": "العودة لخيارات الاستعادة",
-    "awaitingSync": "في انتظار المزامنة..."
+    "awaitingSync": "في انتظار المزامنة...",
+    "iknowCode": "لدي رمز مكون من 12 رقمًا",
+    "codeDesc": "مطبوع على بطاقة الاسترداد الخاصة بك",
+    "iknowEmail": "أعرف بريدي الإلكتروني",
+    "emailDesc": "تسجيل الدخول عبر الرابط السحري"
   },
   "lobby": {
     "online": "متصل",
@@ -300,7 +306,8 @@
     "upgradePrompt": "Upgrade your account to create classrooms",
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "تعلموا معاً! 🏫",
-    "emptyDesc": "انضم إلى فصل لتتنافس مع زملائك، ودع معلمك يوجه رحلتك التعليمية!"
+    "emptyDesc": "انضم إلى فصل لتتنافس مع زملائك، ودع معلمك يوجه رحلتك التعليمية!",
+    "joinButton": "الانضمام إلى الفصل"
   },
   "extendedTables": {
     "title": "الجداول الموسعة",
@@ -507,7 +514,8 @@
     "remove": "إزالة",
     "confirm": "تأكيد",
     "score": "النقاط",
-    "unknownPlayer": "لاعب غير معروف"
+    "unknownPlayer": "لاعب غير معروف",
+    "addFriend": "إضافة صديق"
   },
   "email": {
     "impressum": "Imprint",

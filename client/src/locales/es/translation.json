@@ -18,7 +18,9 @@
     "return": "Return",
     "heat": "Heat",
     "submit": "Submit",
-    "backspace": "Backspace"
+    "backspace": "Backspace",
+    "viewAll": "Ver todo",
+    "6digitCode": "CÓDIGO DE 6 DÍGITOS"
   },
   "days": {
     "mo": "Lu",
@@ -65,7 +67,11 @@
     "verifying": "Verificando...",
     "verifyLogin": "Verificar inicio de sesión",
     "backToRecovery": "Volver a las opciones de recuperación",
-    "awaitingSync": "Esperando sincronización..."
+    "awaitingSync": "Esperando sincronización...",
+    "iknowCode": "Tengo un código de 12 dígitos",
+    "codeDesc": "Impreso en tu tarjeta de recuperación",
+    "iknowEmail": "Conozco mi correo electrónico",
+    "emailDesc": "Iniciar sesión con Enlace Mágico"
   },
   "lobby": {
     "online": "en línea",
@@ -309,7 +315,8 @@
     "upgradePrompt": "Upgrade your account to create classrooms",
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "¡Aprende con otros! 🏫",
-    "emptyDesc": "¡Únete a una clase para competir con tus compañeros y deja que tu profesor guíe tu proceso de aprendizaje!"
+    "emptyDesc": "¡Únete a una clase para competir con tus compañeros y deja que tu profesor guíe tu proceso de aprendizaje!",
+    "joinButton": "Unirse a clase"
   },
   "extendedTables": {
     "title": "Tablas extendidas",
@@ -507,7 +514,8 @@
     "remove": "Eliminar",
     "confirm": "Confirmar",
     "score": "Puntos",
-    "unknownPlayer": "Jugador Desconocido"
+    "unknownPlayer": "Jugador Desconocido",
+    "addFriend": "Añadir amigo"
   },
   "email": {
     "impressum": "Imprint",

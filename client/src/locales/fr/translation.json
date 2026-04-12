@@ -18,7 +18,9 @@
     "return": "Return",
     "heat": "Heat",
     "submit": "Submit",
-    "backspace": "Backspace"
+    "backspace": "Backspace",
+    "viewAll": "Voir tout",
+    "6digitCode": "CODE À 6 CHIFFRES"
   },
   "app": {
     "brand": "1UP",
@@ -56,7 +58,11 @@
     "verifying": "Vérification...",
     "verifyLogin": "Vérifier la connexion",
     "backToRecovery": "Retour aux options de récupération",
-    "awaitingSync": "Synchronisation en cours..."
+    "awaitingSync": "Synchronisation en cours...",
+    "iknowCode": "J'ai un code à 12 chiffres",
+    "codeDesc": "Imprimé sur votre carte de récupération",
+    "iknowEmail": "Je connais mon email",
+    "emailDesc": "Connexion via lien magique"
   },
   "lobby": {
     "online": "en ligne",
@@ -300,7 +306,8 @@
     "upgradePrompt": "Upgrade your account to create classrooms",
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Apprenez ensemble ! 🏫",
-    "emptyDesc": "Rejoignez une classe pour rivaliser avec vos camarades et laissez votre professeur guider votre parcours d'apprentissage !"
+    "emptyDesc": "Rejoignez une classe pour rivaliser avec vos camarades et laissez votre professeur guider votre parcours d'apprentissage !",
+    "joinButton": "Rejoindre la classe"
   },
   "extendedTables": {
     "title": "Tables étendues",
@@ -507,7 +514,8 @@
     "remove": "Supprimer",
     "confirm": "Confirmer",
     "score": "Score",
-    "unknownPlayer": "Joueur inconnu"
+    "unknownPlayer": "Joueur inconnu",
+    "addFriend": "Ajouter un ami"
   },
   "email": {
     "impressum": "Imprint",

@@ -23,9 +23,10 @@ interface Props {
   onRetakeDiagnostic: () => void;
   onEnterClassroom: (id: bigint) => void;
   onGoToAccount: () => void;
+  navigate: (path: string) => void;
 }
 
-export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRetakeDiagnostic, onEnterClassroom, onGoToAccount: _onGoToAccount }: Props) {
+export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRetakeDiagnostic, onEnterClassroom, onGoToAccount: _onGoToAccount, navigate }: Props) {
   const { t, i18n } = useTranslation();
   const [greeting] = useState(() => APP_LANGUAGES[Math.floor(Math.random() * APP_LANGUAGES.length)]);
   const isSameLang = i18n.language.startsWith(greeting.code);
@@ -48,6 +49,34 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
   const [starting, setStarting] = useState(false);
   // Pending auto-join code from ?join=CODE URL param; cleared once we navigate
   const [pendingJoinCode, setPendingJoinCode] = useState<string | null>(null);
+
+  // Inline forms state
+  const [activeJoin, setActiveJoin] = useState<'class' | 'friend' | null>(null);
+  const [joinInput, setJoinInput] = useState('');
+  const [joining, setJoining] = useState(false);
+  const createFriendInvite = useSTDBReducer(reducers.createFriendInvite);
+
+  const handleInlineJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinInput || joinInput.length < 4 || !myIdentityHex) return;
+    setJoining(true);
+    const code = joinInput.trim().toUpperCase();
+    try {
+      if (activeJoin === 'class') {
+        await joinClassroom({ code });
+        setPendingJoinCode(code); // Will auto-redirect once the classroom row arrives
+      } else {
+        await createFriendInvite({ receiverCode: code });
+        setJoinInput('');
+        setActiveJoin(null);
+        navigate('friends'); // Move to friends page to see the invite
+      }
+    } catch {
+       // fallback silently on error for now or just reset
+    } finally {
+      setJoining(false);
+    }
+  };
 
   // Auto-join from ?join=CODE URL param (QR code scan).
   // Step 1: detect the code and fire the reducer.
@@ -193,30 +222,75 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
 
               {myIdentityHex && (
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <a
-                    href="/friends"
-                    className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 flex items-center gap-4 no-underline transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 group"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
-                      <FriendsIcon className="scale-110 transition-transform group-hover:scale-125" />
-                    </div>
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('lobby.friendsTitle' as ParseKeys)}</span>
-                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{t('lobby.friendsDesc' as ParseKeys)}</span>
-                    </div>
-                  </a>
-                  <a
-                    href="/classrooms"
-                    className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 flex items-center gap-4 no-underline transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 group"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
-                      <ClassesIcon className="scale-110 transition-transform group-hover:scale-125" />
-                    </div>
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('lobby.classesTitle' as ParseKeys)}</span>
-                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{t('lobby.classesDesc' as ParseKeys)}</span>
-                    </div>
-                  </a>
+                  
+                  {activeJoin === 'friend' ? (
+                     <form onSubmit={handleInlineJoin} className="flex-1 rounded-2xl border border-brand-yellow bg-brand-yellow/5 p-4 shadow-sm flex flex-col gap-3 animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('friends.addFriend', { defaultValue: 'Add Friend' })}</span>
+                          <a href="/friends" className="text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors">{t('common.viewAll')} ➔</a>
+                        </div>
+                        <div className="flex gap-2">
+                           <input 
+                             type="text" 
+                             placeholder={t('common.6digitCode', { defaultValue: '6-DIGIT CODE' })} 
+                             maxLength={6}
+                             value={joinInput}
+                             onChange={e => setJoinInput(e.target.value.toUpperCase())}
+                             className="flex-1 w-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-black tracking-widest text-center uppercase focus:border-brand-yellow focus:outline-none"
+                             autoFocus
+                           />
+                           <button type="submit" disabled={joining || joinInput.length < 4} className="bg-brand-yellow text-slate-900 font-black px-4 rounded-xl hover:bg-yellow-400 disabled:opacity-50">➔</button>
+                        </div>
+                     </form>
+                  ) : (
+                    <button
+                      onClick={() => { setActiveJoin('friend'); setJoinInput(''); }}
+                      className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 flex items-center gap-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 group text-left cursor-pointer"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
+                        <FriendsIcon className="scale-110 transition-transform group-hover:scale-125" />
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('lobby.friendsTitle' as ParseKeys)}</span>
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{t('lobby.friendsDesc' as ParseKeys)}</span>
+                      </div>
+                    </button>
+                  )}
+
+                  {activeJoin === 'class' ? (
+                     <form onSubmit={handleInlineJoin} className="flex-1 rounded-2xl border border-brand-yellow bg-brand-yellow/5 p-4 shadow-sm flex flex-col gap-3 animate-in zoom-in-95 duration-200">
+                         <div className="flex items-center justify-between">
+                          <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('classes.joinButton', { defaultValue: 'Join Class' })}</span>
+                          <a href="/classrooms" className="text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors">{t('common.viewAll')} ➔</a>
+                        </div>
+                        <div className="flex gap-2">
+                           <input 
+                             type="text" 
+                             placeholder={t('common.6digitCode', { defaultValue: '6-DIGIT CODE' })} 
+                             maxLength={6}
+                             value={joinInput}
+                             onChange={e => setJoinInput(e.target.value.toUpperCase())}
+                             className="flex-1 w-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-black tracking-widest text-center uppercase focus:border-brand-yellow focus:outline-none"
+                             autoFocus
+                           />
+                           <button type="submit" disabled={joining || joinInput.length < 4} className="bg-brand-yellow text-slate-900 font-black px-4 rounded-xl hover:bg-yellow-400 disabled:opacity-50">➔</button>
+                        </div>
+                     </form>
+                  ) : (
+                    <button
+                      onClick={() => { setActiveJoin('class'); setJoinInput(''); }}
+                      className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 flex items-center gap-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 group text-left cursor-pointer"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
+                        <ClassesIcon className="scale-110 transition-transform group-hover:scale-125" />
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('lobby.classesTitle' as ParseKeys)}</span>
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{t('lobby.classesDesc' as ParseKeys)}</span>
+                      </div>
+                    </button>
+                  )}
+                  
                 </div>
               )}
             </div>

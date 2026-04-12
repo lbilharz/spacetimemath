@@ -18,7 +18,9 @@
     "return": "Return",
     "heat": "Heat",
     "submit": "Submit",
-    "backspace": "Backspace"
+    "backspace": "Backspace",
+    "viewAll": "Alle ansehen",
+    "6digitCode": "6-STELLIGER CODE"
   },
   "days": {
     "mo": "Mo",
@@ -65,7 +67,11 @@
     "verifying": "Wird überprüft...",
     "verifyLogin": "Login bestätigen",
     "backToRecovery": "Zurück zu den Wiederherstellungsoptionen",
-    "awaitingSync": "Synchronisierung läuft..."
+    "awaitingSync": "Synchronisierung läuft...",
+    "iknowCode": "Ich habe einen 12-stelligen Code",
+    "codeDesc": "Steht auf deiner Recovery-Karte",
+    "iknowEmail": "Ich kenne meine E-Mail",
+    "emailDesc": "Login per Magic Link"
   },
   "register_split": {
     "teacher_btn": "Lehrkraft",
@@ -193,7 +199,7 @@
     "hiddenHint": "Deine Statistik ist vor der Rangliste und Lernübersicht dieser Klasse verborgen.",
     "noMembers": "Die Klasse ist noch leer.",
     "removeMemberTitle": "Schüler entfernen",
-    "removeMemberDesc": "Tippe den Namen '{{name}}' ein, um diesen Schüler endgültig aus der Klasse zu entfernen:",
+    "removeMemberDesc": "Bist du sicher, dass du {{name}} aus dieser Klasse entfernen möchtest?",
     "remove": "Entfernen",
     "hidden": "verborgen",
     "noSessions": "keine Sprints",
@@ -223,10 +229,7 @@
     "liveObserver": "Live Observer",
     "actionLog": "Action Log",
     "noActionsYet": "No Actions Yet",
-    "submitted": "Submitted",
-    "remove": "Entfernen",
-    "removeMemberTitle": "Schüler entfernen",
-    "removeMemberDesc": "Bist du sicher, dass du {{name}} aus dieser Klasse entfernen möchtest?"
+    "submitted": "Submitted"
   },
   "account": {
     "sessions_one": "{{count}} Sprint",
@@ -322,7 +325,8 @@
     "upgradePrompt": "Upgrade dein Konto, um Klassenräume zu erstellen",
     "upgradeDesc": "Führe ein kostenloses Upgrade für dein Konto durch, um Schüler zu verwalten und Klassensprints zu starten.",
     "emptyHeading": "Gemeinsam lernen! 🏫",
-    "emptyDesc": "Tritt einer Klasse bei, um gegen Mitschüler anzutreten, Aufgaben gemeinsam zu lösen und dich von deiner Lehrkraft an die Spitze führen zu lassen!"
+    "emptyDesc": "Tritt einer Klasse bei, um gegen Mitschüler anzutreten, Aufgaben gemeinsam zu lösen und dich von deiner Lehrkraft an die Spitze führen zu lassen!",
+    "joinButton": "Klasse beitreten"
   },
   "extendedTables": {
     "title": "Erweiterte Tabellen",
@@ -510,7 +514,8 @@
     "remove": "Entfernen",
     "confirm": "Bestätigen",
     "score": "Punkte",
-    "unknownPlayer": "Unbekannter Spieler"
+    "unknownPlayer": "Unbekannter Spieler",
+    "addFriend": "Freund hinzufügen"
   },
   "email": {
     "impressum": "Imprint",

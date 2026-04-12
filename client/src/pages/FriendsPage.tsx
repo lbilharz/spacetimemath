@@ -168,17 +168,54 @@ export default function FriendsPage() {
           })
         )}
 
-        {/* 2 & 3. Action icon buttons */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
-            onClick={() => { setShowCodeInput(!showCodeInput); }}
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
-              <CodeIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
-            </div>
-            {t('friends.haveCode')}
-          </button>
+        {/* 2 & 3. Action icon buttons / inline forms */}
+        <div className="flex flex-col md:flex-row gap-3">
+          {showCodeInput ? (
+            <form onSubmit={handleJoin} className="flex-1 rounded-3xl border border-brand-yellow bg-brand-yellow/5 p-4 shadow-sm flex flex-col gap-3 justify-center animate-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-black text-slate-800 dark:text-slate-100">{t('friends.haveCode')}</span>
+                <button type="button" onClick={() => setShowCodeInput(false)} className="text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors">✕</button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  className="flex-1 w-full rounded-2xl border-2 border-slate-200 bg-white dark:bg-slate-900 px-3 py-2 text-center text-sm tracking-[0.1em] font-black text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:border-slate-700 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none transition-colors"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9\-]*"
+                  placeholder="12-34-56-78"
+                  value={joinCode}
+                  autoFocus
+                  autoComplete="off"
+                  onChange={e => {
+                    let val = e.target.value.replace(/[^0-9]/g, '');
+                    if (val.length > 8) val = val.slice(0, 8);
+                    const chunks = val.match(/.{1,2}/g);
+                    setJoinCode(chunks ? chunks.join('-') : val);
+                  }}
+                  disabled={joining}
+                />
+                <button
+                  className="bg-brand-yellow px-5 rounded-2xl font-black text-[13px] text-slate-900 transition-transform active:scale-95 disabled:opacity-50 tracking-wider uppercase"
+                  type="submit"
+                  disabled={joining || joinCode.replace(/-/g, '').length !== 8}
+                >
+                  {joining ? '...' : t('friends.add', { defaultValue: 'Add' })}
+                </button>
+              </div>
+              {joinError && <p className="text-red-500 text-sm font-bold">{t('friends.invalidCode')}</p>}
+            </form>
+          ) : (
+            <button
+              className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
+              onClick={() => { setShowCodeInput(true); }}
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-yellow/10">
+                <CodeIcon className="scale-110 transition-transform group-hover:scale-[1.2] group-hover:drop-shadow-sm" />
+              </div>
+              {t('friends.haveCode')}
+            </button>
+          )}
+
           <button
             className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm disabled:opacity-50"
             onClick={handleCreateInvite}
@@ -190,40 +227,6 @@ export default function FriendsPage() {
             {loading ? t('common.generating') : activeInvite ? t('friends.inviteActive') : t('friends.createInvite')}
           </button>
         </div>
-
-        {/* Enter code form — expands below */}
-        {showCodeInput && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-slate-800/80 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-300">
-            <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">{t('friends.haveCode')}</h2>
-            <form onSubmit={handleJoin} className="flex flex-col sm:flex-row gap-3">
-              <input
-                className="flex-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3.5 text-center text-xl tracking-widest font-bold text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:bg-white shadow-inner transition-colors"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9\-]*"
-                placeholder="12-34-56-78"
-                value={joinCode}
-                autoFocus
-                autoComplete="off"
-                onChange={e => {
-                  let val = e.target.value.replace(/[^0-9]/g, '');
-                  if (val.length > 8) val = val.slice(0, 8);
-                  const chunks = val.match(/.{1,2}/g);
-                  setJoinCode(chunks ? chunks.join('-') : val);
-                }}
-                disabled={joining}
-              />
-              <button
-                className="flex-1 sm:flex-none rounded-2xl bg-brand-yellow px-6 py-3.5 text-[15px] font-bold text-slate-900 transition-transform active:scale-95 disabled:opacity-50"
-                type="submit"
-                disabled={joining || joinCode.replace(/-/g, '').length !== 8}
-              >
-                {joining ? t('friends.adding') : t('friends.add')}
-              </button>
-            </form>
-            {joinError && <p className="text-red-500 text-sm font-bold mt-2">{t('friends.invalidCode')}</p>}
-          </div>
-        )}
 
         {/* Active invite card — appears after creating */}
         {activeInvite && (
