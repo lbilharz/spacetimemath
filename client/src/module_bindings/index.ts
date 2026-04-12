@@ -54,6 +54,7 @@ import IssueProblemReducer from "./issue_problem_reducer";
 import JoinClassAsStudentReducer from "./join_class_as_student_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
+import RemoveClassroomMemberReducer from "./remove_classroom_member_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
 import MigrateCloseOrphanSessionsReducer from "./migrate_close_orphan_sessions_reducer";
 import MigrateEmailsToPrivateReducer from "./migrate_emails_to_private_reducer";
@@ -373,6 +374,7 @@ const reducersSchema = __reducers(
   __reducerSchema("join_class_as_student", JoinClassAsStudentReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
+  __reducerSchema("remove_classroom_member", RemoveClassroomMemberReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
   __reducerSchema("migrate_close_orphan_sessions", MigrateCloseOrphanSessionsReducer),
   __reducerSchema("migrate_emails_to_private", MigrateEmailsToPrivateReducer),

@@ -49,6 +49,7 @@ export default function ClassroomSettingsModal({
   const toggleVisibility = useSTDBReducer(reducers.toggleClassroomVisibility);
   const leaveClassroom = useSTDBReducer(reducers.leaveClassroom);
   const getClassRecoveryCodes = useSTDBReducer(reducers.getClassRecoveryCodes);
+  const removeClassroomMember = useSTDBReducer(reducers.removeClassroomMember);
 
   // Always fetch fresh recovery codes when the settings modal opens.
   // class_recovery_results is a point-in-time snapshot that can go stale
@@ -65,6 +66,10 @@ export default function ClassroomSettingsModal({
   const [printingModern, setPrintingModern] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
   const [qrStudent, setQrStudent] = useState<{ username: string; code: string } | null>(null);
+  
+  const [studentToRemove, setStudentToRemove] = useState<{ id: string; username: string } | null>(null);
+  const [removeNameConfirm, setRemoveNameConfirm] = useState('');
+  const [removingMember, setRemovingMember] = useState(false);
 
   const restoreUrl = (code: string) => `${window.location.origin}/?restore=${code}`;
 
@@ -109,6 +114,18 @@ export default function ClassroomSettingsModal({
     setLeaving(true);
     await leaveClassroom({ classroomId });
     onLeave();
+  };
+
+  const handleRemoveMember = async () => {
+    if (!studentToRemove) return;
+    setRemovingMember(true);
+    try {
+      await removeClassroomMember({ classroomId, studentHex: studentToRemove.id });
+      setStudentToRemove(null);
+      setRemoveNameConfirm('');
+    } finally {
+      setRemovingMember(false);
+    }
   };
 
   const fetchPrintData = async () => {
@@ -332,14 +349,23 @@ export default function ClassroomSettingsModal({
                 <div className="font-semibold text-slate-900 dark:text-white">
                   {m.username} {m.hidden && <span className="ml-2 text-xs font-normal text-slate-500">(Versteckt)</span>}
                 </div>
-                {m.recoveryCode && (
+                <div className="flex gap-2">
+                  {m.recoveryCode && (
+                    <button
+                      onClick={() => setQrStudent({ username: m.username, code: m.recoveryCode! })}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      <KeyIcon className="h-4 w-4" />
+                    </button>
+                  )}
                   <button
-                    onClick={() => setQrStudent({ username: m.username, code: m.recoveryCode! })}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    onClick={() => { setStudentToRemove({ id: m.id, username: m.username }); setRemoveNameConfirm(''); }}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 transition-colors"
+                    title={t('classroom.remove')}
                   >
-                    <KeyIcon className="h-4 w-4" />
+                    <span className="text-sm">🗑️</span>
                   </button>
-                )}
+                </div>
               </div>
             ))}
           </div>
@@ -370,6 +396,39 @@ export default function ClassroomSettingsModal({
             <button onClick={() => setQrStudent(null)} className="mt-8 w-full rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-3.5 font-bold text-slate-700 dark:text-slate-300 active:scale-95 transition-transform">
               {t('common.cancel')}
             </button>
+          </div>
+        </div>
+      )}
+
+      {studentToRemove && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={() => !removingMember && setStudentToRemove(null)}>
+          <div className="w-full max-w-sm rounded-[24px] bg-white p-8 text-center shadow-xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('classroom.removeMemberTitle')}</h3>
+            <p className="mb-6 text-sm text-slate-500">{t('classroom.removeMemberDesc', { name: studentToRemove.username })}</p>
+            <input
+              type="text"
+              placeholder={studentToRemove.username}
+              value={removeNameConfirm}
+              onChange={e => setRemoveNameConfirm(e.target.value)}
+              disabled={removingMember}
+              className="w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 font-bold text-slate-900 text-center transition-colors focus:border-red-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            />
+            <div className="mt-8 flex gap-3">
+              <button 
+                onClick={() => setStudentToRemove(null)} 
+                disabled={removingMember}
+                className="flex-1 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-3.5 font-bold text-slate-700 dark:text-slate-300 active:scale-95 transition-transform"
+              >
+                {t('common.cancel')}
+              </button>
+              <button 
+                onClick={handleRemoveMember}
+                disabled={removingMember || removeNameConfirm.trim() !== studentToRemove.username.trim()}
+                className="flex-1 rounded-2xl bg-red-500 px-4 py-3.5 font-bold text-white active:scale-95 transition-transform disabled:opacity-50"
+              >
+                {t('classroom.remove')}
+              </button>
+            </div>
           </div>
         </div>
       )}

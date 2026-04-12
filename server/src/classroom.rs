@@ -317,3 +317,28 @@ pub fn restore_classroom_member(
     });
     Ok(())
 }
+
+/// Teacher removes a student from their classroom.
+#[reducer]
+pub fn remove_classroom_member(ctx: &ReducerContext, classroom_id: u64, student_hex: String) -> Result<(), String> {
+    let student_identity = spacetimedb::Identity::from_hex(&student_hex)
+        .map_err(|_| "Invalid student identity".to_string())?;
+
+    let classroom = ctx.db.classrooms().id().find(classroom_id)
+        .ok_or("Classroom not found")?;
+
+    if classroom.teacher != ctx.sender() {
+        return Err("Only the teacher can remove students from this classroom".into());
+    }
+
+    if let Some(membership) = ctx.db.classroom_members()
+        .iter()
+        .find(|m| m.classroom_id == classroom_id && m.player_identity == student_identity) 
+    {
+        ctx.db.classroom_members().id().delete(membership.id);
+    } else {
+        return Err("Student is not in this classroom".into());
+    }
+
+    Ok(())
+}

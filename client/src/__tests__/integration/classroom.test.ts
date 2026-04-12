@@ -95,7 +95,35 @@ describe('classroom lifecycle', () => {
 
     expect(classroom.name).toBe('Mathe 4b');
   });
+
+  it('teacher can remove a student from the classroom', async () => {
+    const studentHex = student.identity.toHexString();
+    
+    // Wait for teacher to see the student first
+    const memberRow = await waitFor(() => {
+      for (const m of teacher.conn.db.my_classroom_members.iter()) {
+        if (
+          m.classroomId === classroomId &&
+          m.playerIdentity.toHexString() === studentHex
+        ) return m;
+      }
+    });
+    expect(memberRow).toBeDefined();
+
+    await teacher.conn.reducers.removeClassroomMember({ classroomId, studentHex });
+
+    // Wait until the member row is gone for the teacher
+    const gone = await waitFor(() => {
+      const still = [...teacher.conn.db.my_classroom_members.iter()].find(
+        m => m.classroomId === classroomId && m.playerIdentity.toHexString() === studentHex
+      );
+      return still === undefined ? true : undefined;
+    });
+
+    expect(gone).toBe(true);
+  });
 });
+
 
 // SEC-01/02: transfer_codes and recovery_keys are private tables — codegen skips
 // them, so client.conn.db.transfer_codes/.recovery_keys are undefined at runtime.
