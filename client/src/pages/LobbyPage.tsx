@@ -14,7 +14,7 @@ import type { Answer } from '../module_bindings/types.js';
 import { APP_LANGUAGES } from '../components/LanguagePicker.js';
 import { TIER_EMOJI } from '../utils/learningTier.js';
 import type { Page } from '../navigation.js';
-
+import PartyOverlay from '../components/PartyOverlay.js';
 
 
 interface Props {
@@ -94,12 +94,20 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
 
   // Step 2: navigate once the classrooms subscription delivers the joined classroom.
   // (classrooms may be empty when Step 1 fires — SpacetimeDB subscription catches up asynchronously)
+  const [successClassroom, setSuccessClassroom] = useState<Classroom | null>(null);
+
   useEffect(() => {
     if (!pendingJoinCode) return;
     const classroom = (classrooms as unknown as Classroom[]).find(c => c.code === pendingJoinCode);
     if (classroom) {
       setPendingJoinCode(null);
-      onEnterClassroom(classroom.id);
+      setSuccessClassroom(classroom);
+      
+      // Celebrate for 2 seconds, then transition to classroom
+      setTimeout(() => {
+        setSuccessClassroom(null);
+        onEnterClassroom(classroom.id);
+      }, 2500);
     }
   }, [pendingJoinCode, classrooms]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -111,6 +119,15 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
 
+      {/* ── PARTY OVERLAY ── */}
+      {successClassroom && (
+        <PartyOverlay
+          icon="🏫"
+          message={`${t('classes.joinedSuccess', { defaultValue: 'You joined the class' })} \`${successClassroom.name}\`!`}
+          subMessage={t('common.loading', { defaultValue: 'Loading...' })}
+          onClick={() => { setSuccessClassroom(null); onEnterClassroom(successClassroom.id); }}
+        />
+      )}
 
       {myPlayer && (() => {
         const tier = myPlayer.learningTier ?? 0;
@@ -184,6 +201,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
               </div>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full pt-1">
                 <button
+                  data-testid="start-sprint-button"
                   className={`group flex items-center justify-center gap-2 sm:flex-[2] rounded-[18px] bg-brand-yellow py-4 px-6 text-[16px] font-black tracking-wide text-slate-900 transition-all active:scale-[0.97] ${starting ? 'opacity-70 cursor-default' : 'hover:bg-brand-yellow-hover shadow-sm hover:shadow-[0_8px_30px_rgba(250,204,21,0.4)]'}`}
                   onClick={handleStartSprint}
                   disabled={starting}

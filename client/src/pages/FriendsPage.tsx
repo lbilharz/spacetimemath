@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSpacetimeDB, useTable, useReducer } from 'spacetimedb/react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Friendship, FriendInvite } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
+import PartyOverlay from '../components/PartyOverlay.js';
 import { FriendsIcon, CodeIcon, InviteLinkIcon, Swosh } from '../components/Icons.js';
 
 export default function FriendsPage() {
@@ -27,6 +28,7 @@ export default function FriendsPage() {
   const [joinError, setJoinError] = useState('');
   const [joining, setJoining] = useState(false);
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+  const [successEvent, setSuccessEvent] = useState<boolean>(false);
 
   const myIdentityHex = identity?.toHexString();
 
@@ -50,7 +52,7 @@ export default function FriendsPage() {
     })
     : undefined;
 
-  const inviteLink = activeInvite ? `https://up.bilharz.eu/friend/${activeInvite.token}` : '';
+  const inviteLink = activeInvite ? `https://up.bilharz.eu/friends?friend=${activeInvite.token}` : '';
   const displayCode = activeInvite?.token ? activeInvite.token.replace(/(..)(..)(..)(..)/, "$1-$2-$3-$4") : '';
 
   const handleCreateInvite = async () => {
@@ -93,8 +95,53 @@ export default function FriendsPage() {
     }
   };
 
+  // Auto-join from ?friend=CODE URL param (link tap)
+  useEffect(() => {
+    if (!myIdentityHex) return;
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('friend');
+    if (!token) return;
+    
+    // Clean the URL immediately so we don't re-trigger
+    window.history.replaceState({}, '', '/friends');
+    
+    // Auto-accept the invite silently (or handle error)
+    if (token.length === 8) {
+      acceptFriendInvite({ token })
+        .then(() => setSuccessEvent(true))
+        .catch(console.error);
+    }
+  }, [myIdentityHex]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const latestFriendName = (() => {
+    if (myFriends.length === 0) return null;
+    const latest = [...myFriends].sort((a, b) => {
+      const tA = typeof a.createdAt === 'object' && a.createdAt !== null && '__timestamp_micros_since_unix_epoch__' in (a.createdAt as any) ? Number((a.createdAt as any).__timestamp_micros_since_unix_epoch__) : Number(a.createdAt);
+      const tB = typeof b.createdAt === 'object' && b.createdAt !== null && '__timestamp_micros_since_unix_epoch__' in (b.createdAt as any) ? Number((b.createdAt as any).__timestamp_micros_since_unix_epoch__) : Number(b.createdAt);
+      return tB - tA;
+    })[0];
+    const friendIdentityHex = latest.initiatorIdentity.toHexString() === myIdentityHex 
+      ? latest.recipientIdentity.toHexString() 
+      : latest.initiatorIdentity.toHexString();
+    return players.find(p => p.identity.toHexString() === friendIdentityHex)?.username;
+  })();
+
   return (
     <PageContainer className="pb-[100px] sm:pb-[140px]">
+      {/* ── PARTY OVERLAY ── */}
+      {successEvent && (
+        <PartyOverlay
+          icon="🎉"
+          message={latestFriendName 
+            ? t('friends.addedSuccessWithName', { name: latestFriendName, defaultValue: `Du und ${latestFriendName} seid jetzt verbündet!` })
+            : t('friends.addedSuccess', { defaultValue: 'Connection established!' })
+          }
+          subMessage={t('common.tapToContinue', { defaultValue: 'Tap to continue' })}
+          subMessageClassName="transition-opacity"
+          onClick={() => setSuccessEvent(false)}
+        />
+      )}
+
       {/* Header */}
       <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-2 flex items-center gap-3">
         <div className="flex xl:h-[42px] xl:w-[42px] shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 shadow-sm">
