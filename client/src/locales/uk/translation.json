@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "Переглянути все",
-    "6digitCode": "6-ЗНАЧНИЙ КОД"
+    "6digitCode": "6-ЗНАЧНИЙ КОД",
+    "tapToContinue": "Торкніться, щоб продовжити",
+    "loading": "Завантаження...",
+    "backToLobby": "Назад до лобі"
   },
   "app": {
     "brand": "1UP",
@@ -28,7 +31,9 @@
     "connectionError": "Не вдалося підключитися до SpaceTimeDB",
     "connectionErrorHint": "Переконайтеся, що spacetime start --in-memory запущено на порту 3000",
     "reconnecting": "Перепідключення…",
-    "tagline": "Знай свій рівень."
+    "tagline": "Знай свій рівень.",
+    "404Title": "Ой! Куди ми потрапили?",
+    "404Desc": "Ця сторінка зникла у просторово-часовій порожнечі. Повертаймося!"
   },
   "register": {
     "tagline": "60 секунд. Таблиця множення. Побий свій рекорд.",
@@ -307,7 +312,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Навчайтеся разом! 🏫",
     "emptyDesc": "Приєднуйтесь до класу, щоб змагатися з однокласниками, та дозвольте вчителю скеровувати ваш навчальний шлях!",
-    "joinButton": "Приєднатися до класу"
+    "joinButton": "Приєднатися до класу",
+    "joinedSuccess": "Ти приєднався до класу"
   },
   "extendedTables": {
     "title": "Розширена таблиця",
@@ -515,7 +521,9 @@
     "confirm": "Підтвердити",
     "score": "Рахунок",
     "unknownPlayer": "Невідомий Гравець",
-    "addFriend": "Додати друга"
+    "addFriend": "Додати друга",
+    "addedSuccessWithName": "Ти і {{name}} тепер з'єднані!",
+    "addedSuccess": "З'єднання встановлено!"
   },
   "email": {
     "impressum": "Imprint",

@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "Ver todo",
-    "6digitCode": "CÓDIGO DE 6 DÍGITOS"
+    "6digitCode": "CÓDIGO DE 6 DÍGITOS",
+    "tapToContinue": "Toca para continuar",
+    "loading": "Cargando...",
+    "backToLobby": "Volver al vestíbulo"
   },
   "days": {
     "mo": "Lu",
@@ -37,7 +40,9 @@
     "connectionError": "No se puede conectar a SpaceTimeDB",
     "connectionErrorHint": "asegúrate de que spacetime start --in-memory se esté ejecutando en el puerto 3000",
     "reconnecting": "Reconectando...",
-    "tagline": "Conoce tu nivel."
+    "tagline": "Conoce tu nivel.",
+    "404Title": "¡Ups! ¿Dónde acabamos?",
+    "404Desc": "Esta página parece haber desaparecido en el vacío espaciotemporal. ¡Volvamos!"
   },
   "register": {
     "tagline": "60 segundos. Tablas de multiplicar. Supera tu mejor marca.",
@@ -316,7 +321,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "¡Aprende con otros! 🏫",
     "emptyDesc": "¡Únete a una clase para competir con tus compañeros y deja que tu profesor guíe tu proceso de aprendizaje!",
-    "joinButton": "Unirse a clase"
+    "joinButton": "Unirse a clase",
+    "joinedSuccess": "Te uniste a la clase"
   },
   "extendedTables": {
     "title": "Tablas extendidas",
@@ -515,7 +521,9 @@
     "confirm": "Confirmar",
     "score": "Puntos",
     "unknownPlayer": "Jugador Desconocido",
-    "addFriend": "Añadir amigo"
+    "addFriend": "Añadir amigo",
+    "addedSuccessWithName": "¡Tú y {{name}} ya están conectados!",
+    "addedSuccess": "¡Conexión establecida!"
   },
   "email": {
     "impressum": "Imprint",

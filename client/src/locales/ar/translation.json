@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "عرض الكل",
-    "6digitCode": "رمز من 6 أرقام"
+    "6digitCode": "رمز من 6 أرقام",
+    "tapToContinue": "انقر للمتابعة",
+    "loading": "جاري التحميل...",
+    "backToLobby": "العودة إلى اللوبي"
   },
   "app": {
     "brand": "1UP",
@@ -28,7 +31,9 @@
     "connectionError": "لا يمكن الاتصال بـ SpaceTimeDB",
     "connectionErrorHint": "تأكد من تشغيل spacetime start --in-memory على المنفذ 3000",
     "reconnecting": "جاري إعادة الاتصال...",
-    "tagline": "اعرف مستواك."
+    "tagline": "اعرف مستواك.",
+    "404Title": "أُوبس! أين انتهى بنا المطاف؟",
+    "404Desc": "يبدو أن هذه الصفحة اختفت في فراغ الزمكان. لنعد أدراجنا!"
   },
   "register": {
     "tagline": "60 ثانية. جداول الضرب. حطّم رقمك القياسي.",
@@ -307,7 +312,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "تعلموا معاً! 🏫",
     "emptyDesc": "انضم إلى فصل لتتنافس مع زملائك، ودع معلمك يوجه رحلتك التعليمية!",
-    "joinButton": "الانضمام إلى الفصل"
+    "joinButton": "الانضمام إلى الفصل",
+    "joinedSuccess": "لقد انضممت إلى الفصل"
   },
   "extendedTables": {
     "title": "الجداول الموسعة",
@@ -515,7 +521,9 @@
     "confirm": "تأكيد",
     "score": "النقاط",
     "unknownPlayer": "لاعب غير معروف",
-    "addFriend": "إضافة صديق"
+    "addFriend": "إضافة صديق",
+    "addedSuccessWithName": "أنت و{{name}} متصلان الآن!",
+    "addedSuccess": "تم إنشاء الاتصال!"
   },
   "email": {
     "impressum": "Imprint",

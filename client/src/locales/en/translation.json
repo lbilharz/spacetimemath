@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "View All",
-    "6digitCode": "6-DIGIT CODE"
+    "6digitCode": "6-DIGIT CODE",
+    "tapToContinue": "Tap to continue",
+    "loading": "Loading...",
+    "backToLobby": "Back to Lobby"
   },
   "days": {
     "mo": "Mo",
@@ -37,7 +40,9 @@
     "connectionError": "Cannot connect to SpaceTimeDB",
     "connectionErrorHint": "Make sure spacetime start --in-memory is running on port 3000",
     "reconnecting": "Reconnecting…",
-    "tagline": "Know your level."
+    "tagline": "Know your level.",
+    "404Title": "Oops! Where did we end up?",
+    "404Desc": "This page seems to have vanished into the spacetime void. Let's turn around!"
   },
   "register": {
     "tagline": "60 seconds. Multiplication tables. Beat your best.",
@@ -326,7 +331,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Learn together! 🏫",
     "emptyDesc": "Join a classroom to compete with classmates, conquer assignments together, and let your teacher guide your learning journey!",
-    "joinButton": "Join Class"
+    "joinButton": "Join Class",
+    "joinedSuccess": "You joined the class"
   },
   "extendedTables": {
     "title": "Extended Tables",
@@ -515,7 +521,9 @@
     "confirm": "Confirm",
     "score": "Score",
     "unknownPlayer": "Unknown Player",
-    "addFriend": "Add Friend"
+    "addFriend": "Add Friend",
+    "addedSuccessWithName": "You and {{name}} are now connected!",
+    "addedSuccess": "Connection established!"
   },
   "email": {
     "impressum": "Imprint",

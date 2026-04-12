@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "Hepsini Gör",
-    "6digitCode": "6 HANELİ KOD"
+    "6digitCode": "6 HANELİ KOD",
+    "tapToContinue": "Devam etmek için dokun",
+    "loading": "Yükleniyor...",
+    "backToLobby": "Lobiye dön"
   },
   "app": {
     "brand": "1UP",
@@ -28,7 +31,9 @@
     "connectionError": "SpaceTimeDB'ye bağlanılamıyor",
     "connectionErrorHint": "spacetime start --in-memory'nin 3000 portunda çalıştığından emin olun",
     "reconnecting": "Yeniden bağlanılıyor…",
-    "tagline": "Seviyeni bil."
+    "tagline": "Seviyeni bil.",
+    "404Title": "Hay aksi! Nereye geldik?",
+    "404Desc": "Bu sayfa uzay-zaman boşluğunda kaybolmuş. Hadi geri dönelim!"
   },
   "register": {
     "tagline": "60 saniye. Carpim tablolari. Rekorunu kir.",
@@ -307,7 +312,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Birlikte öğrenin! 🏫",
     "emptyDesc": "Sınıf arkadaşlarınla rekabet etmek için bir sınıfa katıl ve öğretmeninin öğrenme yolculuğuna rehberlik etmesine izin ver!",
-    "joinButton": "Sınıfa Katıl"
+    "joinButton": "Sınıfa Katıl",
+    "joinedSuccess": "Sınıfa katıldın"
   },
   "extendedTables": {
     "title": "Genişletilmiş Tablolar",
@@ -515,7 +521,9 @@
     "confirm": "Onayla",
     "score": "Skor",
     "unknownPlayer": "Bilinmeyen Oyuncu",
-    "addFriend": "Arkadaş Ekle"
+    "addFriend": "Arkadaş Ekle",
+    "addedSuccessWithName": "Sen ve {{name}} artık bağlısınız!",
+    "addedSuccess": "Bağlantı kuruldu!"
   },
   "email": {
     "impressum": "Imprint",

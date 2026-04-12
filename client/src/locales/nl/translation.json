@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "Bekijk alles",
-    "6digitCode": "6-CIJFERIG CODE"
+    "6digitCode": "6-CIJFERIG CODE",
+    "tapToContinue": "Tik om door te gaan",
+    "loading": "Laden...",
+    "backToLobby": "Terug naar de lobby"
   },
   "app": {
     "brand": "1UP",
@@ -28,7 +31,9 @@
     "connectionError": "Kan geen verbinding maken met SpaceTimeDB",
     "connectionErrorHint": "Zorg ervoor dat spacetime start --in-memory draait op poort 3000",
     "reconnecting": "Opnieuw verbinden…",
-    "tagline": "Ken je niveau."
+    "tagline": "Ken je niveau.",
+    "404Title": "Oeps! Waar zijn we beland?",
+    "404Desc": "Deze pagina lijkt verdwenen in de ruimtetijd. Laten we omdraaien!"
   },
   "register": {
     "tagline": "60 seconden. Tafels van vermenigvuldiging. Versla je record.",
@@ -307,7 +312,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Samen leren! 🏫",
     "emptyDesc": "Word lid van een klas om het op te nemen tegen klasgenoten en laat je leraar je leerproces begeleiden!",
-    "joinButton": "Neem deel aan klas"
+    "joinButton": "Neem deel aan klas",
+    "joinedSuccess": "Je bent lid geworden van de klas"
   },
   "extendedTables": {
     "title": "Uitgebreide Tafels",
@@ -515,7 +521,9 @@
     "confirm": "Bevestigen",
     "score": "Score",
     "unknownPlayer": "Onbekende Speler",
-    "addFriend": "Vriend toevoegen"
+    "addFriend": "Vriend toevoegen",
+    "addedSuccessWithName": "Jij en {{name}} zijn nu verbonden!",
+    "addedSuccess": "Verbinding gemaakt!"
   },
   "email": {
     "impressum": "Imprint",

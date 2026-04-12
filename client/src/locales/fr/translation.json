@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "Voir tout",
-    "6digitCode": "CODE À 6 CHIFFRES"
+    "6digitCode": "CODE À 6 CHIFFRES",
+    "tapToContinue": "Appuyez pour continuer",
+    "loading": "Chargement...",
+    "backToLobby": "Retour au salon"
   },
   "app": {
     "brand": "1UP",
@@ -28,7 +31,9 @@
     "connectionError": "Impossible de se connecter à SpaceTimeDB",
     "connectionErrorHint": "Assurez-vous que spacetime start --in-memory est lancé sur le port 3000",
     "reconnecting": "Reconnexion…",
-    "tagline": "Connais ton niveau."
+    "tagline": "Connais ton niveau.",
+    "404Title": "Oups ! Où sommes-nous arrivés ?",
+    "404Desc": "Cette page semble avoir disparu dans le néant spatio-temporel. Demi-tour !"
   },
   "register": {
     "tagline": "60 secondes. Tables de multiplication. Bats ton record.",
@@ -307,7 +312,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "Apprenez ensemble ! 🏫",
     "emptyDesc": "Rejoignez une classe pour rivaliser avec vos camarades et laissez votre professeur guider votre parcours d'apprentissage !",
-    "joinButton": "Rejoindre la classe"
+    "joinButton": "Rejoindre la classe",
+    "joinedSuccess": "Tu as rejoint la classe"
   },
   "extendedTables": {
     "title": "Tables étendues",
@@ -515,7 +521,9 @@
     "confirm": "Confirmer",
     "score": "Score",
     "unknownPlayer": "Joueur inconnu",
-    "addFriend": "Ajouter un ami"
+    "addFriend": "Ajouter un ami",
+    "addedSuccessWithName": "Toi et {{name}} êtes maintenant connectés !",
+    "addedSuccess": "Connexion établie !"
   },
   "email": {
     "impressum": "Imprint",

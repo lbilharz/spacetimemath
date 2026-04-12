@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "Alle ansehen",
-    "6digitCode": "6-STELLIGER CODE"
+    "6digitCode": "6-STELLIGER CODE",
+    "tapToContinue": "Tippen zum Fortfahren",
+    "loading": "Laden...",
+    "backToLobby": "Zurück zur Lobby"
   },
   "days": {
     "mo": "Mo",
@@ -37,7 +40,9 @@
     "connectionError": "Keine Verbindung zu SpaceTimeDB",
     "connectionErrorHint": "Stelle sicher, dass spacetime start --in-memory auf Port 3000 läuft",
     "reconnecting": "Verbindung wird wiederhergestellt…",
-    "tagline": "Kenn dein Level."
+    "tagline": "Kenn dein Level.",
+    "404Title": "Huch! Wo sind wir denn hier?",
+    "404Desc": "Diese Seite ist scheinbar im Spacetime-Nirwana verschwunden. Lass uns schnell umdrehen!"
   },
   "register": {
     "tagline": "60 Sekunden. Einmaleins. Schlag deinen Rekord.",
@@ -326,7 +331,8 @@
     "upgradeDesc": "Führe ein kostenloses Upgrade für dein Konto durch, um Schüler zu verwalten und Klassensprints zu starten.",
     "emptyHeading": "Gemeinsam lernen! 🏫",
     "emptyDesc": "Tritt einer Klasse bei, um gegen Mitschüler anzutreten, Aufgaben gemeinsam zu lösen und dich von deiner Lehrkraft an die Spitze führen zu lassen!",
-    "joinButton": "Klasse beitreten"
+    "joinButton": "Klasse beitreten",
+    "joinedSuccess": "Du bist der Klasse beigetreten"
   },
   "extendedTables": {
     "title": "Erweiterte Tabellen",
@@ -515,7 +521,9 @@
     "confirm": "Bestätigen",
     "score": "Punkte",
     "unknownPlayer": "Unbekannter Spieler",
-    "addFriend": "Freund hinzufügen"
+    "addFriend": "Freund hinzufügen",
+    "addedSuccessWithName": "Du und {{name}} seid jetzt verbündet!",
+    "addedSuccess": "Verbindung hergestellt!"
   },
   "email": {
     "impressum": "Imprint",

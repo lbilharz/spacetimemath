@@ -20,7 +20,10 @@
     "submit": "Submit",
     "backspace": "Backspace",
     "viewAll": "查看全部",
-    "6digitCode": "6位代码"
+    "6digitCode": "6位代码",
+    "tapToContinue": "点击继续",
+    "loading": "加载中...",
+    "backToLobby": "返回大厅"
   },
   "app": {
     "brand": "1UP",
@@ -28,7 +31,9 @@
     "connectionError": "无法连接到 SpaceTimeDB",
     "connectionErrorHint": "确保 spacetime start --in-memory 正在端口 3000 上运行",
     "reconnecting": "正在重新连接…",
-    "tagline": "了解你的水平。"
+    "tagline": "了解你的水平。",
+    "404Title": "哎呀！我们到哪了？",
+    "404Desc": "这个页面似乎消失在时空虚空中了。我们回去吧！"
   },
   "register": {
     "tagline": "60秒。乘法表。打破你的纪录。",
@@ -307,7 +312,8 @@
     "upgradeDesc": "Upgrade your account for free to start managing students and running class sprints.",
     "emptyHeading": "一起学习！ 🏫",
     "emptyDesc": "加入班级与同学竞争，让老师指导你的学习之旅！",
-    "joinButton": "加入班级"
+    "joinButton": "加入班级",
+    "joinedSuccess": "你已加入班级"
   },
   "extendedTables": {
     "title": "扩展乘法表",
@@ -515,7 +521,9 @@
     "confirm": "确认",
     "score": "分数",
     "unknownPlayer": "未知玩家",
-    "addFriend": "添加朋友"
+    "addFriend": "添加朋友",
+    "addedSuccessWithName": "你和{{name}}现在已连接！",
+    "addedSuccess": "连接已建立！"
   },
   "email": {
     "impressum": "Imprint",
