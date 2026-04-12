@@ -17,6 +17,7 @@ export default function RegisterPage({ onRegistered }: Props) {
   // Split flow states
   const [flowType, setFlowType] = useState<'teacher' | 'student' | 'solo' | null>(null);
   const [hasFriendInvite, setHasFriendInvite] = useState(false);
+  const [cameViaJoinLink, setCameViaJoinLink] = useState(false);
   
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -61,6 +62,7 @@ export default function RegisterPage({ onRegistered }: Props) {
     if (joinCode && joinCode.trim().length >= 4) {
       setClassCode(joinCode.trim().toUpperCase());
       setFlowType('student');
+      setCameViaJoinLink(true);
     }
 
     try {
@@ -217,7 +219,8 @@ export default function RegisterPage({ onRegistered }: Props) {
     try {
       const hex = identity?.toHexString();
       if (!hex) throw new Error("Connection not established");
-      const apiBase = import.meta.env.VITE_API_URL || (window.location.origin.startsWith('http') && !window.location.origin.includes('localhost') ? window.location.origin : 'https://up.bilharz.eu');
+      const isNativeApp = window.location.origin === 'http://localhost' || window.location.origin.startsWith('capacitor://');
+      const apiBase = import.meta.env.VITE_API_URL || (!isNativeApp ? window.location.origin : 'https://up.bilharz.eu');
       const res = await fetch(`${apiBase}/api/send-email-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -424,9 +427,11 @@ export default function RegisterPage({ onRegistered }: Props) {
                 </>
              ) : (
                 <>
-                  <button onClick={() => setFlowType(null)} className="mb-4 text-sm font-bold text-slate-400 hover:text-slate-600">
-                     ← {t('common.back')}
-                  </button>
+                  {!cameViaJoinLink && (
+                    <button onClick={() => setFlowType(null)} className="mb-4 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                       ← {t('common.back')}
+                    </button>
+                  )}
                   {hasFriendInvite && flowType === 'solo' && (
                      <div className="mb-6 flex gap-3 rounded-xl border-[1.5px] border-brand-yellow bg-brand-yellow/10 p-4 text-sm font-bold text-slate-800 shadow-sm shadow-brand-yellow/10 dark:text-slate-200">
                         <span className="text-xl">🤝</span>
@@ -469,16 +474,24 @@ export default function RegisterPage({ onRegistered }: Props) {
 
                      {flowType === 'student' && (
                         <>
-                           <input
-                              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold tracking-widest text-slate-900 uppercase transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
-                              type="text"
-                              placeholder={t('register_split.class_code_label')}
-                              value={classCode}
-                              onChange={e => setClassCode(e.target.value.toUpperCase())}
-                              maxLength={6}
-                              disabled={loading}
-                              required
-                           />
+                           {cameViaJoinLink ? (
+                              <div className="w-full flex items-center justify-between rounded-2xl border-2 border-brand-yellow/40 bg-brand-yellow/10 px-5 py-4 font-bold text-slate-800 dark:text-brand-yellow/90 dark:border-brand-yellow/30">
+                                <span className="opacity-60 text-sm uppercase tracking-wider">{t('register_split.class_code_label')}</span>
+                                <span className="tracking-[0.2em] text-lg">{classCode}</span>
+                              </div>
+                           ) : (
+                              <input
+                                 className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold tracking-widest text-slate-900 uppercase transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
+                                 type="text"
+                                 placeholder={t('register_split.class_code_label')}
+                                 value={classCode}
+                                 onChange={e => setClassCode(e.target.value.toUpperCase())}
+                                 maxLength={6}
+                                 autoFocus={!cameViaJoinLink}
+                                 disabled={loading}
+                                 required
+                              />
+                           )}
                            <input
                               className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-4 font-semibold text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
                               type="text"
@@ -486,12 +499,10 @@ export default function RegisterPage({ onRegistered }: Props) {
                               value={username}
                               onChange={e => setUsername(e.target.value)}
                               maxLength={24}
+                              autoFocus={cameViaJoinLink}
                               disabled={loading}
                               required
                            />
-                           <p className="text-xs text-brand-yellow font-bold bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-                              {t('register_split.recovery_nag_student')}
-                           </p>
                         </>
                      )}
 
@@ -530,19 +541,23 @@ export default function RegisterPage({ onRegistered }: Props) {
                 </>
              )}
 
-            <div className="my-8 flex items-center gap-4 text-slate-300 dark:text-slate-700">
-              <div className="h-px flex-1 bg-current" />
-              <span className="text-xs font-bold uppercase tracking-widest">{t('common.or')}</span>
-              <div className="h-px flex-1 bg-current" />
-            </div>
+            {!cameViaJoinLink && (
+              <>
+                <div className="my-8 flex items-center gap-4 text-slate-300 dark:text-slate-700">
+                  <div className="h-px flex-1 bg-current" />
+                  <span className="text-xs font-bold uppercase tracking-widest">{t('common.or')}</span>
+                  <div className="h-px flex-1 bg-current" />
+                </div>
 
-            <button
-              onClick={() => { setShowRestore(true); setRestoreMode('select'); }}
-              className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-600 transition-all hover:border-slate-200 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
-            >
-              <span>{t('register.restoreLink')}</span>
-              <span className="text-lg transition-transform group-hover:rotate-12">↺</span>
-            </button>
+                <button
+                  onClick={() => { setShowRestore(true); setRestoreMode('select'); }}
+                  className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-600 transition-all hover:border-slate-200 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+                >
+                  <span>{t('register.restoreLink')}</span>
+                  <span className="text-lg transition-transform group-hover:rotate-12">↺</span>
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
@@ -571,7 +586,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                   type="email"
                   placeholder="name@school.edu"
                   value={restoreEmail}
-                  onChange={e => setRestoreEmail(e.target.value.trim())}
+                  onChange={e => setRestoreEmail(e.target.value)}
                   autoFocus
                   disabled={restoring}
                   required

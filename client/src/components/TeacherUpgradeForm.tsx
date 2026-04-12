@@ -38,7 +38,8 @@ export default function TeacherUpgradeForm({ myIdentityHex, name, onUpgraded }: 
     setSubmitting(true);
     setError('');
     try {
-      const apiBase = import.meta.env.VITE_API_URL || (window.location.origin.startsWith('http') && !window.location.origin.includes('localhost') ? window.location.origin : 'https://up.bilharz.eu');
+      const isNativeApp = window.location.origin === 'http://localhost' || window.location.origin.startsWith('capacitor://');
+      const apiBase = import.meta.env.VITE_API_URL || (!isNativeApp ? window.location.origin : 'https://up.bilharz.eu');
       const res = await fetch(`${apiBase}/api/send-teacher-verif`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -104,7 +105,7 @@ export default function TeacherUpgradeForm({ myIdentityHex, name, onUpgraded }: 
             type="email"
             placeholder={t('register_split.email_label')}
             value={email}
-            onChange={e => setEmail(e.target.value.trim())}
+            onChange={e => setEmail(e.target.value)}
             disabled={submitting}
             required
           />
