@@ -71,6 +71,7 @@ export default function PageRenderer({
           onRetakeDiagnostic={() => onStartSprint(0n, 'lobby', true)}
           onEnterClassroom={onEnterClassroom}
           onGoToAccount={onGoToAccount}
+          navigate={navigate}
         />
       )}
       {page === 'classrooms' && (

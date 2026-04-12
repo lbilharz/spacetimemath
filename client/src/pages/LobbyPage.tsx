@@ -13,6 +13,7 @@ import type { Answer } from '../module_bindings/types.js';
 
 import { APP_LANGUAGES } from '../components/LanguagePicker.js';
 import { TIER_EMOJI } from '../utils/learningTier.js';
+import type { Page } from '../navigation.js';
 
 
 
@@ -23,7 +24,7 @@ interface Props {
   onRetakeDiagnostic: () => void;
   onEnterClassroom: (id: bigint) => void;
   onGoToAccount: () => void;
-  navigate: (path: string) => void;
+  navigate: (page: Page, hash?: string) => void;
 }
 
 export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRetakeDiagnostic, onEnterClassroom, onGoToAccount: _onGoToAccount, navigate }: Props) {
@@ -54,7 +55,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
   const [activeJoin, setActiveJoin] = useState<'class' | 'friend' | null>(null);
   const [joinInput, setJoinInput] = useState('');
   const [joining, setJoining] = useState(false);
-  const createFriendInvite = useSTDBReducer(reducers.createFriendInvite);
+  const acceptFriendInvite = useSTDBReducer(reducers.acceptFriendInvite);
 
   const handleInlineJoin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +67,7 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
         await joinClassroom({ code });
         setPendingJoinCode(code); // Will auto-redirect once the classroom row arrives
       } else {
-        await createFriendInvite({ receiverCode: code });
+        await acceptFriendInvite({ token: code });
         setJoinInput('');
         setActiveJoin(null);
         navigate('friends'); // Move to friends page to see the invite
