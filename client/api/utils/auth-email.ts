@@ -76,7 +76,7 @@ export async function handleAuthEmail(
     });
 
     const { error } = await resend.emails.send({
-      from: 'Better 1UP <no-reply@up.bilharz.eu>',
+      from: 'Better 1UP <feedback@up.bilharz.eu>',
       to: email,
       subject: dictionary.subject,
       html,
