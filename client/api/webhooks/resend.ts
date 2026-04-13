@@ -33,14 +33,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    const rawBody = await new Promise<string>((resolve, reject) => {
-      let data = '';
+    const rawBodyBuffer = await new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
       req.on('data', chunk => {
-        data += chunk;
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
       });
-      req.on('end', () => resolve(data));
+      req.on('end', () => resolve(Buffer.concat(chunks)));
       req.on('error', reject);
     });
+    const rawBody = rawBodyBuffer.toString('utf8');
 
     const resend = new Resend(resendKey);
     let event: ResendWebhookEvent;
@@ -60,7 +61,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       event = JSON.parse(rawBody) as ResendWebhookEvent;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      console.error('Webhook signature verification failed:', message);
+      console.error('Webhook signature verification failed:', message, {
+        rawBodyLength: rawBody.length,
+        rawBodyPreview: rawBody.slice(0, 120),
+        hasSvixId: !!req.headers['svix-id'],
+        hasSvixTimestamp: !!req.headers['svix-timestamp'],
+        hasSvixSignature: !!req.headers['svix-signature'],
+        secretPrefix: webhookSecret.slice(0, 6),
+      });
       return res.status(400).json({ error: 'Invalid webhook signature' });
     }
 
