@@ -106,7 +106,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           type: 'header',
           text: {
             type: 'plain_text',
-            text: '📧 New Incoming Email',
+            text: `📧 ${subject ? subject.substring(0, 140) : 'New Incoming Email'}`,
             emoji: true
           }
         },
