@@ -51,9 +51,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       resend.webhooks.verify({
         payload: rawBody,
         headers: {
-          'svix-id': req.headers['svix-id'] as string,
-          'svix-timestamp': req.headers['svix-timestamp'] as string,
-          'svix-signature': req.headers['svix-signature'] as string,
+          id: (req.headers['svix-id'] as string) || '',
+          timestamp: (req.headers['svix-timestamp'] as string) || '',
+          signature: (req.headers['svix-signature'] as string) || '',
         },
         webhookSecret,
       });
