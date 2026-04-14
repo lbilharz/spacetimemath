@@ -189,6 +189,24 @@ pub fn grant_admin_to(ctx: &ReducerContext, target: spacetimedb::Identity) -> Re
     Ok(())
 }
 
+/// DATA RESTORE: Patch a player's type back after a --delete-data incident.
+/// Admin-only. Used to restore teachers/students who were re-inserted as Solo.
+#[reducer]
+pub fn admin_set_player_type(
+    ctx: &ReducerContext,
+    target: spacetimedb::Identity,
+    player_type: PlayerType,
+    class_id: Option<u64>,
+) -> Result<(), String> {
+    if !is_admin(ctx, ctx.sender()) {
+        return Err("Not authorized".into());
+    }
+    let player = ctx.db.players().identity().find(target)
+        .ok_or("Player not found")?;
+    ctx.db.players().identity().update(Player { player_type, class_id, ..player });
+    Ok(())
+}
+
 #[table(accessor = teacher_secrets)]
 pub struct TeacherSecret {
     #[primary_key]

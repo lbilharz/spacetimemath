@@ -16,14 +16,27 @@ OUTDIR="$SCRIPT_DIR/backups/$(date +%Y-%m-%d_%H-%M-%S)"
 mkdir -p "$OUTDIR"
 
 TABLES=(
+  # Core player data
   players
+  player_secrets
+  best_scores
+  player_dkt_weights
+  unlock_logs
+  # Auth & admin
+  recovery_keys
+  server_admins
+  teacher_secrets
+  # Session history
   sessions
   answers
-  recovery_keys
+  problem_stats
+  kc_telemetry
+  # Social
+  friendships
+  friend_invites
+  # Classroom
   classrooms
   classroom_members
-  problem_stats
-  best_scores
   class_sprints
 )
 
