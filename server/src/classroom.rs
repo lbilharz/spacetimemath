@@ -1,7 +1,7 @@
 use spacetimedb::{reducer, ReducerContext, Table, Timestamp, ScheduleAt};
 use crate::{
     Session, Classroom, ClassroomMember, ClassSprint, EndSprintSchedule,
-    SprintSequence, get_player, make_code, build_sequence, DiagnosticState
+    SprintSequence, get_player, make_code, build_sequence, DiagnosticState,
 };
 use crate::{classrooms, classroom_members, class_sprints, sessions, players,
             end_sprint_schedule, sprint_sequences, diagnostic_states};
@@ -313,6 +313,31 @@ pub fn restore_classroom_member(
         id: 0,
         classroom_id,
         player_identity: ctx.sender(),
+        hidden,
+    });
+    Ok(())
+}
+
+/// DATA RESTORE: Re-insert a ClassroomMember row for an arbitrary target identity.
+/// Admin-only — used during data recovery to rebuild classroom memberships.
+#[reducer]
+pub fn admin_restore_membership_for(
+    ctx: &ReducerContext,
+    target: spacetimedb::Identity,
+    classroom_id: u64,
+    hidden: bool,
+) -> Result<(), String> {
+    if !crate::auth::is_admin(ctx, ctx.sender()) {
+        return Err("Only admins can restore classroom members".into());
+    }
+    let already_member = ctx.db.classroom_members()
+        .classroom_id().filter(&classroom_id)
+        .any(|m| m.player_identity == target);
+    if already_member { return Ok(()); }
+    ctx.db.classroom_members().insert(ClassroomMember {
+        id: 0,
+        classroom_id,
+        player_identity: target,
         hidden,
     });
     Ok(())
