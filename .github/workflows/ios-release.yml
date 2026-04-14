@@ -18,6 +18,9 @@ on:
           - metadata    # push metadata + screenshots, no binary
           - release     # full: screenshots + metadata + build + submit
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ios:
     name: ${{ github.event_name == 'workflow_dispatch' && inputs.lane || 'beta' }}
