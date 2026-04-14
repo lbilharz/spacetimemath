@@ -149,6 +149,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
               </div>
               <div className="flex gap-2">
                 <input
+                  data-testid="classroom-join-input"
                   className="flex-1 w-full rounded-2xl border-2 border-slate-200 bg-white dark:bg-slate-900 px-3 py-2 text-center text-sm tracking-[0.2em] font-black text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:border-slate-700 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none transition-colors"
                   type="text"
                   inputMode="numeric"
@@ -161,6 +162,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
                   disabled={joining}
                 />
                 <button
+                  data-testid="classroom-join-submit"
                   className="bg-brand-yellow px-5 rounded-2xl font-black text-[13px] text-slate-900 transition-transform active:scale-95 disabled:opacity-50 tracking-wider uppercase"
                   type="submit"
                   disabled={joining || joinCode.trim().length !== 6}
@@ -172,6 +174,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
             </form>
           ) : (
             <button
+              data-testid="show-join-button"
               className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
               onClick={() => { setShowJoin(true); setShowCreate(false); setJoinError(''); setJoinCode(''); }}
             >
@@ -191,6 +194,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
                 </div>
                 <div className="flex gap-2">
                   <input
+                    data-testid="classroom-name-input"
                     className="flex-1 w-full rounded-2xl border-2 border-slate-200 bg-white dark:bg-slate-900 px-3 py-2 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 border-slate-300 dark:border-slate-700 focus:border-brand-yellow focus:outline-none transition-colors"
                     type="text"
                     placeholder={t('lobby.classNamePlaceholder')}
@@ -202,6 +206,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
                     disabled={submitting}
                   />
                   <button
+                    data-testid="classroom-create-submit"
                     className="bg-brand-yellow px-5 rounded-2xl font-black text-[13px] text-slate-900 transition-transform active:scale-95 disabled:opacity-50 tracking-wider uppercase shadow-sm shadow-brand-yellow/20"
                     type="submit"
                     disabled={submitting || !className.trim()}
@@ -213,6 +218,7 @@ export default function ClassroomsPage({ myIdentityHex, onEnterClassroom }: Prop
               </form>
             ) : (
               <button
+                data-testid="show-create-button"
                 className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
                 onClick={() => { setShowCreate(true); setShowJoin(false); setClassError(''); setClassName(''); }}
               >

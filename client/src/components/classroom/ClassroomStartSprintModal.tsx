@@ -34,7 +34,8 @@ export default function ClassroomStartSprintModal({ onClose, onSelectType }: Pro
             </span>
           </button>
 
-          <button 
+          <button
+            data-testid="start-sprint-training-button"
             onClick={() => onSelectType(false)}
             className="group flex flex-col items-start gap-3 rounded-2xl border-2 border-brand-yellow/50 bg-amber-50 dark:bg-amber-500/10 p-5 text-left transition-all hover:bg-amber-100 dark:hover:bg-amber-500/20 hover:border-brand-yellow shadow-sm active:scale-[0.98]"
           >

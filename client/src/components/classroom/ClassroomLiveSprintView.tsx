@@ -64,6 +64,7 @@ export default function ClassroomLiveSprintView({
               </div>
             </div>
             <button
+              data-testid="teacher-end-sprint-button"
               onClick={onEndSprint}
               disabled={endingClassSprint}
               className="group flex items-center gap-3 rounded-2xl bg-red-500 px-6 sm:px-8 py-4 text-lg font-black tracking-tight text-white transition-all active:scale-95 hover:scale-[1.02] shadow-md shadow-red-500/20 disabled:opacity-50 disabled:hover:scale-100"

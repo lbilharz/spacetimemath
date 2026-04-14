@@ -707,7 +707,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, forceDiagnost
               )}
             </div>
           ) : (
-            <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div data-testid="current-problem" data-problem-a={problem.a} data-problem-b={problem.b} style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ textAlign: 'center', marginBottom: 'clamp(8px, 3vh, 24px)' }}>
                 <div aria-hidden="true" style={{ fontSize: 11, color: '#A1A1A1', letterSpacing: 1.5, marginBottom: 'clamp(0px, 1vh, 8px)', fontWeight: 700, textTransform: 'uppercase' }}>WHAT IS</div>
                 <div aria-hidden="true" className="text-[#2C3E50] dark:text-white" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' }}>
@@ -744,6 +744,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, forceDiagnost
                 }}>
                   <input
                     ref={inputRef}
+                    data-testid="answer-input"
                     className="field bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
                     type="number"
                     inputMode={isTouchDevice ? 'none' : 'numeric'}
@@ -766,6 +767,7 @@ export default function SprintPage({ myIdentityHex, classSprintId, forceDiagnost
                   />
                   {!isTouchDevice && (
                     <button
+                      data-testid="answer-submit"
                       className="btn pressable"
                       type="submit"
                       aria-label={t('common.submit', { defaultValue: 'Submit Answer' })}

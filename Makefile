@@ -5,7 +5,7 @@
 #   make publish-test    – publish WASM to spacetimemath-test on maincloud (for integration tests)
 #   make generate        – regenerate TypeScript bindings from server source
 #   make call REDUCER=x  – call a reducer on maincloud
-#   make deploy          – publish + generate + run integration tests
+#   make deploy          – publish + generate + integration tests + E2E tests
 #   make backup          – export all durable tables to recovery/backups/ (run before risky publishes)
 
 SPACETIME  := /Users/lbi/.local/bin/spacetime
@@ -69,8 +69,14 @@ call:
 	@if [ -z "$(REDUCER)" ]; then echo "Usage: make call REDUCER=<reducer_name>"; exit 1; fi
 	$(SPACETIME) call spacetimemath $(REDUCER) --server maincloud
 
-# Full deploy: publish + regenerate bindings + verify integration tests pass
+# Full deploy: publish + regenerate bindings + integration tests + E2E tests
 deploy: publish generate
 	cd client && npm run test:integration
+	cd client && npm run test:e2e:ci
 
-.PHONY: setup publish publish-test generate call deploy test check-no-delete-data wipe-and-publish backup
+# Run Playwright E2E tests against a locally running dev server
+# (uses concurrently + wait-on; see test:e2e:ci script in client/package.json)
+test-e2e:
+	cd client && npm run test:e2e:ci
+
+.PHONY: setup publish publish-test generate call deploy test test-e2e check-no-delete-data wipe-and-publish backup

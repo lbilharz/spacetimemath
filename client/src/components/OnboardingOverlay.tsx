@@ -46,7 +46,7 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-md animate-in fade-in duration-300">
+    <div data-testid="onboarding-overlay" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-md animate-in fade-in duration-300">
       <div className="relative flex w-full max-w-md max-h-[90vh] flex-col overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
         
         {/* Content Area */}
@@ -89,6 +89,7 @@ export default function OnboardingOverlay({ onDone, onClose, noSprint = false }:
               )}
               
               <button
+                data-testid="onboarding-next"
                 onClick={isLast ? (noSprint ? handleOkay : handleDone) : () => setStep(s => s + 1)}
                 disabled={finishing}
                 className={`group relative flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl px-4 transition-all active:scale-[0.98] disabled:opacity-50 ${

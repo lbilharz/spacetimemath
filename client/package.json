@@ -10,6 +10,8 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test",
     "test:e2e:ci": "concurrently -k -s first \"vite --mode test\" \"wait-on http-get://localhost:5173/ && playwright test\"",
+    "test:e2e:headed": "concurrently -k -s first \"vite --mode test\" \"wait-on http-get://localhost:5173/ && playwright test --headed --reporter=list\"",
+    "test:e2e:debug": "concurrently -k -s first \"vite --mode test\" \"wait-on http-get://localhost:5173/ && PWDEBUG=1 playwright test\"",
     "lint": "eslint",
     "lint:i18n": "node scripts/check-translations.js",
     "preview": "vite preview",

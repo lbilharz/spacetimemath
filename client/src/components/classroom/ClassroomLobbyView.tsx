@@ -72,6 +72,7 @@ export default function ClassroomLobbyView({
               <SettingsIcon className="h-6 w-6 text-slate-500 dark:text-slate-400 transition-transform group-hover:rotate-[15deg]" />
             </button>
             <button
+              data-testid="teacher-start-sprint-button"
               onClick={onOpenStartModal}
               disabled={startingClassSprint}
               className="group flex items-center justify-center gap-3 rounded-2xl bg-brand-yellow px-6 sm:px-8 py-4 text-[19px] font-black tracking-tight text-slate-900 h-[56px] shadow-sm shadow-brand-yellow/20 hover:scale-[1.02] active:scale-[0.97] transition-all disabled:opacity-50 disabled:hover:scale-100"
@@ -100,7 +101,7 @@ export default function ClassroomLobbyView({
           <p className="mb-6 text-sm text-slate-500 max-w-sm">
             Zeige diesen Code, damit deine Schueler_innen beitreten können.
           </p>
-          <div className="font-mono text-4xl font-bold tracking-[0.25em] text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900 px-8 py-4 rounded-2xl">
+          <div data-testid="classroom-code-display" className="font-mono text-4xl font-bold tracking-[0.25em] text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900 px-8 py-4 rounded-2xl">
             {myClassroom.code}
           </div>
         </div>

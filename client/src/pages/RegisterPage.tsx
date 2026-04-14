@@ -245,6 +245,7 @@ export default function RegisterPage({ onRegistered }: Props) {
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <input
+                  data-testid="username-input"
                   className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-5 text-xl font-bold text-center text-slate-900 transition-colors focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:bg-slate-900 dark:focus:border-brand-yellow"
                   type="text"
                   placeholder={t('register.usernamePlaceholder')}
@@ -263,6 +264,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                 )}
 
                 <button
+                  data-testid="register-submit"
                   className="group flex h-16 w-full items-center justify-center gap-2 rounded-[20px] bg-brand-yellow px-8 text-lg font-black uppercase tracking-wider text-slate-900 transition-all hover:scale-[1.02] hover:bg-yellow-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                   type="submit"
                   disabled={loading || !username.trim()}
@@ -278,6 +280,7 @@ export default function RegisterPage({ onRegistered }: Props) {
             </div>
 
             <button
+              data-testid="restore-toggle"
               onClick={() => { setShowRestore(true); setRestoreMode('select'); }}
               className="group mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
             >
@@ -297,6 +300,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                 </p>
                 <div className="flex flex-col gap-3">
                   <button
+                    data-testid="restore-mode-code"
                     onClick={() => { setRestoreMode('code'); setCode(''); }}
                     className="group flex w-full items-center gap-4 rounded-[24px] border-2 border-slate-100 bg-white p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-slate-200 hover:shadow-md active:scale-[0.98] dark:border-slate-700/50 dark:bg-slate-800 dark:hover:bg-slate-700/80 dark:hover:border-slate-600 text-left"
                   >
@@ -380,6 +384,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                 {!autoRestoreCode && (
                   <>
                     <input
+                      data-testid="restore-code-input"
                       className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-brand-yellow dark:focus:bg-slate-900 text-center uppercase"
                       type="text"
                       placeholder={t('register.restorePlaceholder')}
@@ -395,6 +400,7 @@ export default function RegisterPage({ onRegistered }: Props) {
                       </p>
                     )}
                     <button
+                      data-testid="restore-code-submit"
                       className="group relative h-16 w-full cursor-pointer overflow-hidden rounded-[20px] bg-brand-yellow px-8 py-4 transition-all hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center uppercase font-black text-slate-900"
                       type="submit"
                       disabled={restoring || code.trim().length !== 12}

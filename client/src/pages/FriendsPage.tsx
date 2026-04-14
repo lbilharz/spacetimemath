@@ -225,6 +225,7 @@ export default function FriendsPage() {
               </div>
               <div className="flex gap-2">
                 <input
+                  data-testid="friend-invite-input"
                   className="flex-1 w-full rounded-2xl border-2 border-slate-200 bg-white dark:bg-slate-900 px-3 py-2 text-center text-sm tracking-[0.1em] font-black text-slate-900 dark:text-white uppercase placeholder:text-slate-300 dark:border-slate-700 dark:placeholder:text-slate-600 focus:border-brand-yellow focus:outline-none transition-colors"
                   type="text"
                   inputMode="numeric"
@@ -242,6 +243,7 @@ export default function FriendsPage() {
                   disabled={joining}
                 />
                 <button
+                  data-testid="friend-invite-submit"
                   className="bg-brand-yellow px-5 rounded-2xl font-black text-[13px] text-slate-900 transition-transform active:scale-95 disabled:opacity-50 tracking-wider uppercase"
                   type="submit"
                   disabled={joining || joinCode.replace(/-/g, '').length !== 8}
@@ -253,6 +255,7 @@ export default function FriendsPage() {
             </form>
           ) : (
             <button
+              data-testid="have-code-button"
               className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm"
               onClick={() => { setShowCodeInput(true); }}
             >
@@ -264,6 +267,7 @@ export default function FriendsPage() {
           )}
 
           <button
+            data-testid="create-invite-button"
             className="flex-1 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-[15px] font-bold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3.5 group shadow-sm disabled:opacity-50"
             onClick={handleCreateInvite}
             disabled={loading || !!activeInvite}
@@ -283,7 +287,7 @@ export default function FriendsPage() {
             </div>
             <div className="flex-1 flex flex-col w-full text-center md:text-left">
               <div className="text-sm font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-widest">{t('friends.yourLink')}</div>
-              <div className="text-4xl font-black font-mono tracking-wider text-slate-900 dark:text-brand-yellow mb-4 drop-shadow-sm">
+              <div data-testid="invite-code-display" className="text-4xl font-black font-mono tracking-wider text-slate-900 dark:text-brand-yellow mb-4 drop-shadow-sm">
                 {displayCode}
               </div>
               <div className="flex gap-2">
