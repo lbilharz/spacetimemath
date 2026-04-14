@@ -35,13 +35,6 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: client
 
-      - name: Write .env.test
-        run: |
-          cat > client/.env.test <<EOF
-          VITE_STDB_HOST=maincloud.spacetimedb.com
-          VITE_STDB_DB_NAME=spacetimemath-test
-          EOF
-
       - name: Run E2E tests
         run: npm run test:e2e:ci
         working-directory: client
