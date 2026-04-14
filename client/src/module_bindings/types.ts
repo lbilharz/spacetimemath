@@ -105,23 +105,6 @@ export const Friendship = __t.object("Friendship", {
 });
 export type Friendship = __Infer<typeof Friendship>;
 
-export const IssuedProblem = __t.object("IssuedProblem", {
-  id: __t.u64(),
-  sessionId: __t.u64(),
-  a: __t.u8(),
-  b: __t.u8(),
-  token: __t.string(),
-  promptMode: __t.u8(),
-});
-export type IssuedProblem = __Infer<typeof IssuedProblem>;
-
-export const IssuedProblemResult = __t.object("IssuedProblemResult", {
-  owner: __t.identity(),
-  token: __t.string(),
-  promptMode: __t.u8(),
-});
-export type IssuedProblemResult = __Infer<typeof IssuedProblemResult>;
-
 export const IssuedProblemResultV2 = __t.object("IssuedProblemResultV2", {
   owner: __t.identity(),
   token: __t.string(),
@@ -164,16 +147,6 @@ export const MyEmailResult = __t.object("MyEmailResult", {
   email: __t.option(__t.string()),
 });
 export type MyEmailResult = __Infer<typeof MyEmailResult>;
-
-export const NextProblemResult = __t.object("NextProblemResult", {
-  owner: __t.identity(),
-  sessionId: __t.u64(),
-  a: __t.u8(),
-  b: __t.u8(),
-  token: __t.string(),
-  promptMode: __t.u8(),
-});
-export type NextProblemResult = __Infer<typeof NextProblemResult>;
 
 export const NextProblemResultV2 = __t.object("NextProblemResultV2", {
   owner: __t.identity(),
@@ -313,13 +286,6 @@ export const TeacherSecret = __t.object("TeacherSecret", {
   secret: __t.string(),
 });
 export type TeacherSecret = __Infer<typeof TeacherSecret>;
-
-export const TeacherVerificationCode = __t.object("TeacherVerificationCode", {
-  identity: __t.identity(),
-  email: __t.string(),
-  code: __t.string(),
-});
-export type TeacherVerificationCode = __Infer<typeof TeacherVerificationCode>;
 
 export const UnlockLog = __t.object("UnlockLog", {
   id: __t.u64(),

@@ -51,20 +51,12 @@ pub fn my_restore_results(ctx: &ViewContext) -> Vec<RestoreResult> {
     ctx.db.restore_results().caller().find(ctx.sender()).into_iter().collect()
 }
 
-#[spacetimedb::view(accessor = my_issued_problem_results, public)]
-pub fn my_issued_problem_results(ctx: &ViewContext) -> Vec<IssuedProblemResult> {
-    ctx.db.issued_problem_results().owner().find(ctx.sender()).into_iter().collect()
-}
 
 #[spacetimedb::view(accessor = my_issued_problem_results_v2, public)]
 pub fn my_issued_problem_results_v2(ctx: &ViewContext) -> Vec<IssuedProblemResultV2> {
     ctx.db.issued_problem_results_v2().owner().find(ctx.sender()).into_iter().collect()
 }
 
-#[spacetimedb::view(accessor = my_next_problem_results, public)]
-pub fn my_next_problem_results(ctx: &ViewContext) -> Vec<NextProblemResult> {
-    ctx.db.next_problem_results().owner().find(ctx.sender()).into_iter().collect()
-}
 
 #[spacetimedb::view(accessor = my_next_problem_results_v2, public)]
 pub fn my_next_problem_results_v2(ctx: &ViewContext) -> Vec<NextProblemResultV2> {

@@ -54,7 +54,6 @@ import IssueProblemReducer from "./issue_problem_reducer";
 import JoinClassAsStudentReducer from "./join_class_as_student_reducer";
 import JoinClassroomReducer from "./join_classroom_reducer";
 import LeaveClassroomReducer from "./leave_classroom_reducer";
-import RemoveClassroomMemberReducer from "./remove_classroom_member_reducer";
 import MarkRecoveryEmailedReducer from "./mark_recovery_emailed_reducer";
 import MigrateCloseOrphanSessionsReducer from "./migrate_close_orphan_sessions_reducer";
 import MigrateEmailsToPrivateReducer from "./migrate_emails_to_private_reducer";
@@ -71,6 +70,7 @@ import ReconnectLegacySessionsReducer from "./reconnect_legacy_sessions_reducer"
 import RecoverOrphanedSprintsReducer from "./recover_orphaned_sprints_reducer";
 import RegenerateRecoveryKeyReducer from "./regenerate_recovery_key_reducer";
 import RegisterReducer from "./register_reducer";
+import RemoveClassroomMemberReducer from "./remove_classroom_member_reducer";
 import RemoveFriendReducer from "./remove_friend_reducer";
 import RestoreAccountReducer from "./restore_account_reducer";
 import RestoreAccountViaEmailReducer from "./restore_account_via_email_reducer";
@@ -111,9 +111,7 @@ import MyClassroomsRow from "./my_classrooms_table";
 import MyEmailResultsRow from "./my_email_results_table";
 import MyFriendInvitesRow from "./my_friend_invites_table";
 import MyFriendshipsRow from "./my_friendships_table";
-import MyIssuedProblemResultsRow from "./my_issued_problem_results_table";
 import MyIssuedProblemResultsV2Row from "./my_issued_problem_results_v_2_table";
-import MyNextProblemResultsRow from "./my_next_problem_results_table";
 import MyNextProblemResultsV2Row from "./my_next_problem_results_v_2_table";
 import MyPlayerDktWeightsRow from "./my_player_dkt_weights_table";
 import MyRecoveryCodeResultsRow from "./my_recovery_code_results_table";
@@ -273,13 +271,6 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyFriendshipsRow),
-  my_issued_problem_results: __table({
-    name: 'my_issued_problem_results',
-    indexes: [
-    ],
-    constraints: [
-    ],
-  }, MyIssuedProblemResultsRow),
   my_issued_problem_results_v2: __table({
     name: 'my_issued_problem_results_v_2',
     indexes: [
@@ -287,13 +278,6 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyIssuedProblemResultsV2Row),
-  my_next_problem_results: __table({
-    name: 'my_next_problem_results',
-    indexes: [
-    ],
-    constraints: [
-    ],
-  }, MyNextProblemResultsRow),
   my_next_problem_results_v2: __table({
     name: 'my_next_problem_results_v_2',
     indexes: [
@@ -374,7 +358,6 @@ const reducersSchema = __reducers(
   __reducerSchema("join_class_as_student", JoinClassAsStudentReducer),
   __reducerSchema("join_classroom", JoinClassroomReducer),
   __reducerSchema("leave_classroom", LeaveClassroomReducer),
-  __reducerSchema("remove_classroom_member", RemoveClassroomMemberReducer),
   __reducerSchema("mark_recovery_emailed", MarkRecoveryEmailedReducer),
   __reducerSchema("migrate_close_orphan_sessions", MigrateCloseOrphanSessionsReducer),
   __reducerSchema("migrate_emails_to_private", MigrateEmailsToPrivateReducer),
@@ -391,6 +374,7 @@ const reducersSchema = __reducers(
   __reducerSchema("recover_orphaned_sprints", RecoverOrphanedSprintsReducer),
   __reducerSchema("regenerate_recovery_key", RegenerateRecoveryKeyReducer),
   __reducerSchema("register", RegisterReducer),
+  __reducerSchema("remove_classroom_member", RemoveClassroomMemberReducer),
   __reducerSchema("remove_friend", RemoveFriendReducer),
   __reducerSchema("restore_account", RestoreAccountReducer),
   __reducerSchema("restore_account_via_email", RestoreAccountViaEmailReducer),

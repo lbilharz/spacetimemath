@@ -42,6 +42,7 @@ import ReconnectLegacySessionsReducer from "../reconnect_legacy_sessions_reducer
 import RecoverOrphanedSprintsReducer from "../recover_orphaned_sprints_reducer";
 import RegenerateRecoveryKeyReducer from "../regenerate_recovery_key_reducer";
 import RegisterReducer from "../register_reducer";
+import RemoveClassroomMemberReducer from "../remove_classroom_member_reducer";
 import RemoveFriendReducer from "../remove_friend_reducer";
 import RestoreAccountReducer from "../restore_account_reducer";
 import RestoreAccountViaEmailReducer from "../restore_account_via_email_reducer";
@@ -103,6 +104,7 @@ export type ReconnectLegacySessionsParams = __Infer<typeof ReconnectLegacySessio
 export type RecoverOrphanedSprintsParams = __Infer<typeof RecoverOrphanedSprintsReducer>;
 export type RegenerateRecoveryKeyParams = __Infer<typeof RegenerateRecoveryKeyReducer>;
 export type RegisterParams = __Infer<typeof RegisterReducer>;
+export type RemoveClassroomMemberParams = __Infer<typeof RemoveClassroomMemberReducer>;
 export type RemoveFriendParams = __Infer<typeof RemoveFriendReducer>;
 export type RestoreAccountParams = __Infer<typeof RestoreAccountReducer>;
 export type RestoreAccountViaEmailParams = __Infer<typeof RestoreAccountViaEmailReducer>;

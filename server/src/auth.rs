@@ -196,13 +196,6 @@ pub struct TeacherSecret {
     pub secret: String,
 }
 
-#[table(accessor = teacher_verification_codes)]
-pub struct TeacherVerificationCode {
-    #[primary_key]
-    pub identity: spacetimedb::Identity,
-    pub email: String,
-    pub code: String,
-}
 
 #[reducer]
 pub fn admin_set_hmac_secret(ctx: &ReducerContext, secret: String) -> Result<(), String> {

@@ -152,20 +152,6 @@ pub struct Answer {
     pub prompt_mode: u8, // 0 = Type, 1 = Tap
 }
 
-/// SEC-10: Server-issued problem token table.
-/// Each row is created by issue_problem and consumed by submit_answer (one-time use).
-#[table(accessor = issued_problems)]
-pub struct IssuedProblem {
-    #[primary_key]
-    #[auto_inc]
-    pub id: u64,
-    pub session_id: u64,
-    pub a: u8,
-    pub b: u8,
-    pub token: String,
-    #[default(0)]
-    pub prompt_mode: u8,
-}
 
 #[table(accessor = issued_problems_v2)]
 pub struct IssuedProblemV2 {
@@ -181,17 +167,6 @@ pub struct IssuedProblemV2 {
     pub options: Vec<u32>,
 }
 
-/// SEC-10: Result table — now private. Clients access via the
-/// `my_issued_problem_results` view (views.rs), scoped to ctx.sender().
-/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
-#[table(accessor = issued_problem_results)]
-pub struct IssuedProblemResult {
-    #[primary_key]
-    pub owner: Identity,
-    pub token: String,
-    #[default(0)]
-    pub prompt_mode: u8,
-}
 
 /// SEC-10: Result table — now private. Clients access via the
 /// `my_issued_problem_results_v2` view (views.rs), scoped to ctx.sender().
@@ -262,20 +237,6 @@ pub struct SprintSequence {
     pub index: u32,         // pointer to the next problem to serve
 }
 
-/// SEQ-02: Result table for server-driven problem delivery — now private. Clients access via the
-/// `my_next_problem_results` view (views.rs), scoped to ctx.sender().
-/// Previously public due to SpacetimeDB 2.0.3 row-push limitations (resolved via views).
-#[table(accessor = next_problem_results)]
-pub struct NextProblemResult {
-    #[primary_key]
-    pub owner: Identity,
-    pub session_id: u64,
-    pub a: u8,
-    pub b: u8,
-    pub token: String,
-    #[default(0)]
-    pub prompt_mode: u8,
-}
 
 /// SEQ-02: Result table for server-driven problem delivery — now private. Clients access via the
 /// `my_next_problem_results_v2` view (views.rs), scoped to ctx.sender().

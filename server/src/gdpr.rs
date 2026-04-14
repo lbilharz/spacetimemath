@@ -1,32 +1,23 @@
 use spacetimedb::{reducer, ReducerContext, Table};
-use crate::{sessions, answers, issued_problems, sprint_sequences, best_scores,
+use crate::{sessions, answers, sprint_sequences, best_scores,
             unlock_logs, recovery_keys, recovery_code_results,
-            issued_problem_results, classroom_members,
+            classroom_members,
             classrooms, online_players, players};
 
 /// GDPR-01: Erase all data for the calling player.
-/// Cascade covers all 13 identity-keyed tables.
+/// Cascade covers all identity-keyed tables.
 /// Idempotent: if no player row exists, still cleans up any orphaned rows.
 #[reducer]
 pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
     let sender = ctx.sender();
 
-    // 1. Collect session IDs before deleting sessions (issued_problems are session-scoped)
+    // 1. Collect session IDs before deleting sessions
     let session_ids: Vec<u64> = ctx.db.sessions().iter()
         .filter(|s| s.player_identity == sender)
         .map(|s| s.id)
         .collect();
 
-    // 2. Delete issued_problems for those sessions (must happen before sessions are deleted)
-    for sid in &session_ids {
-        let to_delete: Vec<u64> = ctx.db.issued_problems().iter()
-            .filter(|p| p.session_id == *sid)
-            .map(|p| p.id)
-            .collect();
-        for id in to_delete { ctx.db.issued_problems().id().delete(id); }
-    }
-
-    // 2b. Delete sprint_sequences for those sessions (SEQ-06 GDPR cascade)
+    // 2. Delete sprint_sequences for those sessions (SEQ-06 GDPR cascade)
     for sid in &session_ids {
         ctx.db.sprint_sequences().session_id().delete(*sid);
     }
@@ -59,10 +50,7 @@ pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
     for code in rk { ctx.db.recovery_keys().code().delete(code); }
     ctx.db.recovery_code_results().owner().delete(sender);
 
-    // 8. Delete issued_problem_results
-    ctx.db.issued_problem_results().owner().delete(sender);
-
-    // 9. Handle classroom memberships — if teacher, close entire classroom
+    // 8. Handle classroom memberships — if teacher, close entire classroom
     let memberships: Vec<_> = ctx.db.classroom_members().iter()
         .filter(|m| m.player_identity == sender)
         .collect();
@@ -81,10 +69,10 @@ pub fn delete_player(ctx: &ReducerContext) -> Result<(), String> {
         }
     }
 
-    // 10. Delete online presence
+    // 9. Delete online presence
     ctx.db.online_players().identity().delete(sender);
 
-    // 11. Delete player row last
+    // 10. Delete player row last
     ctx.db.players().identity().delete(sender);
 
     Ok(())
