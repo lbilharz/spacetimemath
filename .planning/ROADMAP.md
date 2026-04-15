@@ -39,9 +39,9 @@
   - [ ] 11-01-PLAN.md — Remove global leaderboard source code (LobbyPage, ResultsPage, App.tsx, delete Leaderboard.tsx)
   - [ ] 11-02-PLAN.md — i18n cleanup (remove leaderboard keys, update tagline across 9 locales)
 
-- [ ] Phase 12: Onboarding Weiche (LuL / SuS / Solo)
-  **Goal:** Replace single registration flow with 3-way split: Teacher (email + consent), Student (class code + in-class name), Solo (pseudonym, no PII). SpaceTimeDB Identity remains the cryptographic unique key.
-  **Requirements:** AUTH-01, AUTH-02, AUTH-03, GDPR-01
+- [ ] Phase 12: Database cleanup
+  **Goal:** General database cleanup and refactoring.
+  **Requirements:** TBD
 
 - [ ] Phase 13: Class-Scoped Username Uniqueness
   **Goal:** Enforce username uniqueness per class (not globally) server-side. Add player_type, class_id, email fields to players table. Solo → Teacher / Solo → Student transitions via reducers. SuS → Teacher blocked server-side.
@@ -61,6 +61,6 @@
 | 9. Fixed Grid Visualization | v1.1 | 1/1 | Complete | 2026-03-16 |
 | 10. Extended Tables Opt-In | v1.1 | 1/1 | Complete | 2026-03-17 |
 | 11. Remove Global Leaderboard UI | 2/2 | Complete   | 2026-03-30 | — |
-| 12. Onboarding Weiche | v1.2 | 0/? | Pending | — |
+| 12. Database cleanup | v1.2 | 0/? | Pending | — |
 | 13. Class-Scoped Username Uniqueness | v1.2 | 0/? | Pending | — |
 | 14. Friends via Invite Link | v1.2 | 0/? | Pending | — |

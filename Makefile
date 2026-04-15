@@ -79,4 +79,16 @@ deploy: publish generate
 test-e2e:
 	cd client && npm run test:e2e:ci
 
-.PHONY: setup publish publish-test generate call deploy test test-e2e check-no-delete-data wipe-and-publish backup
+# App packaging and release
+app-release-beta:
+	cd client/ios/App && bundle exec fastlane beta
+	cd client/android && fastlane beta
+
+app-release-metadata:
+	cd client/ios/App && bundle exec fastlane metadata
+	cd client/android && fastlane metadata
+
+app-screenshots:
+	cd client && npm run screenshots
+
+.PHONY: setup publish publish-test generate call deploy test test-e2e check-no-delete-data wipe-and-publish backup app-release-beta app-release-metadata app-screenshots

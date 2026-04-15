@@ -155,7 +155,7 @@ export default function TeacherUpgradeForm({ myIdentityHex, name, onUpgraded }: 
       </p>
       <form onSubmit={handleVerify} className="flex flex-col gap-4">
         <input
-          className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:bg-white focus:outline-none dark:text-white dark:focus:border-brand-yellow text-center shadow-inner"
+          className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-6 text-2xl font-black tracking-[0.2em] text-slate-900 transition-all focus:border-brand-yellow focus:outline-none dark:text-white text-center shadow-inner"
           type="text"
           placeholder="123456"
           value={verificationCode}

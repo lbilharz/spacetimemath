@@ -8,6 +8,6 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    exclude: ['src/__tests__/integration/**', 'node_modules/**'],
+    exclude: ['src/__tests__/integration/**', 'src/__tests__/e2e/**', 'node_modules/**'],
   },
 })

@@ -14,15 +14,15 @@ export const SCREENS: ScreenConfig[] = [
 ]
 
 export const LOCALES = [
-  { lang: 'en', fastlaneDir: 'en-GB',   dir: 'ltr' },
-  { lang: 'de', fastlaneDir: 'de-DE',   dir: 'ltr' },
-  { lang: 'fr', fastlaneDir: 'fr-FR',   dir: 'ltr' },
-  { lang: 'nl', fastlaneDir: 'nl-NL',   dir: 'ltr' },
-  { lang: 'tr', fastlaneDir: 'tr',      dir: 'ltr' },
-  { lang: 'uk', fastlaneDir: 'uk',      dir: 'ltr' },
-  { lang: 'ar', fastlaneDir: 'ar-SA',   dir: 'rtl' },
-  { lang: 'zh', fastlaneDir: 'zh-Hans', dir: 'ltr' },
-  { lang: 'es', fastlaneDir: 'es-ES',   dir: 'ltr' },
+  { lang: 'en', fastlaneDir: 'en-GB',   androidDir: 'en-GB',   dir: 'ltr' },
+  { lang: 'de', fastlaneDir: 'de-DE',   androidDir: 'de-DE',   dir: 'ltr' },
+  { lang: 'fr', fastlaneDir: 'fr-FR',   androidDir: 'fr-FR',   dir: 'ltr' },
+  { lang: 'nl', fastlaneDir: 'nl-NL',   androidDir: 'nl-NL',   dir: 'ltr' },
+  { lang: 'tr', fastlaneDir: 'tr',      androidDir: 'tr-TR',   dir: 'ltr' },
+  { lang: 'uk', fastlaneDir: 'uk',      androidDir: 'uk',      dir: 'ltr' },
+  { lang: 'ar', fastlaneDir: 'ar-SA',   androidDir: 'ar',      dir: 'rtl' },
+  { lang: 'zh', fastlaneDir: 'zh-Hans', androidDir: 'zh-CN',   dir: 'ltr' },
+  { lang: 'es', fastlaneDir: 'es-ES',   androidDir: 'es-ES',   dir: 'ltr' },
 ]
 
 export const DEVICES = [

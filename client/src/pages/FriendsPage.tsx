@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSpacetimeDB, useTable, useReducer } from 'spacetimedb/react';
 import { QRCodeCanvas } from 'qrcode.react';
+import { Capacitor } from '@capacitor/core';
 import { tables, reducers } from '../module_bindings/index.js';
 import type { Friendship, FriendInvite } from '../module_bindings/types.js';
 import PageContainer from '../components/PageContainer.js';
@@ -52,7 +53,9 @@ export default function FriendsPage() {
     })
     : undefined;
 
-  const inviteLink = activeInvite ? `https://up.bilharz.eu/friends?friend=${activeInvite.token}` : '';
+  const isNativeApp = Capacitor.isNativePlatform();
+  const shareOrigin = !isNativeApp ? window.location.origin : 'https://up.bilharz.eu';
+  const inviteLink = activeInvite ? `${shareOrigin}/friends?friend=${activeInvite.token}` : '';
   const displayCode = activeInvite?.token ? activeInvite.token.replace(/(..)(..)(..)(..)/, "$1-$2-$3-$4") : '';
 
   const handleCreateInvite = async () => {

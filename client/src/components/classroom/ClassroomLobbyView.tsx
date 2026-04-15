@@ -5,6 +5,7 @@ import type { Classroom, ClassroomMember, Answer, ProblemStat } from '../../modu
 import PageContainer from '../PageContainer.js';
 import MasteryGrid from '../MasteryGrid.js';
 import { SettingsIcon, PlayIcon } from '../Icons.js';
+import { Capacitor } from '@capacitor/core';
 
 interface LeaderRow {
   id: string;
@@ -50,6 +51,9 @@ export default function ClassroomLobbyView({
 }: Props) {
   const { t } = useTranslation();
   const medals = ['🥇', '🥈', '🥉'];
+  
+  const isNativeApp = Capacitor.isNativePlatform();
+  const shareOrigin = !isNativeApp ? window.location.origin : 'https://up.bilharz.eu';
 
   return (
     <PageContainer maxWidth="max-w-3xl" className="pb-[140px] sm:pb-[160px]">
@@ -95,7 +99,7 @@ export default function ClassroomLobbyView({
         // Empty State: Always show login code
         <div className="flex flex-col items-center justify-center rounded-[32px] border border-slate-200 bg-white p-8 sm:p-12 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 text-center mt-4">
           <div className="mb-6 rounded-3xl border-4 border-slate-50 dark:border-slate-700/50 bg-white p-6 shadow-inner">
-            <QRCodeSVG value={`${window.location.origin}/?join=${myClassroom.code}`} size={180} level="H" />
+            <QRCodeSVG value={`${shareOrigin}/?join=${myClassroom.code}`} size={180} level="H" />
           </div>
           <h2 className="mb-2 text-2xl font-black text-slate-900 dark:text-white">Raum bereit!</h2>
           <p className="mb-6 text-sm text-slate-500 max-w-sm">

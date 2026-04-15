@@ -45,3 +45,13 @@ client/test_json.js
 # Test output
 test-results/
 client/playwright-report/
+
+# Android build and fastlane auth artifacts
+client/android/app/build/
+client/android/app/release-key.keystore
+client/android/app/keystore.properties
+client/android/google-services.json
+client/android/fastlane/google-play-key.json
+client/android/fastlane/report.xml
+client/android/.gradle/
+client/android/local.properties

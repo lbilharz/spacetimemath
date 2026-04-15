@@ -39,6 +39,7 @@ Progress: [█░░░░░░░░░] 5% (1/1 plans complete in v1.2)
 - (11-01) Kept sessions subscription in ResultsPage (still needed for session.isComplete and mastery grid)
 - [Phase 11]: Removed 10-key global leaderboard i18n namespace from all 9 locale files to complete UI removal
 - [Phase 11]: Updated register.tagline with language-idiomatic beat-your-best phrasing per locale
+- [Roadmap]: Replaced Phase 12 (Onboarding weiche) with Database cleanup.
 
 ## Quick Tasks Completed
 

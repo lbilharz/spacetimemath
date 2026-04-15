@@ -9,6 +9,7 @@ import { pdf } from '@react-pdf/renderer';
 import { Concept3PdfCards } from '../Concept3PdfCards.js';
 import PageContainer from '../PageContainer.js';
 import { BackIcon, KeyIcon } from '../Icons.js';
+import { Capacitor } from '@capacitor/core';
 
 interface ClassRecoveryResult {
   memberIdentity: { toHexString: () => string };
@@ -41,6 +42,10 @@ export default function ClassroomSettingsModal({
   const [players] = useTable(tables.players);
   const [classRecoveryResults] = useTable(tables.my_class_recovery_results);
   
+  const isNativeApp = Capacitor.isNativePlatform();
+  const shareOrigin = !isNativeApp ? window.location.origin : 'https://up.bilharz.eu';
+  const shareDomain = !isNativeApp ? window.location.origin.split('//')[1] : 'up.bilharz.eu';
+  
   const classRecoveryResultsRef = useRef<ClassRecoveryResult[]>([]);
   useEffect(() => {
     classRecoveryResultsRef.current = classRecoveryResults as unknown as ClassRecoveryResult[];
@@ -71,7 +76,7 @@ export default function ClassroomSettingsModal({
   const [removeNameConfirm, setRemoveNameConfirm] = useState('');
   const [removingMember, setRemovingMember] = useState(false);
 
-  const restoreUrl = (code: string) => `${window.location.origin}/?restore=${code}`;
+  const restoreUrl = (code: string) => `${shareOrigin}/?restore=${code}`;
 
   const myClassRecoveryCodes = (classRecoveryResults as unknown as ClassRecoveryResult[])
     .filter(r => r.classroomId === classroomId);
@@ -99,7 +104,7 @@ export default function ClassroomSettingsModal({
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/?join=${myClassroom.code}`);
+    navigator.clipboard.writeText(`${shareOrigin}/?join=${myClassroom.code}`);
     setCodeCopied(true);
     setTimeout(() => setCodeCopied(false), 2000);
   };
@@ -217,7 +222,7 @@ export default function ClassroomSettingsModal({
         cursor += 7;
         doc.setTextColor(190, 190, 190);
         doc.setFontSize(SMALL_PT);
-        doc.text(globalThis.location.origin.split('//')[1], x + CARD_W / 2, cursor, { align: 'center' });
+        doc.text(shareDomain, x + CARD_W / 2, cursor, { align: 'center' });
       });
       doc.save(`${myClassroom.name}-login-cards.pdf`);
     } catch (err: unknown) {
@@ -241,9 +246,8 @@ export default function ClassroomSettingsModal({
         qrDataUrl: qrDataUrls[i],
       }));
       
-      const origin = globalThis.location.origin.split('//')[1] || '';
       const blob = await pdf(
-        <Concept3PdfCards cards={cardsData} classroomName={myClassroom.name} origin={origin} />
+        <Concept3PdfCards cards={cardsData} classroomName={myClassroom.name} origin={shareDomain} />
       ).toBlob();
 
       const url = URL.createObjectURL(blob);
@@ -300,7 +304,7 @@ export default function ClassroomSettingsModal({
           <div className="shrink-0 flex flex-col items-center gap-2">
             <div className="rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white p-3 shadow-sm">
               <QRCodeSVG
-                value={`${window.location.origin}/?join=${myClassroom.code}`}
+                value={`${shareOrigin}/?join=${myClassroom.code}`}
                 size={120}
                 level="H"
               />
