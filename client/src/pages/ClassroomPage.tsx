@@ -34,8 +34,8 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const [answers]           = useTable(tables.my_classroom_answers);
   const [players]           = useTable(tables.players);
   const [problemStats]      = useTable(tables.problem_stats);
-  const [nextProblemResults] = useTable(tables.my_next_problem_results_v2);
-  const [issuedProblemResults] = useTable(tables.my_issued_problem_results_v2);
+  const [nextProblemResults] = useTable(tables.my_classroom_next_problem_results_v2);
+  const [issuedProblemResults] = useTable(tables.my_classroom_issued_problem_results_v2);
   // recovery_keys removed (SEC-01): private table — teachers can no longer read student recovery codes
 
   const leaveClassroom        = useSTDBReducer(reducers.leaveClassroom);

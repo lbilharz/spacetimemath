@@ -208,11 +208,11 @@ pub fn my_classroom_answers(ctx: &ViewContext) -> Vec<Answer> {
 pub fn my_classroom_keystrokes(ctx: &ViewContext) -> Vec<StudentKeystroke> {
     let mut visible_keystrokes = Vec::new();
     let sender = ctx.sender();
-    
+
     // Keystrokes are highly transient; we strictly limit iteration to active sprints
     // to prevent unnecessary scans over historical rosters.
     let active_sprints = ctx.db.class_sprints().teacher().filter(&sender)
-         .filter(|s| s.is_active); 
+         .filter(|s| s.is_active);
 
     for sprint in active_sprints {
         if sprint.id == 0 { continue; }
@@ -223,4 +223,38 @@ pub fn my_classroom_keystrokes(ctx: &ViewContext) -> Vec<StudentKeystroke> {
         }
     }
     visible_keystrokes
+}
+
+/// Teacher view: current active problem for every student in an active class sprint.
+/// Mirrors my_next_problem_results_v2 but scoped to the teacher's active sprints
+/// so StudentObserverModal can show which problem a student is currently solving.
+#[spacetimedb::view(accessor = my_classroom_next_problem_results_v2, public)]
+pub fn my_classroom_next_problem_results_v2(ctx: &ViewContext) -> Vec<NextProblemResultV2> {
+    let sender = ctx.sender();
+    let mut results = Vec::new();
+    for sprint in ctx.db.class_sprints().teacher().filter(&sender).filter(|s| s.is_active) {
+        if sprint.id == 0 { continue; }
+        for session in ctx.db.sessions().class_sprint_id().filter(&sprint.id) {
+            if let Some(row) = ctx.db.next_problem_results_v2().owner().find(session.player_identity) {
+                results.push(row);
+            }
+        }
+    }
+    results
+}
+
+/// Teacher view: current diagnostic problem for every student in an active diagnostic sprint.
+#[spacetimedb::view(accessor = my_classroom_issued_problem_results_v2, public)]
+pub fn my_classroom_issued_problem_results_v2(ctx: &ViewContext) -> Vec<IssuedProblemResultV2> {
+    let sender = ctx.sender();
+    let mut results = Vec::new();
+    for sprint in ctx.db.class_sprints().teacher().filter(&sender).filter(|s| s.is_active) {
+        if sprint.id == 0 { continue; }
+        for session in ctx.db.sessions().class_sprint_id().filter(&sprint.id) {
+            if let Some(row) = ctx.db.issued_problem_results_v2().owner().find(session.player_identity) {
+                results.push(row);
+            }
+        }
+    }
+    results
 }

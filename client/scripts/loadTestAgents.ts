@@ -1,9 +1,9 @@
 import { connect, waitFor, type ConnectedClient } from '../src/__tests__/helpers.js';
 import fs from 'node:fs';
 
-// Fallback environment settings so the test suite can connect naturally
-process.env.TEST_STDB_URI = process.env.TEST_STDB_URI || 'wss://maincloud.spacetimedb.com';
-process.env.TEST_STDB_DB = process.env.TEST_STDB_DB || 'spacetimemath-test';
+// Always target production — this script seeds live test data
+process.env.TEST_STDB_URI = 'wss://maincloud.spacetimedb.com';
+process.env.TEST_STDB_DB = 'spacetimemath';
 
 let targetCode = process.argv[2];
 const isAutoMode = !targetCode;
@@ -58,7 +58,7 @@ async function startVirtualTeacher(): Promise<{ client: ConnectedClient, code: s
   await client.conn.reducers.createClassroom({ name: "Automated Test Class" });
   
   const room = await waitFor(() => {
-    for (const r of client.conn.db.classrooms.iter()) {
+    for (const r of client.conn.db.my_classrooms.iter()) {
       if (r.teacher.toHexString() === hex) return r;
     }
   }, 10_000);
@@ -78,33 +78,41 @@ async function startAgent(index: number, existingToken: string | undefined, code
   globalTokens[index - 1] = client.token;
   fs.writeFileSync(TOKEN_FILE, JSON.stringify(globalTokens, null, 2));
   
-  if (!existingToken) {
+  // Ensure player row exists (re-register if wiped)
+  const playerExists = [...client.conn.db.players.iter()].some(
+    p => p.identity.toHexString() === hex
+  );
+  if (!existingToken || !playerExists) {
     console.log(`Agent ${index} connected fresh (${hex.slice(0, 6)}). Registering as ${botName}...`);
-    await client.conn.reducers.register({ username: botName, playerType: { tag: "Student" }, email: undefined });
+    await client.conn.reducers.register({ username: botName, playerType: { tag: "Solo" }, email: undefined });
+    // Wait for player row to land before joining
+    await waitFor(() => {
+      return [...client.conn.db.players.iter()].find(p => p.identity.toHexString() === hex);
+    }, 10_000);
   } else {
     console.log(`Agent ${index} reconnected via token (${hex.slice(0, 6)}) as ${botName}.`);
   }
-  
-  try {
+
+  // Join classroom and verify membership landed
+  const alreadyMember = [...client.conn.db.my_classroom_members.iter()].length > 0;
+  if (!alreadyMember) {
     console.log(`Agent ${index} joining classroom ${code}...`);
     await client.conn.reducers.joinClassroom({ code });
-  } catch (e: any) {
-    if (e.message?.includes('register')) {
-      console.log(`Agent ${index} orphaned by DB wipe! Re-registering as ${botName}...`);
-      await client.conn.reducers.register({ username: botName, playerType: { tag: "Student" }, email: undefined });
-      await client.conn.reducers.joinClassroom({ code });
-    } else {
-      throw e;
-    }
+    await waitFor(() => {
+      return [...client.conn.db.my_classroom_members.iter()].length > 0 ? true : undefined;
+    }, 10_000);
+  } else {
+    console.log(`Agent ${index} already a member of classroom ${code}.`);
   }
+  console.log(`Agent ${index} joined ✅`);
   
   while (true) {
     console.log(`Agent ${index} ready. Waiting for teacher to start class sprint...`);
     const session = await waitFor(() => {
-      for (const s of client.conn.db.sessions.iter()) {
+      for (const s of client.conn.db.my_sessions.iter()) {
         if (s.playerIdentity.toHexString() === hex && !s.isComplete) return s;
       }
-    }, 3600_000); 
+    }, 3600_000);
     
     if (!session) continue;
     
@@ -120,7 +128,7 @@ async function startAgent(index: number, existingToken: string | undefined, code
     }
     
     while (true) {
-      const latestSession = [...client.conn.db.sessions.iter()].find(s => s.id === session.id);
+      const latestSession = [...client.conn.db.my_sessions.iter()].find(s => s.id === session.id);
       if (latestSession && latestSession.isComplete) {
          console.log(`Agent ${index} local session completed!`);
          break;
@@ -135,9 +143,9 @@ async function startAgent(index: number, existingToken: string | undefined, code
         
         await client.conn.reducers.issueProblem({ sessionId: session.id, a, b });
         const problemRow = await waitFor(() => {
-          const s = [...client.conn.db.sessions.iter()].find(s => s.id === session.id);
+          const s = [...client.conn.db.my_sessions.iter()].find(s => s.id === session.id);
           if (s?.isComplete) return 'COMPLETED';
-          for (const r of client.conn.db.issued_problem_results_v2.iter()) {
+          for (const r of client.conn.db.my_issued_problem_results_v2.iter()) {
             if (r.owner.toHexString() === hex && !seenTokens.has(r.token)) return r;
           }
         }, 30_000);
@@ -146,9 +154,9 @@ async function startAgent(index: number, existingToken: string | undefined, code
       } else {
         // Normal Flow: Wait for Server nextProblem
         const problemRow = await waitFor(() => {
-          const s = [...client.conn.db.sessions.iter()].find(s => s.id === session.id);
+          const s = [...client.conn.db.my_sessions.iter()].find(s => s.id === session.id);
           if (s?.isComplete) return 'COMPLETED';
-          for (const r of client.conn.db.next_problem_results_v2.iter()) {
+          for (const r of client.conn.db.my_next_problem_results_v2.iter()) {
             if (r.owner.toHexString() === hex && !seenTokens.has(r.token)) return r;
           }
         }, 30_000);
@@ -182,7 +190,7 @@ async function startAgent(index: number, existingToken: string | undefined, code
       if (isDiagnostic) {
         // TAP MODE Simulator
         await new Promise(r => setTimeout(r, thinkingTime));
-        const isFocused = Array.from(client.conn.db.teacher_focus.iter()).some(
+        const isFocused = Array.from(client.conn.db.my_teacher_focus.iter()).some(
           (f: any) => f.focusedStudentId.toHexString() === hex
         );
         if (isFocused) {
@@ -197,7 +205,7 @@ async function startAgent(index: number, existingToken: string | undefined, code
           await new Promise(r => setTimeout(r, delayPerKeystroke));
           
           // Opt-in Telemetry: Am I being watched right now?
-          const isFocused = Array.from(client.conn.db.teacher_focus.iter()).some(
+          const isFocused = Array.from(client.conn.db.my_teacher_focus.iter()).some(
             (f: any) => f.focusedStudentId.toHexString() === hex
           );
           
@@ -244,8 +252,8 @@ async function run() {
     
     await waitFor(() => {
       let count = 0;
-      for (const m of teacherData.client.conn.db.classroom_members.iter()) {
-         if (m.classroomId === teacherData.classroomId) count++;
+      for (const m of teacherData.client.conn.db.my_classroom_members.iter()) {
+        if (m.classroomId === teacherData.classroomId) count++;
       }
       if (count >= AGENT_COUNT) return true;
     }, 60_000);

@@ -35,7 +35,9 @@ import {
 
 // Import all reducer arg schemas
 import AcceptFriendInviteReducer from "./accept_friend_invite_reducer";
+import AdminRestoreMembershipForReducer from "./admin_restore_membership_for_reducer";
 import AdminSetHmacSecretReducer from "./admin_set_hmac_secret_reducer";
+import AdminSetPlayerTypeReducer from "./admin_set_player_type_reducer";
 import CompleteOnboardingReducer from "./complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "./consume_restore_result_reducer";
 import CreateClassroomReducer from "./create_classroom_reducer";
@@ -104,8 +106,10 @@ import ClassSprintsRow from "./class_sprints_table";
 import MyAnswersRow from "./my_answers_table";
 import MyClassRecoveryResultsRow from "./my_class_recovery_results_table";
 import MyClassroomAnswersRow from "./my_classroom_answers_table";
+import MyClassroomIssuedProblemResultsV2Row from "./my_classroom_issued_problem_results_v_2_table";
 import MyClassroomKeystrokesRow from "./my_classroom_keystrokes_table";
 import MyClassroomMembersRow from "./my_classroom_members_table";
+import MyClassroomNextProblemResultsV2Row from "./my_classroom_next_problem_results_v_2_table";
 import MyClassroomSessionsRow from "./my_classroom_sessions_table";
 import MyClassroomsRow from "./my_classrooms_table";
 import MyEmailResultsRow from "./my_email_results_table";
@@ -222,6 +226,13 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyClassroomAnswersRow),
+  my_classroom_issued_problem_results_v2: __table({
+    name: 'my_classroom_issued_problem_results_v_2',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyClassroomIssuedProblemResultsV2Row),
   my_classroom_keystrokes: __table({
     name: 'my_classroom_keystrokes',
     indexes: [
@@ -236,6 +247,13 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MyClassroomMembersRow),
+  my_classroom_next_problem_results_v2: __table({
+    name: 'my_classroom_next_problem_results_v_2',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyClassroomNextProblemResultsV2Row),
   my_classroom_sessions: __table({
     name: 'my_classroom_sessions',
     indexes: [
@@ -339,7 +357,9 @@ const tablesSchema = __schema({
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
   __reducerSchema("accept_friend_invite", AcceptFriendInviteReducer),
+  __reducerSchema("admin_restore_membership_for", AdminRestoreMembershipForReducer),
   __reducerSchema("admin_set_hmac_secret", AdminSetHmacSecretReducer),
+  __reducerSchema("admin_set_player_type", AdminSetPlayerTypeReducer),
   __reducerSchema("complete_onboarding", CompleteOnboardingReducer),
   __reducerSchema("consume_restore_result", ConsumeRestoreResultReducer),
   __reducerSchema("create_classroom", CreateClassroomReducer),

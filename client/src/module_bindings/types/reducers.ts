@@ -7,7 +7,9 @@ import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
 import AcceptFriendInviteReducer from "../accept_friend_invite_reducer";
+import AdminRestoreMembershipForReducer from "../admin_restore_membership_for_reducer";
 import AdminSetHmacSecretReducer from "../admin_set_hmac_secret_reducer";
+import AdminSetPlayerTypeReducer from "../admin_set_player_type_reducer";
 import CompleteOnboardingReducer from "../complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "../consume_restore_result_reducer";
 import CreateClassroomReducer from "../create_classroom_reducer";
@@ -69,7 +71,9 @@ import UpdateFriendAliasReducer from "../update_friend_alias_reducer";
 import VerifyTeacherUpgradeReducer from "../verify_teacher_upgrade_reducer";
 
 export type AcceptFriendInviteParams = __Infer<typeof AcceptFriendInviteReducer>;
+export type AdminRestoreMembershipForParams = __Infer<typeof AdminRestoreMembershipForReducer>;
 export type AdminSetHmacSecretParams = __Infer<typeof AdminSetHmacSecretReducer>;
+export type AdminSetPlayerTypeParams = __Infer<typeof AdminSetPlayerTypeReducer>;
 export type CompleteOnboardingParams = __Infer<typeof CompleteOnboardingReducer>;
 export type ConsumeRestoreResultParams = __Infer<typeof ConsumeRestoreResultReducer>;
 export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;

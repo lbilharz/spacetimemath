@@ -85,7 +85,9 @@ function Root() {
             // SEC-03: Teacher Dashboard secure views
             'SELECT * FROM my_classroom_sessions',
             'SELECT * FROM my_classroom_answers',
-            'SELECT * FROM my_classroom_keystrokes'
+            'SELECT * FROM my_classroom_keystrokes',
+            'SELECT * FROM my_classroom_next_problem_results_v2',
+            'SELECT * FROM my_classroom_issued_problem_results_v2'
           ]);
       })
       .onConnectError((_conn, err) => {

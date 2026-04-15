@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import reactHooks from "eslint-plugin-react-hooks";
 
 export default defineConfig(
-  { ignores: ["dist/", "src/module_bindings/", "scripts/"] },
+  { ignores: ["dist/", "src/module_bindings/", "scripts/", "android/", "ios/"] },
   {
     files: ["src/**/*.{ts,tsx}"],
     extends: [
