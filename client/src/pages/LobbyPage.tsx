@@ -16,6 +16,18 @@ import { TIER_EMOJI } from '../utils/learningTier.js';
 import type { Page } from '../navigation.js';
 import PartyOverlay from '../components/PartyOverlay.js';
 
+// Greeting clips live in /public/audio/greetings/{code}.mp3 (base language code only).
+function playGreeting(code: string, phrase: string) {
+  const base = code.split('-')[0];
+  const a = new Audio(`/audio/greetings/${base}.mp3`);
+  a.play().catch(() => {
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(phrase);
+    u.lang = code;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  });
+}
 
 interface Props {
   myPlayer: Player | undefined;
@@ -164,11 +176,25 @@ export default function LobbyPage({ myPlayer, myIdentityHex, onStartSprint, onRe
               </div>
               <span className="relative z-10 flex flex-col gap-1.5 pt-0.5">
                 <span className="flex items-center flex-wrap leading-tight">
-                  {greeting.greeting},&nbsp;<span className="whitespace-nowrap"><span className="relative z-10 inline-block text-brand-yellow-hover pr-1">{myPlayer.username}<Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" /></span>! 👋</span>
+                  <span
+                    lang={greeting.code}
+                    role="button"
+                    tabIndex={0}
+                    title={t('lobby.hearGreeting', { defaultValue: 'Hear pronunciation' })}
+                    className="cursor-pointer select-none"
+                    onClick={() => playGreeting(greeting.code, greeting.greeting)}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter' && e.key !== ' ') return;
+                      e.preventDefault();
+                      playGreeting(greeting.code, greeting.greeting);
+                    }}
+                  >
+                    {greeting.greeting}
+                  </span>,&nbsp;<span className="whitespace-nowrap"><span className="relative z-10 inline-block text-brand-yellow-hover pr-1">{myPlayer.username}<Swosh className="absolute w-[105%] h-[0.35em] -bottom-1 -left-[2.5%] text-brand-yellow/40 z-[-1]" /></span>! <span aria-hidden="true">👋</span></span>
                 </span>
                 {!isSameLang && (
                   <span className="text-sm font-bold text-slate-400 dark:text-slate-500 flex items-center gap-1.5 opacity-90 transition-opacity hover:opacity-100">
-                    <span className="text-base leading-none -mt-px">{greeting.flag}</span> 
+                    <span className="text-base leading-none -mt-px" aria-hidden="true">{greeting.flag}</span>
                     <span className="leading-none">{
                       (() => {
                         try {
