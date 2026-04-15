@@ -117,3 +117,59 @@ spacetime call spacetimemath cleanup_orphaned_memberships --server maincloud
 SpaceTimeDB resets `auto_inc` counters to 0 on every publish, while existing rows keep their higher IDs. Inserting with `id: 0` will collide with the first existing row.
 
 **Pattern:** Use `try_insert` in a retry loop (up to 200 attempts) for all auto-incremented tables. The counter advances on each collision until it clears existing IDs. This is already the established pattern in `create_classroom`, `start_class_sprint`, etc.
+
+---
+
+## Backup & Restore
+
+> Full incident narrative: `recovery/INCIDENT.md` (2026-03-17 production wipe).
+
+### Publishing safely
+
+SpaceTimeDB's `spacetime publish --delete-data` wipes **all table data** before deploying. It is the leading cause of accidental data loss.
+
+**Rules:**
+- Always publish via `make publish` or `make deploy` — these targets intentionally never pass `--delete-data`.
+- Never run `spacetime publish` directly on production. If you must, double-check the flags.
+- The `wipe-and-publish` Makefile target requires `CONFIRM_WIPE=yes` and is documented as destructive.
+
+### Before any schema-breaking publish
+
+SpaceTimeDB 2.0.3 requires a full wipe (`--delete-data`) to change column types or remove columns. Before doing so:
+
+1. **Run `make backup`** — exports all durable tables to `recovery/backups/<timestamp>/` as text files via `spacetime sql`.
+2. **Export CSVs from the SpacetimeDB web console** as a second copy (Tables → Export CSV). The web console export is the canonical input format for the restore scripts.
+3. Publish with `make wipe-and-publish CONFIRM_WIPE=yes`.
+4. Restore data (see below).
+
+Tables covered by `make backup`: `players`, `player_secrets`, `best_scores`, `player_dkt_weights`, `unlock_logs`, `recovery_keys`, `server_admins`, `teacher_secrets`, `sessions`, `answers`, `problem_stats`, `kc_telemetry`, `friendships`, `friend_invites`, `classrooms`, `classroom_members`, `class_sprints`.
+
+### Restore process
+
+Full restore is scripted in `recovery/`. Run in order:
+
+| Step | Script | What it does |
+|------|--------|-------------|
+| 1 | `restore.js` | Restores `Player` rows, recovery keys, and `BestScore` rows |
+| 2 | `restore-history.js` | Restores all `Session` and `Answer` rows |
+| 3 | `compute-tiers.js` | Recomputes learning tiers from session history, calls `set_learning_tier` |
+| 4 | `restore-classrooms.js` | Restores `Classroom` rows |
+| 5 | `restore-memberships.js` | Restores `ClassroomMember` rows (admin-gated reducer) |
+
+Input: CSV exports from the SpacetimeDB web console (not the `make backup` text files, which are for reference only).
+
+### Restore reducer design
+
+The restore reducers in `server/src/` follow three invariants:
+
+1. **Idempotent** — each reducer checks whether the target row already exists and skips if so. Safe to re-run after partial failures.
+2. **Caller-scoped where possible** — most reducers use `ctx.sender()` as the identity, so a player can only restore their own data. The classroom membership reducers (`restore_classroom_member`, `admin_restore_membership_for`) are admin-gated.
+3. **Preserve original IDs** — restore reducers accept the original `id` as a parameter and insert it directly (bypassing `auto_inc`). This keeps session/answer references intact across the restore.
+
+### After a wipe: re-run `cleanup_orphaned_memberships`
+
+Any restore done out of order (e.g. memberships restored before classrooms) can leave orphaned `ClassroomMember` rows. Always run the migration reducer after restoring classroom data:
+
+```bash
+make call REDUCER=cleanup_orphaned_memberships
+```
