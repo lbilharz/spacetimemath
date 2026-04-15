@@ -41,6 +41,12 @@ client/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.re
 # Scratch / dev files
 scratch.js
 client/test_json.js
+test_reducers.ts
+generate_dict.js
+
+# Temp files
+*.bak
+*.tmp
 
 # Test output
 test-results/

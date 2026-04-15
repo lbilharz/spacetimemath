@@ -1,0 +1,20 @@
+Better 1UP convierte las tablas de multiplicar en un juego multijugador de ritmo rápido.
+
+Responde operaciones contra el reloj, sube 8 niveles progresivos y compite con tus compañeros en sprints de clase en directo — sin crear una cuenta ni compartir datos personales.
+
+CÓMO FUNCIONA
+• Sprint: 60 segundos, problema tras problema. La puntuación se pondera por dificultad — los hechos fáciles valen menos que los difíciles.
+• 8 Niveles: Empieza por los hechos sencillos y desbloquea pares más difíciles a medida que mejora tu precisión. El nivel 7 desbloquea el modo extendido (×11–×20).
+• Modo Aula: Los profesores lanzan un sprint grupal; los alumnos se unen en directo y compiten en una clasificación en tiempo real.
+
+DIFICULTAD INTELIGENTE
+La app se adapta a tu nivel exacto. Los problemas provienen solo de tu nivel actual — nunca demasiado fácil, nunca frustrante. El dominio se registra en segundo plano automáticamente.
+
+PRIVACIDAD TOTAL (RGPD)
+No se necesita cuenta. No se recogen nombres, correos ni identificadores de dispositivo de los alumnos. El progreso queda en el dispositivo. Sin anuncios. Sin rastreo.
+
+PARA PROFESORES
+Crea un aula en segundos. Lanza un sprint para toda la clase. Observa las puntuaciones en tiempo real. Los alumnos se unen con un código de aula.
+
+9 IDIOMAS
+English, Deutsch, Français, Nederlands, Türkçe, Українська, العربية, 中文, Español

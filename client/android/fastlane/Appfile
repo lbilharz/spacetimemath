@@ -1,0 +1,2 @@
+package_name("eu.bilharz.oneup")
+json_key_file("fastlane/google-play-key.json")

@@ -1,0 +1,73 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+
+default_platform(:android)
+
+platform :android do
+  desc "Build modern web React app and sync to Capacitor Android"
+  private_lane :build_web do
+    UI.message("Building modern web React app and syncing to Capacitor...")
+    sh "cd #{File.join(File.dirname(__FILE__), '../..')} && npm run build && npx cap sync android"
+  end
+
+  desc "Auto-increment Android versionCode in build.gradle"
+  private_lane :bump_version do
+    gradle_path = File.expand_path('../app/build.gradle', File.dirname(__FILE__))
+    content = File.read(gradle_path)
+    current_version = content.match(/versionCode\s+(\d+)/)[1].to_i
+    new_version = current_version + 1
+    content = content.sub(/versionCode\s+\d+/, "versionCode #{new_version}")
+    File.write(gradle_path, content)
+    UI.success("Bumped Android versionCode from #{current_version} to #{new_version}!")
+  end
+
+  desc "Generate Android screenshots for all languages via headless browser"
+  lane :screenshots do
+    sh "cd #{File.join(File.dirname(__FILE__), '../..')} && npm run screenshots"
+  end
+
+  desc "Push metadata and screenshots to Google Play (no binary)"
+  lane :metadata do
+    supply(
+      track: "internal",
+      release_status: "draft",
+      version_code: 2,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false
+    )
+  end
+
+  desc "Full release: metadata -> build -> upload to Internal Testing"
+  lane :beta do
+    bump_version
+    build_web
+    gradle(task: "bundle", build_type: "Release")
+    supply(
+      track: "internal",
+      release_status: "draft",
+      aab: "app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false
+    )
+  end
+
+  desc "Full release to Production: metadata -> build -> upload to Production Track"
+  lane :release do
+    bump_version
+    build_web
+    screenshots
+    gradle(task: "bundle", build_type: "Release")
+    supply(
+      track: "production",
+      aab: "app/build/outputs/bundle/release/app-release.aab",
+      release_status: "draft", # uploads as draft so you can manually review before finalizing
+      skip_upload_apk: true
+    )
+  end
+end

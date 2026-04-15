@@ -2,6 +2,35 @@
 
 ---
 
+## Operational Notes — 2026-04-15
+
+### HMAC secret is now live data
+
+`teacher_secrets` table (row id=0) holds the HMAC secret used for teacher email verification. After any future wipe it must be manually re-seeded — **the restore scripts do not cover this table**.
+
+Re-seed command (works without admin if table is empty — bootstrap mechanism):
+```bash
+~/.local/bin/spacetime call spacetimemath admin_set_hmac_secret '"<secret>"' --server maincloud
+```
+The same value must be set as `HMAC_SECRET` in Vercel environment variables.
+
+### Admin identity is on an unknown device
+
+Three SpaceTimeDB identities are in use:
+| Identity | Where |
+|----------|-------|
+| `c2001af5...` | Local CLI (`spacetime login show`) |
+| `c20084a5...` | Browser localStorage (`spacetimemath_credentials`) |
+| `c2003717...` | **Server admin** — device unknown |
+
+If admin access is needed and the admin device is unavailable: publish a server with bootstrap logic in the relevant reducer (allow first call when table is empty), then seed without admin credentials.
+
+### Bootstrap mechanism in `admin_set_hmac_secret`
+
+`admin_set_hmac_secret` in `server/src/auth.rs` was modified to allow an unauthenticated first call when `teacher_secrets` is empty. Once seeded, only `server_admins` members can update it. This was necessary because the admin identity's device was unavailable.
+
+---
+
 ## Incident 2: Production Data Wipe — 2026-04-14
 
 ### What happened
