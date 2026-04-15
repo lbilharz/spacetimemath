@@ -64,6 +64,13 @@ export async function solveOneProblem(page: Page): Promise<boolean> {
 
   const input = page.getByTestId('answer-input');
   if (await input.isVisible({ timeout: 500 }).catch(() => false)) {
+    // Guard: when the sprint timer hits 0 the input flips to `disabled` for a
+    // brief moment before SprintPage navigates away.  Trying to fill a disabled
+    // element causes Playwright to block for the entire test timeout.  Detect
+    // it here and return false so the caller exits the solve-loop cleanly.
+    if (!await input.isEnabled().catch(() => false)) {
+      return false;
+    }
     await input.fill(answer);
     await page.getByTestId('answer-submit').click();
     return true;
