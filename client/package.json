@@ -16,7 +16,8 @@
     "lint:i18n": "node scripts/check-translations.js",
     "preview": "vite preview",
     "screenshots": "npx ts-node --project tsconfig.node.json scripts/generate-screenshots.ts",
-    "agents": "tsx scripts/loadTestAgents.ts"
+    "agents": "tsx scripts/loadTestAgents.ts",
+    "cleanup-bots": "tsx scripts/cleanupBots.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.0",
