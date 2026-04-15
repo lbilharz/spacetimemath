@@ -35,9 +35,9 @@ pub fn my_teacher_focus(ctx: &ViewContext) -> Vec<TeacherFocus> {
     if let Some(tf) = ctx.db.teacher_focus().teacher_id().find(sender) {
         results.push(tf);
     }
+    // teacher_id is the primary key, so a teacher can't also appear as a focused student
+    // for themselves — dedup is unnecessary.
     results.extend(ctx.db.teacher_focus().focused_student_id().filter(&sender));
-    // Remove duplicates if the teacher somehow focused themselves
-    results.dedup_by_key(|tf| tf.teacher_id);
     results
 }
 
@@ -104,14 +104,15 @@ pub fn my_classrooms(ctx: &ViewContext) -> Vec<Classroom> {
 #[spacetimedb::view(accessor = my_classroom_members, public)]
 pub fn my_classroom_members(ctx: &ViewContext) -> Vec<ClassroomMember> {
     let sender = ctx.sender();
-    // Collect all classroom IDs I'm involved in
-    let mut my_classroom_ids: Vec<u64> = ctx.db.classrooms().teacher().filter(&sender)
-        .map(|c| c.id).collect();
-    for m in ctx.db.classroom_members().player_identity().filter(&sender) {
-        my_classroom_ids.push(m.classroom_id);
+    // Collect all classroom IDs I'm involved in, using a set to avoid duplicates
+    // without needing sort+dedup (a teacher is also a member of their own classroom).
+    let mut my_classroom_ids = std::collections::HashSet::<u64>::new();
+    for c in ctx.db.classrooms().teacher().filter(&sender) {
+        my_classroom_ids.insert(c.id);
     }
-    my_classroom_ids.sort();
-    my_classroom_ids.dedup();
+    for m in ctx.db.classroom_members().player_identity().filter(&sender) {
+        my_classroom_ids.insert(m.classroom_id);
+    }
     // Return all members of those classrooms
     let mut result = Vec::new();
     for cid in my_classroom_ids {
@@ -123,10 +124,12 @@ pub fn my_classroom_members(ctx: &ViewContext) -> Vec<ClassroomMember> {
 #[spacetimedb::view(accessor = my_friendships, public)]
 pub fn my_friendships(ctx: &ViewContext) -> Vec<Friendship> {
     let sender = ctx.sender();
-    let mut result: Vec<Friendship> = ctx.db.friendships().initiator_identity().filter(&sender).collect();
+    // initiator != recipient by definition, so the two scans are always disjoint —
+    // no sort/dedup needed.
+    let mut result: Vec<Friendship> = ctx.db.friendships()
+        .initiator_identity().filter(&sender)
+        .collect();
     result.extend(ctx.db.friendships().recipient_identity().filter(&sender));
-    result.sort_by_key(|f| f.id);
-    result.dedup_by_key(|f| f.id);
     result
 }
 
