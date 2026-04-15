@@ -122,7 +122,7 @@ SpaceTimeDB resets `auto_inc` counters to 0 on every publish, while existing row
 
 ## Backup & Restore
 
-> Full incident narrative: `recovery/INCIDENT.md` (2026-03-17 production wipe).
+> Full incident narratives: `recovery/INCIDENT.md` (two production wipes: 2026-03-17, 2026-04-14).
 
 ### Publishing safely
 
@@ -137,38 +137,40 @@ SpaceTimeDB's `spacetime publish --delete-data` wipes **all table data** before 
 
 SpaceTimeDB 2.0.3 requires a full wipe (`--delete-data`) to change column types or remove columns. Before doing so:
 
-1. **Run `make backup`** — exports all durable tables to `recovery/backups/<timestamp>/` as text files via `spacetime sql`.
-2. **Export CSVs from the SpacetimeDB web console** as a second copy (Tables → Export CSV). The web console export is the canonical input format for the restore scripts.
-3. Publish with `make wipe-and-publish CONFIRM_WIPE=yes`.
-4. Restore data (see below).
+1. **Run `make backup`** — exports all durable tables to `recovery/backups/<timestamp>/` as pipe-delimited text files via `spacetime sql`. This is the input format for the restore scripts.
+2. Publish with `make wipe-and-publish CONFIRM_WIPE=yes`.
+3. Restore data (see below).
 
 Tables covered by `make backup`: `players`, `player_secrets`, `best_scores`, `player_dkt_weights`, `unlock_logs`, `recovery_keys`, `server_admins`, `teacher_secrets`, `sessions`, `answers`, `problem_stats`, `kc_telemetry`, `friendships`, `friend_invites`, `classrooms`, `classroom_members`, `class_sprints`.
 
 ### Restore process
 
-Full restore is scripted in `recovery/`. Run in order:
+Run in order after a wipe:
 
-| Step | Script | What it does |
-|------|--------|-------------|
-| 1 | `restore.js` | Restores `Player` rows, recovery keys, and `BestScore` rows |
-| 2 | `restore-history.js` | Restores all `Session` and `Answer` rows |
-| 3 | `compute-tiers.js` | Recomputes learning tiers from session history, calls `set_learning_tier` |
-| 4 | `restore-classrooms.js` | Restores `Classroom` rows |
-| 5 | `restore-memberships.js` | Restores `ClassroomMember` rows (admin-gated reducer) |
+| Step | Command | What it does |
+|------|---------|-------------|
+| 1 | `node recovery/restore-from-backup.js` | 6-phase restore: players → recovery_keys → best_scores → classrooms → sessions → answers |
+| 2 | Bootstrap admin in SpacetimeDB console | Manual: add your identity to `server_admins` via the web console |
+| 3 | `node recovery/restore-memberships.js` | Restores `ClassroomMember` rows via admin-gated reducer |
 
-Input: CSV exports from the SpacetimeDB web console (not the `make backup` text files, which are for reference only).
+Both scripts default to the most recent backup in `recovery/backups/`. Pass `--backup <dir>` to target a specific snapshot, and `--dry-run` to preview without writing.
+
+**Not yet scripted** (these either regenerate automatically or are low priority):
+- `problem_stats`, `kc_telemetry` — rebuild from ongoing gameplay
+- `friendships`, `friend_invites` — players re-add manually
+- `class_sprints`, `player_secrets`, `teacher_secrets`, `player_dkt_weights`, `unlock_logs` — non-critical for core gameplay
 
 ### Restore reducer design
 
 The restore reducers in `server/src/` follow three invariants:
 
 1. **Idempotent** — each reducer checks whether the target row already exists and skips if so. Safe to re-run after partial failures.
-2. **Caller-scoped where possible** — most reducers use `ctx.sender()` as the identity, so a player can only restore their own data. The classroom membership reducers (`restore_classroom_member`, `admin_restore_membership_for`) are admin-gated.
-3. **Preserve original IDs** — restore reducers accept the original `id` as a parameter and insert it directly (bypassing `auto_inc`). This keeps session/answer references intact across the restore.
+2. **Caller-scoped where possible** — most reducers use `ctx.sender()` and the player's own token (read from `recovery_keys`), so no impersonation is needed. Only `admin_restore_membership_for` requires the admin identity.
+3. **Preserve original IDs** — restore reducers accept the original `id` as a parameter and insert it directly (bypassing `auto_inc`). This keeps session/answer foreign key references intact.
 
 ### After a wipe: re-run `cleanup_orphaned_memberships`
 
-Any restore done out of order (e.g. memberships restored before classrooms) can leave orphaned `ClassroomMember` rows. Always run the migration reducer after restoring classroom data:
+If the restore completes out of order (memberships before classrooms), orphaned `ClassroomMember` rows can be left behind. Always run after restoring classroom data:
 
 ```bash
 make call REDUCER=cleanup_orphaned_memberships
