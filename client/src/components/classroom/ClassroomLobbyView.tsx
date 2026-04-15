@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import type { Classroom, ClassroomMember, Answer, ProblemStat } from '../../module_bindings/types.js';
 import PageContainer from '../PageContainer.js';
 import MasteryGrid from '../MasteryGrid.js';
+import Leaderboard from '../Leaderboard.js';
 import { SettingsIcon, PlayIcon } from '../Icons.js';
 import { Capacitor } from '@capacitor/core';
 
@@ -12,6 +13,7 @@ interface LeaderRow {
   username: string;
   best?: number;
   hidden: boolean;
+  isOnline?: boolean;
 }
 
 interface Props {
@@ -50,7 +52,6 @@ export default function ClassroomLobbyView({
   children
 }: Props) {
   const { t } = useTranslation();
-  const medals = ['🥇', '🥈', '🥉'];
   
   const isNativeApp = Capacitor.isNativePlatform();
   const shareOrigin = !isNativeApp ? window.location.origin : 'https://up.bilharz.eu';
@@ -115,29 +116,11 @@ export default function ClassroomLobbyView({
           
           <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80">
             <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">{t('classroom.leaderboard')}</h2>
-            {leaderRows.length === 0 ? (
-              <p className="text-slate-500">{t('classroom.leaderboardEmpty')}</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {leaderRows.map((m, i) => {
-                  const isMe = m.id === myIdentityHex;
-                  return (
-                    <div key={m.id} className={`flex items-center gap-4 rounded-2xl p-4 transition-colors ${isMe ? 'bg-amber-50 dark:bg-amber-500/10 border border-brand-yellow/30' : 'bg-slate-50 dark:bg-slate-900/50 border border-transparent'}`}>
-                      <div className={`flex w-8 justify-center font-black ${i < 3 ? 'text-brand-yellow text-xl drop-shadow-sm' : 'text-slate-400'}`}>
-                        {i < 3 ? medals[i] : i + 1}
-                      </div>
-                      <div className={`flex-1 font-bold ${isMe ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
-                        {m.username}
-                        {isMe && <span className="ml-2 rounded-md bg-brand-yellow/20 px-2 py-0.5 text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400">{t('common.you')}</span>}
-                      </div>
-                      <div className="font-black tabular-nums tracking-tight text-brand-yellow text-lg">
-                        {m.best!.toFixed(1)}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <Leaderboard 
+              rows={leaderRows.map(row => ({ ...row, best: row.best ?? 0 }))} 
+              myIdentityHex={myIdentityHex} 
+              emptyMessage={t('classroom.leaderboardEmpty')} 
+            />
             <p className="mt-6 text-center text-xs text-slate-400">
               {t('classroom.liveCaption')}
             </p>

@@ -454,7 +454,7 @@ export default function App() {
 
       {showBottomNav && (
         <BottomNav 
-          active={TABBED_PAGES.includes(page) ? page : 'lobby'} 
+          active={TABBED_PAGES.includes(page) ? page : (page === 'classroom' ? 'classrooms' : 'lobby')} 
         />
       )}
     </>

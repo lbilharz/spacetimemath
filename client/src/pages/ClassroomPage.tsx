@@ -33,6 +33,7 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const [sessions]          = useTable(tables.my_classroom_sessions);
   const [answers]           = useTable(tables.my_classroom_answers);
   const [players]           = useTable(tables.players);
+  const [onlinePlayers]     = useTable(tables.online_players);
   const [problemStats]      = useTable(tables.problem_stats);
   const [nextProblemResults] = useTable(tables.my_classroom_next_problem_results_v2);
   const [issuedProblemResults] = useTable(tables.my_classroom_issued_problem_results_v2);
@@ -211,11 +212,15 @@ export default function ClassroomPage({ myIdentityHex, classroomId, onLeave }: P
   const memberRows = members.map(m => {
     const id = m.playerIdentity.toHexString();
     const player = (players as unknown as Player[]).find(p => p.identity.toHexString() === id);
+    const isOnline = Array.from(onlinePlayers as unknown as any[]).some(
+      op => op.identity.toHexString() === id && op.connectionCount > 0
+    );
     return {
       id,
       username: player?.username ?? id.slice(0, 8),
       best: bestByMember.get(id),
       hidden: m.hidden as boolean,
+      isOnline,
     };
   }).sort((a, b) => (b.best ?? 0) - (a.best ?? 0));
 
