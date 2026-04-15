@@ -370,3 +370,22 @@ pub fn remove_classroom_member(ctx: &ReducerContext, classroom_id: u64, student_
 
     Ok(())
 }
+
+/// One-time migration: delete any classroom_member rows whose classroom_id
+/// has no corresponding classroom in the classrooms table.
+/// Idempotent — safe to call multiple times.  Fixes "Error materializing view
+/// my_classroom_members" caused by stale membership rows for deleted classrooms.
+#[reducer]
+pub fn cleanup_orphaned_memberships(ctx: &ReducerContext) -> Result<(), String> {
+    let orphans: Vec<u64> = ctx.db.classroom_members()
+        .iter()
+        .filter(|m| ctx.db.classrooms().id().find(m.classroom_id).is_none())
+        .map(|m| m.id)
+        .collect();
+    let count = orphans.len();
+    for id in orphans {
+        ctx.db.classroom_members().id().delete(id);
+    }
+    log::info!("cleanup_orphaned_memberships: deleted {} orphaned rows", count);
+    Ok(())
+}
