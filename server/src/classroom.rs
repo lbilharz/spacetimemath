@@ -48,17 +48,18 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
     let _player = get_player(ctx)?;
     let upper = code.trim().to_uppercase();
     let classroom = ctx.db.classrooms()
-        .iter()
-        .find(|c| c.code == upper)
+        .code().filter(&upper)
+        .next()
         .ok_or("Classroom not found — check the code")?;
     let cid = classroom.id;
+    let sender = ctx.sender();
     // Already a member? No-op
-    if ctx.db.classroom_members().iter().any(|m| m.classroom_id == cid && m.player_identity == ctx.sender()) {
+    if ctx.db.classroom_members().player_identity().filter(&sender).any(|m| m.classroom_id == cid) {
         return Ok(());
     }
     for _ in 0..200 {
         if ctx.db.classroom_members().try_insert(ClassroomMember {
-            id: 0, classroom_id: cid, player_identity: ctx.sender(), hidden: false,
+            id: 0, classroom_id: cid, player_identity: sender, hidden: false,
         }).is_ok() {
             break;
         }
@@ -71,20 +72,21 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
 #[reducer]
 pub fn leave_classroom(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
     // Verify membership
+    let sender = ctx.sender();
     let membership = ctx.db.classroom_members()
-        .iter()
-        .find(|m| m.classroom_id == classroom_id && m.player_identity == ctx.sender())
+        .player_identity().filter(&sender)
+        .find(|m| m.classroom_id == classroom_id)
         .ok_or("Not a member of this classroom")?;
 
     let is_teacher = ctx.db.classrooms()
-        .iter()
-        .any(|c| c.id == classroom_id && c.teacher == ctx.sender());
+        .id().find(classroom_id)
+        .map(|c| c.teacher == sender)
+        .unwrap_or(false);
 
     if is_teacher {
         // Close classroom: remove all members then the classroom itself
         let all_members: Vec<_> = ctx.db.classroom_members()
-            .iter()
-            .filter(|m| m.classroom_id == classroom_id)
+            .classroom_id().filter(&classroom_id)
             .collect();
         for m in all_members { ctx.db.classroom_members().id().delete(m.id); }
         ctx.db.classrooms().id().delete(classroom_id);
@@ -97,9 +99,10 @@ pub fn leave_classroom(ctx: &ReducerContext, classroom_id: u64) -> Result<(), St
 /// Toggle whether the caller's stats are visible in a specific classroom.
 #[reducer]
 pub fn toggle_classroom_visibility(ctx: &ReducerContext, classroom_id: u64) -> Result<(), String> {
+    let sender = ctx.sender();
     let membership = ctx.db.classroom_members()
-        .iter()
-        .find(|m| m.classroom_id == classroom_id && m.player_identity == ctx.sender())
+        .player_identity().filter(&sender)
+        .find(|m| m.classroom_id == classroom_id)
         .ok_or("Not in this classroom")?;
     let updated = ClassroomMember { hidden: !membership.hidden, ..membership };
     ctx.db.classroom_members().id().update(updated);
@@ -148,8 +151,8 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
 
     // Create a Session for each non-hidden, non-teacher member
     let members: Vec<_> = ctx.db.classroom_members()
-        .iter()
-        .filter(|m| m.classroom_id == classroom_id && !m.hidden && m.player_identity != sender)
+        .classroom_id().filter(&classroom_id)
+        .filter(|m| !m.hidden && m.player_identity != sender)
         .collect();
 
     for member in members {
@@ -246,8 +249,8 @@ pub fn auto_end_class_sprint(ctx: &ReducerContext, args: EndSprintSchedule) -> R
 
 fn finalize_class_sprint_sessions(ctx: &ReducerContext, class_sprint_id: u64) {
     let incomplete: Vec<Session> = ctx.db.sessions()
-        .iter()
-        .filter(|s| s.class_sprint_id == class_sprint_id && !s.is_complete)
+        .class_sprint_id().filter(&class_sprint_id)
+        .filter(|s| !s.is_complete)
         .collect();
     for session in incomplete {
         let player_identity = session.player_identity;
@@ -280,8 +283,8 @@ pub fn restore_classroom(
     });
     // Add teacher as member, same as create_classroom does
     let already_member = ctx.db.classroom_members()
-        .iter()
-        .any(|m| m.classroom_id == id && m.player_identity == ctx.sender());
+        .player_identity().filter(&ctx.sender())
+        .any(|m| m.classroom_id == id);
     if !already_member {
         ctx.db.classroom_members().insert(ClassroomMember {
             id: 0,
@@ -357,8 +360,8 @@ pub fn remove_classroom_member(ctx: &ReducerContext, classroom_id: u64, student_
     }
 
     if let Some(membership) = ctx.db.classroom_members()
-        .iter()
-        .find(|m| m.classroom_id == classroom_id && m.player_identity == student_identity) 
+        .player_identity().filter(&student_identity)
+        .find(|m| m.classroom_id == classroom_id)
     {
         ctx.db.classroom_members().id().delete(membership.id);
     } else {

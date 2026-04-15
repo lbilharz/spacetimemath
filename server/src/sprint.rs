@@ -96,9 +96,10 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
     // These arise from abandoned sprints or from the restore-incident (sessions
     // restored as is_complete=false with no SprintSequence).  Marking them complete
     // ensures SprintPage always picks the freshly-created session.
+    let sender = ctx.sender();
     let orphans: Vec<_> = ctx.db.sessions()
-        .iter()
-        .filter(|s| s.player_identity == ctx.sender() && !s.is_complete && s.class_sprint_id == 0)
+        .player_identity().filter(&sender)
+        .filter(|s| !s.is_complete && s.class_sprint_id == 0)
         .collect();
     for s in orphans {
         ctx.db.sessions().id().update(Session { is_complete: true, ..s });
@@ -147,9 +148,10 @@ pub fn start_diagnostic_session(ctx: &ReducerContext) -> Result<(), String> {
     let player = get_player(ctx)?;
 
     // Close any orphaned incomplete solo sessions
+    let sender = ctx.sender();
     let orphans: Vec<_> = ctx.db.sessions()
-        .iter()
-        .filter(|s| s.player_identity == ctx.sender() && !s.is_complete && s.class_sprint_id == 0)
+        .player_identity().filter(&sender)
+        .filter(|s| !s.is_complete && s.class_sprint_id == 0)
         .collect();
     for s in orphans {
         ctx.db.sessions().id().update(Session { is_complete: true, ..s });
@@ -410,8 +412,7 @@ pub fn submit_answer(
 
     // SEC-04: per-session answer cap
     let existing_count = ctx.db.answers()
-        .iter()
-        .filter(|ans| ans.session_id == session_id)
+        .session_id().filter(&session_id)
         .count();
     if existing_count >= MAX_ANSWERS_PER_SESSION {
         return Err("Session answer limit reached".into());
@@ -594,7 +595,7 @@ pub(crate) fn finalize_session(ctx: &ReducerContext, session: Session) {
     let session_id = session.id;
     // SEQ: clean up sprint sequence (no longer needed after session ends)
     ctx.db.sprint_sequences().session_id().delete(session_id);
-    let answers: Vec<Answer> = ctx.db.answers().iter().filter(|a| a.session_id == session_id).collect();
+    let answers: Vec<Answer> = ctx.db.answers().session_id().filter(&session_id).collect();
     let total = answers.len() as u32;
     if total == 0 {
         ctx.db.sessions().id().update(Session { is_complete: true, ..session });
@@ -646,8 +647,9 @@ fn check_extended_level(ctx: &ReducerContext, identity: Identity) {
     let player = match ctx.db.players().identity().find(identity) { Some(p) => p, None => return };
     if !player.extended_mode || player.extended_level >= 9 { return; }
     let current_table = 11u8 + player.extended_level;
-    let all_answers: Vec<_> = ctx.db.answers().iter()
-        .filter(|a| a.player_identity == identity && a.a.max(a.b) == current_table)
+    let all_answers: Vec<_> = ctx.db.answers()
+        .player_identity().filter(&identity)
+        .filter(|a| a.a.max(a.b) == current_table)
         .collect();
     let last10: Vec<_> = all_answers.iter().rev().take(10).collect();
     if last10.len() < 5 { return; }
