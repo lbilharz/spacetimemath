@@ -307,6 +307,12 @@ export default function App() {
   // NOTE: we cannot call navigate() here because it strips query params like ?join=CODE.
   // Instead we push the URL manually, preserving search params so LobbyPage can auto-join.
   useEffect(() => {
+    // If we're actively trying to restore an account, don't auto-redirect to lobby
+    // even if they currently have a ghost/guest session active!
+    if (window.location.search.includes('restore=') || window.location.hash.includes('restore=')) {
+      return;
+    }
+
     if (myPlayer && page === 'register') {
       const pathname = window.location.pathname;
       let target: Page = 'lobby';

@@ -36,7 +36,6 @@ export default function RegisterPage({ onRegistered }: Props) {
     const restore = params.get('restore');
     if (restore && restore.trim().length >= 6) {
       const upper = restore.trim().toUpperCase();
-      window.history.replaceState({}, '', '/');
       setCode(upper);
       setShowRestore(true);
       setRestoreMode('code');
