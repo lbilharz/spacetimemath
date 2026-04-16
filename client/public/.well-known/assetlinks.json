@@ -1,10 +1,14 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "eu.bilharz.oneup",
-    "sha256_cert_fingerprints": [
-      "DEIN:SHA256:FINGERABDRUCK:HIER"
-    ]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "eu.bilharz.oneup",
+      "sha256_cert_fingerprints": [
+        "1B:CF:F4:8D:FD:CD:C0:6A:4E:B5:2A:71:98:ED:8E:32:CB:CD:00:0C:D9:E4:99:BD:62:7E:C3:5B:BC:C8:97:04"
+      ]
+    }
   }
-}]
+]
