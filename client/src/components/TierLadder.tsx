@@ -9,20 +9,30 @@ import { TIER_EMOJI } from '../utils/learningTier.js';
 const TIER_NEW_FACTORS: (string | null)[] = [
   null,   // tier 0: base set ×1 ×2 ×10
   '×3', '×5', '×4', '×6', '×7', '×8', '×9',
+  '×11 & ×12', '×13', '×14', '×15', '×16', '×17', '×18', '×19', '×20',
 ];
 
 // The factor(s) introduced at each tier — used to bucket answer stats
 // Tier 0 covers ×1, ×2, ×10 (all sub-10 base problems)
 // Higher tiers each introduce one new multiplier table
 const TIER_FACTORS: number[][] = [
-  [1, 2, 10],   // Starter
-  [3],          // Builder
-  [5],          // Climber
-  [4],          // Achiever
-  [6],          // Skilled
-  [7],          // Advanced
-  [8],          // Expert
-  [9],          // Master
+  [1, 2, 10],   // 0
+  [3],          // 1
+  [5],          // 2
+  [4],          // 3
+  [6],          // 4
+  [7],          // 5
+  [8],          // 6
+  [9],          // 7
+  [11, 12],     // 8
+  [13],         // 9
+  [14],         // 10
+  [15],         // 11
+  [16],         // 12
+  [17],         // 13
+  [18],         // 14
+  [19],         // 15
+  [20],         // 16
 ];
 
 interface TierStats {
@@ -71,9 +81,11 @@ interface Props {
   onSelect?: (tier: number) => void;
   /** Optional: player's answers for per-tier stats display. */
   answers?: Answer[];
+  /** Whether to show the extended tiers 8-16. */
+  extendedMode?: boolean;
 }
 
-export default function TierLadder({ currentTier, selectedTier, onSelect, answers }: Props) {
+export default function TierLadder({ currentTier, selectedTier, onSelect, answers, extendedMode = false }: Props) {
   const { t } = useTranslation();
   const interactive = !!onSelect;
 
@@ -103,6 +115,8 @@ export default function TierLadder({ currentTier, selectedTier, onSelect, answer
         </div>
       )}
       {TIER_EMOJI.map((emoji, tier) => {
+        if (!extendedMode && tier > 7) return null;
+        
         const isCurrent = tier === currentTier;
         const isSelected = selectedTier !== undefined ? tier === selectedTier : isCurrent;
         const newFactor = TIER_NEW_FACTORS[tier];

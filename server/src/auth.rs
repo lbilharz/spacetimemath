@@ -2,7 +2,7 @@ use spacetimedb::{table, reducer, ReducerContext, Table};
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 type HmacSha256 = Hmac<Sha256>;
-use crate::{Player, PlayerSecret, OnlinePlayer, BestScore, get_player, MAX_TIER, PlayerType};
+use crate::{Player, PlayerSecret, OnlinePlayer, BestScore, get_player, MAX_STANDARD_TIER, PlayerType};
 use crate::{players, player_secrets, online_players, best_scores, classrooms};
 
 /// Validate a username for length, control characters, and Unicode script (SEC-08).
@@ -98,13 +98,13 @@ pub fn complete_onboarding(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
-/// Let a player declare their starting learning tier (0–MAX_TIER).
+/// Let a player declare their starting learning tier (0–MAX_STANDARD_TIER).
 /// Used in onboarding to skip tiers the player already knows.
 /// Also allows downgrading from ProgressPage if a player wants more practice on easier tables.
 #[reducer]
 pub fn set_learning_tier(ctx: &ReducerContext, tier: u8) -> Result<(), String> {
-    if tier > MAX_TIER {
-        return Err(format!("Tier must be 0–{}", MAX_TIER));
+    if tier > MAX_STANDARD_TIER {
+        return Err(format!("Tier must be 0–{}", MAX_STANDARD_TIER));
     }
     let player = get_player(ctx)?;
     ctx.db.players().identity().update(Player { learning_tier: tier, ..player });

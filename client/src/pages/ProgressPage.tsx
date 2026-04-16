@@ -43,6 +43,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
 
   const handleSetTier = async (tier: number) => {
     if (saving || (tier === playerLearningTier && !extendedMode)) { return; }
+    if (tier > 7 && extendedMode) { return; } // Extended tiers are progression gates, not manually settable
     setSaving(true);
     setPendingTier(tier);
     await setLearningTier({ tier });
@@ -222,10 +223,10 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-6 animate-in slide-in-from-top-2 relative z-10">
               <div className="flex flex-col gap-4">
                 <span className="font-bold text-slate-700 dark:text-slate-200">{t('progress.adjustTier', { defaultValue: 'Adjust Learning Tier' })}</span>
-                <TierLadder currentTier={playerLearningTier} selectedTier={extendedMode ? -1 : pendingTier} onSelect={handleSetTier} answers={myAnswers} />
+                <TierLadder currentTier={playerLearningTier} selectedTier={pendingTier} onSelect={handleSetTier} answers={myAnswers} extendedMode={extendedMode} />
                 
                 {/* Extended Toggle Inline */}
-                {isMaxTier && (
+                {isMaxTier && !extendedMode && (
                   <button
                     onClick={handleSetExtendedTier}
                     disabled={saving}
@@ -279,6 +280,32 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
            </button>
         </div>
       </div>
+
+      {/* --- Nag Banner for Extended Tables --- */}
+      {isMaxTier && !extendedMode && (
+        <div className="bg-brand-yellow/10 border-2 border-brand-yellow/30 rounded-[32px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 justify-between animate-in slide-in-from-bottom-4 shadow-sm relative overflow-hidden mb-6">
+           
+           {/* Background flair */}
+           <div className="absolute top-[-20%] right-[-10%] text-[140px] opacity-10 pointer-events-none rotate-12 blur-[2px]">🚀</div>
+
+           <div className="relative z-10 text-center md:text-left">
+             <div className="text-2xl font-black mb-2 text-slate-800 dark:text-white">
+               You've mastered the solar system! 🌌
+             </div>
+             <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-md">
+               Your 10×10 grid is fully unlocked. Are you ready to push your limits and expand deep into the 20×20 universe?
+             </p>
+           </div>
+           
+           <button
+             onClick={handleSetExtendedTier}
+             disabled={saving}
+             className="relative z-10 px-6 py-4 bg-brand-yellow text-slate-900 rounded-2xl font-black text-lg shrink-0 shadow-[0_8px_30px_rgba(250,204,21,0.3)] hover:scale-[1.05] active:scale-95 transition-all w-full md:w-auto"
+           >
+             {saving ? 'Engaging Hyperdrive...' : 'Unlock Extended Tables'}
+           </button>
+        </div>
+      )}
 
       {/* ── CARD 3: MASTERY GRID ── */}
       <div id="mastery" className="bg-white dark:bg-slate-800 rounded-[28px] p-6 sm:p-8 flex flex-col shadow-sm border border-slate-200 dark:border-slate-700">

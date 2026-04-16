@@ -109,7 +109,8 @@
     "progressProfileDesc": "عرض شبكة التمارين ورؤى التعلم الخاصة بك.",
     "welcomeBack": "مرحبًا بعودتك،",
     "detailsLink": "التفاصيل",
-    "sprintCta": "تدرّب الآن"
+    "sprintCta": "تدرّب الآن",
+    "hearGreeting": "استمع إلى النطق"
   },
   "onboarding": {
     "card1Title": "60 ثانية على الساعة",
@@ -406,7 +407,16 @@
     "tier6Desc": "أعرف أيضًا ×7",
     "tier7Desc": "!أعرف كل جداولي",
     "setLevelManually": "تحديد المستوى يدوياً",
-    "testMyLevel": "اختبار مستواي"
+    "testMyLevel": "اختبار مستواي",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "!تم فتح ×3",
@@ -439,7 +449,16 @@
     "nextUnlock4": "×7 أتقن ×6 لفتح",
     "nextUnlock5": "×8 أتقن ×7 لفتح",
     "nextUnlock6": "×9 أتقن ×8 لفتح",
-    "allUnlocked": "!تم فتح جميع الجداول 🎉"
+    "allUnlocked": "!تم فتح جميع الجداول 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "مستوى",
@@ -494,7 +513,19 @@
       "developing": "{{kc}} — {{accuracy}}% دقة، {{speed}}ث معدل. واصل التدريب!",
       "struggling": "{{kc}} — يحتاج عملاً ({{accuracy}}% دقة). جرّب نصائح الاستراتيجية أدناه.",
       "untouched": "{{kc}} — لم يُستكشف بعد. ابدأ سباقاً سريعاً للفتح!"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "register_split": {
     "teacher_btn": "معلم",

@@ -109,7 +109,8 @@
     "progressProfileDesc": "Voir ta grille de maîtrise et tes progrès.",
     "welcomeBack": "Bon retour,",
     "detailsLink": "Détails",
-    "sprintCta": "S'entraîner"
+    "sprintCta": "S'entraîner",
+    "hearGreeting": "Écouter la prononciation"
   },
   "onboarding": {
     "card1Title": "60 secondes au compteur",
@@ -406,7 +407,16 @@
     "tier6Desc": "Je connais aussi ×7",
     "tier7Desc": "Je connais toutes mes tables !",
     "setLevelManually": "Définir le niveau manuellement",
-    "testMyLevel": "Tester mon niveau"
+    "testMyLevel": "Tester mon niveau",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "×3 débloqué !",
@@ -439,7 +449,16 @@
     "nextUnlock4": "Maîtrise ×6 pour débloquer ×7",
     "nextUnlock5": "Maîtrise ×7 pour débloquer ×8",
     "nextUnlock6": "Maîtrise ×8 pour débloquer ×9",
-    "allUnlocked": "Toutes les tables sont débloquées ! 🎉"
+    "allUnlocked": "Toutes les tables sont débloquées ! 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "Niveau",
@@ -494,7 +513,19 @@
       "developing": "{{kc}} — {{accuracy}}% de précision, {{speed}}s en moy. Continue à t'entraîner !",
       "struggling": "{{kc}} — à travailler ({{accuracy}}% de précision). Essaie les astuces ci-dessous.",
       "untouched": "{{kc}} — pas encore exploré. Lance un sprint pour débloquer !"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "register_split": {
     "teacher_btn": "Enseignant",

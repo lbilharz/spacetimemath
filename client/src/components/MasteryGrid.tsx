@@ -46,7 +46,6 @@ const MASTERY_BG: Record<Mastery, string> = {
   untouched:  'var(--card2)',
 };
 
-const EXTENDED_A = [11,12,13,14,15,16,17,18,19,20];
 
 export default function MasteryGrid({ answers, problemStats, highlightSession: _highlightSession, sessionAnswers = [], showExtended = false, focusCell, playerLearningTier, activeMissionKc }: Props) {
   const { t } = useTranslation();
@@ -60,18 +59,32 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
+  let gridSize = 10;
+  if (showExtended && playerLearningTier !== undefined) {
+    if (playerLearningTier >= 8) gridSize = 12; // unlocks 11 and 12
+    if (playerLearningTier >= 9) gridSize = 13;
+    if (playerLearningTier >= 10) gridSize = 14;
+    if (playerLearningTier >= 11) gridSize = 15;
+    if (playerLearningTier >= 12) gridSize = 16;
+    if (playerLearningTier >= 13) gridSize = 17;
+    if (playerLearningTier >= 14) gridSize = 18;
+    if (playerLearningTier >= 15) gridSize = 19;
+    if (playerLearningTier >= 16) gridSize = 20;
+  }
+  const cellSize = gridSize > 12 ? '26px' : '34px';
+
   const cells: React.ReactNode[] = [];
   // Header row: b labels
-  cells.push(<div key="h0" className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">×</div>);
-  for (let b = 1; b <= 10; b++) {
+  cells.push(<div key="h0" style={{ width: cellSize, height: cellSize }} className="flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">×</div>);
+  for (let b = 1; b <= gridSize; b++) {
     cells.push(
-      <div key={`hb${b}`} className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
+      <div key={`hb${b}`} style={{ width: cellSize, height: cellSize }} className="flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
         {b}
       </div>
     );
   }
 
-  const renderCell = (a: number, b: number, isExt: boolean) => {
+  const renderCell = (a: number, b: number) => {
     let mastery: Mastery = 'untouched';
     
     if (answers && answers.length > 0) {
@@ -102,8 +115,8 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
     cells.push(
       <button
-        key={`${isExt ? 'ext-' : ''}${a}-${b}`}
-        className={`w-[34px] h-[34px] rounded-[6px] flex items-center justify-center transition-all relative ${
+        key={`${a}-${b}`}
+        className={`rounded-[6px] flex items-center justify-center transition-all relative ${
           isLocked 
             ? 'cursor-default opacity-20 filter grayscale blur-[0.5px] pointer-events-none' 
             : 'cursor-pointer hover:scale-[1.05] active:scale-95 shadow-sm'
@@ -111,6 +124,8 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
         title={t('mastery.tooltip', { a, b, answer, difficulty: w.toFixed(2) })}
         onClick={() => !isLocked && setSelected(isSelected ? null : { a, b })}
         style={{
+          width: cellSize,
+          height: cellSize,
           background: isSelected ? MASTERY_COLORS[mastery] + '33' : MASTERY_BG[mastery],
           border: isSelected
             ? `2px solid ${MASTERY_COLORS[mastery]}`
@@ -119,7 +134,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
             : `1px solid ${MASTERY_COLORS[mastery]}44`,
           color: MASTERY_COLORS[mastery],
           fontWeight: 600,
-          fontSize: 13,
+          fontSize: gridSize > 12 ? 11 : 13,
           zIndex: isHighlighted || isSelected ? 10 : 1,
           boxShadow: isHighlighted ? '0 0 10px rgba(250,204,21,0.3)' : 'none',
         }}
@@ -133,42 +148,19 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
     );
   };
 
-  for (let a = 1; a <= 10; a++) {
+  for (let a = 1; a <= gridSize; a++) {
     // Row label
     cells.push(
-      <div key={`ha${a}`} className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
+      <div key={`ha${a}`} style={{ width: cellSize, height: cellSize }} className="flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
         {a}
       </div>
     );
-    for (let b = 1; b <= 10; b++) {
-      renderCell(a, b, false);
+    for (let b = 1; b <= gridSize; b++) {
+      renderCell(a, b);
     }
   }
 
-  // Gap row + extended rows (×11–×20) when tier1 is unlocked
-  if (showExtended) {
-    // Gap row: 11 cells spanning all columns, acts as visual divider
-    for (let i = 0; i < 11; i++) {
-      cells.push(
-        <div
-          key={`gap${i}`}
-          style={{ height: 8, background: 'rgba(255,255,255,0.05)' }}
-        />
-      );
-    }
 
-    for (const a of EXTENDED_A) {
-      // Row label
-      cells.push(
-        <div key={`ext-ha${a}`} className="w-[34px] h-[34px] flex items-center justify-center text-xs font-bold text-slate-400 dark:text-slate-500">
-          {a}
-        </div>
-      );
-      for (let b = 1; b <= 10; b++) {
-        renderCell(a, b, true);
-      }
-    }
-  }
 
   const rw = selected ? getRechenweg(selected.a, selected.b) : null;
 
@@ -177,7 +169,7 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
       <div className="overflow-x-auto pb-2 self-center lg:self-start">
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '28px repeat(10, 34px)',
+          gridTemplateColumns: `28px repeat(${gridSize}, ${cellSize})`,
           gap: 3,
         }}>
           {cells}

@@ -1,4 +1,4 @@
-export const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆'] as const;
+export const TIER_EMOJI = ['🌱', '🔨', '⚡', '🎯', '🔥', '💫', '🌟', '🏆', '🪙', '🔮', '🛡️', '⚔️', '💎', '👑', '🚀', '🌌', '🌠'] as const;
 
 /**
  * Returns the learning tier for a single factor value.
@@ -15,7 +15,16 @@ function factorTier(x: number): number {
   if (x === 7) return 5;
   if (x === 8) return 6;
   if (x === 9) return 7;
-  return 99; // 11, 12, 15, 20, 25 — excluded
+  if (x === 11 || x === 12) return 8;
+  if (x === 13) return 9;
+  if (x === 14) return 10;
+  if (x === 15) return 11;
+  if (x === 16) return 12;
+  if (x === 17) return 13;
+  if (x === 18) return 14;
+  if (x === 19) return 15;
+  if (x === 20) return 16;
+  return 99; // above 20 excluded
 }
 
 /**

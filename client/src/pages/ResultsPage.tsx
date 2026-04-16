@@ -57,6 +57,8 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
   const myAnswers = allAnswers.filter(a => a.playerIdentity.toHexString() === myIdentityHex);
   const sessionAnswers = myAnswers.filter(a => a.sessionId === sessionId);
   const setLearningTier = useSTDBReducer(reducers.setLearningTier);
+  const setExtendedMode = useSTDBReducer(reducers.setExtendedMode);
+  const [activatingExtended, setActivatingExtended] = useState(false);
 
   // Top 3 hardest pairs this session (wrong answers by difficulty weight)
   const wrongPairs = sessionAnswers
@@ -200,6 +202,36 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
         >
           {t('results.nextSprint')}
         </button>
+      )}
+
+      {/* Nag Banner for Extended Tables intercepts the Mastery grid sightline */}
+      {playerLearningTier >= 7 && !extendedMode && (
+        <div className="bg-brand-yellow/10 border-2 border-brand-yellow/30 rounded-[32px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 justify-between animate-in zoom-in shadow-sm relative overflow-hidden w-full mt-2 mb-4 text-slate-900 dark:text-white transition-all">
+           
+           <div className="absolute top-[-50%] right-[-5%] text-[180px] opacity-10 pointer-events-none rotate-12 blur-[2px]">🌌</div>
+
+           <div className="relative z-10 text-center md:text-left flex-1">
+             <div className="text-2xl md:text-3xl font-black mb-2 text-slate-800 dark:text-white">
+               Ready for the 20×20 Universe?
+             </div>
+             <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-lg">
+               You've mastered the 10x10 multiplication tables! Unlock the Extended Expansion to ignite your journey into the teens.
+             </p>
+           </div>
+           
+           <button
+             onClick={async () => {
+                if (activatingExtended) return;
+                setActivatingExtended(true);
+                await setExtendedMode({ enabled: true });
+                setActivatingExtended(false);
+             }}
+             disabled={activatingExtended}
+             className="relative z-10 px-6 py-4 bg-brand-yellow text-slate-900 rounded-2xl font-black text-lg shrink-0 shadow-[0_8px_30px_rgba(250,204,21,0.3)] hover:scale-[1.05] active:scale-95 transition-transform w-full md:w-auto"
+           >
+             {activatingExtended ? 'Engaging Hyperdrive...' : 'Unlock the Next Frontier'}
+           </button>
+        </div>
       )}
 
       {/* Mastery grid */}

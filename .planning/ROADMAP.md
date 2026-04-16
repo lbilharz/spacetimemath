@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Safe for School Rollout** — Phases 1–8 (shipped 2026-03-15)
 - ✅ **v1.1 Fixed Grid + Extended Tables** — Phases 9–10 (shipped 2026-03-17)
-- 🔄 **v1.2 App Store Submission** — Phases 11–14 (in progress)
+- 🔄 **v1.2 App Store Submission** — Phases 11–15 (in progress)
 
 ---
 
@@ -27,7 +27,7 @@
 
 </details>
 
-## v1.2 App Store Submission (Phases 11–14)
+## v1.2 App Store Submission (Phases 11–15)
 
 **Goal:** Get Better 1UP approved in the App Store by fixing privacy dealbreakers, then introduce class-scoped identity for school use.
 
@@ -51,6 +51,10 @@
   **Goal:** Replace "who is online" global view with opt-in friends graph. Solo players can invite friends via share link. Friends see each other's online status, sprint scores, and tier progress. Alias support (CRUD).
   **Requirements:** SOC-01, SOC-02
 
+- [ ] Phase 15: multiplications 11-20 x 1-10
+  **Goal:** multiplications 11-20 x 1-10
+  **Requirements:** TBD
+
 ---
 
 ## Progress
@@ -64,3 +68,15 @@
 | 12. Database cleanup | v1.2 | 0/? | Pending | — |
 | 13. Class-Scoped Username Uniqueness | v1.2 | 0/? | Pending | — |
 | 14. Friends via Invite Link | v1.2 | 0/? | Pending | — |
+| 15. multiplications 11-20 x 1-10 | v1.2 | 0/? | Pending | — |
+
+## Backlog
+
+### Phase 999.1: DKT Dashboard and Reset (BACKLOG)
+
+**Goal:** Offer the raw DKT diagnostic stats to the user natively in the app, giving them insights into their proficiency data and providing a mechanism to selectively delete or reset their stats (e.g., if a sibling played on their device or they want a clean slate).
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)

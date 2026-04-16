@@ -109,7 +109,8 @@
     "progressProfileDesc": "Çalışma tablosunu ve öğrenme istatistiklerini gör.",
     "welcomeBack": "Tekrar hoş geldin,",
     "detailsLink": "Detaylar",
-    "sprintCta": "Şimdi Çalış"
+    "sprintCta": "Şimdi Çalış",
+    "hearGreeting": "Telaffuzu duy"
   },
   "onboarding": {
     "card1Title": "Saat 60 saniye",
@@ -406,7 +407,16 @@
     "tier6Desc": "×7 de biliyorum",
     "tier7Desc": "Tüm tablolarımı biliyorum!",
     "setLevelManually": "Seviyeyi manuel ayarla",
-    "testMyLevel": "Seviyemi test et"
+    "testMyLevel": "Seviyemi test et",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "×3 açıldı!",
@@ -439,7 +449,16 @@
     "nextUnlock4": "×7'yi açmak için ×6'da ustalaş",
     "nextUnlock5": "×8'i açmak için ×7'de ustalaş",
     "nextUnlock6": "×9'u açmak için ×8'de ustalaş",
-    "allUnlocked": "Tüm tablolar açıldı! 🎉"
+    "allUnlocked": "Tüm tablolar açıldı! 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "Seviye",
@@ -494,7 +513,19 @@
       "developing": "{{kc}} — {{accuracy}}% doğruluk, {{speed}}s ort. Pratik yapmaya devam et!",
       "struggling": "{{kc}} — çalışılması gerekiyor ({{accuracy}}% doğruluk). Aşağıdaki strateji ipuçlarını dene.",
       "untouched": "{{kc}} — henüz keşfedilmedi. Açmak için bir sprint başlat!"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "register_split": {
     "teacher_btn": "Öğretmen",

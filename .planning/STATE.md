@@ -55,6 +55,11 @@ Progress: [█░░░░░░░░░] 5% (1/1 plans complete in v1.2)
 | 260319-p1b | retry-on-wrong sprint behavior: wrong answers re-offer same problem, no server submission, no time penalty | 2026-03-19 | 870f311 | [260319-p1b-in-spacetimemath-app-sprints-should-re-o](./quick/260319-p1b-in-spacetimemath-app-sprints-should-re-o/) |
 | 260321-c6m | WebSocket reconnection stability: no splash on reconnect, sprint state preserved, no repeated questions | 2026-03-21 | 4e07962 | [260321-c6m-fix-websocket-reconnection-stability-on-](./quick/260321-c6m-fix-websocket-reconnection-stability-on-/) |
 
+## Accumulated Context
+
+### Roadmap Evolution
+- Phase 15 added: multiplications 11-20 x 1-10
+
 ## Session Continuity
 
 Last session: 2026-03-30T20:43:36.916Z

@@ -206,23 +206,9 @@ pub fn issue_problem(
     let player = get_player(ctx)?;
     let is_diag = ctx.db.diagnostic_states().session_id().find(session_id).is_some();
 
-    let is_extended_pair = a.max(b) >= 11 && a.max(b) <= 20;
-    if is_extended_pair {
-        if !is_diag && !player.extended_mode {
-            return Err("Extended mode not enabled".into());
-        }
-        if !is_diag && a.max(b) > 11 + player.extended_level {
-            return Err("Extended pair not yet unlocked".into());
-        }
-        let key = (a as u16) * 100 + (b as u16);
-        if ctx.db.problem_stats().problem_key().find(key).is_none() {
-            return Err("Unknown extended pair".into());
-        }
-    } else {
-        let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
-        if !is_diag && pair_tier > player.learning_tier {
-            return Err("Problem pair above player's current tier".into());
-        }
+    let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
+    if !is_diag && pair_tier > player.learning_tier {
+        return Err("Problem pair above player's current tier".into());
     }
     let token = make_code(ctx);
     
@@ -421,24 +407,10 @@ pub fn submit_answer(
     // SEC-06: (a, b) pair must be within player's learning tier (or extended pool if enabled)
     let is_diag = ctx.db.diagnostic_states().session_id().find(session_id).is_some();
 
-    let is_extended_pair = a.max(b) >= 11 && a.max(b) <= 20;
-    if is_extended_pair {
-        if !is_diag && !player.extended_mode {
-            return Err("Extended mode not enabled".into());
-        }
-        if !is_diag && a.max(b) > 11 + player.extended_level {
-            return Err("Extended pair not yet unlocked".into());
-        }
-        let key = (a as u16) * 100 + (b as u16);
-        if ctx.db.problem_stats().problem_key().find(key).is_none() {
-            return Err("Unknown extended pair".into());
-        }
-    } else {
-        let pair_tier = pair_learning_tier(a, b)
-            .ok_or_else(|| "Invalid problem pair".to_string())?;
-        if !is_diag && pair_tier > player.learning_tier {
-            return Err("Problem pair above player's current tier".into());
-        }
+    let pair_tier = pair_learning_tier(a, b)
+        .ok_or_else(|| "Invalid problem pair".to_string())?;
+    if !is_diag && pair_tier > player.learning_tier {
+        return Err("Problem pair above player's current tier".into());
     }
 
     // SEC-10: verify server-issued problem token
@@ -463,7 +435,8 @@ pub fn submit_answer(
             if is_fast {
                 diag.consecutive_fast_correct += 1;
                 if diag.consecutive_fast_correct >= 2 {
-                    diag.current_tier = diag.current_tier.saturating_add(1).min(7);
+                    let max_tier = if player.extended_mode { crate::MAX_EXTENDED_TIER } else { crate::MAX_STANDARD_TIER };
+                    diag.current_tier = diag.current_tier.saturating_add(1).min(max_tier);
                     diag.consecutive_fast_correct = 0;
                 }
             } else {
@@ -639,25 +612,10 @@ pub fn end_session(ctx: &ReducerContext, session_id: u64) -> Result<(), String> 
 
     finalize_session(ctx, session);
     credit_session_to_player(ctx, sender, session_id);
-    check_extended_level(ctx, sender);
     Ok(())
 }
 
-fn check_extended_level(ctx: &ReducerContext, identity: Identity) {
-    let player = match ctx.db.players().identity().find(identity) { Some(p) => p, None => return };
-    if !player.extended_mode || player.extended_level >= 9 { return; }
-    let current_table = 11u8 + player.extended_level;
-    let all_answers: Vec<_> = ctx.db.answers()
-        .player_identity().filter(&identity)
-        .filter(|a| a.a.max(a.b) == current_table)
-        .collect();
-    let last10: Vec<_> = all_answers.iter().rev().take(10).collect();
-    if last10.len() < 5 { return; }
-    let correct = last10.iter().filter(|a| a.is_correct).count();
-    if correct * 10 >= last10.len() * 8 {
-        ctx.db.players().identity().update(Player { extended_level: player.extended_level + 1, ..player });
-    }
-}
+
 
 pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity, session_id: u64) {
     let session = match ctx.db.sessions().id().find(session_id) {
@@ -677,9 +635,10 @@ pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity,
     let new_best = player.best_score.max(weighted_score);
     
     // Check if this was a diagnostic placement match
-    let mut final_learning_tier = player.learning_tier.min(7);
+    let max_tier = if player.extended_mode { crate::MAX_EXTENDED_TIER } else { crate::MAX_STANDARD_TIER };
+    let mut final_learning_tier = player.learning_tier.min(max_tier);
     if let Some(diag) = ctx.db.diagnostic_states().session_id().find(session_id) {
-        final_learning_tier = diag.current_tier.min(7);
+        final_learning_tier = diag.current_tier.min(max_tier);
         ctx.db.diagnostic_states().session_id().delete(session_id);
     }
 

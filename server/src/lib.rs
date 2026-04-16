@@ -857,8 +857,21 @@ fn seed_problem_stats(ctx: &ReducerContext) {
 
 
 fn seed_extended_problem_stats(ctx: &ReducerContext) {
-    // Seeds all 10 extended tables (×11 through ×20) at uniform weight 1.5, both orderings.
-    // Pairs: a ∈ 11..=20, b ∈ 1..=10. Idempotent — skips existing rows.
+    for a in 11u8..=20 {
+        for b in 11u8..=20 {
+            for &(ra, rb) in &[(a, b), (b, a)] {
+                let key = (ra as u16) * 100 + (rb as u16);
+                if ctx.db.problem_stats().problem_key().find(key).is_none() {
+                    ctx.db.problem_stats().insert(ProblemStat {
+                        problem_key: key,
+                        a: ra, b: rb, category: 2,
+                        attempt_count: 0, correct_count: 0, avg_response_ms: 0,
+                        difficulty_weight: 1.5,
+                    });
+                }
+            }
+        }
+    }
     for a in 11u8..=20 {
         for b in 1u8..=10 {
             for &(ra, rb) in &[(a, b), (b, a)] {
@@ -909,16 +922,19 @@ pub(crate) fn bootstrap_weight(a: u8, b: u8, category: u8) -> f32 {
 // REDUCERS
 // ============================================================
 
-/// Maximum learning tier index (inclusive). Tiers 0–7 = 8 distinct tiers.
-pub(crate) const MAX_TIER: u8 = 7;
+/// Maximum learning tier index for regular players.
+pub(crate) const MAX_STANDARD_TIER: u8 = 7;
+/// Maximum learning tier index for extended players (Tiers 8-16 expand into 11-20 tables).
+pub(crate) const MAX_EXTENDED_TIER: u8 = 16;
 
 /// Returns the learning tier for a factor value.
-/// Returns None for excluded factors (×0 and extended: ×11, ×12, ×15, ×20, ×25).
+/// Returns None for excluded factors, e.g. ×0 and values above 20.
 /// Tier ladder: ×1/×2/×10 (0) → ×3 (1) → ×5 (2) → ×4 (3) → ×6 (4) → ×7 (5) → ×8 (6) → ×9 (7).
+/// Extended: ×11 & ×12 (8) → ×13 (9) → ×14 (10) → ×15 (11) → ×16 (12) → ×17 (13) → ×18 (14) → ×19 (15) → ×20 (16).
 pub(crate) fn factor_tier(x: u8) -> Option<u8> {
     match x {
         0 => None,
-        1 | 2 | 10 => Some(0), // starter: ×1, ×2, ×10
+        1 | 2 | 10 => Some(0), // starter
         3 => Some(1),
         5 => Some(2),
         4 => Some(3),
@@ -926,7 +942,16 @@ pub(crate) fn factor_tier(x: u8) -> Option<u8> {
         7 => Some(5),
         8 => Some(6),
         9 => Some(7),
-        _ => None, // 11, 12, 15, 20, 25 — excluded
+        11 | 12 => Some(8),
+        13 => Some(9),
+        14 => Some(10),
+        15 => Some(11),
+        16 => Some(12),
+        17 => Some(13),
+        18 => Some(14),
+        19 => Some(15),
+        20 => Some(16),
+        _ => None,
     }
 }
 
@@ -959,7 +984,9 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
 
     let mut new_tier = player.learning_tier;
 
-    for target_tier in (player.learning_tier + 1)..=MAX_TIER {
+    let max_allowed_tier = if player.extended_mode { MAX_EXTENDED_TIER } else { MAX_STANDARD_TIER };
+
+    for target_tier in (player.learning_tier + 1)..=max_allowed_tier {
         let check_tier = target_tier - 1;
 
         // All problem_stat pairs belonging to check_tier
@@ -1155,9 +1182,6 @@ pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier:
     let eligible: Vec<ProblemStat> = ctx.db.problem_stats().iter()
         .filter(|s| {
             if s.a == 0 || s.b == 0 { return false; }
-            if extended_mode && s.category == 2 {
-                return s.a.max(s.b) <= 11 + extended_level;
-            }
             pair_learning_tier(s.a, s.b).map(|t| t <= player_tier).unwrap_or(false)
         })
         .collect();

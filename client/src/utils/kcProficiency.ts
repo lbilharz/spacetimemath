@@ -24,9 +24,21 @@ export const KC = {
   FactHard: 8,
   ExtendedBase10: 9,
   ExtendedCoreDigit: 10,
+  Fact11s: 11,
+  Fact12s: 12,
+  Fact13s: 13,
+  Fact14s: 14,
+  Fact15s: 15,
+  Fact16s: 16,
+  Fact17s: 17,
+  Fact18s: 18,
+  Fact19s: 19,
+  Fact20s: 20,
+  ExtendedSquare: 21,
+  ExtendedHard: 22,
 } as const;
 
-export const KC_COUNT = 11;
+export const KC_COUNT = 23;
 
 /** KCs that are always implicitly known — never surface as a "focus area" even if untouched. */
 export const KC_TRIVIAL = new Set<number>([KC.ZeroProperty, KC.Identity]);
@@ -42,7 +54,19 @@ export function tagKCs(a: number, b: number): number[] {
 
   // Extended
   if (maxVal > 10) {
-    kcs.push(KC.ExtendedBase10, KC.ExtendedCoreDigit);
+    if (a === b) kcs.push(KC.ExtendedSquare);
+    if (a === 11 || b === 11) kcs.push(KC.Fact11s);
+    else if (a === 12 || b === 12) kcs.push(KC.Fact12s);
+    else if (a === 13 || b === 13) kcs.push(KC.Fact13s);
+    else if (a === 14 || b === 14) kcs.push(KC.Fact14s);
+    else if (a === 15 || b === 15) kcs.push(KC.Fact15s);
+    else if (a === 16 || b === 16) kcs.push(KC.Fact16s);
+    else if (a === 17 || b === 17) kcs.push(KC.Fact17s);
+    else if (a === 18 || b === 18) kcs.push(KC.Fact18s);
+    else if (a === 19 || b === 19) kcs.push(KC.Fact19s);
+    else if (a === 20 || b === 20) kcs.push(KC.Fact20s);
+
+    if (kcs.length === 0) kcs.push(KC.ExtendedBase10);
     return kcs;
   }
 
@@ -193,6 +217,17 @@ export function relevantKCsForTier(tier: number): number[] {
   if (tier >= 5) kcs.push(KC.Square);        // more squares become relevant
   if (tier >= 6) kcs.push(KC.FactHard);      // 6×7, 6×8, 7×8
   if (tier >= 7) kcs.push(KC.ExtendedBase10, KC.ExtendedCoreDigit);
+
+  // Extended progressive unlocks
+  if (tier >= 8) kcs.push(KC.Fact11s, KC.Fact12s, KC.ExtendedSquare);
+  if (tier >= 9) kcs.push(KC.Fact13s); // Fact13s through Fact20s unlocked progressively
+  if (tier >= 10) kcs.push(KC.Fact14s);
+  if (tier >= 11) kcs.push(KC.Fact15s);
+  if (tier >= 12) kcs.push(KC.Fact16s);
+  if (tier >= 13) kcs.push(KC.Fact17s);
+  if (tier >= 14) kcs.push(KC.Fact18s);
+  if (tier >= 15) kcs.push(KC.Fact19s);
+  if (tier >= 16) kcs.push(KC.Fact20s);
 
   return kcs;
 }

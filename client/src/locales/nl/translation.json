@@ -109,7 +109,8 @@
     "progressProfileDesc": "Bekijk je oefenraster en leervoortgang.",
     "welcomeBack": "Welkom terug,",
     "detailsLink": "Details",
-    "sprintCta": "Nu oefenen"
+    "sprintCta": "Nu oefenen",
+    "hearGreeting": "Uitspraak beluisteren"
   },
   "onboarding": {
     "card1Title": "60 seconden op de klok",
@@ -406,7 +407,16 @@
     "tier6Desc": "Ik ken ook ×7",
     "tier7Desc": "Ik ken al mijn tafels!",
     "setLevelManually": "Niveau handmatig instellen",
-    "testMyLevel": "Test mijn niveau"
+    "testMyLevel": "Test mijn niveau",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "×3 ontgrendeld!",
@@ -439,7 +449,16 @@
     "nextUnlock4": "Beheers ×6 om ×7 te ontgrendelen",
     "nextUnlock5": "Beheers ×7 om ×8 te ontgrendelen",
     "nextUnlock6": "Beheers ×8 om ×9 te ontgrendelen",
-    "allUnlocked": "Alle tafels ontgrendeld! 🎉"
+    "allUnlocked": "Alle tafels ontgrendeld! 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "Niveau",
@@ -494,7 +513,19 @@
       "developing": "{{kc}} — {{accuracy}}% nauwkeurigheid, {{speed}}s gem. Blijf oefenen!",
       "struggling": "{{kc}} — moet beter ({{accuracy}}% nauwkeurigheid). Probeer de strategietips hieronder.",
       "untouched": "{{kc}} — nog niet verkend. Start een sprint om te ontgrendelen!"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "register_split": {
     "teacher_btn": "Leraar",

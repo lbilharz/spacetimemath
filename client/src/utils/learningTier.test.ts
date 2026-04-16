@@ -45,7 +45,7 @@ describe('learningTierOf — excluded factors return 99', () => {
   it('×0 returns 99 (excluded from pool)', () => {
     expect(learningTierOf(0, 5)).toBe(99);
   });
-  it('×11 returns 99 (out of scope)', () => {
-    expect(learningTierOf(11, 1)).toBe(99);
+  it('×21 returns 99 (above supported range)', () => {
+    expect(learningTierOf(21, 1)).toBe(99);
   });
 });

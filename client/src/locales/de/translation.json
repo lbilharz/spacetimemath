@@ -128,7 +128,8 @@
     "progressProfileDesc": "Dein Übungsgitter und Lernfortschritt ansehen.",
     "welcomeBack": "Willkommen zurück,",
     "detailsLink": "Details",
-    "sprintCta": "Jetzt üben"
+    "sprintCta": "Jetzt üben",
+    "hearGreeting": "Aussprache anhören"
   },
   "onboarding": {
     "card1Title": "60 Sekunden auf der Uhr",
@@ -425,7 +426,16 @@
     "tier6Desc": "Ich kenne auch ×7",
     "tier7Desc": "Ich kenne alle Einmaleins-Reihen!",
     "setLevelManually": "Level manuell setzen",
-    "testMyLevel": "Mein Level testen"
+    "testMyLevel": "Mein Level testen",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "×3 freigeschaltet!",
@@ -458,7 +468,16 @@
     "nextUnlock4": "×6 meistern → ×7 freischalten",
     "nextUnlock5": "×7 meistern → ×8 freischalten",
     "nextUnlock6": "×8 meistern → ×9 freischalten",
-    "allUnlocked": "Alle Tabellen freigeschaltet! 🎉"
+    "allUnlocked": "Alle Tabellen freigeschaltet! 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "Stufe",
@@ -504,7 +523,19 @@
       "developing": "{{kc}} — {{accuracy}}% Genauigkeit, {{speed}}s Ø. Weiter üben!",
       "struggling": "{{kc}} — braucht Übung ({{accuracy}}% Genauigkeit). Probier die Strategietipps unten.",
       "untouched": "{{kc}} — noch nicht erkundet. Starte einen Sprint, um freizuschalten!"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "friends": {
     "haveCode": "Hast du den Code eines Freundes?",

@@ -128,7 +128,8 @@
     "focusNew": "{{kc}} — start exploring!",
     "focusPractice": "{{kc}} — {{accuracy}}% accuracy. Keep going!",
     "detailsLink": "Details",
-    "sprintCta": "Practice Now"
+    "sprintCta": "Practice Now",
+    "hearGreeting": "Hear pronunciation"
   },
   "onboarding": {
     "card1Title": "60 Seconds on the Clock",
@@ -425,7 +426,16 @@
     "tier6Desc": "I also know ×7",
     "tier7Desc": "I know all my tables!",
     "setLevelManually": "Set Level manually",
-    "testMyLevel": "Test my Level"
+    "testMyLevel": "Test my Level",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "×3 unlocked!",
@@ -458,7 +468,16 @@
     "nextUnlock4": "Master ×6 to unlock ×7",
     "nextUnlock5": "Master ×7 to unlock ×8",
     "nextUnlock6": "Master ×8 to unlock ×9",
-    "allUnlocked": "All tables unlocked! 🎉"
+    "allUnlocked": "All tables unlocked! 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "Level",
@@ -504,7 +523,19 @@
       "developing": "{{kc}} — {{accuracy}}% accuracy, {{speed}}s avg. Keep practicing!",
       "struggling": "{{kc}} — needs work ({{accuracy}}% accuracy). Try the strategy tips below.",
       "untouched": "{{kc}} — not yet explored. Start a sprint to unlock!"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "friends": {
     "haveCode": "Have a friend's code?",

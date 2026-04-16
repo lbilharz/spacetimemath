@@ -109,7 +109,8 @@
     "progressProfileDesc": "查看你的练习网格和学习进度。",
     "welcomeBack": "欢迎回来，",
     "detailsLink": "详情",
-    "sprintCta": "开始练习"
+    "sprintCta": "开始练习",
+    "hearGreeting": "听发音"
   },
   "onboarding": {
     "card1Title": "60 秒计时",
@@ -406,7 +407,16 @@
     "tier6Desc": "我也掌握了 ×7",
     "tier7Desc": "我掌握了所有乘法表！",
     "setLevelManually": "手动设置级别",
-    "testMyLevel": "测试我的级别"
+    "testMyLevel": "测试我的级别",
+    "tier8Desc": "I also know ×11 & ×12",
+    "tier9Desc": "I also know ×13",
+    "tier10Desc": "I also know ×14",
+    "tier11Desc": "I also know ×15",
+    "tier12Desc": "I also know ×16",
+    "tier13Desc": "I also know ×17",
+    "tier14Desc": "I also know ×18",
+    "tier15Desc": "I also know ×19",
+    "tier16Desc": "I know up to 20x20!"
   },
   "tiers": {
     "unlocked1": "×3 已解锁！",
@@ -439,7 +449,16 @@
     "nextUnlock4": "熟练掌握 ×6 以解锁 ×7",
     "nextUnlock5": "熟练掌握 ×7 以解锁 ×8",
     "nextUnlock6": "熟练掌握 ×8 以解锁 ×9",
-    "allUnlocked": "所有表格均已解锁！ 🎉"
+    "allUnlocked": "所有表格均已解锁！ 🎉",
+    "tier8Name": "×11 & ×12 Tables",
+    "tier9Name": "×13 Table",
+    "tier10Name": "×14 Table",
+    "tier11Name": "×15 Table",
+    "tier12Name": "×16 Table",
+    "tier13Name": "×17 Table",
+    "tier14Name": "×18 Table",
+    "tier15Name": "×19 Table",
+    "tier16Name": "×20 Table"
   },
   "tierLadder": {
     "level": "等级",
@@ -494,7 +513,19 @@
       "developing": "{{kc}} — {{accuracy}}%准确率，平均{{speed}}秒。继续练习！",
       "struggling": "{{kc}} — 需要加强（{{accuracy}}%准确率）。试试下面的策略提示。",
       "untouched": "{{kc}} — 尚未探索。开始一次冲刺来解锁！"
-    }
+    },
+    "name11": "Fact Family 11s",
+    "name12": "Fact Family 12s",
+    "name13": "Fact Family 13s",
+    "name14": "Fact Family 14s",
+    "name15": "Fact Family 15s",
+    "name16": "Fact Family 16s",
+    "name17": "Fact Family 17s",
+    "name18": "Fact Family 18s",
+    "name19": "Fact Family 19s",
+    "name20": "Fact Family 20s",
+    "name21": "Extended Squares",
+    "name22": "Extended Hard Facts"
   },
   "register_split": {
     "teacher_btn": "老师",
