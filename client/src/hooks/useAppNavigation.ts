@@ -13,6 +13,7 @@ export function useAppNavigation(initialPage: Page) {
   const navigate = (newPage: Page, hash?: string, pushPath?: string) => {
     const path = pushPath ?? PAGE_PATH[newPage] ?? '/';
     window.history.pushState(null, '', hash ? `${path}#${hash}` : path);
+    window.dispatchEvent(new Event('urlchange'));
     setPage(newPage);
   };
 

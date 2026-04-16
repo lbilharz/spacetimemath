@@ -32,15 +32,20 @@ export default function RegisterPage({ onRegistered }: Props) {
   const [autoRestoreCode, setAutoRestoreCode] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const restore = params.get('restore');
-    if (restore && restore.trim().length >= 6) {
-      const upper = restore.trim().toUpperCase();
-      setCode(upper);
-      setShowRestore(true);
-      setRestoreMode('code');
-      setAutoRestoreCode(upper);
-    }
+    const checkUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const restore = params.get('restore');
+      if (restore && restore.trim().length >= 6) {
+        const upper = restore.trim().toUpperCase();
+        setCode(upper);
+        setShowRestore(true);
+        setRestoreMode('code');
+        setAutoRestoreCode(upper);
+      }
+    };
+    checkUrl();
+    window.addEventListener('urlchange', checkUrl);
+    return () => window.removeEventListener('urlchange', checkUrl);
   }, []);
 
   const { identity } = useSpacetimeDB();
