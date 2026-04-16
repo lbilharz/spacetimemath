@@ -154,6 +154,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       try { await consumeRestoreResult(); } catch { /* best-effort */ }
       setRestoring(false);
       setSyncing(false);
+      window.history.replaceState({}, '', '/');
       window.location.reload();
     } catch (err: any) {
       setRestoreError(err.message || 'Verification failed');
@@ -192,6 +193,7 @@ export default function RegisterPage({ onRegistered }: Props) {
       const CREDS_KEY = 'spacetimemath_credentials';
       localStorage.setItem(CREDS_KEY, JSON.stringify({ identity: '', token: row.token }));
       try { await consumeRestoreResult(); } catch { /* ignore */ }
+      window.history.replaceState({}, '', '/');
       window.location.reload();
     } catch (err: unknown) {
       const msg = (err instanceof Error ? err.message : String(err)) || t('register.restoreError');
