@@ -145,10 +145,6 @@
     "tapPenalty": "不完全对，再想一下吧...",
     "whatIs": "计算"
   },
-  "migration": {
-    "title": "欢迎回来！",
-    "body": "我们新增了选择题！由于直接输入答案更具挑战性，现在可以赚取3倍积分。为了保持排行榜的公平性，我们已自动将您的历史得分增加到3倍。"
-  },
   "results": {
     "heading": "冲刺完成！",
     "finalizing": "正在结算练习…",
@@ -408,15 +404,15 @@
     "tier7Desc": "我掌握了所有乘法表！",
     "setLevelManually": "手动设置级别",
     "testMyLevel": "测试我的级别",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "我也懂 ×11 和 ×12",
+    "tier9Desc": "我也懂 ×13",
+    "tier10Desc": "我也懂 ×14",
+    "tier11Desc": "我也懂 ×15",
+    "tier12Desc": "我也懂 ×16",
+    "tier13Desc": "我也懂 ×17",
+    "tier14Desc": "我也懂 ×18",
+    "tier15Desc": "我也懂 ×19",
+    "tier16Desc": "我懂一直到 20×20！"
   },
   "tiers": {
     "unlocked1": "×3 已解锁！",
@@ -450,15 +446,15 @@
     "nextUnlock5": "熟练掌握 ×7 以解锁 ×8",
     "nextUnlock6": "熟练掌握 ×8 以解锁 ×9",
     "allUnlocked": "所有表格均已解锁！ 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "11 和 12 乘法表",
+    "tier9Name": "13 乘法表",
+    "tier10Name": "14 乘法表",
+    "tier11Name": "15 乘法表",
+    "tier12Name": "16 乘法表",
+    "tier13Name": "17 乘法表",
+    "tier14Name": "18 乘法表",
+    "tier15Name": "19 乘法表",
+    "tier16Name": "20 乘法表"
   },
   "tierLadder": {
     "level": "等级",
@@ -514,18 +510,18 @@
       "struggling": "{{kc}} — 需要加强（{{accuracy}}%准确率）。试试下面的策略提示。",
       "untouched": "{{kc}} — 尚未探索。开始一次冲刺来解锁！"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "11 的家族",
+    "name12": "12 的家族",
+    "name13": "13 的家族",
+    "name14": "14 的家族",
+    "name15": "15 的家族",
+    "name16": "16 的家族",
+    "name17": "17 的家族",
+    "name18": "18 的家族",
+    "name19": "19 的家族",
+    "name20": "20 的家族",
+    "name21": "扩展平方",
+    "name22": "扩展难题"
   },
   "register_split": {
     "teacher_btn": "老师",

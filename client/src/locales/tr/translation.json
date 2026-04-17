@@ -145,10 +145,6 @@
     "tapPenalty": "Tam olarak doğru değil. Biraz düşün...",
     "whatIs": "KAÇ EDER"
   },
-  "migration": {
-    "title": "Tekrar Hoş Geldin!",
-    "body": "Çoktan seçmeli soruları ekledik! Cevapları doğrudan yazmak daha zor olduğu için artık 3 kat daha fazla puan kazandırıyor. Liderlik tablosunu adil tutmak için geçmiş puanınızı otomatik olarak üçe katladık."
-  },
   "results": {
     "heading": "Oturum Tamamlandı!",
     "finalizing": "Oturum sonlandırılıyor…",
@@ -408,15 +404,15 @@
     "tier7Desc": "Tüm tablolarımı biliyorum!",
     "setLevelManually": "Seviyeyi manuel ayarla",
     "testMyLevel": "Seviyemi test et",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "×11 ve ×12'yi de biliyorum",
+    "tier9Desc": "×13'ü de biliyorum",
+    "tier10Desc": "×14'ü de biliyorum",
+    "tier11Desc": "×15'i de biliyorum",
+    "tier12Desc": "×16'yı da biliyorum",
+    "tier13Desc": "×17'yi de biliyorum",
+    "tier14Desc": "×18'i de biliyorum",
+    "tier15Desc": "×19'u da biliyorum",
+    "tier16Desc": "20×20'ye kadar biliyorum!"
   },
   "tiers": {
     "unlocked1": "×3 açıldı!",
@@ -450,15 +446,15 @@
     "nextUnlock5": "×8'i açmak için ×7'de ustalaş",
     "nextUnlock6": "×9'u açmak için ×8'de ustalaş",
     "allUnlocked": "Tüm tablolar açıldı! 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "11 ve 12'ler Tablosu",
+    "tier9Name": "13'ler Tablosu",
+    "tier10Name": "14'ler Tablosu",
+    "tier11Name": "15'ler Tablosu",
+    "tier12Name": "16'lar Tablosu",
+    "tier13Name": "17'ler Tablosu",
+    "tier14Name": "18'ler Tablosu",
+    "tier15Name": "19'lar Tablosu",
+    "tier16Name": "20'ler Tablosu"
   },
   "tierLadder": {
     "level": "Seviye",
@@ -514,18 +510,18 @@
       "struggling": "{{kc}} — çalışılması gerekiyor ({{accuracy}}% doğruluk). Aşağıdaki strateji ipuçlarını dene.",
       "untouched": "{{kc}} — henüz keşfedilmedi. Açmak için bir sprint başlat!"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "11'ler",
+    "name12": "12'ler",
+    "name13": "13'ler",
+    "name14": "14'ler",
+    "name15": "15'ler",
+    "name16": "16'lar",
+    "name17": "17'ler",
+    "name18": "18'ler",
+    "name19": "19'lar",
+    "name20": "20'ler",
+    "name21": "Genişletilmiş Kareler",
+    "name22": "Genişletilmiş Zor İşlemler"
   },
   "register_split": {
     "teacher_btn": "Öğretmen",

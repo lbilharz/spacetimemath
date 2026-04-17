@@ -145,10 +145,6 @@
     "tapPenalty": "Nog niet helemaal goed. Denk even na...",
     "whatIs": "WAT IS"
   },
-  "migration": {
-    "title": "Welkom terug!",
-    "body": "We hebben meerkeuzevragen toegevoegd! Omdat zelf je antwoord typen uitdagender is, levert dit nu 3x zoveel punten op. Om het scorebord eerlijk te houden, hebben we je oude score automatisch verdrievoudigd."
-  },
   "results": {
     "heading": "Sessie voltooid!",
     "finalizing": "Sessie afronden…",
@@ -408,15 +404,15 @@
     "tier7Desc": "Ik ken al mijn tafels!",
     "setLevelManually": "Niveau handmatig instellen",
     "testMyLevel": "Test mijn niveau",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "Ik ken ook ×11 & ×12",
+    "tier9Desc": "Ik ken ook ×13",
+    "tier10Desc": "Ik ken ook ×14",
+    "tier11Desc": "Ik ken ook ×15",
+    "tier12Desc": "Ik ken ook ×16",
+    "tier13Desc": "Ik ken ook ×17",
+    "tier14Desc": "Ik ken ook ×18",
+    "tier15Desc": "Ik ken ook ×19",
+    "tier16Desc": "Ik ken alles tot 20×20!"
   },
   "tiers": {
     "unlocked1": "×3 ontgrendeld!",
@@ -450,15 +446,15 @@
     "nextUnlock5": "Beheers ×7 om ×8 te ontgrendelen",
     "nextUnlock6": "Beheers ×8 om ×9 te ontgrendelen",
     "allUnlocked": "Alle tafels ontgrendeld! 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "Tafel van 11 & 12",
+    "tier9Name": "Tafel van 13",
+    "tier10Name": "Tafel van 14",
+    "tier11Name": "Tafel van 15",
+    "tier12Name": "Tafel van 16",
+    "tier13Name": "Tafel van 17",
+    "tier14Name": "Tafel van 18",
+    "tier15Name": "Tafel van 19",
+    "tier16Name": "Tafel van 20"
   },
   "tierLadder": {
     "level": "Niveau",
@@ -514,18 +510,18 @@
       "struggling": "{{kc}} — moet beter ({{accuracy}}% nauwkeurigheid). Probeer de strategietips hieronder.",
       "untouched": "{{kc}} — nog niet verkend. Start een sprint om te ontgrendelen!"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "Tafel van 11",
+    "name12": "Tafel van 12",
+    "name13": "Tafel van 13",
+    "name14": "Tafel van 14",
+    "name15": "Tafel van 15",
+    "name16": "Tafel van 16",
+    "name17": "Tafel van 17",
+    "name18": "Tafel van 18",
+    "name19": "Tafel van 19",
+    "name20": "Tafel van 20",
+    "name21": "Uitgebreide kwadraten",
+    "name22": "Uitgebreide moeilijke sommen"
   },
   "register_split": {
     "teacher_btn": "Leraar",

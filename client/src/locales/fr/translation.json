@@ -145,10 +145,6 @@
     "tapPenalty": "Pas tout à fait. Prends un court instant...",
     "whatIs": "COMBIEN FONT"
   },
-  "migration": {
-    "title": "Bon Retour !",
-    "body": "Nous avons ajouté des questions à choix multiples ! Puisque taper vos réponses directement est plus difficile, cela rapporte désormais 3x plus de points. Pour l'équité du classement, nous avons automatiquement triplé votre ancien score."
-  },
   "results": {
     "heading": "Session terminée !",
     "finalizing": "Finalisation de la session…",
@@ -408,15 +404,15 @@
     "tier7Desc": "Je connais toutes mes tables !",
     "setLevelManually": "Définir le niveau manuellement",
     "testMyLevel": "Tester mon niveau",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "Je connais aussi ×11 et ×12",
+    "tier9Desc": "Je connais aussi ×13",
+    "tier10Desc": "Je connais aussi ×14",
+    "tier11Desc": "Je connais aussi ×15",
+    "tier12Desc": "Je connais aussi ×16",
+    "tier13Desc": "Je connais aussi ×17",
+    "tier14Desc": "Je connais aussi ×18",
+    "tier15Desc": "Je connais aussi ×19",
+    "tier16Desc": "Je connais tout jusqu'à 20×20 !"
   },
   "tiers": {
     "unlocked1": "×3 débloqué !",
@@ -450,15 +446,15 @@
     "nextUnlock5": "Maîtrise ×7 pour débloquer ×8",
     "nextUnlock6": "Maîtrise ×8 pour débloquer ×9",
     "allUnlocked": "Toutes les tables sont débloquées ! 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "Table de 11 & 12",
+    "tier9Name": "Table de 13",
+    "tier10Name": "Table de 14",
+    "tier11Name": "Table de 15",
+    "tier12Name": "Table de 16",
+    "tier13Name": "Table de 17",
+    "tier14Name": "Table de 18",
+    "tier15Name": "Table de 19",
+    "tier16Name": "Table de 20"
   },
   "tierLadder": {
     "level": "Niveau",
@@ -514,18 +510,18 @@
       "struggling": "{{kc}} — à travailler ({{accuracy}}% de précision). Essaie les astuces ci-dessous.",
       "untouched": "{{kc}} — pas encore exploré. Lance un sprint pour débloquer !"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "Famille des 11",
+    "name12": "Famille des 12",
+    "name13": "Famille des 13",
+    "name14": "Famille des 14",
+    "name15": "Famille des 15",
+    "name16": "Famille des 16",
+    "name17": "Famille des 17",
+    "name18": "Famille des 18",
+    "name19": "Famille des 19",
+    "name20": "Famille des 20",
+    "name21": "Carrés étendus",
+    "name22": "Faits difficiles étendus"
   },
   "register_split": {
     "teacher_btn": "Enseignant",

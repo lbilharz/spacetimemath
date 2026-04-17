@@ -164,10 +164,6 @@
     "phase": "Phase",
     "whatIs": "WAS IST"
   },
-  "migration": {
-    "title": "Willkommen zurück!",
-    "body": "Wir haben Multiple-Choice-Aufgaben eingeführt! Da die freie Eingabe anspruchsvoller ist, gibt sie ab sofort 3x so viele Punkte. Damit die Rangliste fair bleibt, haben wir deine alten Punkte automatisch verdreifacht."
-  },
   "results": {
     "heading": "Sprint abgeschlossen!",
     "finalizing": "Sitzung wird abgeschlossen…",
@@ -427,15 +423,15 @@
     "tier7Desc": "Ich kenne alle Einmaleins-Reihen!",
     "setLevelManually": "Level manuell setzen",
     "testMyLevel": "Mein Level testen",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "Ich kenne auch ×11 & ×12",
+    "tier9Desc": "Ich kenne auch ×13",
+    "tier10Desc": "Ich kenne auch ×14",
+    "tier11Desc": "Ich kenne auch ×15",
+    "tier12Desc": "Ich kenne auch ×16",
+    "tier13Desc": "Ich kenne auch ×17",
+    "tier14Desc": "Ich kenne auch ×18",
+    "tier15Desc": "Ich kenne auch ×19",
+    "tier16Desc": "Ich kenne alles bis 20×20!"
   },
   "tiers": {
     "unlocked1": "×3 freigeschaltet!",
@@ -469,15 +465,15 @@
     "nextUnlock5": "×7 meistern → ×8 freischalten",
     "nextUnlock6": "×8 meistern → ×9 freischalten",
     "allUnlocked": "Alle Tabellen freigeschaltet! 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "×11 & ×12 Reihe",
+    "tier9Name": "×13 Reihe",
+    "tier10Name": "×14 Reihe",
+    "tier11Name": "×15 Reihe",
+    "tier12Name": "×16 Reihe",
+    "tier13Name": "×17 Reihe",
+    "tier14Name": "×18 Reihe",
+    "tier15Name": "×19 Reihe",
+    "tier16Name": "×20 Reihe"
   },
   "tierLadder": {
     "level": "Stufe",
@@ -524,18 +520,18 @@
       "struggling": "{{kc}} — braucht Übung ({{accuracy}}% Genauigkeit). Probier die Strategietipps unten.",
       "untouched": "{{kc}} — noch nicht erkundet. Starte einen Sprint, um freizuschalten!"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "Die 11er",
+    "name12": "Die 12er",
+    "name13": "Die 13er",
+    "name14": "Die 14er",
+    "name15": "Die 15er",
+    "name16": "Die 16er",
+    "name17": "Die 17er",
+    "name18": "Die 18er",
+    "name19": "Die 19er",
+    "name20": "Die 20er",
+    "name21": "Erweiterte Quadrate",
+    "name22": "Erweiterte schwere Aufgaben"
   },
   "friends": {
     "haveCode": "Hast du den Code eines Freundes?",

@@ -145,10 +145,6 @@
     "tapPenalty": "Не зовсім так. Подумай ще хвилинку...",
     "whatIs": "СКІЛЬКИ"
   },
-  "migration": {
-    "title": "З поверненням!",
-    "body": "Ми додали питання з вибором відповідей! Оскільки вводити відповіді самостійно складніше, це тепер приносить вам у 3 рази більше балів. Щоб зберегти справедливість у таблиці лідерів, ми автоматично потроїли ваш попередній рахунок."
-  },
   "results": {
     "heading": "Сесію завершено!",
     "finalizing": "Фіналізація сесії…",
@@ -408,15 +404,15 @@
     "tier7Desc": "Я знаю всі таблиці!",
     "setLevelManually": "Встановити рівень вручну",
     "testMyLevel": "Перевірити мій рівень",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "Я також знаю ×11 та ×12",
+    "tier9Desc": "Я також знаю ×13",
+    "tier10Desc": "Я також знаю ×14",
+    "tier11Desc": "Я також знаю ×15",
+    "tier12Desc": "Я також знаю ×16",
+    "tier13Desc": "Я також знаю ×17",
+    "tier14Desc": "Я також знаю ×18",
+    "tier15Desc": "Я також знаю ×19",
+    "tier16Desc": "Я знаю все до 20×20!"
   },
   "tiers": {
     "unlocked1": "×3 розблоковано!",
@@ -450,15 +446,15 @@
     "nextUnlock5": "Освой ×7, щоб відкрити ×8",
     "nextUnlock6": "Освой ×8, щоб відкрити ×9",
     "allUnlocked": "Всі таблиці розблоковано! 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "Таблиця на 11 та 12",
+    "tier9Name": "Таблиця на 13",
+    "tier10Name": "Таблиця на 14",
+    "tier11Name": "Таблиця на 15",
+    "tier12Name": "Таблиця на 16",
+    "tier13Name": "Таблиця на 17",
+    "tier14Name": "Таблиця на 18",
+    "tier15Name": "Таблиця на 19",
+    "tier16Name": "Таблиця на 20"
   },
   "tierLadder": {
     "level": "Рівень",
@@ -514,18 +510,18 @@
       "struggling": "{{kc}} — потребує роботи ({{accuracy}}% точності). Спробуй поради нижче.",
       "untouched": "{{kc}} — ще не досліджено. Почни спринт, щоб розблокувати!"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "Родина 11",
+    "name12": "Родина 12",
+    "name13": "Родина 13",
+    "name14": "Родина 14",
+    "name15": "Родина 15",
+    "name16": "Родина 16",
+    "name17": "Родина 17",
+    "name18": "Родина 18",
+    "name19": "Родина 19",
+    "name20": "Родина 20",
+    "name21": "Розширені квадрати",
+    "name22": "Розширені складні факти"
   },
   "register_split": {
     "teacher_btn": "Вчитель",

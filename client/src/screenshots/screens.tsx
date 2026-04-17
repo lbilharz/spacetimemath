@@ -117,7 +117,7 @@ export function LobbyScreen({ lang }: { lang: string }) {
           <div className="flex items-center gap-3 mb-2">
              <div className="text-3xl">🏆</div>
              <div>
-                <div className="text-[12px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">{t('tiers.tier7Name')} <span className="w-1 h-1 bg-slate-500 rounded-full"></span> {t('tiers.statusLevel', { tier: 8 })}</div>
+                <div className="text-[12px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">{t('tiers.tier16Name')} <span className="w-1 h-1 bg-slate-500 rounded-full"></span> {t('tiers.statusLevel', { tier: 17 })}</div>
                 <div className="text-white font-bold text-[18px]">{t('lobby.focusNew', { kc: t('dkt.name9') })}</div>
              </div>
           </div>
@@ -233,8 +233,8 @@ export function ProgressScreen({ lang }: { lang: string }) {
           </div>
           
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-[28px] font-black text-brand-yellow">{t('tiers.tier7Name')}</span>
-            <span className="bg-slate-900 border border-slate-700 text-slate-300 font-bold uppercase tracking-widest text-[12px] px-3 py-1.5 rounded-full">{t('tiers.statusLevel', { tier: 8 })}</span>
+            <span className="text-[28px] font-black text-brand-yellow">{t('tiers.tier16Name')}</span>
+            <span className="bg-slate-900 border border-slate-700 text-slate-300 font-bold uppercase tracking-widest text-[12px] px-3 py-1.5 rounded-full">{t('tiers.statusLevel', { tier: 17 })}</span>
           </div>
 
           <div className="w-full bg-[#311f26]/80 border border-brand-red/30 rounded-2xl p-5 mb-4 relative overflow-hidden">

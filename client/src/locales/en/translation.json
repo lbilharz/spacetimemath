@@ -164,10 +164,6 @@
     "phase": "Phase",
     "whatIs": "WHAT IS"
   },
-  "migration": {
-    "title": "Welcome Back!",
-    "body": "We've introduced Multiple-Choice questions! Since typing your answers directly is more challenging, it now earns you 3x the points. To keep the leaderboard fair, we've automatically tripled your past score."
-  },
   "results": {
     "heading": "Session Complete!",
     "finalizing": "Finalizing session…",

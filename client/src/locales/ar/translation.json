@@ -145,10 +145,6 @@
     "tapPenalty": "ليست صحيحة تماماً. خذ لحظة للتفكير...",
     "whatIs": "كم يساوي"
   },
-  "migration": {
-    "title": "مرحبًا بعودتك!",
-    "body": "لقد أضفنا أسئلة الاختيار من متعدد! نظرًا لأن كتابة الأجوبة بشكل مباشر أصعب، فإنها ستمنحك الآن 3 أضعاف النقاط. للحفاظ على عدالة قائمة المتصدرين، قمنا تلقائيًا بمضاعفة درجاتك السابقة ثلاث مرات."
-  },
   "results": {
     "heading": "!اكتملت الجلسة",
     "finalizing": "... جاري إنهاء الجلسة",
@@ -408,15 +404,15 @@
     "tier7Desc": "!أعرف كل جداولي",
     "setLevelManually": "تحديد المستوى يدوياً",
     "testMyLevel": "اختبار مستواي",
-    "tier8Desc": "I also know ×11 & ×12",
-    "tier9Desc": "I also know ×13",
-    "tier10Desc": "I also know ×14",
-    "tier11Desc": "I also know ×15",
-    "tier12Desc": "I also know ×16",
-    "tier13Desc": "I also know ×17",
-    "tier14Desc": "I also know ×18",
-    "tier15Desc": "I also know ×19",
-    "tier16Desc": "I know up to 20x20!"
+    "tier8Desc": "أعرف أيضًا ×11 و ×12",
+    "tier9Desc": "أعرف أيضًا ×13",
+    "tier10Desc": "أعرف أيضًا ×14",
+    "tier11Desc": "أعرف أيضًا ×15",
+    "tier12Desc": "أعرف أيضًا ×16",
+    "tier13Desc": "أعرف أيضًا ×17",
+    "tier14Desc": "أعرف أيضًا ×18",
+    "tier15Desc": "أعرف أيضًا ×19",
+    "tier16Desc": "أعرف حتى 20×20!"
   },
   "tiers": {
     "unlocked1": "!تم فتح ×3",
@@ -450,15 +446,15 @@
     "nextUnlock5": "×8 أتقن ×7 لفتح",
     "nextUnlock6": "×9 أتقن ×8 لفتح",
     "allUnlocked": "!تم فتح جميع الجداول 🎉",
-    "tier8Name": "×11 & ×12 Tables",
-    "tier9Name": "×13 Table",
-    "tier10Name": "×14 Table",
-    "tier11Name": "×15 Table",
-    "tier12Name": "×16 Table",
-    "tier13Name": "×17 Table",
-    "tier14Name": "×18 Table",
-    "tier15Name": "×19 Table",
-    "tier16Name": "×20 Table"
+    "tier8Name": "جدول 11 و 12",
+    "tier9Name": "جدول 13",
+    "tier10Name": "جدول 14",
+    "tier11Name": "جدول 15",
+    "tier12Name": "جدول 16",
+    "tier13Name": "جدول 17",
+    "tier14Name": "جدول 18",
+    "tier15Name": "جدول 19",
+    "tier16Name": "جدول 20"
   },
   "tierLadder": {
     "level": "مستوى",
@@ -514,18 +510,18 @@
       "struggling": "{{kc}} — يحتاج عملاً ({{accuracy}}% دقة). جرّب نصائح الاستراتيجية أدناه.",
       "untouched": "{{kc}} — لم يُستكشف بعد. ابدأ سباقاً سريعاً للفتح!"
     },
-    "name11": "Fact Family 11s",
-    "name12": "Fact Family 12s",
-    "name13": "Fact Family 13s",
-    "name14": "Fact Family 14s",
-    "name15": "Fact Family 15s",
-    "name16": "Fact Family 16s",
-    "name17": "Fact Family 17s",
-    "name18": "Fact Family 18s",
-    "name19": "Fact Family 19s",
-    "name20": "Fact Family 20s",
-    "name21": "Extended Squares",
-    "name22": "Extended Hard Facts"
+    "name11": "عائلة الـ 11",
+    "name12": "عائلة الـ 12",
+    "name13": "عائلة الـ 13",
+    "name14": "عائلة الـ 14",
+    "name15": "عائلة الـ 15",
+    "name16": "عائلة الـ 16",
+    "name17": "عائلة الـ 17",
+    "name18": "عائلة الـ 18",
+    "name19": "عائلة الـ 19",
+    "name20": "عائلة الـ 20",
+    "name21": "المربعات الموسعة",
+    "name22": "المسائل الصعبة الموسعة"
   },
   "register_split": {
     "teacher_btn": "معلم",

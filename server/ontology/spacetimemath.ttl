@@ -53,3 +53,51 @@
 :MathsMultiplicationExtendedCoreDigit a owl:NamedIndividual, edu:Area ;
     rdfs:isDefinedBy "The fundamental single-digit multiplication required inside of an extended Base 10 problem (e.g., recognizing 2 * 7 inside 12 * 7)." ;
     edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact11s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 11s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact12s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 12s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact13s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 13s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact14s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 14s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact15s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 15s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact16s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 16s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact17s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 17s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact18s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 18s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact19s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 19s multiplication fact family." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationFact20s a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the 20s multiplication fact family (N * 2 * 10)." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationExtendedSquare a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of Perfect Squares within the extended 11x11 to 20x20 bounds." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .
+
+:MathsMultiplicationExtendedHard a owl:NamedIndividual, edu:Area ;
+    rdfs:isDefinedBy "Mastery of the core 'Extended Hard Facts' memory cluster involving overlapping high teen numbers (e.g., 16x17) not strictly tracked by squares." ;
+    edu:partOf <http://edugraph.io/edu/Multiplication> .

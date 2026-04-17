@@ -47,6 +47,7 @@ Better 1UP is a high-speed, adaptive multiplication trainer. It features a UI th
 | 5 | +×7 | 80%* of tier-4 pairs mastered |
 | 6 | +×8 | 80%* of tier-5 pairs mastered |
 | 7 | +×9 | 80%* of tier-6 pairs mastered |
+| 8–16 | +×11 to ×20 | Extended Mastery Domain (20x20) |
 
 \* Speed bonus: if ≥80% of sprint answers for current-tier pairs are <2 s, threshold drops to 50%.
 
