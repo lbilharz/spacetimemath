@@ -1,8 +1,7 @@
-v1.3 — A jugar de una!
+v1.5 — ¡Hasta el ×20!
 
-- Registro en un toque: recibes un gamertag divertido al instante — cambialo si quieres
-- Los amigos ahora pueden compartir enlaces de invitacion que conectan automaticamente
-- Unirse a una clase o agregar un amigo muestra una pequena celebracion
-- El enlace magico por correo por fin funciona en iOS
-- Nueva pagina 404 (probablemente nunca la veras, pero se ve genial)
-- Muchas correcciones pequenas para una experiencia mas rapida
+- Tablas extendidas: domina del ×11 al ×20, nivel a nivel — la cuadrícula crece contigo
+- 9 nuevos niveles de progresión con emojis y hitos propios
+- Easter egg de voz: toca tu avatar para escuchar tu gamertag en voz alta
+- Reconexión mejorada: la app retoma exactamente donde lo dejaste
+- Muchas mejoras pequeñas para mayor velocidad y fiabilidad

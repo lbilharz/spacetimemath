@@ -1,8 +1,7 @@
-v1.3 — Fonce direct !
+v1.5 — Cap sur le ×20 !
 
-- Inscription en un clic : tu recois un gamertag fun instantanement — change-le si tu veux
-- Les amis peuvent partager des liens d'invitation qui connectent automatiquement
-- Rejoindre une classe ou ajouter un ami affiche une petite celebration
-- Le lien magique par e-mail fonctionne enfin sur iOS
-- Nouvelle page 404 (tu ne la verras probablement jamais, mais elle est cool)
-- Plein de petites corrections pour une experience plus fluide
+- Tables étendues : maîtrise le ×11 jusqu'au ×20, palier par palier
+- 9 nouveaux niveaux de progression — la grille de maîtrise grandit avec toi
+- Easter egg vocal : touche ton avatar pour entendre ton gamertag à voix haute
+- Reconnexion améliorée : l'app reprend exactement où elle s'était arrêtée
+- Plein de petites améliorations pour plus de fluidité et de fiabilité

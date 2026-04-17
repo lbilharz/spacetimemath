@@ -1,8 +1,7 @@
-v1.3 — Einfach loslegen!
+v1.5 — Weiter bis ×20!
 
-- Anmeldung in einem Tipp: du bekommst sofort einen coolen Gamertag — aendern geht natuerlich auch
-- Freunde koennen jetzt Einladungslinks teilen, die automatisch verbinden
-- Einer Klasse beitreten oder Freunde adden zeigt jetzt eine kleine Feier
-- E-Mail-Login-Link funktioniert endlich zuverlaessig auf iOS
-- Neue 404-Seite (wirst du vermutlich nie sehen, sieht aber gut aus)
-- Viele kleine Fixes fuer ein flottes Erlebnis
+- Erweiterte Tafeln: Lerne ×11 bis ×20, Stufe für Stufe — das Raster wächst mit dir
+- 9 neue Fortschrittsstufen mit eigenen Emojis und Meilensteinen
+- Begrüßungs-Easteregg: Tippe auf deinen Avatar, um deinen Gamertag laut zu hören
+- Stabilere Verbindung: Die App macht nach einem Verbindungsabbruch einfach weiter
+- Viele kleine Verbesserungen für mehr Tempo und Zuverlässigkeit

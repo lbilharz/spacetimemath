@@ -1,8 +1,7 @@
-v1.3 — Meteen erin!
+v1.5 — Door naar ×20!
 
-- Aanmelden in een tik: je krijgt direct een toffe gamertag — wijzigen kan altijd
-- Vrienden kunnen nu uitnodigingslinks delen die automatisch verbinden
-- Een klas joinen of een vriend toevoegen laat een kleine viering zien
-- E-mail-inloglink werkt eindelijk betrouwbaar op iOS
-- Nieuwe 404-pagina (je ziet hem waarschijnlijk nooit, maar hij ziet er gaaf uit)
-- Veel kleine verbeteringen voor een vlottere ervaring
+- Uitgebreide tafels: leer ×11 tot ×20, niveau voor niveau — het raster groeit mee
+- 9 nieuwe voortgangsniveaus met eigen emoji's en mijlpalen
+- Spraak-easteregg: tik op je avatar om je gamertag hardop te horen
+- Stabilere verbinding: de app pakt gewoon door na een netwerkunderbrekíng
+- Veel kleine verbeteringen voor snelheid en betrouwbaarheid

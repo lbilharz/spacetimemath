@@ -1,8 +1,7 @@
-v1.3 — Hemen basla!
+v1.5 — ×20'ye Kadar!
 
-- Tek dokunusla kayit: aninda eglenceli bir oyuncu adi alirsin — istersen degistir
-- Arkadaslar artik otomatik baglanan davet linkleri paylasabiliyor
-- Sinifa katilmak veya arkadas eklemek kucuk bir kutlama gosteriyor
-- E-posta giris baglantisi sonunda iOS'ta duzgun calisiyor
-- Yeni 404 sayfasi (muhtemelen hic gormeyeceksin ama cok guzel)
-- Daha hizli bir deneyim icin bir suru kucuk duzeltme
+- Genişletilmiş tablolar: ×11'den ×20'ye kadar, adım adım ilerle — ızgara seninle büyür
+- 9 yeni ilerleme seviyesi, kendine özgü emoji ve kilometre taşlarıyla
+- Ses sürprizi: avatarına dokun, oyuncu adını sesli duymak için
+- Daha kararlı bağlantı: uygulama ağ kesintisinden sonra kaldığı yerden devam eder
+- Hız ve güvenilirlik için pek çok küçük iyileştirme
