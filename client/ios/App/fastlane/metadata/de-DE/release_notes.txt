@@ -1,7 +1,3 @@
-v1.5 — Weiter bis ×20!
+v1.5 — Weiter als 10×10
 
-- Erweiterte Tafeln: Lerne ×11 bis ×20, Stufe für Stufe — das Raster wächst mit dir
-- 9 neue Fortschrittsstufen mit eigenen Emojis und Meilensteinen
-- Begrüßungs-Easteregg: Tippe auf deinen Avatar, um deinen Gamertag laut zu hören
-- Stabilere Verbindung: Die App macht nach einem Verbindungsabbruch einfach weiter
-- Viele kleine Verbesserungen für mehr Tempo und Zuverlässigkeit
+Lerne ×11 bis ×20, Reihe für Reihe. Neun neue Stufen, ein wachsendes Beherrschungsraster und ein verstecktes Begrüßungs-Easteregg in deinem Avatar. Dazu die üblichen Stabilitätsverbesserungen.

@@ -1,7 +1,3 @@
-v1.5 — ×20'ye Kadar!
+v1.5 — 10×10'un Ötesinde
 
-- Genişletilmiş tablolar: ×11'den ×20'ye kadar, adım adım ilerle — ızgara seninle büyür
-- 9 yeni ilerleme seviyesi, kendine özgü emoji ve kilometre taşlarıyla
-- Ses sürprizi: avatarına dokun, oyuncu adını sesli duymak için
-- Daha kararlı bağlantı: uygulama ağ kesintisinden sonra kaldığı yerden devam eder
-- Hız ve güvenilirlik için pek çok küçük iyileştirme
+×11'den ×20'ye kadar her tabloyu adım adım öğren. Dokuz yeni seviye, büyüyen bir ustalık ızgarası ve avatarında saklı bir ses sürprizi. Bir de her zamanki kararlılık iyileştirmeleri.

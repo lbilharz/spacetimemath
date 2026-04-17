@@ -1,7 +1,3 @@
-v1.5 — Level Up to ×20!
+v1.5 — Beyond the 10×10
 
-- Extended tables unlocked: master ×11 all the way to ×20, tier by tier
-- 9 new progression tiers — the mastery grid grows as you advance
-- Greeting easter egg: tap your avatar to hear your gamertag out loud
-- Smoother reconnects: the app picks up right where you left off after a network blip
-- Lots of under-the-hood fixes for speed and reliability
+Master ×11 through ×20, one table at a time. Nine new tiers, a growing mastery grid, and a greeting easter egg hidden in your avatar. Plus the usual round of stability improvements.

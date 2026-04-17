@@ -1,7 +1,3 @@
-v1.5 — Door naar ×20!
+v1.5 — Verder dan 10×10
 
-- Uitgebreide tafels: leer ×11 tot ×20, niveau voor niveau — het raster groeit mee
-- 9 nieuwe voortgangsniveaus met eigen emoji's en mijlpalen
-- Spraak-easteregg: tik op je avatar om je gamertag hardop te horen
-- Stabilere verbinding: de app pakt gewoon door na een netwerkunderbrekíng
-- Veel kleine verbeteringen voor snelheid en betrouwbaarheid
+Beheers ×11 tot ×20, rij voor rij. Negen nieuwe niveaus, een groeiend raster en een spraak-easteregg verborgen in je avatar. Plus de gebruikelijke stabiliteitsverbeteringen.

@@ -1,7 +1,3 @@
-v1.5 — Cap sur le ×20 !
+v1.5 — Au-delà du 10×10
 
-- Tables étendues : maîtrise le ×11 jusqu'au ×20, palier par palier
-- 9 nouveaux niveaux de progression — la grille de maîtrise grandit avec toi
-- Easter egg vocal : touche ton avatar pour entendre ton gamertag à voix haute
-- Reconnexion améliorée : l'app reprend exactement où elle s'était arrêtée
-- Plein de petites améliorations pour plus de fluidité et de fiabilité
+Maîtrise le ×11 jusqu'au ×20, table par table. Neuf nouveaux niveaux, une grille qui grandit avec toi et un easter egg vocal caché dans ton avatar. Plus les habituelles améliorations de stabilité.
