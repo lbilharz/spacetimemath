@@ -105,6 +105,7 @@ export default function App() {
   }, [navigate]);
 
   const getMyRecoveryCode = useSTDBReducer(reducers.getMyRecoveryCode);
+  const getMyEmail = useSTDBReducer(reducers.getMyEmail);
 
   const myIdentityHex = identity?.toHexString();
   const myPlayer = myIdentityHex
@@ -150,6 +151,7 @@ export default function App() {
     if (myPlayer && isActive && !hasFetchedRecoveryCodeRef.current) {
       hasFetchedRecoveryCodeRef.current = true;
       getMyRecoveryCode();
+      getMyEmail();
     }
   }, [myPlayer?.identity?.toHexString(), isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 

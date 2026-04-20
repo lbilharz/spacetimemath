@@ -187,18 +187,23 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
           </span>
         </div>
 
-        {!isTeacher && (
+        {(!isTeacher || !myEmail) && (
           <>
             {!showUpgradeForm ? (
               <>
                 <div className="mt-4 font-bold text-sm text-slate-700 dark:text-slate-300">
-                  {t('classes.areYouTeacher')}
+                  {isTeacher ? t('account.reVerifyEmailPrompt', 'Re-verify your email') : t('classes.areYouTeacher')}
                 </div>
+                {isTeacher && (
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {t('account.reVerifyEmailDesc', 'Your email is not stored — re-verify to enable email-based account recovery.')}
+                  </p>
+                )}
                 <button
                   onClick={() => setShowUpgradeForm(true)}
                   className="mt-2 w-full rounded-xl bg-brand-yellow/10 border border-brand-yellow/30 px-4 py-3 text-sm font-bold text-amber-700 dark:text-amber-400 transition-all hover:bg-brand-yellow/20 active:scale-[0.98]"
                 >
-                  {t('classes.upgradePrompt')}
+                  {isTeacher ? t('account.reVerifyEmailBtn', 'Verify email address') : t('classes.upgradePrompt')}
                 </button>
               </>
             ) : (
@@ -206,7 +211,6 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{t('classes.upgradeDesc')}</p>
                 <TeacherUpgradeForm myIdentityHex={myIdentityHex} onUpgraded={() => setShowUpgradeForm(false)} />
               </div>
-
             )}
           </>
         )}
