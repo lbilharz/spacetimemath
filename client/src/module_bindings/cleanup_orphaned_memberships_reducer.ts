@@ -10,8 +10,4 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
-export default {
-  secretKey: __t.string(),
-  targetPlayerHex: __t.string(),
-  weights: __t.array(__t.f32()),
-};
+export default {};

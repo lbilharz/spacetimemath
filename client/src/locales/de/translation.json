@@ -531,7 +531,12 @@
     "name19": "Die 19er",
     "name20": "Die 20er",
     "name21": "Erweiterte Quadrate",
-    "name22": "Erweiterte schwere Aufgaben"
+    "name22": "Erweiterte schwere Aufgaben",
+    "name23": "Die 3er",
+    "name24": "Die 4er",
+    "name25": "Die 6er",
+    "name26": "Die 7er",
+    "name27": "Die 8er"
   },
   "friends": {
     "haveCode": "Hast du den Code eines Freundes?",

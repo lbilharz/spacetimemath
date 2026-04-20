@@ -182,23 +182,23 @@ pub struct IssuedProblemResultV2 {
 }
 
 /// AI Engine: Passive Telemetry Ledger for offline PyTorch LSTM inference.
-/// Stores immutable, anonymized sequences of success/failure mapped strictly 
-/// against the semantic EduGraph Ontology ID array.
-// -------------------------------------------------------
-// Phase 3 DKT ML Ingestion (Deep Knowledge Tracing)
-// -------------------------------------------------------
-// An offline PyTorch loop calculates the student's mastery weights based
-// on `kc_telemetry` and forces HTTP synchronization specifically here.
+/// Per-player mastery vector, maintained in-reducer by the BKT step in
+/// `submit_answer` with time-based decay toward 0.5. Length should be
+/// `generator::KC_COUNT`; legacy rows are padded on read via
+/// `ensure_kc_mastery_len`.
 #[table(accessor = player_dkt_weights)]
 pub struct PlayerDktWeights {
     #[primary_key]
     pub player_identity: Identity,
-    // Holds 11 probabilities matching the `generator::EduGraphKC` variants.
-    // e.g. index 0 corresponds to KC #1 (Zero Property), mapped continuously.
     pub kc_mastery: Vec<f32>,
     pub last_updated_timestamp: u64,
 }
 
+/// DEPRECATED: dormant table from the old PyTorch trainer pipeline.
+/// No reducer writes to it anymore (as of Phase-A DKT rewrite); existing rows
+/// remain for schema stability so production publishes don't need
+/// `--delete-data`. Drop during a planned maintenance window with a real
+/// backup + manual migration path.
 #[table(accessor = kc_telemetry)]
 pub struct KcTelemetry {
     #[primary_key]
@@ -696,8 +696,8 @@ pub fn migrate_rebuild_dkt_weights(ctx: &ReducerContext) -> Result<(), String> {
             .collect();
         answers.sort_by_key(|a| a.id);
 
-        // Start from fresh default weights
-        let mut weights = vec![0.5_f32; 11];
+        // Start from fresh default weights sized for the full KC taxonomy
+        let mut weights = vec![0.5_f32; crate::generator::KC_COUNT];
 
         for ans in &answers {
             let kcs = crate::generator::calculate_kcs_for_multiplication(ans.a, ans.b);
@@ -955,6 +955,141 @@ pub(crate) fn factor_tier(x: u8) -> Option<u8> {
     }
 }
 
+/// Primary KC discriminants (1-based, matching `generator::EduGraphKC`) that
+/// represent mastery of `tier`. Used by `check_and_unlock` and the diagnostic
+/// placement to gate tier advancement on DKT evidence, not just per-pair
+/// accuracy. Extended tiers each have a single fact-family KC.
+pub(crate) fn tier_primary_kcs(tier: u8) -> Vec<u32> {
+    use crate::generator::EduGraphKC as K;
+    let kcs: &[K] = match tier {
+        0 => &[K::MathsMultiplicationIdentityProperty, K::MathsMultiplicationFact2s, K::MathsMultiplicationFact10s],
+        1 => &[K::MathsMultiplicationFact3s],
+        2 => &[K::MathsMultiplicationFact5s],
+        3 => &[K::MathsMultiplicationFact4s],
+        4 => &[K::MathsMultiplicationFact6s],
+        5 => &[K::MathsMultiplicationFact7s],
+        6 => &[K::MathsMultiplicationFact8s],
+        7 => &[K::MathsMultiplicationFact9s],
+        8 => &[K::MathsMultiplicationFact11s, K::MathsMultiplicationFact12s],
+        9 => &[K::MathsMultiplicationFact13s],
+        10 => &[K::MathsMultiplicationFact14s],
+        11 => &[K::MathsMultiplicationFact15s],
+        12 => &[K::MathsMultiplicationFact16s],
+        13 => &[K::MathsMultiplicationFact17s],
+        14 => &[K::MathsMultiplicationFact18s],
+        15 => &[K::MathsMultiplicationFact19s],
+        16 => &[K::MathsMultiplicationFact20s],
+        _ => &[],
+    };
+    kcs.iter().map(|k| *k as u32).collect()
+}
+
+/// DKT-mastery threshold: the minimum `kc_mastery` value (0..=1) a player must
+/// have on every primary KC of a tier for that tier to be considered DKT-mastered.
+/// Used to gate tier promotions on learning evidence.
+pub(crate) const DKT_TIER_MASTERY_THRESHOLD: f32 = 0.80;
+
+/// Returns true if the player has DKT evidence of mastering `tier`.
+/// A fresh player (no `player_dkt_weights` row) fails the gate for all tiers
+/// except 0 — preventing the "zero-answer diagnostic promotion" bug.
+pub(crate) fn has_dkt_mastery_for_tier(ctx: &ReducerContext, player_id: Identity, tier: u8) -> bool {
+    if tier == 0 { return true; }
+    let primary = tier_primary_kcs(tier);
+    if primary.is_empty() { return false; }
+    if ctx.db.player_dkt_weights().player_identity().find(player_id).is_none() {
+        return false;
+    }
+    let weights = effective_kc_mastery(ctx, player_id);
+    primary.iter().all(|kc| {
+        let idx = (*kc as usize).saturating_sub(1);
+        weights.get(idx).copied().unwrap_or(0.0) >= DKT_TIER_MASTERY_THRESHOLD
+    })
+}
+
+/// Seed tier for a new diagnostic session.
+///
+/// The diagnostic is a tier climber — starting too low wastes questions on
+/// trivial pairs, starting too high punishes the player. This helper picks
+/// the highest tier the player can defensibly start at given:
+///   1. their committed `learning_tier` (already-earned floor), and
+///   2. any DKT evidence beyond that (returning players / backfilled mastery).
+///
+/// Returns at least 1 so the diagnostic never seeds below the lowest climb
+/// rung. For a brand-new player with no DKT row, this collapses to 1 —
+/// identical to the legacy hardcoded default.
+pub(crate) fn diagnostic_seed_tier(ctx: &ReducerContext, player_id: Identity) -> u8 {
+    let player = match ctx.db.players().identity().find(player_id) {
+        Some(p) => p,
+        None => return 1,
+    };
+    let max_tier = if player.extended_mode { crate::MAX_EXTENDED_TIER } else { crate::MAX_STANDARD_TIER };
+    let mut seed = player.learning_tier.min(max_tier);
+    for tier in (seed + 1)..=max_tier {
+        if has_dkt_mastery_for_tier(ctx, player_id, tier) {
+            seed = tier;
+        } else {
+            break;
+        }
+    }
+    seed.max(1)
+}
+
+/// Half-life (days) for KC mastery retention. After this period without
+/// practice on a KC, its deviation from the neutral 0.5 prior halves.
+/// Multiplication fluency decays faster than one might expect; 30 days is a
+/// conservative starting point — can be tuned from metrics later.
+pub(crate) const MASTERY_HALF_LIFE_DAYS: f32 = 30.0;
+
+/// Applies exponential decay toward the neutral 0.5 prior based on elapsed
+/// time since `last_updated_micros`. Mastery above 0.5 drifts down, mastery
+/// below drifts up — modelling forgetting.
+///
+/// Contract: `last_updated_micros == 0` signals "never written / unknown" and
+/// skips decay so fresh rows aren't artificially aged. The caller is
+/// responsible for passing `last_updated_micros` from the stored row and
+/// `now_micros` from `ctx.timestamp.to_micros_since_unix_epoch()`.
+pub(crate) fn decay_mastery(
+    mut weights: Vec<f32>,
+    last_updated_micros: u64,
+    now_micros: i64,
+) -> Vec<f32> {
+    if last_updated_micros == 0 { return weights; }
+    let elapsed_micros = (now_micros as i128).saturating_sub(last_updated_micros as i128).max(0) as u64;
+    let elapsed_days = (elapsed_micros as f32) / 86_400_000_000.0;
+    if elapsed_days <= 0.0 { return weights; }
+    let factor = 0.5_f32.powf(elapsed_days / MASTERY_HALF_LIFE_DAYS);
+    for w in weights.iter_mut() {
+        *w = (0.5 + (*w - 0.5) * factor).clamp(0.01, 0.99);
+    }
+    weights
+}
+
+/// Convenience: load + pad + decay a player's mastery vector. Returns the
+/// neutral vector if the player has no DKT row yet.
+pub(crate) fn effective_kc_mastery(ctx: &ReducerContext, player_id: Identity) -> Vec<f32> {
+    match ctx.db.player_dkt_weights().player_identity().find(player_id) {
+        Some(row) => {
+            let weights = ensure_kc_mastery_len(row.kc_mastery);
+            decay_mastery(weights, row.last_updated_timestamp, ctx.timestamp.to_micros_since_unix_epoch())
+        }
+        None => vec![0.5_f32; crate::generator::KC_COUNT],
+    }
+}
+
+/// Pads a kc_mastery vector with the neutral 0.5 prior up to KC_COUNT.
+/// Legacy rows (length < KC_COUNT) gain new KC slots at the neutral value;
+/// over-length rows are truncated. The vector layout is 0-based:
+/// index i corresponds to EduGraphKC variant with discriminant (i + 1).
+pub(crate) fn ensure_kc_mastery_len(mut weights: Vec<f32>) -> Vec<f32> {
+    let target = crate::generator::KC_COUNT;
+    if weights.len() < target {
+        weights.resize(target, 0.5_f32);
+    } else if weights.len() > target {
+        weights.truncate(target);
+    }
+    weights
+}
+
 /// Learning tier of an ordered pair = min(tier(a), tier(b)).
 /// A pair belongs to the tier of its *easier* factor — so 2×7 is a tier-0 pair
 /// because it's part of the ×2 table, even though 7 hasn't been unlocked yet.
@@ -986,7 +1121,11 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
 
     let max_allowed_tier = if player.extended_mode { MAX_EXTENDED_TIER } else { MAX_STANDARD_TIER };
 
-    for target_tier in (player.learning_tier + 1)..=max_allowed_tier {
+    // Only consider ONE tier promotion per session. A single sprint should
+    // never cascade through multiple tiers on lifetime-mastery evidence —
+    // that was the cause of "I played one good sprint and jumped 3 tiers".
+    let target_tier = player.learning_tier.saturating_add(1);
+    if target_tier <= max_allowed_tier {
         let check_tier = target_tier - 1;
 
         // All problem_stat pairs belonging to check_tier
@@ -996,57 +1135,65 @@ pub(crate) fn check_and_unlock(ctx: &ReducerContext, sender: Identity, session_i
             .map(|s| (s.a, s.b))
             .collect();
         let total = tier_pairs.len() as f32;
-        if total == 0.0 { continue; }
 
-        // Speed bonus: ≥80% of this-sprint answers for check_tier pairs answered in <2s
-        let sprint_tier: Vec<_> = sprint_answers.iter()
-            .filter(|a| pair_learning_tier(a.a, a.b) == Some(check_tier))
-            .collect();
-        // Brilliant sprint fast-track: ≥85% accuracy AND avg response < 3000ms → instant unlock
-        if !sprint_tier.is_empty() {
-            let sprint_correct = sprint_tier.iter().filter(|a| a.is_correct).count();
-            let sprint_acc = sprint_correct as f32 / sprint_tier.len() as f32;
-            let sprint_avg_ms = sprint_tier.iter().map(|a| a.response_ms as u64).sum::<u64>()
-                / sprint_tier.len() as u64;
-            if sprint_acc >= 0.85 && sprint_avg_ms < 3000 {
-                new_tier = target_tier;
-                continue;
-            }
-        }
+        // DKT gate: require evidence on the tier's primary KCs before promoting.
+        // Covers the sample-size hole in fast-track and the empty-sprint case.
+        let dkt_ok = has_dkt_mastery_for_tier(ctx, sender, check_tier);
 
-        let speed_bonus = !sprint_tier.is_empty()
-            && sprint_tier.iter().filter(|a| a.response_ms < 2000).count() as f32
-               / sprint_tier.len() as f32 >= 0.8;
-        let threshold = if speed_bonus { 0.5_f32 } else { 0.6_f32 };
+        // Minimum sprint sample — prevents "one lucky answer → unlock".
+        const MIN_SPRINT_SAMPLE: usize = 5;
 
-        // Count mastered pairs using attempts-weighted accuracy (last-3)
-        // 1st-attempt correct = 1.0, 2nd-attempt = 0.6, 3+ attempts = 0.3, wrong = 0.0
-        let mut mastered = 0u32;
-        for (a, b) in &tier_pairs {
-            let mut pair: Vec<_> = my_answers.iter()
-                .filter(|ans| ans.a == *a && ans.b == *b)
+        if total > 0.0 && dkt_ok {
+            let sprint_tier: Vec<_> = sprint_answers.iter()
+                .filter(|a| pair_learning_tier(a.a, a.b) == Some(check_tier))
                 .collect();
-            if pair.is_empty() { continue; }
-            pair.sort_by_key(|ans| ans.id);
-            let recent: Vec<_> = pair.iter().rev().take(3).collect();
-            let weighted_acc: f32 = recent.iter().map(|ans| {
-                if !ans.is_correct {
-                    0.0
-                } else {
-                    match ans.attempts {
-                        0 | 1 => 1.0, // 0 = legacy data (default), treat as 1st attempt
-                        2 => 0.6,
-                        _ => 0.3,     // 3+ attempts
-                    }
-                }
-            }).sum::<f32>() / recent.len() as f32;
-            if weighted_acc >= 0.8 { mastered += 1; }
-        }
 
-        if mastered as f32 / total >= threshold {
-            new_tier = target_tier;
-        } else {
-            break; // cannot skip tiers
+            // Brilliant sprint fast-track: needs a real sample size now.
+            let fast_track = sprint_tier.len() >= MIN_SPRINT_SAMPLE && {
+                let sprint_correct = sprint_tier.iter().filter(|a| a.is_correct).count();
+                let sprint_acc = sprint_correct as f32 / sprint_tier.len() as f32;
+                let sprint_avg_ms = sprint_tier.iter().map(|a| a.response_ms as u64).sum::<u64>()
+                    / sprint_tier.len() as u64;
+                sprint_acc >= 0.85 && sprint_avg_ms < 3000
+            };
+
+            if fast_track {
+                new_tier = target_tier;
+            } else {
+                // Speed bonus also needs a real sample to kick in.
+                let speed_bonus = sprint_tier.len() >= MIN_SPRINT_SAMPLE
+                    && sprint_tier.iter().filter(|a| a.response_ms < 2000).count() as f32
+                       / sprint_tier.len() as f32 >= 0.8;
+                let threshold = if speed_bonus { 0.5_f32 } else { 0.6_f32 };
+
+                // Count mastered pairs using attempts-weighted accuracy (last-3).
+                // 1st-attempt correct = 1.0, 2nd-attempt = 0.6, 3+ attempts = 0.3, wrong = 0.0
+                let mut mastered = 0u32;
+                for (a, b) in &tier_pairs {
+                    let mut pair: Vec<_> = my_answers.iter()
+                        .filter(|ans| ans.a == *a && ans.b == *b)
+                        .collect();
+                    if pair.is_empty() { continue; }
+                    pair.sort_by_key(|ans| ans.id);
+                    let recent: Vec<_> = pair.iter().rev().take(3).collect();
+                    let weighted_acc: f32 = recent.iter().map(|ans| {
+                        if !ans.is_correct {
+                            0.0
+                        } else {
+                            match ans.attempts {
+                                0 | 1 => 1.0, // 0 = legacy data (default), treat as 1st attempt
+                                2 => 0.6,
+                                _ => 0.3,     // 3+ attempts
+                            }
+                        }
+                    }).sum::<f32>() / recent.len() as f32;
+                    if weighted_acc >= 0.8 { mastered += 1; }
+                }
+
+                if mastered as f32 / total >= threshold {
+                    new_tier = target_tier;
+                }
+            }
         }
     }
 
@@ -1179,6 +1326,7 @@ pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier:
     //    problem_key = a * 100 + b; exclude pairs where a == 0 || b == 0
     //    If extended_mode is true, also include category=2 (curated 2-digit) pairs
     //    gated by extended_level: only pairs where max(a,b) <= 11 + extended_level.
+    let _ = (extended_mode, extended_level); // Reserved for future extended gating
     let eligible: Vec<ProblemStat> = ctx.db.problem_stats().iter()
         .filter(|s| {
             if s.a == 0 || s.b == 0 { return false; }
@@ -1186,10 +1334,33 @@ pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier:
         })
         .collect();
 
-    // 2. Expand into weighted pool: hard problems (high difficulty_weight) get more copies
+    // 2. Load player's DKT mastery (padded to KC_COUNT, decayed toward 0.5
+    //    based on elapsed time; neutral 0.5 when no row exists).
+    //    Weak KCs get oversampled; strong KCs get de-emphasised (but never removed).
+    let weights = effective_kc_mastery(ctx, ctx.sender());
+
+    // Per-pair weakness = 1.0 - min(mastery on any KC the pair trains).
+    // Using min picks up the growth-edge KC: if a pair touches a weak KC, practice it.
+    let pair_weakness = |a: u8, b: u8| -> f32 {
+        let kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
+        if kcs.is_empty() { return 0.5; }
+        let min_mastery = kcs.iter()
+            .map(|kc| {
+                let idx = (*kc as usize).saturating_sub(1);
+                weights.get(idx).copied().unwrap_or(0.5)
+            })
+            .fold(1.0_f32, f32::min);
+        1.0 - min_mastery
+    };
+
+    // 3. Expand into weighted pool: difficulty × weakness drives copy count.
+    //    Mastery 0.5 (untouched) → 1.0× base. Mastery 1.0 → 0.5×. Mastery 0.0 → 1.5×.
+    //    This keeps the difficulty-weight shape intact while biasing toward weak KCs.
     let mut pool: Vec<u16> = eligible.into_iter()
         .flat_map(|s| {
-            let copies = ((s.difficulty_weight * 3.0).round() as usize).max(1);
+            let weakness = pair_weakness(s.a, s.b);
+            let multiplier = 0.5 + weakness; // 0.5..=1.5
+            let copies = ((s.difficulty_weight * 3.0 * multiplier).round() as usize).max(1);
             std::iter::repeat(s.problem_key).take(copies)
         })
         .collect();
@@ -1300,38 +1471,3 @@ pub struct EndSprintSchedule {
     pub class_sprint_id: u64,
 }
 
-/// DKT-01: Secure AI Webhook Sink.
-/// Called exclusively by the offline Hugging Face PyTorch script 
-/// to push synthesized mastery matrices back into the edge.
-#[reducer]
-pub fn update_dkt_weights(
-    ctx: &ReducerContext,
-    secret_key: String,
-    target_player_hex: String,
-    weights: Vec<f32>,
-) -> Result<(), String> {
-    if secret_key != "hf-bot-secret" {
-        return Err("Unauthorized ML Sink Access".into());
-    }
-    
-    let target_player = spacetimedb::Identity::from_hex(&target_player_hex)
-        .map_err(|_| "Invalid Identity hex".to_string())?;
-    
-    // Fallback dimension check
-    if weights.len() != 11 {
-        return Err("Fatal: DKT Tensors MUST strictly correspond to the 11 EduGraph Ontology nodes.".into());
-    }
-    
-    let row = PlayerDktWeights {
-        player_identity: target_player,
-        kc_mastery: weights,
-        last_updated_timestamp: 0,
-    };
-    
-    // Upsert semantic matrix
-    match ctx.db.player_dkt_weights().player_identity().find(target_player) {
-        Some(_) => { ctx.db.player_dkt_weights().player_identity().update(row); }
-        None    => { ctx.db.player_dkt_weights().insert(row); }
-    }
-    Ok(())
-}

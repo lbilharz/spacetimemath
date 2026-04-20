@@ -178,7 +178,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
                         ctx.db.diagnostic_states().insert(DiagnosticState {
                             session_id: inserted_sess.id,
                             player_identity: member.player_identity,
-                            current_tier: 1,
+                            current_tier: crate::diagnostic_seed_tier(ctx, member.player_identity),
                             consecutive_fast_correct: 0,
                             wrong_streak: 0,
                             force_tap_mode: false,
