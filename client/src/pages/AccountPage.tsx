@@ -266,12 +266,15 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
               <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform ${showTelemetry ? 'translate-x-6' : 'translate-x-1'}`} />
             </button>
           </div>
-
-          <RemindersSettings />
         </div>
       </div>
 
-      {/* ── 4. Security ─────────────────────────────────────────────── */}
+      {/* ── 4. Reminders ────────────────────────────────────────────── */}
+      <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
+        <RemindersSettings />
+      </div>
+
+      {/* ── 5. Security ─────────────────────────────────────────────── */}
       <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
         <h2 className="mb-1.5 text-base font-bold text-slate-900 dark:text-white">{t('account.recovery')}</h2>
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
@@ -353,7 +356,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
         )}
       </div>
 
-      {/* ── 5. Session & Data ───────────────────────────────────────── */}
+      {/* ── 6. Session & Data ───────────────────────────────────────── */}
       <div className="flex flex-col rounded-2xl border border-red-200 bg-white p-6 shadow-sm dark:border-red-900/30 dark:bg-slate-800/80 transition-colors">
         <h2 className="mb-2 text-base font-bold text-red-600 dark:text-red-400">{t('account.session')}</h2>
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">

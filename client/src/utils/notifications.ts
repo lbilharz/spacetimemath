@@ -32,14 +32,16 @@ export const syncReminders = async (reminders: Reminder[]) => {
     if (!r.enabled) continue;
     const [h, m] = r.time.split(':').map(Number);
 
+    const soundAsset = Capacitor.getPlatform() === 'android' ? 'oneup.wav' : '1up.wav';
+
     if (r.pattern === 'daily') {
       notificationsToSchedule.push({
         id: counter++,
         title: '1UP Sprint! 🚀',
         body: 'Time for your daily math sprint! Keep your streak alive.',
         schedule: { on: { hour: h, minute: m }, repeats: true },
-        extra: { intent: 'start_sprint' },
-        sound: '1up.wav',
+        extra: { intent: 'open_app' },
+        sound: soundAsset,
       });
     } else {
       for (const day of r.daysOfWeek) {
@@ -49,8 +51,8 @@ export const syncReminders = async (reminders: Reminder[]) => {
           body: 'Time for your scheduled math sprint!',
           // Capacitor weekday is 1-indexed (1 = Sunday)
           schedule: { on: { weekday: day, hour: h, minute: m }, repeats: true },
-          extra: { intent: 'start_sprint' },
-          sound: '1up.wav',
+          extra: { intent: 'open_app' },
+          sound: soundAsset,
         });
       }
     }

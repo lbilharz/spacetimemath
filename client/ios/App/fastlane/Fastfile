@@ -135,6 +135,17 @@ platform :ios do
       profile_name:          "match AppStore eu.bilharz.oneup"
     )
 
+    # Automatically fetch the latest build number from TestFlight and increment it by 1 locally
+    latest_build_number = app_store_build_number(
+      api_key: key,
+      app_identifier: "eu.bilharz.oneup",
+      version: ENV["MARKETING_VERSION"]
+    )
+    increment_build_number(
+      build_number: latest_build_number + 1,
+      xcodeproj: "App.xcodeproj"
+    )
+
     build_app(
       scheme:          "App",
       export_method:   "app-store",

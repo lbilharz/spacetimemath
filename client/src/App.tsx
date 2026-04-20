@@ -61,7 +61,7 @@ export default function App() {
 
 
   // Deeplink Intent State (Notification Taps)
-  const [pendingIntent, setPendingIntent] = useState<string | null>(() => {
+  const [pendingIntent, _setPendingIntent] = useState<string | null>(() => {
     try { return localStorage.getItem('_pending_intent'); } catch { return null; }
   });
   useEffect(() => {
@@ -288,19 +288,22 @@ export default function App() {
     if (!Capacitor.isNativePlatform()) return;
     import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
       LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-        if (action.notification.extra?.intent === 'start_sprint') {
-          setPendingIntent('start_sprint');
-        }
+        try {
+          if (action.notification.extra?.intent === 'open_app') {
+            // Setting page to dashboard allows normal state resolution.
+            setPage('dashboard');
+          }
+        } catch (e) { console.error(e); }
       });
     });
   }, []);
 
   useEffect(() => {
     // Wait until WS is up and effectivePlayer is definitively loaded
-    if (pendingIntent === 'start_sprint' && effectivePlayer && isActive && page !== 'sprint') {
-      setPendingIntent(null);
-      goToSprint(0n, 'lobby');
-    }
+    if (!isActive) return;
+    
+    // Resume audio context if there was user interaction
+    resumeAudioContext();
   }, [pendingIntent, effectivePlayer, isActive, page, goToSprint]); // Wait, goToSprint is closure-bound. Disable lint for exhaustive-deps below if needed!
 
   // Auto-navigate to URL-indicated page after login.

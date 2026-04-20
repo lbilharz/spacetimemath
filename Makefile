@@ -81,11 +81,11 @@ test-e2e:
 
 # App packaging and release
 app-release-beta:
-	cd client/ios/App && bundle exec fastlane beta
+	cd client/ios/App && fastlane beta
 	cd client/android && fastlane beta
 
 app-release-metadata:
-	cd client/ios/App && bundle exec fastlane metadata
+	cd client/ios/App && fastlane metadata
 	cd client/android && fastlane metadata
 
 app-screenshots:

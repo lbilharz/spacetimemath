@@ -42,7 +42,17 @@ export default function RemindersSettings() {
   };
 
   const addReminder = () => {
-    const newR: Reminder = { id: crypto.randomUUID(), time: '07:15', pattern: 'daily', daysOfWeek: [2,3,4,5,6], enabled: true };
+    const d = new Date();
+    // Round to the next quarter hour
+    const minutes = d.getMinutes();
+    const remainder = 15 - (minutes % 15);
+    d.setMinutes(minutes + remainder);
+
+    const hh = d.getHours().toString().padStart(2, '0');
+    const mm = d.getMinutes().toString().padStart(2, '0');
+    const time = `${hh}:${mm}`;
+
+    const newR: Reminder = { id: crypto.randomUUID(), time, pattern: 'daily', daysOfWeek: [2,3,4,5,6], enabled: true };
     saveAndSync([...reminders, newR]);
   };
 
@@ -74,7 +84,7 @@ export default function RemindersSettings() {
   ];
 
   return (
-    <div className="w-full flex flex-col gap-4 mt-8">
+    <div className="w-full flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
         <h3 className="font-bold text-slate-800 dark:text-slate-200">{t('account.remindersHeading', 'Push Reminders')}</h3>
         <button onClick={addReminder} className="text-brand-yellow font-bold text-sm pressable py-1 px-3 bg-brand-yellow/10 rounded-full">
