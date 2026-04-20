@@ -1,3 +1,3 @@
-v1.5 — 10×10'un Ötesinde
+v1.6 — Hesap Kurtarma & Hatırlatıcılar
 
-×11'den ×20'ye kadar her tabloyu adım adım öğren. Dokuz yeni seviye, seninle büyüyen bir ustalık ızgarası ve avatarında saklı bir ses sürprizi. Günlük push hatırlatıcıları ayarla ve daha akıllı seviye ilerlemesinden yararlan. Bir de her zamanki kararlılık iyileştirmeleri.
+Serinizi canlı tutmak için günlük push hatırlatıcıları ayarlayın. Öğretmenler artık e-posta adreslerini doğrudan hesap ayarlarından yeniden doğrulayabilir — bu, cihaz değişikliğinden sonra e-posta tabanlı hesap kurtarmayı düzeltir. Ayrıca daha akıllı seviye ilerlemesi ve her zamanki kararlılık iyileştirmeleri.

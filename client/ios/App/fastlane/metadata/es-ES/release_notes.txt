@@ -1,3 +1,3 @@
-v1.5 — Más allá del 10×10
+v1.6 — Recuperación de cuenta y recordatorios
 
-Domina del ×11 al ×20, tabla a tabla. Nueve nuevos niveles, una cuadrícula que crece contigo, y un easter egg de voz en tu avatar. Programa recordatorios diarios y avanza con una progresión de niveles más inteligente. Más las habituales mejoras de estabilidad.
+Programa recordatorios diarios para mantener tu racha. Los profesores ahora pueden volver a verificar su correo electrónico directamente en los ajustes de cuenta — lo que corrige la recuperación por correo tras un cambio de dispositivo. Además, progresión de niveles más inteligente y las habituales mejoras de estabilidad.
