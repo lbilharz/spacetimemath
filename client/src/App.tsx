@@ -290,21 +290,12 @@ export default function App() {
       LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
         try {
           if (action.notification.extra?.intent === 'open_app') {
-            // Setting page to dashboard allows normal state resolution.
-            setPage('dashboard');
+            setPage('lobby');
           }
         } catch (e) { console.error(e); }
       });
     });
   }, []);
-
-  useEffect(() => {
-    // Wait until WS is up and effectivePlayer is definitively loaded
-    if (!isActive) return;
-    
-    // Resume audio context if there was user interaction
-    resumeAudioContext();
-  }, [pendingIntent, effectivePlayer, isActive, page, goToSprint]); // Wait, goToSprint is closure-bound. Disable lint for exhaustive-deps below if needed!
 
   // Auto-navigate to URL-indicated page after login.
   // NOTE: we cannot call navigate() here because it strips query params like ?join=CODE.
