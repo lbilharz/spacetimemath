@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ParseKeys } from 'i18next';
 import { useTable, useReducer as useSTDBReducer } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
-import type { Answer, ProblemStat, Session } from '../module_bindings/types.js';
+import type { Answer, ProblemStat, Session, PlayerDktWeights } from '../module_bindings/types.js';
 import MasteryGrid from '../components/MasteryGrid.js';
 import SprintHistory from '../components/SprintHistory.js';
 import TierLadder from '../components/TierLadder.js';
@@ -27,6 +27,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
   const [sessions] = useTable(tables.my_sessions);
   const [answers]      = useTable(tables.my_answers);
   const [problemStats] = useTable(tables.problem_stats);
+  const [dktWeights]   = useTable(tables.my_player_dkt_weights);
   const setLearningTier = useSTDBReducer(reducers.setLearningTier);
   const setExtendedMode = useSTDBReducer(reducers.setExtendedMode);
 
@@ -38,6 +39,13 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
   const myAnswers = useMemo(() => (answers as unknown as Answer[])?.filter(
     a => a.playerIdentity.toHexString() === myIdentityHex
   ) ?? [], [answers, myIdentityHex]);
+
+  const myKcMastery = useMemo<number[] | null>(() => {
+    const rows = dktWeights as unknown as PlayerDktWeights[] | undefined;
+    if (!rows || rows.length === 0) return null;
+    const row = rows.find(r => r.playerIdentity.toHexString() === myIdentityHex) ?? rows[0];
+    return Array.from(row.kcMastery);
+  }, [dktWeights, myIdentityHex]);
 
   const isMaxTier = playerLearningTier >= 7;
 
@@ -223,7 +231,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700/50 flex flex-col gap-6 animate-in slide-in-from-top-2 relative z-10">
               <div className="flex flex-col gap-4">
                 <span className="font-bold text-slate-700 dark:text-slate-200">{t('progress.adjustTier', { defaultValue: 'Adjust Learning Tier' })}</span>
-                <TierLadder currentTier={playerLearningTier} selectedTier={pendingTier} onSelect={handleSetTier} answers={myAnswers} extendedMode={extendedMode} />
+                <TierLadder currentTier={playerLearningTier} selectedTier={pendingTier} onSelect={handleSetTier} answers={myAnswers} kcMastery={myKcMastery} extendedMode={extendedMode} />
                 
                 {/* Extended Toggle Inline */}
                 {isMaxTier && !extendedMode && (
