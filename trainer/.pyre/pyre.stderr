@@ -1,3 +1,0 @@
-2026-03-27 23:31:26,302 [PID 51688] INFO No binary specified, looking for `pyre.bin` in PATH
-2026-03-27 23:31:26,302 [PID 51688] INFO Pyre binary is located at `/Users/lbi/Library/Python/3.9/bin/pyre.bin`
-2026-03-27 23:31:26,302 [PID 51688] ERROR Invalid configuration: Cannot find any source files to analyze. Either `source_directories` or `targets` must be specified.

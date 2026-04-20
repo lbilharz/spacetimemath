@@ -10,6 +10,7 @@ import AcceptFriendInviteReducer from "../accept_friend_invite_reducer";
 import AdminRestoreMembershipForReducer from "../admin_restore_membership_for_reducer";
 import AdminSetHmacSecretReducer from "../admin_set_hmac_secret_reducer";
 import AdminSetPlayerTypeReducer from "../admin_set_player_type_reducer";
+import CleanupOrphanedMembershipsReducer from "../cleanup_orphaned_memberships_reducer";
 import CompleteOnboardingReducer from "../complete_onboarding_reducer";
 import ConsumeRestoreResultReducer from "../consume_restore_result_reducer";
 import CreateClassroomReducer from "../create_classroom_reducer";
@@ -66,7 +67,6 @@ import SubmitAnswerReducer from "../submit_answer_reducer";
 import SyncKeystrokeReducer from "../sync_keystroke_reducer";
 import SynthesizeLegacySprintsReducer from "../synthesize_legacy_sprints_reducer";
 import ToggleClassroomVisibilityReducer from "../toggle_classroom_visibility_reducer";
-import UpdateDktWeightsReducer from "../update_dkt_weights_reducer";
 import UpdateFriendAliasReducer from "../update_friend_alias_reducer";
 import VerifyTeacherUpgradeReducer from "../verify_teacher_upgrade_reducer";
 
@@ -74,6 +74,7 @@ export type AcceptFriendInviteParams = __Infer<typeof AcceptFriendInviteReducer>
 export type AdminRestoreMembershipForParams = __Infer<typeof AdminRestoreMembershipForReducer>;
 export type AdminSetHmacSecretParams = __Infer<typeof AdminSetHmacSecretReducer>;
 export type AdminSetPlayerTypeParams = __Infer<typeof AdminSetPlayerTypeReducer>;
+export type CleanupOrphanedMembershipsParams = __Infer<typeof CleanupOrphanedMembershipsReducer>;
 export type CompleteOnboardingParams = __Infer<typeof CompleteOnboardingReducer>;
 export type ConsumeRestoreResultParams = __Infer<typeof ConsumeRestoreResultReducer>;
 export type CreateClassroomParams = __Infer<typeof CreateClassroomReducer>;
@@ -130,7 +131,6 @@ export type SubmitAnswerParams = __Infer<typeof SubmitAnswerReducer>;
 export type SyncKeystrokeParams = __Infer<typeof SyncKeystrokeReducer>;
 export type SynthesizeLegacySprintsParams = __Infer<typeof SynthesizeLegacySprintsReducer>;
 export type ToggleClassroomVisibilityParams = __Infer<typeof ToggleClassroomVisibilityReducer>;
-export type UpdateDktWeightsParams = __Infer<typeof UpdateDktWeightsReducer>;
 export type UpdateFriendAliasParams = __Infer<typeof UpdateFriendAliasReducer>;
 export type VerifyTeacherUpgradeParams = __Infer<typeof VerifyTeacherUpgradeReducer>;
 

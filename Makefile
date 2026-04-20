@@ -8,8 +8,8 @@
 #   make deploy          – publish + generate + integration tests + E2E tests
 #   make backup          – export all durable tables to recovery/backups/ (run before risky publishes)
 
-SPACETIME  := /Users/lbi/.local/bin/spacetime
-CARGO      := /Users/lbi/.cargo/bin/cargo
+SPACETIME  ?= $(HOME)/.local/bin/spacetime
+CARGO      ?= $(HOME)/.cargo/bin/cargo
 WASM_BIN   := server/target/wasm32-unknown-unknown/release/spacetimemath.wasm
 
 # Install git hooks (run once after cloning)

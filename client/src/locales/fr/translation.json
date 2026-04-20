@@ -521,7 +521,12 @@
     "name19": "Famille des 19",
     "name20": "Famille des 20",
     "name21": "Carrés étendus",
-    "name22": "Faits difficiles étendus"
+    "name22": "Faits difficiles étendus",
+    "name23": "Les 3",
+    "name24": "Les 4",
+    "name25": "Les 6",
+    "name26": "Les 7",
+    "name27": "Les 8"
   },
   "register_split": {
     "teacher_btn": "Enseignant",

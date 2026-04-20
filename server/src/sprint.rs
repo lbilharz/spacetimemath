@@ -12,7 +12,7 @@ use crate::{
 use crate::{
     players, sessions, answers, issued_problems_v2, issued_problem_results_v2,
     sprint_sequences, next_problem_results_v2, problem_stats, best_scores,
-    kc_telemetry, player_dkt_weights, classrooms, classroom_members, diagnostic_states,
+    player_dkt_weights, classrooms, classroom_members, diagnostic_states,
     DiagnosticState
 };
 
@@ -123,7 +123,7 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
                 ctx.db.diagnostic_states().insert(DiagnosticState {
                     session_id: inserted.id,
                     player_identity: ctx.sender(),
-                    current_tier: 1,
+                    current_tier: crate::diagnostic_seed_tier(ctx, ctx.sender()),
                     consecutive_fast_correct: 0,
                     wrong_streak: 0,
                     force_tap_mode: false,
@@ -174,7 +174,7 @@ pub fn start_diagnostic_session(ctx: &ReducerContext) -> Result<(), String> {
             ctx.db.diagnostic_states().insert(DiagnosticState {
                 session_id: inserted.id,
                 player_identity: ctx.sender(),
-                current_tier: 1,
+                current_tier: crate::diagnostic_seed_tier(ctx, ctx.sender()),
                 consecutive_fast_correct: 0,
                 wrong_streak: 0,
                 force_tap_mode: false,
@@ -465,28 +465,22 @@ pub fn submit_answer(
     }
     ctx.db.sessions().id().update(session);
 
-    // AI Engine Telemetry (Log KCs)
+    // In-reducer BKT mastery update.
+    // Success = correct, single attempt, under 4s. Anything else counts as miss.
     let generated_kcs = crate::generator::calculate_kcs_for_multiplication(a, b);
-    for &kc in &generated_kcs {
-        ctx.db.kc_telemetry().insert(crate::KcTelemetry {
-            id: 0,
-            session_id,
-            player_identity: player.identity,
-            knowledge_component: kc,
-            is_correct,
-            latency_ms: response_ms,
-            timestamp: ctx.timestamp.to_micros_since_unix_epoch() as u64,
-        });
-    }
-
-    // Phase 3 Native DKT Logic (Replaces huggingface python polling engine)
-    // We treat success as 1.0 if correct, single attempt, and under 4s.
     let is_dkt_success = if is_correct && attempts == 1 && response_ms < 4000 { 1.0_f32 } else { 0.0_f32 };
     
-    let mut current_weights = vec![0.5_f32; 11]; // default starting threshold for 11 KCs
-    if let Some(existing) = ctx.db.player_dkt_weights().player_identity().find(player.identity) {
-        current_weights = existing.kc_mastery.clone();
-    }
+    // Seed with the neutral 0.5 prior; pad legacy short vectors up to KC_COUNT
+    // so new KC slots (e.g. Fact3s through Fact8s) aren't silently dropped.
+    // Decay first so time-between-answers shows up in the persisted snapshot
+    // (a player returning after a month won't accidentally keep their old
+    // mastery and bypass tier gates).
+    let mut current_weights = if let Some(existing) = ctx.db.player_dkt_weights().player_identity().find(player.identity) {
+        let padded = crate::ensure_kc_mastery_len(existing.kc_mastery.clone());
+        crate::decay_mastery(padded, existing.last_updated_timestamp, ctx.timestamp.to_micros_since_unix_epoch())
+    } else {
+        vec![0.5_f32; crate::generator::KC_COUNT]
+    };
     
     for &kc in &generated_kcs {
         let idx = (kc as usize).saturating_sub(1); // KC enum is 1-based, array is 0-based
@@ -638,7 +632,20 @@ pub(crate) fn credit_session_to_player(ctx: &ReducerContext, identity: Identity,
     let max_tier = if player.extended_mode { crate::MAX_EXTENDED_TIER } else { crate::MAX_STANDARD_TIER };
     let mut final_learning_tier = player.learning_tier.min(max_tier);
     if let Some(diag) = ctx.db.diagnostic_states().session_id().find(session_id) {
-        final_learning_tier = diag.current_tier.min(max_tier);
+        // Cap the diagnostic promotion at the highest tier the player actually
+        // demonstrates DKT mastery for. Prevents the "zero-answer session
+        // promotes to tier 1" bug where the diagnostic default seed leaked
+        // straight onto the player's learning_tier.
+        let claimed = diag.current_tier.min(max_tier);
+        let mut supported = player.learning_tier.min(max_tier);
+        for tier in (supported + 1)..=claimed {
+            if crate::has_dkt_mastery_for_tier(ctx, identity, tier - 1) {
+                supported = tier;
+            } else {
+                break;
+            }
+        }
+        final_learning_tier = supported;
         ctx.db.diagnostic_states().session_id().delete(session_id);
     }
 

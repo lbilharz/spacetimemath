@@ -521,7 +521,12 @@
     "name19": "19'lar",
     "name20": "20'ler",
     "name21": "Genişletilmiş Kareler",
-    "name22": "Genişletilmiş Zor İşlemler"
+    "name22": "Genişletilmiş Zor İşlemler",
+    "name23": "3'ler",
+    "name24": "4'ler",
+    "name25": "6'lar",
+    "name26": "7'ler",
+    "name27": "8'ler"
   },
   "register_split": {
     "teacher_btn": "Öğretmen",
