@@ -58,6 +58,8 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const isTeacher = myPlayer.playerType?.tag === 'Teacher';
   const [showUpgradeForm, setShowUpgradeForm] = useState(false);
 
+  const getMyEmail = useSTDBReducer(reducers.getMyEmail);
+
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
@@ -209,7 +211,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
             ) : (
               <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-300">
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{t('classes.upgradeDesc')}</p>
-                <TeacherUpgradeForm myIdentityHex={myIdentityHex} onUpgraded={() => setShowUpgradeForm(false)} />
+                <TeacherUpgradeForm myIdentityHex={myIdentityHex} onUpgraded={() => { setShowUpgradeForm(false); getMyEmail(); }} />
               </div>
             )}
           </>
