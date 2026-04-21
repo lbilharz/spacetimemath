@@ -270,6 +270,8 @@
     "regenerateDesc": "¿Estás seguro?",
     "regenerateConfirm": "Confirmar",
     "remindersHeading": "Recordatorios Push",
+    "remindersWebDesc1": "Los recordatorios locales son una función exclusiva de la aplicación nativa. ¡Descarga 1UP desde la ",
+    "remindersWebDesc2": " para mantener tu racha viva!",
     "noReminders": "Sin recordatorios.",
     "daily": "Cada día",
     "weekly": "Días concretos",

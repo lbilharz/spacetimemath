@@ -1,38 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Reminder, ReminderPattern, syncReminders, isPushSupported } from '../utils/notifications.js';
 
 export default function RemindersSettings() {
   const { t } = useTranslation();
-  const [reminders, setReminders] = useState<Reminder[]>([]);
-
-  useEffect(() => {
+  const [reminders, setReminders] = useState<Reminder[]>(() => {
     try {
       const stored = localStorage.getItem('user_reminders');
-      if (stored) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setReminders(JSON.parse(stored));
-      } else {
-        // Default migration
-        const legacy = localStorage.getItem('daily_reminders') === '1';
-        if (legacy) {
-          const defaultReminders: Reminder[] = [
-            { id: crypto.randomUUID(), time: '07:15', pattern: 'daily', daysOfWeek: [], enabled: true },
-            { id: crypto.randomUUID(), time: '19:15', pattern: 'daily', daysOfWeek: [], enabled: true },
-          ];
-          setReminders(defaultReminders);
-          syncReminders(defaultReminders);
-          localStorage.setItem('user_reminders', JSON.stringify(defaultReminders));
-        }
-      }
+      return stored ? JSON.parse(stored) : [];
     } catch (e) {
-      console.warn('Silent local-storage drop', e);
+      console.warn('Failed to parse reminders from local storage', e);
+      return [];
     }
-  }, []);
+  });
 
-  // Only render on native Capacitor contexts (iOS/Android) where push is free & local.
+  // On Web, explain that reminders are native-only
   if (!isPushSupported()) {
-    return null;
+    return (
+      <div className="w-full flex flex-col gap-2">
+        <h3 className="font-bold text-slate-800 dark:text-slate-200">{t('account.remindersHeading', 'Push Reminders')}</h3>
+        <div className="mt-2 flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+          <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 text-center leading-relaxed">
+            {t('account.remindersWebDesc1', 'Local push reminders are an exclusive feature of the native app. Download 1UP from the ')}
+            <a href="https://apps.apple.com/us/app/better-1up/id6761323453" target="_blank" rel="noopener noreferrer" className="text-amber-500 font-bold hover:underline">App Store</a>
+            {' '}{t('common.or', 'or')}{' '}
+            <a href="https://play.google.com/apps/testing/eu.bilharz.oneup" target="_blank" rel="noopener noreferrer" className="text-amber-500 font-bold hover:underline">Google Play</a>
+            {' '}{t('account.remindersWebDesc2', 'to keep your streak alive!')}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const saveAndSync = (newArr: Reminder[]) => {

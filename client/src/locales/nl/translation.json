@@ -261,6 +261,8 @@
     "telemetry": "Telemetrie",
     "telemetryDesc": "Toon prestatiestatistieken en latentie",
     "remindersHeading": "Push Herinneringen",
+    "remindersWebDesc1": "Lokale push-herinneringen zijn een exclusieve functie van de native app. Download 1UP in de ",
+    "remindersWebDesc2": " om je reeks in leven te houden!",
     "noReminders": "Geen actieve herinneringen. Voeg er een toe om je reeks te behouden!",
     "daily": "Elke dag",
     "weekly": "Specifieke dagen",

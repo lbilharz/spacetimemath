@@ -1,3 +1,3 @@
-v1.6 — Account Recovery & Reminders
+v1.7 — Polish & Fixes
 
-Set daily push reminders to keep your streak alive. Teachers can now re-verify their email directly in the account settings — fixing email-based account recovery after a device switch. Plus smarter tier progression and the usual stability improvements.
+Android now uses the full screen with edge-to-edge display. On web, the reminders section now links to the App Store and Google Play. Plus the usual stability improvements.

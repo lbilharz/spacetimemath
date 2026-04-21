@@ -280,6 +280,8 @@
     "regenerateDesc": "Are you sure? Your old recovery key will be permanently invalidated!",
     "regenerateConfirm": "Confirm & Regenerate",
     "remindersHeading": "Push Reminders",
+    "remindersWebDesc1": "Local push reminders are an exclusive feature of the native app. Download 1UP from the ",
+    "remindersWebDesc2": " to keep your streak alive!",
     "noReminders": "No active reminders. Add one to keep your streak alive!",
     "daily": "Every day",
     "weekly": "Specific days",

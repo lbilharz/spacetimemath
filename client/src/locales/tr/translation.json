@@ -261,6 +261,8 @@
     "telemetry": "Telemetri",
     "telemetryDesc": "Performans ölçümlerini ve gecikmeyi göster",
     "remindersHeading": "Bildirimler",
+    "remindersWebDesc1": "Yerel bildirimler yalnızca mobil uygulamalara özeldir. Serinizi korumak için 1UP'ı ",
+    "remindersWebDesc2": " üzerinden indirin!",
     "noReminders": "Aktif hatırlatıcı yok. Serini sürdürmek için bir tane ekle!",
     "daily": "Her gün",
     "weekly": "Belirli günler",

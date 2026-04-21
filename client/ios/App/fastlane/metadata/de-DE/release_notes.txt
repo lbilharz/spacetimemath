@@ -1,3 +1,3 @@
-v1.6 — Kontowiederherstellung & Erinnerungen
+v1.7 — Politur & Fixes
 
-Richte tägliche Push-Erinnerungen ein, um deine Serie am Leben zu erhalten. Lehrkräfte können ihre E-Mail-Adresse jetzt direkt in den Kontoeinstellungen erneut verifizieren – damit funktioniert die E-Mail-basierte Kontowiederherstellung auch nach einem Gerätewechsel. Dazu eine intelligentere Stufenprogression und die üblichen Stabilitätsverbesserungen.
+Android nutzt jetzt den vollen Bildschirm mit randlosem Display. Im Web verweist der Erinnerungsbereich jetzt auf den App Store und Google Play. Dazu die üblichen Stabilitätsverbesserungen.

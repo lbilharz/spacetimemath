@@ -261,6 +261,8 @@
     "telemetry": "性能遥测",
     "telemetryDesc": "显示性能指标和延迟",
     "remindersHeading": "推送提醒",
+    "remindersWebDesc1": "本地推送提醒是原生应用的专属功能。请从 ",
+    "remindersWebDesc2": " 下载 1UP，继续保持您的连胜记录！",
     "noReminders": "没有活动的提醒。添加一个来保持你的连胜！",
     "daily": "每天",
     "weekly": "特定日期",

@@ -80,12 +80,20 @@ test-e2e:
 	cd client && npm run test:e2e:ci
 
 # App packaging and release
-app-release-beta:
+app-release-beta: app-release-android app-release-ios
+
+app-release-android:
 	cd client/android && fastlane beta
+
+app-release-ios:
 	cd client/ios/App && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 fastlane beta
 
-app-release-metadata:
+app-release-metadata: app-metadata-ios app-metadata-android
+
+app-metadata-ios:
 	cd client/ios/App && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 fastlane metadata
+
+app-metadata-android:
 	cd client/android && fastlane metadata
 
 app-screenshots:

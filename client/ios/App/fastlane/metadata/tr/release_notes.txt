@@ -1,3 +1,3 @@
-v1.6 — Hesap Kurtarma & Hatırlatıcılar
+v1.7 — Cilalama & düzeltmeler
 
-Serinizi canlı tutmak için günlük push hatırlatıcıları ayarlayın. Öğretmenler artık e-posta adreslerini doğrudan hesap ayarlarından yeniden doğrulayabilir — bu, cihaz değişikliğinden sonra e-posta tabanlı hesap kurtarmayı düzeltir. Ayrıca daha akıllı seviye ilerlemesi ve her zamanki kararlılık iyileştirmeleri.
+Android artık kenardan kenara tam ekran kullanıyor. Webde hatırlatıcılar bölümü artık App Store ve Google Play'e bağlantı veriyor. Bir de her zamanki kararlılık iyileştirmeleri.

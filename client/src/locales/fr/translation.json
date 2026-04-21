@@ -261,6 +261,8 @@
     "telemetry": "Télémétrie",
     "telemetryDesc": "Afficher les mesures de performance et la latence",
     "remindersHeading": "Rappels Push",
+    "remindersWebDesc1": "Les rappels locaux sont une fonctionnalité exclusive de l'application native. Téléchargez 1UP depuis l'",
+    "remindersWebDesc2": " pour sauvegarder votre série !",
     "noReminders": "Aucun rappel actif. Ajoutez-en un pour garder votre série !",
     "daily": "Tous les jours",
     "weekly": "Jours spécifiques",

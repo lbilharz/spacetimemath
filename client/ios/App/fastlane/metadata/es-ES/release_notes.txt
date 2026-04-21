@@ -1,3 +1,3 @@
-v1.6 — Recuperación de cuenta y recordatorios
+v1.7 — Pulido y correcciones
 
-Programa recordatorios diarios para mantener tu racha. Los profesores ahora pueden volver a verificar su correo electrónico directamente en los ajustes de cuenta — lo que corrige la recuperación por correo tras un cambio de dispositivo. Además, progresión de niveles más inteligente y las habituales mejoras de estabilidad.
+Android ahora usa la pantalla completa con visualización de borde a borde. En la web, la sección de recordatorios ahora enlaza al App Store y Google Play. Más las habituales mejoras de estabilidad.

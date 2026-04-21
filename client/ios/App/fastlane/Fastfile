@@ -135,14 +135,14 @@ platform :ios do
       profile_name:          "match AppStore eu.bilharz.oneup"
     )
 
-    # Automatically fetch the latest build number from TestFlight and increment it by 1 locally
-    latest_build_number = app_store_build_number(
-      api_key: key,
-      app_identifier: "eu.bilharz.oneup",
-      version: ENV["MARKETING_VERSION"]
-    )
+    # Sync iOS build number exactly with Android's newly bumped versionCode
+    # This guarantees both platforms have the exact same build number in TestFlight & Google Play.
+    gradle_path = File.expand_path('../../../android/app/build.gradle', File.dirname(__FILE__))
+    android_gradle_content = File.read(gradle_path)
+    synchronized_version = android_gradle_content.match(/versionCode\s+(\d+)/)[1].to_i
+    
     increment_build_number(
-      build_number: latest_build_number + 1,
+      build_number: synchronized_version,
       xcodeproj: "App.xcodeproj"
     )
 

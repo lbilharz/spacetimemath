@@ -280,6 +280,8 @@
     "regenerateDesc": "Bist du sicher? Dein alter Schlüssel wird dauerhaft ungültig!",
     "regenerateConfirm": "Bestätigen & Neu generieren",
     "remindersHeading": "Push-Erinnerungen",
+    "remindersWebDesc1": "Lokale Push-Erinnerungen sind eine exklusive Funktion der nativen App. Hole dir 1UP im ",
+    "remindersWebDesc2": ", um deine Lern-Serie aufrechtzuerhalten!",
     "noReminders": "Keine aktiven Erinnerungen. Füge eine hinzu, um dranzubleiben!",
     "daily": "Jeden Tag",
     "weekly": "Bestimmte Tage",

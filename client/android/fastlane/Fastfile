@@ -31,7 +31,6 @@ platform :android do
     supply(
       track: "internal",
       release_status: "draft",
-      version_code: 2,
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_changelogs: true,

@@ -1,3 +1,3 @@
-v1.6 — Accountherstel & herinneringen
+v1.7 — Verfijning & fixes
 
-Stel dagelijkse pushmeldingen in om je reeks gaande te houden. Leerkrachten kunnen hun e-mailadres nu rechtstreeks in de accountinstellingen herbevestigen — dit herstelt de e-mailgebaseerde accountherstel na een apparaatwisseling. Plus slimmere niveauvoortgang en de gebruikelijke stabiliteitsverbeteringen.
+Android gebruikt nu het volledige scherm met randloos display. Op het web verwijst de herinneringssectie nu naar de App Store en Google Play. Plus de gebruikelijke stabiliteitsverbeteringen.
