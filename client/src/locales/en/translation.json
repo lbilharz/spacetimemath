@@ -287,7 +287,10 @@
     "weekly": "Specific days",
     "sessions": "Sessions",
     "accountType": "Account Type",
-    "accountTypeDesc": "Your current role determines what features are available to you."
+    "accountTypeDesc": "Your current role determines what features are available to you.",
+    "reVerifyEmailPrompt": "Re-verify your email",
+    "reVerifyEmailDesc": "Your email is not stored — re-verify to enable email-based account recovery.",
+    "reVerifyEmailBtn": "Verify email address"
   },
   "unlock": {
     "tier1Title": "2-Digit Multiplier Unlocked!",
@@ -616,6 +619,9 @@
     "startSprint": "Train My Level",
     "setLevel": "Set Level",
     "adjustTier": "Adjust Learning Tier",
-    "unlocksExtended": "Unlocks ×11 to ×20"
+    "unlocksExtended": "Unlocks ×11 to ×20",
+    "extendedTitle": "10×10 complete.",
+    "extendedDesc": "All standard tables unlocked. Ready to tackle ×11 through ×20?",
+    "extendedBtn": "Unlock ×11–×20"
   }
 }

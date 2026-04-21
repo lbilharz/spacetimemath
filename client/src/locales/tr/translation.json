@@ -268,7 +268,10 @@
     "weekly": "Belirli günler",
     "sessions": "Oturumlar",
     "accountType": "Hesap Türü",
-    "accountTypeDesc": "Mevcut rolünüz hangi özelliklerin kullanılabilir olduğunu belirler."
+    "accountTypeDesc": "Mevcut rolünüz hangi özelliklerin kullanılabilir olduğunu belirler.",
+    "reVerifyEmailPrompt": "E-postanı yeniden doğrula",
+    "reVerifyEmailDesc": "E-postanız kaydedilmemiş — e-posta tabanlı hesap kurtarmayı etkinleştirmek için yeniden doğrulayın.",
+    "reVerifyEmailBtn": "E-posta adresini doğrula"
   },
   "unlock": {
     "tier1Title": "2 Basamaklı Çarpan Açıldı!",
@@ -616,6 +619,9 @@
     "startSprint": "Seviyemi eğit",
     "setLevel": "Seviye seç",
     "adjustTier": "Öğrenme seviyesini ayarla",
-    "unlocksExtended": "×11 ile ×20 arası açılır"
+    "unlocksExtended": "×11 ile ×20 arası açılır",
+    "extendedTitle": "10×10 tamamlandı.",
+    "extendedDesc": "Tüm standart tablolar açıldı. ×11'den ×20'ye hazır mısın?",
+    "extendedBtn": "×11–×20'yi aç"
   }
 }

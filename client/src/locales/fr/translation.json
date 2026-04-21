@@ -268,7 +268,10 @@
     "weekly": "Jours spécifiques",
     "sessions": "Sessions",
     "accountType": "Type de compte",
-    "accountTypeDesc": "Votre rôle actuel détermine les fonctionnalités disponibles."
+    "accountTypeDesc": "Votre rôle actuel détermine les fonctionnalités disponibles.",
+    "reVerifyEmailPrompt": "Re-vérifier ton e-mail",
+    "reVerifyEmailDesc": "Ton e-mail n'est pas enregistré — re-vérifie-le pour activer la récupération par e-mail.",
+    "reVerifyEmailBtn": "Vérifier l'adresse e-mail"
   },
   "unlock": {
     "tier1Title": "Multiplicateur à 2 chiffres débloqué !",
@@ -616,6 +619,9 @@
     "startSprint": "Entraîner mon niveau",
     "setLevel": "Choisir le niveau",
     "adjustTier": "Ajuster le niveau",
-    "unlocksExtended": "Débloque ×11 à ×20"
+    "unlocksExtended": "Débloque ×11 à ×20",
+    "extendedTitle": "10×10 accompli.",
+    "extendedDesc": "Toutes les tables standard débloquées. Prêt·e pour ×11 à ×20 ?",
+    "extendedBtn": "Débloquer ×11–×20"
   }
 }

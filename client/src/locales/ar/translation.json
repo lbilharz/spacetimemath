@@ -268,7 +268,10 @@
     "weekly": "أيام محددة",
     "sessions": "جلسات",
     "accountType": "نوع الحساب",
-    "accountTypeDesc": "يحدد دورك الحالي الميزات المتاحة لك."
+    "accountTypeDesc": "يحدد دورك الحالي الميزات المتاحة لك.",
+    "reVerifyEmailPrompt": "إعادة التحقق من بريدك الإلكتروني",
+    "reVerifyEmailDesc": "بريدك الإلكتروني غير محفوظ — أعد التحقق لتفعيل استعادة الحساب عبر البريد.",
+    "reVerifyEmailBtn": "تحقق من عنوان البريد الإلكتروني"
   },
   "unlock": {
     "tier1Title": "!تم فتح مضاعف الرقمين",
@@ -616,6 +619,9 @@
     "startSprint": "تدريب مستواي",
     "setLevel": "اختر المستوى",
     "adjustTier": "ضبط مستوى التعلم",
-    "unlocksExtended": "يفتح ×11 إلى ×20"
+    "unlocksExtended": "يفتح ×11 إلى ×20",
+    "extendedTitle": ".اكتملت 10×10",
+    "extendedDesc": "جميع الجداول المعيارية مفتوحة. هل أنت مستعد لـ ×11 حتى ×20؟",
+    "extendedBtn": "افتح ×11–×20"
   }
 }

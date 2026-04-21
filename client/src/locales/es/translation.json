@@ -277,7 +277,10 @@
     "weekly": "Días concretos",
     "sessions": "Sesiones",
     "accountType": "Tipo de cuenta",
-    "accountTypeDesc": "Tu rol actual determina qué funciones están disponibles."
+    "accountTypeDesc": "Tu rol actual determina qué funciones están disponibles.",
+    "reVerifyEmailPrompt": "Volver a verificar tu correo",
+    "reVerifyEmailDesc": "Tu correo no está guardado — vuelve a verificarlo para activar la recuperación por correo.",
+    "reVerifyEmailBtn": "Verificar dirección de correo"
   },
   "unlock": {
     "tier1Title": "¡Multiplicador de 10 abierto!",
@@ -616,6 +619,9 @@
     "startSprint": "Entrenar mi nivel",
     "setLevel": "Elegir nivel",
     "adjustTier": "Ajustar nivel de aprendizaje",
-    "unlocksExtended": "Desbloquea ×11 a ×20"
+    "unlocksExtended": "Desbloquea ×11 a ×20",
+    "extendedTitle": "10×10 completado.",
+    "extendedDesc": "Todas las tablas estándar desbloqueadas. ¿Listo para ×11 a ×20?",
+    "extendedBtn": "Desbloquear ×11–×20"
   }
 }

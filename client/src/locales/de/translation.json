@@ -287,7 +287,10 @@
     "weekly": "Bestimmte Tage",
     "sessions": "Runden",
     "accountType": "Kontotyp",
-    "accountTypeDesc": "Deine aktuelle Rolle bestimmt, welche Funktionen dir zur Verfügung stehen."
+    "accountTypeDesc": "Deine aktuelle Rolle bestimmt, welche Funktionen dir zur Verfügung stehen.",
+    "reVerifyEmailPrompt": "E-Mail erneut verifizieren",
+    "reVerifyEmailDesc": "Deine E-Mail ist nicht gespeichert — verifiziere sie erneut, um die E-Mail-Wiederherstellung zu aktivieren.",
+    "reVerifyEmailBtn": "E-Mail-Adresse verifizieren"
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",
@@ -616,6 +619,9 @@
     "startSprint": "Level trainieren",
     "setLevel": "Stufe wählen",
     "adjustTier": "Lernstufe anpassen",
-    "unlocksExtended": "Schaltet ×11 bis ×20 frei"
+    "unlocksExtended": "Schaltet ×11 bis ×20 frei",
+    "extendedTitle": "10×10 geschafft.",
+    "extendedDesc": "Alle Standardtabellen freigeschaltet. Bereit für ×11 bis ×20?",
+    "extendedBtn": "×11–×20 freischalten"
   }
 }

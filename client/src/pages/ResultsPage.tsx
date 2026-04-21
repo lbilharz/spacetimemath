@@ -212,10 +212,10 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
 
            <div className="relative z-10 text-center md:text-left flex-1">
              <div className="text-2xl md:text-3xl font-black mb-2 text-slate-800 dark:text-white">
-               Ready for the 20×20 Universe?
+               {t('progress.extendedTitle', '10×10 complete.')}
              </div>
              <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-lg">
-               You've mastered the 10x10 multiplication tables! Unlock the Extended Expansion to ignite your journey into the teens.
+               {t('progress.extendedDesc', 'All standard tables unlocked. Ready to tackle ×11 through ×20?')}
              </p>
            </div>
            
@@ -229,7 +229,7 @@ export default function ResultsPage({ sessionId, myIdentityHex, playerLearningTi
              disabled={activatingExtended}
              className="relative z-10 px-6 py-4 bg-brand-yellow text-slate-900 rounded-2xl font-black text-lg shrink-0 shadow-[0_8px_30px_rgba(250,204,21,0.3)] hover:scale-[1.05] active:scale-95 transition-transform w-full md:w-auto"
            >
-             {activatingExtended ? 'Engaging Hyperdrive...' : 'Unlock the Next Frontier'}
+             {activatingExtended ? t('common.saving', 'Saving…') : t('progress.extendedBtn', 'Unlock ×11–×20')}
            </button>
         </div>
       )}

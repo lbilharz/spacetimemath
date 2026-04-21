@@ -268,7 +268,10 @@
     "weekly": "Specifieke dagen",
     "sessions": "Sessies",
     "accountType": "Accounttype",
-    "accountTypeDesc": "Je huidige rol bepaalt welke functies beschikbaar zijn."
+    "accountTypeDesc": "Je huidige rol bepaalt welke functies beschikbaar zijn.",
+    "reVerifyEmailPrompt": "E-mail opnieuw verifiëren",
+    "reVerifyEmailDesc": "Je e-mail is niet opgeslagen — verifieer opnieuw om e-mailherstel in te schakelen.",
+    "reVerifyEmailBtn": "E-mailadres verifiëren"
   },
   "unlock": {
     "tier1Title": "2-Cijferige vermenigvuldiger ontgrendeld!",
@@ -616,6 +619,9 @@
     "startSprint": "Mijn niveau trainen",
     "setLevel": "Niveau kiezen",
     "adjustTier": "Leerniveau aanpassen",
-    "unlocksExtended": "Ontgrendelt ×11 tot ×20"
+    "unlocksExtended": "Ontgrendelt ×11 tot ×20",
+    "extendedTitle": "10×10 voltooid.",
+    "extendedDesc": "Alle standaardtafels ontgrendeld. Klaar voor ×11 tot ×20?",
+    "extendedBtn": "×11–×20 ontgrendelen"
   }
 }

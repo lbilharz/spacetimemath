@@ -268,7 +268,10 @@
     "weekly": "特定日期",
     "sessions": "训练次数",
     "accountType": "账户类型",
-    "accountTypeDesc": "您当前的角色决定了可用的功能。"
+    "accountTypeDesc": "您当前的角色决定了可用的功能。",
+    "reVerifyEmailPrompt": "重新验证邮箱",
+    "reVerifyEmailDesc": "你的邮箱未存储——重新验证以启用邮件账户恢复。",
+    "reVerifyEmailBtn": "验证邮箱地址"
   },
   "unlock": {
     "tier1Title": "已解锁两位数乘法！",
@@ -616,6 +619,9 @@
     "startSprint": "训练我的等级",
     "setLevel": "设置等级",
     "adjustTier": "调整学习等级",
-    "unlocksExtended": "解锁 ×11 到 ×20"
+    "unlocksExtended": "解锁 ×11 到 ×20",
+    "extendedTitle": "10×10 完成。",
+    "extendedDesc": "所有标准乘法表已解锁。准备好挑战 ×11 到 ×20 了吗？",
+    "extendedBtn": "解锁 ×11–×20"
   }
 }

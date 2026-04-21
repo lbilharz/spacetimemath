@@ -298,10 +298,10 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
 
            <div className="relative z-10 text-center md:text-left">
              <div className="text-2xl font-black mb-2 text-slate-800 dark:text-white">
-               You've mastered the solar system! 🌌
+               {t('progress.extendedTitle', '10×10 complete.')}
              </div>
              <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-md">
-               Your 10×10 grid is fully unlocked. Are you ready to push your limits and expand deep into the 20×20 universe?
+               {t('progress.extendedDesc', 'All standard tables unlocked. Ready to tackle ×11 through ×20?')}
              </p>
            </div>
            
@@ -310,7 +310,7 @@ export default function ProgressPage({ myIdentityHex, playerLearningTier = 0, ex
              disabled={saving}
              className="relative z-10 px-6 py-4 bg-brand-yellow text-slate-900 rounded-2xl font-black text-lg shrink-0 shadow-[0_8px_30px_rgba(250,204,21,0.3)] hover:scale-[1.05] active:scale-95 transition-all w-full md:w-auto"
            >
-             {saving ? 'Engaging Hyperdrive...' : 'Unlock Extended Tables'}
+             {saving ? t('common.saving', 'Saving…') : t('progress.extendedBtn', 'Unlock ×11–×20')}
            </button>
         </div>
       )}
