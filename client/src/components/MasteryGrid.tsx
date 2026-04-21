@@ -59,18 +59,9 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   const sessionKeys = new Set(sessionAnswers.map(a => a.a * 100 + a.b));
 
-  let gridSize = 10;
-  if (showExtended && playerLearningTier !== undefined) {
-    if (playerLearningTier >= 8) gridSize = 12; // unlocks 11 and 12
-    if (playerLearningTier >= 9) gridSize = 13;
-    if (playerLearningTier >= 10) gridSize = 14;
-    if (playerLearningTier >= 11) gridSize = 15;
-    if (playerLearningTier >= 12) gridSize = 16;
-    if (playerLearningTier >= 13) gridSize = 17;
-    if (playerLearningTier >= 14) gridSize = 18;
-    if (playerLearningTier >= 15) gridSize = 19;
-    if (playerLearningTier >= 16) gridSize = 20;
-  }
+  // server learning_tier is capped at 7 even in extended mode — when extended is
+  // active simply show the full 20×20 grid so all answers are visible.
+  const gridSize = showExtended ? 20 : 10;
   const cellSize = gridSize > 12 ? '26px' : '34px';
 
   const cells: React.ReactNode[] = [];
