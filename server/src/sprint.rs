@@ -207,8 +207,13 @@ pub fn issue_problem(
     let is_diag = ctx.db.diagnostic_states().session_id().find(session_id).is_some();
 
     let pair_tier = pair_learning_tier(a, b).ok_or("Invalid problem pair")?;
-    if !is_diag && pair_tier > player.learning_tier {
-        return Err("Problem pair above player's current tier".into());
+    if !is_diag {
+        if (a > 10 || b > 10) && !player.extended_mode {
+            return Err("Extended problems not unlocked".into());
+        }
+        if pair_tier > player.learning_tier {
+            return Err("Problem pair above player's current tier".into());
+        }
     }
     let token = make_code(ctx);
     
@@ -409,8 +414,13 @@ pub fn submit_answer(
 
     let pair_tier = pair_learning_tier(a, b)
         .ok_or_else(|| "Invalid problem pair".to_string())?;
-    if !is_diag && pair_tier > player.learning_tier {
-        return Err("Problem pair above player's current tier".into());
+    if !is_diag {
+        if (a > 10 || b > 10) && !player.extended_mode {
+            return Err("Extended problems not unlocked".into());
+        }
+        if pair_tier > player.learning_tier {
+            return Err("Problem pair above player's current tier".into());
+        }
     }
 
     // SEC-10: verify server-issued problem token

@@ -1326,10 +1326,19 @@ pub(crate) fn build_sequence(ctx: &ReducerContext, session_id: u64, player_tier:
     //    problem_key = a * 100 + b; exclude pairs where a == 0 || b == 0
     //    If extended_mode is true, also include category=2 (curated 2-digit) pairs
     //    gated by extended_level: only pairs where max(a,b) <= 11 + extended_level.
-    let _ = (extended_mode, extended_level); // Reserved for future extended gating
     let eligible: Vec<ProblemStat> = ctx.db.problem_stats().iter()
         .filter(|s| {
             if s.a == 0 || s.b == 0 { return false; }
+            // Never include extended (>10) factors unless the player has explicitly
+            // opted in. pair_learning_tier() uses min(tier_a, tier_b), so 2×18
+            // would get tier 0 — always within any player's standard tier.
+            // Without this guard every player gets ×11-×20 problems regardless.
+            if !extended_mode && (s.a > 10 || s.b > 10) { return false; }
+            // For extended players, gate by extended_level: max factor ≤ 11 + level.
+            if extended_mode && (s.a > 10 || s.b > 10) {
+                let max_factor = s.a.max(s.b);
+                if max_factor > 11 + extended_level { return false; }
+            }
             pair_learning_tier(s.a, s.b).map(|t| t <= player_tier).unwrap_or(false)
         })
         .collect();
