@@ -61,3 +61,8 @@ client/android/fastlane/google-play-key.json
 client/android/fastlane/report.xml
 client/android/.gradle/
 client/android/local.properties
+client/android/.idea/
+
+# iOS fastlane Ruby deps (not checked in)
+client/ios/App/.bundle/
+client/ios/App/vendor/
