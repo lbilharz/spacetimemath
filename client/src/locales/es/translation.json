@@ -280,7 +280,15 @@
     "accountTypeDesc": "Tu rol actual determina qué funciones están disponibles.",
     "reVerifyEmailPrompt": "Volver a verificar tu correo",
     "reVerifyEmailDesc": "Tu correo no está guardado — vuelve a verificarlo para activar la recuperación por correo.",
-    "reVerifyEmailBtn": "Verificar dirección de correo"
+    "reVerifyEmailBtn": "Verificar dirección de correo",
+    "multi": {
+      "title": "Cuentas",
+      "subtitle": "Cambiar entre jugadores en este dispositivo",
+      "active": "Activo",
+      "switchBtn": "Cambiar",
+      "addBtn": "+ Añadir Jugador",
+      "tierSubtitle": "Nivel {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "¡Multiplicador de 10 abierto!",

@@ -290,7 +290,15 @@
     "accountTypeDesc": "Your current role determines what features are available to you.",
     "reVerifyEmailPrompt": "Re-verify your email",
     "reVerifyEmailDesc": "Your email is not stored — re-verify to enable email-based account recovery.",
-    "reVerifyEmailBtn": "Verify email address"
+    "reVerifyEmailBtn": "Verify email address",
+    "multi": {
+      "title": "Accounts",
+      "subtitle": "Switch between players on this device",
+      "active": "Active",
+      "switchBtn": "Switch",
+      "addBtn": "+ Add Player",
+      "tierSubtitle": "Tier {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "2-Digit Multiplier Unlocked!",

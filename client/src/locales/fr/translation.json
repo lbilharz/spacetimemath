@@ -271,7 +271,15 @@
     "accountTypeDesc": "Votre rôle actuel détermine les fonctionnalités disponibles.",
     "reVerifyEmailPrompt": "Re-vérifier ton e-mail",
     "reVerifyEmailDesc": "Ton e-mail n'est pas enregistré — re-vérifie-le pour activer la récupération par e-mail.",
-    "reVerifyEmailBtn": "Vérifier l'adresse e-mail"
+    "reVerifyEmailBtn": "Vérifier l'adresse e-mail",
+    "multi": {
+      "title": "Comptes",
+      "subtitle": "Basculer entre les joueurs sur cet appareil",
+      "active": "Actif",
+      "switchBtn": "Basculer",
+      "addBtn": "+ Ajouter un joueur",
+      "tierSubtitle": "Niveau {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "Multiplicateur à 2 chiffres débloqué !",

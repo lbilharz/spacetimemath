@@ -271,7 +271,15 @@
     "accountTypeDesc": "Mevcut rolünüz hangi özelliklerin kullanılabilir olduğunu belirler.",
     "reVerifyEmailPrompt": "E-postanı yeniden doğrula",
     "reVerifyEmailDesc": "E-postanız kaydedilmemiş — e-posta tabanlı hesap kurtarmayı etkinleştirmek için yeniden doğrulayın.",
-    "reVerifyEmailBtn": "E-posta adresini doğrula"
+    "reVerifyEmailBtn": "E-posta adresini doğrula",
+    "multi": {
+      "title": "Hesaplar",
+      "subtitle": "Bu cihazdaki oyuncular arasında geçiş yap",
+      "active": "Aktif",
+      "switchBtn": "Değiştir",
+      "addBtn": "+ Oyuncu Ekle",
+      "tierSubtitle": "Aşama {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "2 Basamaklı Çarpan Açıldı!",

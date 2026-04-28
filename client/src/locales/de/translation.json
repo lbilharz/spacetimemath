@@ -290,7 +290,15 @@
     "accountTypeDesc": "Deine aktuelle Rolle bestimmt, welche Funktionen dir zur Verfügung stehen.",
     "reVerifyEmailPrompt": "E-Mail erneut verifizieren",
     "reVerifyEmailDesc": "Deine E-Mail ist nicht gespeichert — verifiziere sie erneut, um die E-Mail-Wiederherstellung zu aktivieren.",
-    "reVerifyEmailBtn": "E-Mail-Adresse verifizieren"
+    "reVerifyEmailBtn": "E-Mail-Adresse verifizieren",
+    "multi": {
+      "title": "Konten",
+      "subtitle": "Wechsle zwischen Spielern auf diesem Gerät",
+      "active": "Aktiv",
+      "switchBtn": "Wechseln",
+      "addBtn": "+ Spieler hinzufügen",
+      "tierSubtitle": "Stufe {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "Zweistellige Multiplikation freigeschaltet!",

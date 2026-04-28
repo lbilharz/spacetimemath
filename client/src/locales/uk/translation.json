@@ -271,7 +271,15 @@
     "accountTypeDesc": "Ваша поточна роль визначає, які функції вам доступні.",
     "reVerifyEmailPrompt": "Повторно підтвердити e-mail",
     "reVerifyEmailDesc": "Ваш e-mail не збережено — підтвердіть повторно, щоб увімкнути відновлення через e-mail.",
-    "reVerifyEmailBtn": "Підтвердити адресу e-mail"
+    "reVerifyEmailBtn": "Підтвердити адресу e-mail",
+    "multi": {
+      "title": "Акаунти",
+      "subtitle": "Перемикання між гравцями на цьому пристрої",
+      "active": "Активний",
+      "switchBtn": "Перемкнути",
+      "addBtn": "+ Додати гравця",
+      "tierSubtitle": "Рівень {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "Розблоковано 2-значний множник!",

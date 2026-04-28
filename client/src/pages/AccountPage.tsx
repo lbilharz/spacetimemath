@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTable, useReducer as useSTDBReducer, useSpacetimeDB } from 'spacetimedb/react';
 import { tables, reducers } from '../module_bindings/index.js';
@@ -10,6 +10,7 @@ import PageContainer from '../components/PageContainer.js';
 import TeacherUpgradeForm from '../components/TeacherUpgradeForm.js';
 import { AccountIcon, Swosh } from '../components/Icons.js';
 import RemindersSettings from '../components/RemindersSettings.js';
+import { getSavedAccounts, addAccount, switchAccount, removeAccount } from '../utils/multiAccount.js';
 
 
 interface Props {
@@ -60,6 +61,14 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
 
   const getMyEmail = useSTDBReducer(reducers.getMyEmail);
 
+  // Re-read registry whenever the current player's username or tier changes
+  // (syncCurrentAccount will have written the update to localStorage by this point)
+  const localAccounts = useMemo(
+    () => getSavedAccounts(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [myPlayer.username, myPlayer.learningTier, myIdentityHex]
+  );
+
   const handleGenerateRecoveryKey = async () => {
     if (!capturedToken) return;
     setGeneratingKey(true);
@@ -88,8 +97,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('spacetimemath_credentials');
-    window.location.reload();
+    removeAccount(myIdentityHex);
   };
 
   const deletePlayer = useSTDBReducer(reducers.deletePlayer);
@@ -99,8 +107,7 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
   const handleDeleteAccount = async () => {
     setDeleting(true);
     await deletePlayer();
-    localStorage.removeItem('spacetimemath_credentials');
-    window.location.reload();
+    removeAccount(myIdentityHex);
   };
 
   const initials = myPlayer.username.slice(0, 2).toUpperCase();
@@ -165,6 +172,54 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* ── 1.5 Accounts on this device ─────────────────────────────── */}
+      <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800/80 transition-colors">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('account.multi.title')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('account.multi.subtitle')}</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          {localAccounts.map(account => {
+            const isCurrent = account.identity === myIdentityHex;
+            const acctInitials = account.username.slice(0, 2).toUpperCase();
+            return (
+              <div key={account.identity} className={`flex items-center justify-between rounded-xl border p-3 transition-colors ${isCurrent ? 'border-brand-yellow/50 bg-brand-yellow/5 dark:bg-brand-yellow/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50'}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold text-sm shadow-inner ${isCurrent ? 'bg-brand-yellow text-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white'}`}>
+                    {acctInitials}
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                      {account.username}
+                      {isCurrent && <span className="text-[10px] uppercase tracking-wider font-black text-amber-600 dark:text-brand-yellow bg-brand-yellow/20 px-2 py-0.5 rounded-full">{t('account.multi.active')}</span>}
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      {t('account.multi.tierSubtitle', { tier: account.learningTier, role: account.playerType === 'Teacher' ? t('common.teacher') : t('common.student') })}
+                    </div>
+                  </div>
+                </div>
+                {!isCurrent && (
+                  <button
+                    onClick={() => switchAccount(account.identity)}
+                    className="rounded-lg bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700 active:scale-95 transition-transform hover:bg-slate-50 dark:hover:bg-slate-700"
+                  >
+                    {t('account.multi.switchBtn')}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+          <button
+            onClick={addAccount}
+            className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-3 mt-1 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors active:scale-[0.98]"
+          >
+            {t('account.multi.addBtn')}
+          </button>
         </div>
       </div>
 

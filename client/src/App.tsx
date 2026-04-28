@@ -14,6 +14,7 @@ import { TABBED_PAGES, PAGE_PATH, PATH_MAP } from './navigation.js';
 import type { Page } from './navigation.js';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
+import { syncCurrentAccount } from './utils/multiAccount.js';
 
 export type { Page };
 
@@ -135,6 +136,13 @@ export default function App() {
   const [cachedPlayer, setCachedPlayer] = useState(myPlayer);
   useEffect(() => { if (myPlayer) setCachedPlayer(myPlayer); }, [myPlayer]);  
   const effectivePlayer = myPlayer ?? cachedPlayer;
+
+  // Sync multi-account registry on profile update
+  useEffect(() => {
+    if (effectivePlayer && myIdentityHex) {
+      syncCurrentAccount(effectivePlayer, myIdentityHex);
+    }
+  }, [effectivePlayer, myIdentityHex]);
 
   useEffect(() => {
     // Break the waiting lock if table sync hangs for 3s after websocket connection

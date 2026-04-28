@@ -271,7 +271,15 @@
     "accountTypeDesc": "您当前的角色决定了可用的功能。",
     "reVerifyEmailPrompt": "重新验证邮箱",
     "reVerifyEmailDesc": "你的邮箱未存储——重新验证以启用邮件账户恢复。",
-    "reVerifyEmailBtn": "验证邮箱地址"
+    "reVerifyEmailBtn": "验证邮箱地址",
+    "multi": {
+      "title": "账户",
+      "subtitle": "在此设备上的玩家之间切换",
+      "active": "活跃",
+      "switchBtn": "切换",
+      "addBtn": "+ 添加玩家",
+      "tierSubtitle": "等级 {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "已解锁两位数乘法！",

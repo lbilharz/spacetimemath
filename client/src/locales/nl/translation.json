@@ -271,7 +271,15 @@
     "accountTypeDesc": "Je huidige rol bepaalt welke functies beschikbaar zijn.",
     "reVerifyEmailPrompt": "E-mail opnieuw verifiëren",
     "reVerifyEmailDesc": "Je e-mail is niet opgeslagen — verifieer opnieuw om e-mailherstel in te schakelen.",
-    "reVerifyEmailBtn": "E-mailadres verifiëren"
+    "reVerifyEmailBtn": "E-mailadres verifiëren",
+    "multi": {
+      "title": "Accounts",
+      "subtitle": "Wissel tussen spelers op dit apparaat",
+      "active": "Actief",
+      "switchBtn": "Wisselen",
+      "addBtn": "+ Speler toevoegen",
+      "tierSubtitle": "Niveau {{tier}} • {{role}}"
+    }
   },
   "unlock": {
     "tier1Title": "2-Cijferige vermenigvuldiger ontgrendeld!",
