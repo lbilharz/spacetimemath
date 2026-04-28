@@ -76,7 +76,8 @@
     "iknowCode": "Tengo un código de 12 dígitos",
     "codeDesc": "Impreso en tu tarjeta de recuperación",
     "iknowEmail": "Conozco mi correo electrónico",
-    "emailDesc": "Iniciar sesión con Enlace Mágico"
+    "emailDesc": "Iniciar sesión con Enlace Mágico",
+    "connectionNotReady": "Conexión no lista — espera un momento e inténtalo de nuevo."
   },
   "lobby": {
     "online": "en línea",

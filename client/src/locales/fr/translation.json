@@ -67,7 +67,8 @@
     "iknowCode": "J'ai un code à 12 chiffres",
     "codeDesc": "Imprimé sur votre carte de récupération",
     "iknowEmail": "Je connais mon email",
-    "emailDesc": "Connexion via lien magique"
+    "emailDesc": "Connexion via lien magique",
+    "connectionNotReady": "Connexion pas encore prête — veuillez patienter un instant et réessayer."
   },
   "lobby": {
     "online": "en ligne",

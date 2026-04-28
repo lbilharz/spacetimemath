@@ -67,7 +67,8 @@
     "iknowCode": "我有一个 12 位代码",
     "codeDesc": "印在您的恢复卡上",
     "iknowEmail": "我知道我的电子邮件",
-    "emailDesc": "通过神奇链接登录"
+    "emailDesc": "通过神奇链接登录",
+    "connectionNotReady": "连接尚未就绪 — 请稍候片刻，然后重试。"
   },
   "lobby": {
     "online": "在线",

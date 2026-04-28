@@ -67,7 +67,8 @@
     "iknowCode": "12 haneli bir kodum var",
     "codeDesc": "Kurtarma kartınıza basılıdır",
     "iknowEmail": "E-postamı biliyorum",
-    "emailDesc": "Sihirli bağlantı ile giriş yap"
+    "emailDesc": "Sihirli bağlantı ile giriş yap",
+    "connectionNotReady": "Bağlantı henüz hazır değil — lütfen bir an bekleyin ve tekrar deneyin."
   },
   "lobby": {
     "online": "çevrimiçi",

@@ -76,7 +76,8 @@
     "iknowCode": "I have a 12-digit code",
     "codeDesc": "Printed on your recovery card",
     "iknowEmail": "I know my email",
-    "emailDesc": "Login via magic link"
+    "emailDesc": "Login via magic link",
+    "connectionNotReady": "Connection not ready — please wait a moment and try again."
   },
   "register_split": {
     "teacher_btn": "Teacher",

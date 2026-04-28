@@ -76,7 +76,8 @@
     "iknowCode": "Ich habe einen 12-stelligen Code",
     "codeDesc": "Steht auf deiner Recovery-Karte",
     "iknowEmail": "Ich kenne meine E-Mail",
-    "emailDesc": "Login per Magic Link"
+    "emailDesc": "Login per Magic Link",
+    "connectionNotReady": "Verbindung noch nicht bereit — bitte warte einen Moment und versuche es erneut."
   },
   "register_split": {
     "teacher_btn": "Lehrkraft",

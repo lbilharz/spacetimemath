@@ -67,7 +67,8 @@
     "iknowCode": "Ik heb een 12-cijferige code",
     "codeDesc": "Gedrukt op je herstelkaart",
     "iknowEmail": "Ik ken mijn e-mail",
-    "emailDesc": "Inloggen via magic link"
+    "emailDesc": "Inloggen via magic link",
+    "connectionNotReady": "Verbinding nog niet gereed — wacht even en probeer het opnieuw."
   },
   "lobby": {
     "online": "online",

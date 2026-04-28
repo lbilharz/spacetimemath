@@ -170,12 +170,28 @@ export default function RegisterPage({ onRegistered }: Props) {
       setRestoreError(t('register.restoreError'));
       return;
     }
+    // Guard: connection must be established before calling a reducer.
+    // Right after a new version install the SpaceTimeDB module restarts and
+    // disconnects all clients; identity is null until the reconnect completes.
+    // Without this guard, restoreAccount() is queued on a dead socket and the
+    // await never resolves — causing an infinite spinner.
+    if (!identity) {
+      setRestoreError(t('register.connectionNotReady', 'Connection not ready — please wait a moment and try again.'));
+      return;
+    }
     setRestoring(true);
     setRestoreError('');
     try {
-      await restoreAccount({ code: upper });
+      // Timeout wrapper: if the SDK queues the message on an unstable connection
+      // the promise would never resolve without this guard.
+      await Promise.race([
+        restoreAccount({ code: upper }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(t('register.restoreTimeout'))), 10_000)
+        ),
+      ]);
       const POLL_INTERVAL = 50;
-      const TIMEOUT = 5_000;
+      const TIMEOUT = 10_000; // increased from 5s — fresh connections need time for 25+ subscriptions to apply
       const deadline = Date.now() + TIMEOUT;
       type RestoreRow = { caller: { toHexString: () => string }; token: string };
       const getRow = () =>
