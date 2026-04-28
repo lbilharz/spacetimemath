@@ -1,3 +1,3 @@
-v1.7 — Cilalama & düzeltmeler
+v1.8 — Aile Hesapları & Düzeltmeler
 
-Android artık kenardan kenara tam ekran kullanıyor. Webde hatırlatıcılar bölümü artık App Store ve Google Play'e bağlantı veriyor. Bir de her zamanki kararlılık iyileştirmeleri.
+Ebeveynler artık tek bir cihazda birden fazla oyuncuyu yönetebilir — Hesap sayfasından tek dokunuşla çocuk profilleri arasında geçiş yapın. Düzeltildi: Henüz açmamış oyunculara genişletilmiş çarpım tabloları (×11–×20) gösteriliyordu. Genişletilmiş modda tam 20×20 ustalık ızgarası da artık doğru şekilde görüntüleniyor.

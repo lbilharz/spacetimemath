@@ -1,3 +1,3 @@
-v1.7 — Polish & Fixes
+v1.8 — Family Accounts & Fixes
 
-Android now uses the full screen with edge-to-edge display. On web, the reminders section now links to the App Store and Google Play. Plus the usual stability improvements.
+Parents can now manage multiple players on one device — switch between children's accounts in one tap from the Account page. Fixed a bug where extended multiplication tables (×11–×20) could appear for players who hadn't unlocked them yet. The full 20×20 mastery grid now also displays correctly in extended mode.

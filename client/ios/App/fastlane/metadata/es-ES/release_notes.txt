@@ -1,3 +1,3 @@
-v1.7 — Pulido y correcciones
+v1.8 — Cuentas familiares y correcciones
 
-Android ahora usa la pantalla completa con visualización de borde a borde. En la web, la sección de recordatorios ahora enlaza al App Store y Google Play. Más las habituales mejoras de estabilidad.
+Los padres pueden gestionar varios jugadores en un dispositivo: cambia entre perfiles de hijos con un toque desde la página de Cuenta. Corregido: las tablas de multiplicar extendidas (×11–×20) ya no aparecen para jugadores que aún no las han desbloqueado. La cuadrícula de dominio 20×20 también se muestra correctamente en modo extendido.
