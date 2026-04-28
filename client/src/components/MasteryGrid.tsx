@@ -157,12 +157,13 @@ export default function MasteryGrid({ answers, problemStats, highlightSession: _
 
   return (
     <div className="flex flex-col w-full relative">
-      <div className="overflow-x-auto pb-2 self-center lg:self-start">
+      <div className="w-full overflow-x-auto pb-2">
         <div style={{
           display: 'grid',
           gridTemplateColumns: `28px repeat(${gridSize}, ${cellSize})`,
           gap: 3,
-        }}>
+          width: 'max-content',
+        }} className="mx-auto lg:mx-0">
           {cells}
         </div>
       </div>
