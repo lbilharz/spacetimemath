@@ -154,16 +154,39 @@ export default function App() {
   }, [effectivePlayer, myIdentityHex]);
 
   // OTA: silently check for a new web bundle on every foreground event.
-  // The bundle is staged; it applies on the next cold start, never mid-session.
+  // Self-hosted flow — we fetch OUR OWN Vercel Blob manifest and call
+  // downloadBundle() directly. This never contacts Capawesome servers.
+  // sync() is intentionally NOT used — it hardcodes api.cloud.capawesome.io.
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
+    // Replace with the real Vercel Blob URL after completing Task 2.
+    const MANIFEST_URL = 'REPLACE_WITH_VERCEL_BLOB_MANIFEST_URL';
+    if (MANIFEST_URL.startsWith('REPLACE_')) return; // placeholder guard
+
     const checkForUpdate = async () => {
       try {
-        const result = await LiveUpdate.sync();
-        if (result.nextBundleId) {
-          setUpdateReady(true);
-        }
+        const res = await fetch(MANIFEST_URL, { cache: 'no-store' });
+        if (!res.ok) return;
+        const manifest = await res.json() as { version: string; url: string | null; checksum: string | null };
+        if (!manifest.version || manifest.version === '0' || !manifest.url) return;
+
+        // Already on this bundle or already staged — nothing to do
+        const [current, next] = await Promise.all([
+          LiveUpdate.getCurrentBundle(),
+          LiveUpdate.getNextBundle(),
+        ]);
+        if (next.bundleId === manifest.version) { setUpdateReady(true); return; }
+        if (current.bundleId === manifest.version) return;
+
+        // Download zip and stage it
+        await LiveUpdate.downloadBundle({
+          url: manifest.url,
+          bundleId: manifest.version,
+          checksum: manifest.checksum ?? undefined,
+        });
+        await LiveUpdate.setNextBundle({ bundleId: manifest.version });
+        setUpdateReady(true);
       } catch (err) {
         console.warn('[OTA] Update check failed (non-fatal):', err);
       }
