@@ -2,7 +2,7 @@
 
 All notable changes to Better 1UP are documented here.
 
-## [2.0.0] — 2026-04-30
+## [2.0] — 2026-04-30
 
 ### Added
 - **Multi-account switcher** — parents can manage multiple child profiles on a single device. Switch between accounts in one tap from the Account page; add new profiles via "+ Add Player"; logout gracefully falls back to the next available account. All 9 languages supported.
@@ -17,7 +17,7 @@ All notable changes to Better 1UP are documented here.
 
 ### Internal
 - Android adaptive icon updated with 16.7% inset so the logo sits within the safe-zone on all launcher shapes.
-- iOS/Android build numbers bumped to 24; marketing version 1.7.0 → 2.0.0.
+- iOS/Android build numbers bumped to 24; marketing version 1.7 → 2.0.
 - `sharp` pinned to 0.33.4 via pnpm override to prevent build errors.
 - `.gitignore` extended: `client/android/.idea/`, `client/ios/App/.bundle/`, `client/ios/App/vendor/`.
 - Added official testing guide (`Better_1UP_Testing_Guide.md`) and audio generation scripts (`elevenlabs_gen.ts`, `generateGreetings.ts`).
