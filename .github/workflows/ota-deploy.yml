@@ -1,0 +1,86 @@
+name: OTA Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Only fire when the web layer changes
+      - 'client/src/**'
+      - 'client/public/**'
+      # Explicitly NOT listed (require a store release via ios-release.yml):
+      # - 'client/ios/**'
+      # - 'client/android/**'
+      # - 'client/capacitor.config.ts'
+      # - 'client/package.json'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  ota:
+    name: Build & Deploy OTA Bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build web assets
+        run: npm run build
+        working-directory: client
+        env:
+          # Baked into the bundle at compile time — read by AccountPage for version display
+          VITE_BUILD_SHA: ${{ github.sha }}
+          VITE_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+          VITE_SPACETIMEDB_URI: ${{ secrets.VITE_SPACETIMEDB_URI }}
+          VITE_SPACETIMEDB_DB: ${{ secrets.VITE_SPACETIMEDB_DB }}
+
+      - name: Generate OTA version (short git SHA)
+        id: version
+        run: echo "version=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Zip bundle
+        run: |
+          cd client/dist
+          zip -r ../../bundle-${{ steps.version.outputs.version }}.zip .
+
+      - name: Compute checksum
+        id: checksum
+        run: |
+          echo "sha256=$(sha256sum bundle-${{ steps.version.outputs.version }}.zip | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Upload bundle to Vercel Blob
+        id: upload
+        run: |
+          RESULT=$(npx vercel blob put \
+            bundle-${{ steps.version.outputs.version }}.zip \
+            --token=${{ secrets.BLOB_READ_WRITE_TOKEN }} \
+            --multipart)
+          echo "bundle_url=$RESULT" >> $GITHUB_OUTPUT
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+
+      - name: Update latest.json manifest
+        run: |
+          printf '{"version":"%s","url":"%s","checksum":"%s"}' \
+            "${{ steps.version.outputs.version }}" \
+            "${{ steps.upload.outputs.bundle_url }}" \
+            "${{ steps.checksum.outputs.sha256 }}" \
+          | npx vercel blob put latest.json \
+            --token=${{ secrets.BLOB_READ_WRITE_TOKEN }} \
+            --content-type=application/json \
+            --multipart -
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}

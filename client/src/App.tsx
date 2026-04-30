@@ -14,6 +14,7 @@ import { TABBED_PAGES, PAGE_PATH, PATH_MAP } from './navigation.js';
 import type { Page } from './navigation.js';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
+import { LiveUpdate } from '@capawesome/capacitor-live-update';
 import { syncCurrentAccount } from './utils/multiAccount.js';
 
 export type { Page };
@@ -58,7 +59,10 @@ export default function App() {
   // Track first-ever connection so we never re-show splash on WS reconnect.
   // Must be state (not ref) because it's read during render for the splash guard.
   const [wasEverConnected, setWasEverConnected] = useState(false);
-  useEffect(() => { if (isActive) setWasEverConnected(true); }, [isActive]);  
+  useEffect(() => { if (isActive) setWasEverConnected(true); }, [isActive]);
+
+  // OTA update ready flag — set when Capawesome stages a new bundle
+  const [updateReady, setUpdateReady] = useState(false);
 
 
   // Deeplink Intent State (Notification Taps)
@@ -137,12 +141,42 @@ export default function App() {
   useEffect(() => { if (myPlayer) setCachedPlayer(myPlayer); }, [myPlayer]);  
   const effectivePlayer = myPlayer ?? cachedPlayer;
 
-  // Sync multi-account registry on profile update
+  // Sync multi-account registry on profile update.
+  // Also call LiveUpdate.ready() here — after SpaceTimeDB confirms the player row —
+  // so Capawesome knows the bundle is healthy and won't auto-revert on crash.
   useEffect(() => {
     if (effectivePlayer && myIdentityHex) {
       syncCurrentAccount(effectivePlayer, myIdentityHex);
+      if (Capacitor.isNativePlatform()) {
+        LiveUpdate.ready().catch(() => {}); // mark bundle as stable
+      }
     }
   }, [effectivePlayer, myIdentityHex]);
+
+  // OTA: silently check for a new web bundle on every foreground event.
+  // The bundle is staged; it applies on the next cold start, never mid-session.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const checkForUpdate = async () => {
+      try {
+        const result = await LiveUpdate.sync();
+        if (result.nextBundleId) {
+          setUpdateReady(true);
+        }
+      } catch (err) {
+        console.warn('[OTA] Update check failed (non-fatal):', err);
+      }
+    };
+
+    checkForUpdate();
+
+    const listenerPromise = CapApp.addListener('appStateChange', ({ isActive: appIsActive }) => {
+      if (appIsActive) checkForUpdate();
+    });
+
+    return () => { listenerPromise.then(l => l.remove()); };
+  }, []);
 
   useEffect(() => {
     // Break the waiting lock if table sync hangs for 3s after websocket connection
@@ -460,9 +494,22 @@ export default function App() {
       />
 
       {showBottomNav && (
-        <BottomNav 
-          active={TABBED_PAGES.includes(page) ? page : (page === 'classroom' ? 'classrooms' : 'lobby')} 
+        <BottomNav
+          active={TABBED_PAGES.includes(page) ? page : (page === 'classroom' ? 'classrooms' : 'lobby')}
         />
+      )}
+
+      {/* OTA restart nudge — only shown outside of active sprint so it never disrupts a session */}
+      {updateReady && page !== 'sprint' && (
+        <div className="fixed bottom-20 inset-x-4 z-50 flex items-center justify-between gap-3 rounded-2xl bg-slate-900 dark:bg-slate-700 px-4 py-3 shadow-xl animate-in slide-in-from-bottom-4 duration-300">
+          <span className="text-sm font-bold text-white">✨ Update ready</span>
+          <button
+            onClick={() => LiveUpdate.reload()}
+            className="rounded-xl bg-brand-yellow px-4 py-1.5 text-xs font-black text-slate-900 active:scale-95 transition-transform"
+          >
+            Restart
+          </button>
+        </div>
       )}
     </>
   );

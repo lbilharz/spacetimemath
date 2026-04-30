@@ -19,6 +19,16 @@ interface Props {
   onBack: () => void;
 }
 
+function timeAgo(isoString: string): string {
+  const diff = (Date.now() - new Date(isoString).getTime()) / 1000;
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+  if (diff < 60)      return rtf.format(-Math.round(diff), 'second');
+  if (diff < 3600)    return rtf.format(-Math.round(diff / 60), 'minute');
+  if (diff < 86400)   return rtf.format(-Math.round(diff / 3600), 'hour');
+  if (diff < 2592000) return rtf.format(-Math.round(diff / 86400), 'day');
+  return rtf.format(-Math.round(diff / 2592000), 'month');
+}
+
 
 
 export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
@@ -109,6 +119,9 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
     await deletePlayer();
     removeAccount(myIdentityHex);
   };
+
+  const buildSha = import.meta.env.VITE_BUILD_SHA?.slice(0, 7) as string | undefined;
+  const buildTime = import.meta.env.VITE_BUILD_TIME as string | undefined;
 
   const initials = myPlayer.username.slice(0, 2).toUpperCase();
 
@@ -462,21 +475,28 @@ export default function AccountPage({ myPlayer, myIdentityHex }: Props) {
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────── */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-6 pb-2">
-        {[
-          { key: 'account.imprint', href: 'https://one.up.bilharz.eu/impressum' },
-          { key: 'account.privacy', href: 'https://one.up.bilharz.eu/datenschutz' },
-        ].map(({ key, href }) => (
-          <a
-            key={key}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
-          >
-            {t(key as ParseKeys)}
-          </a>
-        ))}
+      <div className="mt-4 flex flex-col items-center gap-3 pb-2">
+        <div className="flex flex-wrap items-center justify-center gap-6">
+          {[
+            { key: 'account.imprint', href: 'https://one.up.bilharz.eu/impressum' },
+            { key: 'account.privacy', href: 'https://one.up.bilharz.eu/datenschutz' },
+          ].map(({ key, href }) => (
+            <a
+              key={key}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+            >
+              {t(key as ParseKeys)}
+            </a>
+          ))}
+        </div>
+        {buildSha && (
+          <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600 select-all">
+            bundle {buildSha}{buildTime ? ` · ${timeAgo(buildTime)}` : ''}
+          </span>
+        )}
       </div>
     </PageContainer>
   );
