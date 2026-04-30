@@ -29,6 +29,9 @@ importers:
       '@capacitor/local-notifications':
         specifier: ^8.0.2
         version: 8.0.2(@capacitor/core@8.3.0)
+      '@capawesome/capacitor-live-update':
+        specifier: ^8.2.1
+        version: 8.2.1(@capacitor/core@8.3.0)
       '@fontsource-variable/dm-sans':
         specifier: ^5.2.8
         version: 5.2.8
@@ -280,6 +283,11 @@ packages:
 
   '@capacitor/local-notifications@8.0.2':
     resolution: {integrity: sha512-X7KE/I4ZutMTGVHNUyTjIugYcQEcHJRLks+TsPnOriuS+lo0geSTuaRln6zAZlJSSXSoVMSSzHexdSbIjR/8iw==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capawesome/capacitor-live-update@8.2.1':
+    resolution: {integrity: sha512-oQYBXl75mvFboWfqOBXC7Z5T5PmevTQzv5YqTr2n21Q43+SakLKuyQT3N8vvb4sERsPxi8zzjslocHb6b328bg==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -4266,6 +4274,10 @@ snapshots:
       '@capacitor/core': 8.3.0
 
   '@capacitor/local-notifications@8.0.2(@capacitor/core@8.3.0)':
+    dependencies:
+      '@capacitor/core': 8.3.0
+
+  '@capawesome/capacitor-live-update@8.2.1(@capacitor/core@8.3.0)':
     dependencies:
       '@capacitor/core': 8.3.0
 
