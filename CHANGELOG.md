@@ -2,10 +2,12 @@
 
 All notable changes to Better 1UP are documented here.
 
-## [1.7.0] — 2026-04-28
+## [2.0.0] — 2026-04-30
 
 ### Added
-- **Multi-account switcher** — parents can manage multiple child profiles on a single device. Switch between accounts in one tap from the Account page; add new profiles via "+ Add Player"; logout gracefully falls back to the next available account.
+- **Multi-account switcher** — parents can manage multiple child profiles on a single device. Switch between accounts in one tap from the Account page; add new profiles via "+ Add Player"; logout gracefully falls back to the next available account. All 9 languages supported.
+- **OTA live updates** *(in progress — phase 16)* — web-layer fixes will ship within minutes of a `git push`, bypassing App Store review. Powered by Capawesome Live Update + Vercel Blob. A non-blocking restart nudge appears after staging; suppressed during active sprints. AccountPage footer shows the active bundle SHA and humanized build timestamp.
+- **Account recovery hang fix** — after a new version install the SpaceTimeDB module restarts and disconnects clients. Entering a recovery code before reconnection completed caused an infinite spinner. Now guarded with an `identity` check and a 10 s timeout on the reducer call; poll timeout raised from 5 s to 10 s.
 
 ### Fixed
 - **Extended mode problems leaking into standard sprints** — players who had not opted into extended mode (×11–×20) were receiving those problems. Root cause: `build_sequence` silently discarded the `extended_mode` / `extended_level` parameters. Added explicit guards in the sequence builder and in both SEC-06 server-side validation points (`issue_problem`, `submit_answer`).
@@ -15,10 +17,11 @@ All notable changes to Better 1UP are documented here.
 
 ### Internal
 - Android adaptive icon updated with 16.7% inset so the logo sits within the safe-zone on all launcher shapes.
-- iOS/Android build numbers bumped to 24.
+- iOS/Android build numbers bumped to 24; marketing version 1.7.0 → 2.0.0.
 - `sharp` pinned to 0.33.4 via pnpm override to prevent build errors.
 - `.gitignore` extended: `client/android/.idea/`, `client/ios/App/.bundle/`, `client/ios/App/vendor/`.
 - Added official testing guide (`Better_1UP_Testing_Guide.md`) and audio generation scripts (`elevenlabs_gen.ts`, `generateGreetings.ts`).
+- `CHANGELOG.md` introduced; `BACKLOG.md` introduced with three tracked items.
 
 ---
 
