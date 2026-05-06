@@ -18,13 +18,9 @@ pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String
     let _player = get_player(ctx)?;
     let code = make_code(ctx);
 
-    // STDB resets auto_inc counters to 0 on every server restart — derive limits from
-    // max existing IDs so the retry loop always clears the stale-counter region.
-    let classroom_limit = ctx.db.classrooms().iter().map(|c| c.id).max().unwrap_or(0) as usize + 500;
-    let member_limit    = ctx.db.classroom_members().iter().map(|m| m.id).max().unwrap_or(0) as usize + 500;
-
+    // Use try_insert loop to survive auto_inc reset after SpacetimeDB deploys
     let mut classroom_opt: Option<Classroom> = None;
-    for _ in 0..classroom_limit {
+    for _ in 0..100_000 {
         if let Ok(c) = ctx.db.classrooms().try_insert(Classroom {
             id: 0, code: code.clone(), name: name.clone(), teacher: ctx.sender(),
         }) {
@@ -34,7 +30,7 @@ pub fn create_classroom(ctx: &ReducerContext, name: String) -> Result<(), String
     }
     let classroom = classroom_opt.ok_or("Failed to create classroom due to ID collision")?;
 
-    for _ in 0..member_limit {
+    for _ in 0..100_000 {
         if ctx.db.classroom_members().try_insert(ClassroomMember {
             id: 0, classroom_id: classroom.id, player_identity: ctx.sender(), hidden: false,
         }).is_ok() {
@@ -61,8 +57,7 @@ pub fn join_classroom(ctx: &ReducerContext, code: String) -> Result<(), String> 
     if ctx.db.classroom_members().player_identity().filter(&sender).any(|m| m.classroom_id == cid) {
         return Ok(());
     }
-    let member_limit = ctx.db.classroom_members().iter().map(|m| m.id).max().unwrap_or(0) as usize + 500;
-    for _ in 0..member_limit {
+    for _ in 0..100_000 {
         if ctx.db.classroom_members().try_insert(ClassroomMember {
             id: 0, classroom_id: cid, player_identity: sender, hidden: false,
         }).is_ok() {
@@ -136,14 +131,10 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
         ctx.db.class_sprints().id().update(ClassSprint { is_active: false, ..s });
     }
 
-    // STDB resets auto_inc counters to 0 on every server restart — derive limits once
-    // from max existing IDs so all retry loops clear the stale-counter region.
-    let sprint_limit   = ctx.db.class_sprints().iter().map(|s| s.id).max().unwrap_or(0) as usize + 500;
-    let session_limit  = ctx.db.sessions().iter().map(|s| s.id).max().unwrap_or(0) as usize + 500;
-    let schedule_limit = ctx.db.end_sprint_schedule().iter().map(|e| e.scheduled_id).max().unwrap_or(0) as usize + 500;
-
+    // Insert new ClassSprint — use try_insert retry loop to survive auto_inc desync
+    // (SpacetimeDB resets the counter to 0 on each deploy while existing rows keep higher IDs)
     let mut sprint_opt: Option<ClassSprint> = None;
-    for _ in 0..sprint_limit {
+    for _ in 0..100_000 {
         if let Ok(s) = ctx.db.class_sprints().try_insert(ClassSprint {
             id: 0,
             classroom_id,
@@ -166,8 +157,10 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
 
     for member in members {
         if let Some(player) = ctx.db.players().identity().find(member.player_identity) {
+            // auto_inc counter may be out of sync with existing data due to a SpacetimeDB
+            // migration resetting it. Retry until the counter moves past existing IDs.
             let mut success = false;
-            for _ in 0..session_limit {
+            for _ in 0..100_000 {
                 if let Ok(inserted_sess) = ctx.db.sessions().try_insert(Session {
                     id: 0,
                     player_identity: member.player_identity,
@@ -216,7 +209,7 @@ pub fn start_class_sprint(ctx: &ReducerContext, classroom_id: u64, is_diagnostic
     let schedule_at = ScheduleAt::Time(Timestamp::from_micros_since_unix_epoch(
         ctx.timestamp.to_micros_since_unix_epoch() + auto_end_secs * 1_000_000,
     ));
-    for _ in 0..schedule_limit {
+    for _ in 0..100_000 {
         if ctx.db.end_sprint_schedule().try_insert(EndSprintSchedule {
             scheduled_id: 0,
             scheduled_at: schedule_at.clone(),

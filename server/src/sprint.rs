@@ -105,12 +105,7 @@ pub fn start_session(ctx: &ReducerContext) -> Result<(), String> {
         ctx.db.sessions().id().update(Session { is_complete: true, ..s });
     }
 
-    // STDB resets the auto_inc counter to 0 on every server restart, causing try_insert
-    // to collide with existing session IDs until the counter advances past the highest ID.
-    // We derive the limit from max(existing id) so it's always sufficient regardless of
-    // how many sessions accumulate over time. +500 provides headroom for concurrent inserts.
-    let session_limit = ctx.db.sessions().iter().map(|s| s.id).max().unwrap_or(0) as usize + 500;
-    for _ in 0..session_limit {
+    for _ in 0..100_000 {
         if let Ok(inserted) = ctx.db.sessions().try_insert(Session {
             id: 0,
             player_identity: ctx.sender(),
@@ -162,8 +157,7 @@ pub fn start_diagnostic_session(ctx: &ReducerContext) -> Result<(), String> {
         ctx.db.sessions().id().update(Session { is_complete: true, ..s });
     }
 
-    let session_limit = ctx.db.sessions().iter().map(|s| s.id).max().unwrap_or(0) as usize + 500;
-    for _ in 0..session_limit {
+    for _ in 0..100_000 {
         if let Ok(inserted) = ctx.db.sessions().try_insert(Session {
             id: 0,
             player_identity: ctx.sender(),
@@ -520,7 +514,7 @@ pub fn submit_answer(
     }
 
     // try_insert retry loop: auto_inc counter may be out of sync with restored rows.
-    for _ in 0..200 {
+    for _ in 0..100_000 {
         if ctx.db.answers().try_insert(Answer {
             id: 0,
             player_identity: sender,
